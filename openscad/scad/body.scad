@@ -56,26 +56,37 @@ module head(dpt)
 
 module body_platform(dpt)
 {
-    rotate([0,0,18+180]) cyl(h=dpt, d=80*2, $fn=5); // Circumcircle radius of 79.96mm = side of 94mm
-    move([0,22,0]) cuboid([244,87,dpt]);
+    move([0,0,-(dpt/2)]) {
+        rotate([0,0,18+180]) cyl(h=dpt, d=80*2, $fn=5); // Circumcircle radius of 79.96mm = side of 94mm
+        move([0,22,0]) cuboid([244,87,dpt]);
 
-    // Front of back leg slope to body
-    move([73,-21.5,-(dpt/2)]) xrot(90) right_triangle([49,dpt,5]);
-    yrot(180) move([73,-21.5,-(dpt/2)]) xrot(90) right_triangle([49,dpt,5]);
+        // Front of back leg slope to body
+        move([73,-21.5,-(dpt/2)]) xrot(90) right_triangle([49,dpt,5]);
+        yrot(180) move([73,-21.5,-(dpt/2)]) xrot(90) right_triangle([49,dpt,5]);
 
-    // Front part of body/legs
-    front_flipper(dpt); // Left
-    yrot(180) front_flipper(dpt); // Right
+        // Front part of body/legs
+        front_flipper(dpt); // Left
+        yrot(180) front_flipper(dpt); // Right
 
-    // Rear part of body/legs
-    rear_flipper(dpt); // Left
-    yrot(180) rear_flipper(dpt); // Right
+        // Rear part of body/legs
+        rear_flipper(dpt); // Left
+        yrot(180) rear_flipper(dpt); // Right
 
-    // Head
-    head(dpt);
+        // Head
+        head(dpt);
+    }
+}
+
+module wheel_cutouts(dpt)
+{
+    move([+90,25.5,-(dpt/2)]) cuboid([60,76,dpt*2], chamfer=2);
+    move([-90,25.5,-(dpt/2)]) cuboid([60,76,dpt*2], chamfer=2);
 }
 
 module render_body()
 {
-    body_platform(10);   
+    difference() {
+        body_platform(10);
+        wheel_cutouts(10);
+    }
 }
