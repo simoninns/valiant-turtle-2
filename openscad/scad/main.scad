@@ -27,7 +27,7 @@ use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
 // Local includes
-//include <holder.scad>
+include <body.scad>
 
 // Rendering resolution
 $fn=50;
@@ -35,7 +35,7 @@ $fn=50;
 // Render the required items
 module main()
 {
-    // Nothing
+    render_body();
 }
 
 main();
