@@ -27,23 +27,38 @@ use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
 // Render a pentagon with a radius = pr
-module pentagon(pr)
+module pentagon()
 {
     hull() {
-        for ( i = [0:1:5]) {
-            zrot((360/5) * i) move([0,pr,0]) staggered_sphere(d=2, $fn=18);
-        }
+        zrot((360/5) * 0) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 1) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 2) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 3) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 4) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
+    }
+}
+
+// This is a bit of an odd shape... to get it right I made it 2D and printed
+// it to scale and adjusted until it matched the original pretty closely.
+module irrPentagon()
+{
+    hull() {
+        zrot((360/5) * 0) move([0,103/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 1) move([0,123/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 2) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 3) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 4) move([0,123/2,0]) staggered_sphere(d=2, $fn=18);
     }
 }
 
 module half_shell()
 {
     // Centre
-    pentagon(110/2);
+    pentagon();
 
     for ( i = [0:1:5]) {
         zrot((360/5) * i) {
-            zrot(360/10) move([0,128.75/2,79.75/2]) xrot(63.5) pentagon(110/2);
+            zrot(360/10) move([0,70.5,39.25]) xrot(58.25) irrPentagon();
         }
     }
 }
@@ -54,10 +69,10 @@ module render_shell()
         // Top shell
         yrot(180) half_shell();
 
-        // Bottom shell
-        move([0,0,-105]) difference() {
-            move([0,0,-39.5]) zrot(360/10) half_shell();
-            move([0,0,-55]) cuboid([200,200,100]);
-        }
+        // // Bottom shell
+        // move([0,0,-100]) difference() {
+        //     move([0,0,-42]) zrot(360/10) half_shell();
+        //     //move([0,0,-60]) cuboid([200,200,100]);
+        // }
     }
 }

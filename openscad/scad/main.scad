@@ -33,9 +33,8 @@ include <shell.scad>
 // Rendering resolution
 $fn=50;
 
-// Render the required items
-module main()
-{
+module main() {
+    // Render the required items
     render_body();
     render_shell();
 }
