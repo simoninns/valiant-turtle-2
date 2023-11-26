@@ -1,6 +1,6 @@
 /************************************************************************
 
-    main.scad
+    shell.scad
     
     Valiant Turtle 2
     Copyright (C) 2023 Simon Inns
@@ -26,18 +26,38 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-// Local includes
-include <body.scad>
-include <shell.scad>
-
-// Rendering resolution
-$fn=50;
-
-// Render the required items
-module main()
+// Render a pentagon with a radius = pr
+module pentagon(pr)
 {
-    render_body();
-    render_shell();
+    hull() {
+        for ( i = [0:1:5]) {
+            zrot((360/5) * i) move([0,pr,0]) staggered_sphere(d=2, $fn=18);
+        }
+    }
 }
 
-main();
+module half_shell()
+{
+    // Centre
+    pentagon(110/2);
+
+    for ( i = [0:1:5]) {
+        zrot((360/5) * i) {
+            zrot(360/10) move([0,128.75/2,79.75/2]) xrot(63.5) pentagon(110/2);
+        }
+    }
+}
+
+module render_shell()
+{
+    move([0,0,110]) {
+        // Top shell
+        yrot(180) half_shell();
+
+        // Bottom shell
+        move([0,0,-105]) difference() {
+            move([0,0,-39.5]) zrot(360/10) half_shell();
+            move([0,0,-55]) cuboid([200,200,100]);
+        }
+    }
+}

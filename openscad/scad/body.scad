@@ -47,10 +47,18 @@ module front_flipper(dpt)
 
 module head(dpt)
 {
+    hull() {
     move([0,119.5 - 210,0]) {
         cuboid([43,65,dpt]);
         move([0,-32.5,-(dpt/2)]) xrot(90) right_triangle([21.5,dpt,21.5]);
         yrot(180) move([0,-32.5,-(dpt/2)]) xrot(90) right_triangle([21.5,dpt,21.5]);
+    }
+
+    move([0,119.5 - 210,15]) {
+        cuboid([22,65,20]);
+        move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
+        yrot(180) move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
+    }
     }
 }
 
