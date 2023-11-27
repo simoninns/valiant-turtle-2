@@ -33,10 +33,23 @@ include <shell.scad>
 // Rendering resolution
 $fn=50;
 
+// Select rendering parameters
+use_colour = "Colour"; // [Colour, No colour]
+for_printing = "Display"; // [Display, Printing]
+
+display_body = "Yes"; // [Yes, No]
+display_shell = "Yes"; // [Yes, No]
+
 module main() {
+    crend = (use_colour == "Colour") ? true:false;
+    toPrint = (for_printing == "Printing") ? true:false;
+
+    d_body = (display_body == "Yes") ? true:false;
+    d_shell = (display_shell == "Yes") ? true:false;
+
     // Render the required items
-    render_body();
-    render_shell();
+    if (d_body) render_body(crend, toPrint);
+    if (d_shell) render_shell(crend, toPrint);
 }
 
 main();
