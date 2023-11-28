@@ -26,39 +26,36 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-// Render a pentagon with a radius = pr
 module pentagon()
 {
     hull() {
-        zrot((360/5) * 0) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 1) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 2) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 3) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 4) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 0) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 1) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 4) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
     }
 }
 
-// This is a bit of an odd shape... to get it right I made it 2D and printed
-// it to scale and adjusted until it matched the original pretty closely.
 module irrPentagonTop()
 {
     hull() {
-        zrot((360/5) * 0) move([0,103/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 1) move([0,123/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 2) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 3) move([0,114/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 4) move([0,123/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 0) move([0,103/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 1) move([0,123/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 4) move([0,123/2,0]) staggered_sphere(d=2, $fn=16);
     }
 }
 
 module irrPentagonBottom()
 {
     hull() {
-        zrot((360/5) * 0) move([0,105.5/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 1) move([0,120.5/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 2) move([0,104.5/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 3) move([0,104.5/2,0]) staggered_sphere(d=2, $fn=18);
-        zrot((360/5) * 4) move([0,120.5/2,0]) staggered_sphere(d=2, $fn=18);
+        zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 1) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 2) move([0,107/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 3) move([0,107/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 4) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
     }
 }
 
@@ -70,7 +67,7 @@ module shellTop()
 
         for ( i = [0:1:4]) {
             zrot((360/5) * i) {
-                zrot(360/10) move([0,70.5,39.25]) xrot(58.25) irrPentagonTop();
+                zrot(360/10) move([0,70,36.75]) xrot(55.5) irrPentagonTop();
             }
         }
     }
@@ -80,7 +77,25 @@ module shellBottom()
 {
     zrot(360/10) for ( i = [0:1:4]) {
         zrot((360/5) * i) {
-            zrot(360/10) move([0,67.75,40]) xrot(53.25) irrPentagonBottom();
+            zrot(360/10) move([0,69,36.25]) xrot(54) irrPentagonBottom();
+        }
+    }
+}
+
+// Note: Borrowed from the body code and made a little wider
+module headCutout(dpt)
+{
+    hull() {
+        move([0,119.5 - 210,0]) {
+            cuboid([44,65,dpt]);
+            move([0,-32.5,-(dpt/2)]) xrot(90) right_triangle([21.5,dpt,21.5]);
+            yrot(180) move([0,-32.5,-(dpt/2)]) xrot(90) right_triangle([21.5,dpt,21.5]);
+        }
+
+        move([0,119.5 - 210,15]) {
+            cuboid([23,65,20]);
+            move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
+            yrot(180) move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
         }
     }
 }
@@ -89,11 +104,15 @@ module shell()
 {
     difference() {
         union() {
-            move([0,0,110]) shellTop();
-            move([0,0,-28]) shellBottom();
+            move([0,0,104]) shellTop();
+            move([0,0,-27]) shellBottom();
         }
         move([0,0,-20]) cuboid([200,200,40]);
+
+        // Head cutout
+        move([0,0,-5]) headCutout(10);
     }
+    
 }
 
 module render_shell(crend, toPrint)
