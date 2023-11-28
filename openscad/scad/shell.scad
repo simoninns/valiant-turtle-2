@@ -100,6 +100,85 @@ module headCutout(dpt)
     }
 }
 
+module wheelCover()
+{
+    move([0,24,1]) {
+        //cuboid([243,80,2]);
+
+        // Wheel arch
+
+        // Side
+        hull() {
+            move([120.5,40,0]) staggered_sphere(d=2, $fn=16); // A
+            move([120.5,-40,0]) staggered_sphere(d=2, $fn=16); // B
+            move([120.5,-40 + 45,23]) staggered_sphere(d=2, $fn=16); // C
+        }
+
+        // Back
+        hull() {
+            move([120.5,40,0]) staggered_sphere(d=2, $fn=16); // A
+            move([46.5,40,0]) staggered_sphere(d=2, $fn=16); // D
+            move([46.5 + 23,40,22]) staggered_sphere(d=2, $fn=16); // E
+        }
+
+        // Middle
+        hull() {
+            move([120.5,-40 + 45,23]) staggered_sphere(d=2, $fn=16); // C
+            move([120.5-25,-40 + 45,23+11]) staggered_sphere(d=2, $fn=16); // F
+            move([46.5 + 23,40,22]) staggered_sphere(d=2, $fn=16); // E
+            move([120.5,40,0]) staggered_sphere(d=2, $fn=16); // A
+        }
+
+        // Front
+        hull() {
+            move([120.5,-40,0]) staggered_sphere(d=2, $fn=16); // B
+            move([120.5 - 26,-40,13]) staggered_sphere(d=2, $fn=16); // G
+            move([120.5 - 50,-40,0]) staggered_sphere(d=2, $fn=16); // H
+        }
+
+        // Front Top
+        hull() {
+            move([120.5 - 26,-40,13]) staggered_sphere(d=2, $fn=16); // G
+            move([120.5-25,-40 + 45,23+11]) staggered_sphere(d=2, $fn=16); // F
+
+            move([120.5,-40,0]) staggered_sphere(d=2, $fn=16); // B
+            move([120.5,-40 + 45,23]) staggered_sphere(d=2, $fn=16); // C
+        }
+
+        // Back upper
+        hull() {
+            move([46.5,40,0]) staggered_sphere(d=2, $fn=16); // D
+            move([46.5 + 23,40,22]) staggered_sphere(d=2, $fn=16); // E
+            move([46.5 + 23,40,22 + 10]) staggered_sphere(d=2, $fn=16); // I
+        }
+
+        // Front upper
+        hull() {
+            move([120.5 - 26,-40,13]) staggered_sphere(d=2, $fn=16); // G
+            move([120.5 - 26,-40,13 + 17]) staggered_sphere(d=2, $fn=16); // J
+            move([120.5 - 50,-40,0]) staggered_sphere(d=2, $fn=16); // H
+        }
+
+        // Front side upper
+        hull() {
+            move([120.5 - 26,-40,13]) staggered_sphere(d=2, $fn=16); // G
+            move([120.5 - 26,-40,13 + 17]) staggered_sphere(d=2, $fn=16); // J
+            move([120.5-25,-40 + 45,23+11]) staggered_sphere(d=2, $fn=16); // F
+
+            move([120.5-25,-40 + 45,23+11+16]) staggered_sphere(d=2, $fn=16); // K (F+15.5)
+        }
+
+        // Back side upper
+        hull() {
+            move([46.5 + 23,40,22]) staggered_sphere(d=2, $fn=16); // E
+            move([46.5 + 23,40,22 + 10]) staggered_sphere(d=2, $fn=16); // I
+            move([120.5-25,-40 + 45,23+11]) staggered_sphere(d=2, $fn=16); // F
+
+            move([120.5-25,-40 + 45,23+11+16]) staggered_sphere(d=2, $fn=16); // K (F+15.5)
+        }
+    }
+}
+
 module shell()
 {
     difference() {
@@ -113,6 +192,7 @@ module shell()
         move([0,0,-5]) headCutout(10);
     }
     
+    wheelCover();
 }
 
 module render_shell(crend, toPrint)
