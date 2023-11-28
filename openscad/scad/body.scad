@@ -87,8 +87,8 @@ module body_platform(dpt)
 
 module wheel_cutouts(dpt)
 {
-    move([+90,25.5,-(dpt/2)]) cuboid([60,76,dpt*2], chamfer=2);
-    move([-90,25.5,-(dpt/2)]) cuboid([60,76,dpt*2], chamfer=2);
+    move([+90,25,-(dpt/2)]) cuboid([60,78,dpt*2], chamfer=2);
+    move([-90,25,-(dpt/2)]) cuboid([60,78,dpt*2], chamfer=2);
 }
 
 module render_body(crend, toPrint)

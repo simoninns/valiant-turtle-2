@@ -102,23 +102,23 @@ module headCutout(dpt)
 
 module wheelCoverBase()
 {
-    move([0,23.5,1.5]) {
+    move([83 ,25,1.5]) {
         difference() {
-        cuboid([244,80,3], fillet=1, edges=EDGES_Z_ALL, $fn=16);
-        cuboid([244-4,80-4,6]);
+            cuboid([78,80,3], fillet=1, edges=EDGES_Z_ALL, $fn=16);
+            cuboid([78-4,80-4,6]);
         }
     }
 }
 
 module wheelCover()
 {
-    move([0,23.5,1]) {
+    move([0,25,1]) {
 
         outer_x = 121;
-        backinner_x = 46.5;
-        frontinner_x = 72;
+        backinner_x = 47.5;
+        frontinner_x = 73;
 
-        backmid_x = backinner_x + 25;
+        backmid_x = backinner_x + 24;
         frontmid_x = outer_x - 26;
 
         front_y = -39;
@@ -206,8 +206,8 @@ module shell()
 {
     difference() {
         union() {
-            move([0,0,104]) shellTop();
-            move([0,0,-27]) shellBottom();
+            move([0,1.5,104]) shellTop();
+            move([0,1.5,-27]) shellBottom();
         }
         move([0,0,-20]) cuboid([200,200,40]);
 
@@ -217,7 +217,11 @@ module shell()
     
     wheelCoverBase();
     wheelCover();
-    xflip() wheelCover();
+    
+    xflip() {
+        wheelCoverBase();
+        wheelCover();
+    }
 }
 
 module render_shell(crend, toPrint)
