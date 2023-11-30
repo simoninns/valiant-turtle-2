@@ -202,26 +202,45 @@ module wheelCover()
     }
 }
 
+module wheelCutout()
+{
+    hull() {
+        move([51 ,25,14]) cuboid([40,76,40]);
+        move([73.5 ,10,14]) cuboid([40,46,34]);
+        move([121-26 - 1.25, -39 + 46.5 + 24.75,23+10+18]) staggered_sphere(d=0.5, $fn=16);
+    }
+}
+
 module shell()
 {
     difference() {
         union() {
-            move([0,1.5,104]) shellTop();
-            move([0,1.5,-27]) shellBottom();
-        }
-        move([0,0,-20]) cuboid([200,200,40]);
+            difference() {
+                union() {
+                    move([0,1.5,104]) shellTop();
+                    move([0,1.5,-27]) shellBottom();
+                }
+                move([0,0,-20]) cuboid([200,200,40]);
 
-        // Head cutout
-        move([0,0,-5]) headCutout(10);
-    }
+                // Head cutout
+                move([0,0,-5]) headCutout(10);
+
+                // Wheel cutouts
+                wheelCutout();
+                xflip() wheelCutout();
+            }
+            
+            wheelCoverBase();
+            wheelCover();
+            
+            xflip() {
+                wheelCoverBase();
+                wheelCover();
+            }
+        }        
+    }   
+
     
-    wheelCoverBase();
-    wheelCover();
-    
-    xflip() {
-        wheelCoverBase();
-        wheelCover();
-    }
 }
 
 module render_shell(crend, toPrint)
