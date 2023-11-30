@@ -102,10 +102,12 @@ module headCutout(dpt)
 
 module wheelCoverBase()
 {
-    move([83 ,25,1.5]) {
+    move([84.25 ,25,1.5]) {
         difference() {
-            cuboid([78,80,3], fillet=1, edges=EDGES_Z_ALL, $fn=16);
-            cuboid([78-4,80-4,6]);
+            cuboid([75.5,80,3], fillet=1, edges=EDGES_Z_ALL, $fn=16);
+            cuboid([75.5-4,80-4,6]);
+            move([-26,0,0]) cuboid([30,76,6]);
+            move([-29.5,-32,0]) yrot(26) cuboid([30,20,20]);
         }
     }
 }
@@ -204,7 +206,7 @@ module wheelCover()
 
 module wheelCutout()
 {
-    hull() {
+    move([2,0,0]) hull() {
         move([51 ,25,14]) cuboid([40,76,40]);
         move([73.5 ,10,14]) cuboid([40,46,34]);
         move([121-26 - 1.25, -39 + 46.5 + 24.75,23+10+18]) staggered_sphere(d=0.5, $fn=16);
@@ -228,6 +230,9 @@ module shell()
                 // Wheel cutouts
                 wheelCutout();
                 xflip() wheelCutout();
+
+                // Clean the back edge
+                move([0,62.5,1]) cuboid([100,1,3]);
             }
             
             wheelCoverBase();
@@ -237,6 +242,11 @@ module shell()
                 wheelCoverBase();
                 wheelCover();
             }
+
+            // Make the back edge filled
+            move([0,64.5,1]) cuboid([100,1,2]);
+
+            
         }        
     }   
 
