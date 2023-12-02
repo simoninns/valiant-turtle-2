@@ -46,33 +46,6 @@ module irrPentagonBottom(pos)
     }
 }
 
-module shellBottom()
-{
-    move([0,1.5,9]) difference() {
-        union() {
-            irrPentagonBottom(0);
-            
-            difference() {
-                union() {
-                    irrPentagonBottom(2);
-                    irrPentagonBottom(3);
-                }
-                
-                // Head cutout
-                headCutout();
-            }
-
-            // Wheel arches
-            wheelArch();
-            xflip() wheelArch();
-        }
-
-        // Slice the bottom of the shell to make it flush with the body
-        move([0,0,-29]) cuboid([200,200,40]);
-    }
-                
-}
-
 // Cut a slot in the bottom shell front for the body's head
 module headCutout()
 {
@@ -119,6 +92,7 @@ module wheelArchBase()
 
 module wheelArch()
 {
+    // Plot the side of the shell and cutout the wheel arch space
     difference() {
         union() {
             irrPentagonBottom(4);
@@ -129,10 +103,18 @@ module wheelArch()
         move([80,23.5,20]) cuboid([78 - 0,80 - 6,60]);
     }
 
+    // Render the wheelcover and use the pentagon to clip the inside edge
     difference() {
         wheelCover();
         move([-1,0,2]) irrPentagonBottom(4);
     }
+
+    // Render some lips to help alignment with the body
+    // Note: This is just for test printing and isn't correct
+    move([119.5,10,-11]) cuboid([1,20,4]); 
+    move([119.5,10+30,-11]) cuboid([1,20,4]);
+    move([100,-14,-11]) cuboid([20,1,4]); 
+    move([100,61,-11]) cuboid([20,1,4]); 
 }
 
 module wheelCover()
@@ -143,7 +125,7 @@ module wheelCover()
         pointB = [120.5,-38.5,2];
         pointC = [120.5,38.5,2];
         // pointD unused
-        pointE = [120.5,7.5,23];
+        pointE = [120.5,7.5,22.5];
         pointF = [94,-38.5,13.5];
         pointG = [94,7.5,33.5];
         pointH = [94,-38.5,29.5];
@@ -219,6 +201,75 @@ module wheelCover()
             move(pointB) staggered_sphere(d=3, $fn=16);
         }
     }
+}
+
+module back_screw_mount()
+{
+    difference() {
+        union() {
+            hull() {
+                zcyl(h=10, d=7);
+                move([-3,6.5,-3.5]) cuboid([12,1,3]);
+            }
+        }
+
+        // M3 screw hole
+        zcyl(h=12, d=2.5);
+    }
+}
+
+// Back screw mounts are 97mm apart, 7mm in diameter
+module back_screw_mounts()
+{
+    move([0,56,5]) {
+        move([(97/2),0,0]) back_screw_mount();
+        xflip() move([(97/2),0,0]) back_screw_mount();
+    }
+}
+
+module front_screw_mount()
+{
+    move([0,-93 + 3,25]) {
+        difference() {
+            hull() {
+                zcyl(h=10, d=7);
+                move([0,5,-3.5]) cuboid([26.5,1,3]);
+            }
+
+            // M3 screw hole
+            zcyl(h=12, d=2.5);
+        }
+    }
+}
+
+module shellBottom()
+{
+    move([0,1.5,9]) difference() {
+        union() {
+            irrPentagonBottom(0);
+            
+            difference() {
+                union() {
+                    irrPentagonBottom(2);
+                    irrPentagonBottom(3);
+                }
+                
+                // Head cutout
+                headCutout();
+            }
+
+            // Wheel arches
+            wheelArch();
+            xflip() wheelArch();
+        }
+
+        // Slice the bottom of the shell to make it flush with the body
+        move([0,0,-29]) cuboid([200,200,40]);
+    }
+
+    // Render front and back screw mounts
+    front_screw_mount();
+    back_screw_mounts();          
 }
 
 // Note: From edge to edge of the wheel covers, the shell is 244mm wide
