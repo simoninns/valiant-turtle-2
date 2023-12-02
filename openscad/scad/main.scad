@@ -28,7 +28,8 @@ use <BOSL/shapes.scad>
 
 // Local includes
 include <body.scad>
-include <shell.scad>
+include <shell_top.scad>
+include <shell_bottom.scad>
 
 // Rendering resolution
 $fn=50;
@@ -38,18 +39,21 @@ use_colour = "Colour"; // [Colour, No colour]
 for_printing = "Display"; // [Display, Printing]
 
 display_body = "Yes"; // [Yes, No]
-display_shell = "Yes"; // [Yes, No]
+display_shell_top = "Yes"; // [Yes, No]
+display_shell_bottom = "Yes"; // [Yes, No]
 
 module main() {
     crend = (use_colour == "Colour") ? true:false;
     toPrint = (for_printing == "Printing") ? true:false;
 
     d_body = (display_body == "Yes") ? true:false;
-    d_shell = (display_shell == "Yes") ? true:false;
+    d_shell_top = (display_shell_top == "Yes") ? true:false;
+    d_shell_bottom = (display_shell_bottom == "Yes") ? true:false;
 
     // Render the required items
     if (d_body) render_body(crend, toPrint);
-    if (d_shell) render_shell(crend, toPrint);
+    if (d_shell_top) render_shell_top(crend, toPrint);
+    if (d_shell_bottom) render_shell_bottom(crend, toPrint);
 }
 
 main();
