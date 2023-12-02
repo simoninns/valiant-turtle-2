@@ -1,6 +1,6 @@
 /************************************************************************
 
-    shell.scad
+    shell_bottom.scad
     
     Valiant Turtle 2
     Copyright (C) 2023 Simon Inns
@@ -129,76 +129,28 @@ module wheelArch()
         move([80,23.5,20]) cuboid([78 - 0,80 - 6,60]);
     }
 
-    wheelCover();
+    difference() {
+        wheelCover();
+        move([-1,0,2]) irrPentagonBottom(4);
+    }
 }
-
-// Note: From edge to edge of the wheel covers, the shell is 244mm wide
-// The plastic is 3mm thick around the base of the wheel covers but the rest
-// of the shell is 2mm thick
-module shell()
-{
-    shellBottom();
-}
-
-module render_shell_bottom(crend, toPrint)
-{
-    color([0,0.8,0,1]) shell();
-}
-
-
-// ---------------------------------------------------------------------------------
-
-
-// module wheelCoverBase()
-// {
-//     move([84.25 ,25,1.5]) {
-//         difference() {
-//             cuboid([75.5,80,3], fillet=1, edges=EDGES_Z_ALL, $fn=16);
-//             cuboid([75.5-6,80-6,6]);
-//             move([-26,0,0]) cuboid([30,74,6]);
-//             move([-29.5,-32,0]) yrot(26) cuboid([30,20,20]);
-//         }
-//     }
-// }
 
 module wheelCover()
 {
     move([0,23.5,-8]) {
-
-        outer_x = 121 - 0.5;
-        
-        backinner_x = 47.5 + 0.5;
-        backmid_x = backinner_x + 24;
-        back_y = 39 - 0.5;
-        backmid_z = 23;
-        backtop_z = 23 + 9.5;
-        
-        frontinner_x = 73 + 0.5;
-        frontmid_x = outer_x - 26.5;
-        front_y = -39 + 0.5;
-        frontbottom_z = 12.5 + 1;
-        fronttop_z = frontbottom_z + 16.0;
-        fronttopinner_z = fronttop_z+4;
-        frontmidtop_z = fronttop_z+20;
-        
-        sidemid_z = 23;
-        middle_y = front_y + 46.5 - 0.5;
-        base_z = 2;
-
-
-        // --------------------------------
-        pointA = [frontinner_x,front_y,base_z];
-        pointB = [outer_x,front_y,base_z];
-        pointC = [outer_x,back_y,base_z];
-
-        pointE = [outer_x,middle_y,sidemid_z];
-        pointF = [frontmid_x,front_y,frontbottom_z];
-        pointG = [frontmid_x,middle_y,fronttopinner_z];
-        pointH = [frontmid_x,front_y,fronttop_z];
-        pointI = [frontmid_x,middle_y,frontmidtop_z];
-        pointJ = [backmid_x,back_y,backtop_z];
-        pointK = [backmid_x,back_y,backmid_z];
-        pointL = [backinner_x,back_y,base_z];
+        // Point cloud for the wheel arch (see doc/wheel_arch_points.jpg)
+        pointA = [73.5,-38.5,2];
+        pointB = [120.5,-38.5,2];
+        pointC = [120.5,38.5,2];
+        // pointD unused
+        pointE = [120.5,7.5,23];
+        pointF = [94,-38.5,13.5];
+        pointG = [94,7.5,33.5];
+        pointH = [94,-38.5,29.5];
+        pointI = [94,7.5,49.5];
+        pointJ = [71.0,38.5,32.5];
+        pointK = [71.0,38.5,23];
+        pointL = [48,38.5,2];
 
         // ABF (note: same plane as AFH)
         hull() {
@@ -267,4 +219,12 @@ module wheelCover()
             move(pointB) staggered_sphere(d=3, $fn=16);
         }
     }
+}
+
+// Note: From edge to edge of the wheel covers, the shell is 244mm wide
+// The plastic is 3mm thick around the base of the wheel covers but the rest
+// of the shell is 2mm thick
+module render_shell_bottom(crend, toPrint)
+{
+    color([0,0.8,0,1]) shellBottom();
 }

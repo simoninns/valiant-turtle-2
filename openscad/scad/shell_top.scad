@@ -64,5 +64,5 @@ module shellTop()
 
 module render_shell_top(crend, toPrint)
 {
-    color([0.8,0.0,0,1]) shellTop();
+    color([0,0.8,0,1]) shellTop();
 }
