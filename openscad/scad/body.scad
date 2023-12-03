@@ -29,42 +29,28 @@ use <BOSL/shapes.scad>
 module body_profile(loc)
 {
     move(loc) {
-        move([0,0,3]) cyl(h=3,d=4,chamfer2=1);
+        move([0,0,-1.5]) cyl(h=3,d=3,chamfer2=1);
     }
 }
 
-module rear_flipper(dpt)
+module lip_profile(loc1, loc2)
 {
     hull() {
-        // Outer edge
-        body_profile([120, 67.5 - 4, 0]);
-        body_profile([120, 72.5, 0]);
+        move(loc1) {
+            move([0,0,-6.5]) cyl(h=7,d=3);
+        }
 
-        // Inner edge
-        body_profile([74.5, 98, 0]);
-        body_profile([53, 67.5 - 4, 0]);
+        move(loc2) {
+            move([0,0,-6.5]) cyl(h=7,d=3);
+        }
     }
 }
 
-module front_flipper()
+module head()
 {
-    hull() {
-        // Flipper outer edge
-        body_profile([120, -71.5, 0]);
-        body_profile([120, -101, 0]);
+    dpt=10;
 
-        // Flipper front
-        body_profile([74, -111.5, 0]);
-        body_profile([15, -64, 0]);
-
-        // Flipper back
-        body_profile([54, -40, 0]);
-    }
-}
-
-module head(dpt)
-{
-    hull() {
+    move([0,0,-5]) hull() {
         move([0,119.5 - 210,0]) {
             cuboid([43,65,dpt]);
             move([0,-32.5,-(dpt/2)]) xrot(90) right_triangle([21.5,dpt,21.5]);
@@ -81,47 +67,65 @@ module head(dpt)
 
 module body_platform()
 {
-    move([0,0,-5]) {
-        // Wheel platform
-        hull() {
-            // Back edge
-            body_profile([120, 63.5, 0]);
-            body_profile([-120,63.5,0]);
+    pointA = [0, 67.5 - 4, 0];
+    pointB = [53, 67.5 - 4, 0];
+    pointC = [74.5, 98, 0];
+    pointD = [120, 72.5, 0];
+    pointE = [120,-20,0];
+    pointF = [72.5,-24.5,0];
+    pointG = [52.5, -39, 0];
+    pointH = [120, -71.5, 0];
+    pointI = [120, -101, 0];
+    pointJ = [74, -111.5, 0];
+    pointK = [15, -64, 0];
+    pointL = [0, -64, 0];
 
-            // Left front
-            body_profile([-73.5,-24.5,0]);
-            body_profile([-120,-20,0]);
-
-            // Right front
-            body_profile([73.5,-24.5,0]);
-            body_profile([120,-20,0]);
-        }
-
-        // Mid-body
-        hull() {
-            body_profile([-73.5,-24.5,0]);
-            body_profile([73.5,-24.5,0]);
-            body_profile([20,-64,0]);
-            body_profile([-20,-64,0]);
-        }
-
-        // Front part of body/legs
-        front_flipper(); // Left
-        xflip() front_flipper();
-
-        // // Rear part of body/legs
-        rear_flipper(10); // Left
-        xflip() rear_flipper(10); // Right
-
-        // // Head
-        //head(10);
+    // Body top surface -----------------------------------------------------------------------------------------------
+    // Middle of body
+    hull() {
+        body_profile(pointB);
+        body_profile(pointF);
+        body_profile(pointG);
+        body_profile(pointK);
+        body_profile(pointL);
+        body_profile(pointA);
     }
+
+    // Rear flipper
+    hull() {
+        body_profile(pointB);
+        body_profile(pointC);
+        body_profile(pointD);
+        body_profile(pointE);
+        body_profile(pointF);
+    }
+
+    // Front flipper
+    hull() {
+        body_profile(pointG);
+        body_profile(pointH);
+        body_profile(pointI);
+        body_profile(pointJ);
+        body_profile(pointK);
+    }
+
+    // Edge lip -------------------------------------------------------------------------------------------------------
+    lip_profile(pointA, pointB);
+    lip_profile(pointB, pointC);
+    lip_profile(pointC, pointD);
+    lip_profile(pointD, pointE);
+    lip_profile(pointE, pointF);
+    lip_profile(pointF, pointG);
+    lip_profile(pointG, pointH);
+    lip_profile(pointH, pointI);
+    lip_profile(pointI, pointJ);
+    lip_profile(pointJ, pointK);
+    lip_profile(pointK, pointL);
 }
 
-module wheel_cutouts()
+module wheel_cutout()
 {
     move([+90,25,-(4)]) cuboid([60,76,6*2], chamfer=2);
-    move([-90,25,-(4)]) cuboid([60,76,6*2], chamfer=2);
 }
 
 module shell_mounts()
@@ -137,9 +141,12 @@ module shell_mounts()
 module render_body(crend, toPrint)
 {
     difference() {
-        body_platform();
-        wheel_cutouts();
+        union() {
+            body_platform();
+            xflip() body_platform();
+            head();
+        }
+        //wheel_cutout();
         // shell_mounts();
     }
-    
 }
