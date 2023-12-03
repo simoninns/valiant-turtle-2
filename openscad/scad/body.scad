@@ -26,22 +26,39 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-module rear_flipper(dpt)
+module body_profile(loc)
 {
-    move([86.5,0,0]) difference() { // Right
-        move([0,83,0]) cuboid([48+23,8+27,dpt]); 
-        move([-35.51,100.51,-dpt]) xrot(90) right_triangle([23,dpt*2,27+8]);
-        move([+35.51,100.51,dpt]) xrot(90) zrot(180) right_triangle([48,dpt*2,27]);
+    move(loc) {
+        move([0,0,3]) cyl(h=3,d=4,chamfer2=1);
     }
 }
 
-module front_flipper(dpt)
+module rear_flipper(dpt)
 {
-    move([70,-53.5 - 49,0]) {
-        move([0,0,-(dpt/2)]) xrot(90) right_triangle([52,dpt,11]);
-        move([26,16,0]) cuboid([52,32,dpt]);
-        move([0,32,(dpt/2)]) yrot(180) xrot(90) right_triangle([55,dpt,43]);
-        move([-70,32,(dpt/2)]) xrot(-90) right_triangle([122,dpt,57]);
+    hull() {
+        // Outer edge
+        body_profile([120, 67.5 - 4, 0]);
+        body_profile([120, 72.5, 0]);
+
+        // Inner edge
+        body_profile([74.5, 98, 0]);
+        body_profile([53, 67.5 - 4, 0]);
+    }
+}
+
+module front_flipper()
+{
+    hull() {
+        // Flipper outer edge
+        body_profile([120, -71.5, 0]);
+        body_profile([120, -101, 0]);
+
+        // Flipper front
+        body_profile([74, -111.5, 0]);
+        body_profile([15, -64, 0]);
+
+        // Flipper back
+        body_profile([54, -40, 0]);
     }
 }
 
@@ -62,39 +79,67 @@ module head(dpt)
     }
 }
 
-module body_platform(dpt)
+module body_platform()
 {
-    move([0,0,-(dpt/2)]) {
-        rotate([0,0,18+180]) cyl(h=dpt, d=80*2, $fn=5); // Circumcircle radius of 79.96mm = side of 94mm
-        move([0,22,0]) cuboid([244,87,dpt]);
+    move([0,0,-5]) {
+        // Wheel platform
+        hull() {
+            // Back edge
+            body_profile([120, 63.5, 0]);
+            body_profile([-120,63.5,0]);
 
-        // Front of back leg slope to body
-        move([73,-21.5,-(dpt/2)]) xrot(90) right_triangle([49,dpt,5]);
-        yrot(180) move([73,-21.5,-(dpt/2)]) xrot(90) right_triangle([49,dpt,5]);
+            // Left front
+            body_profile([-73.5,-24.5,0]);
+            body_profile([-120,-20,0]);
+
+            // Right front
+            body_profile([73.5,-24.5,0]);
+            body_profile([120,-20,0]);
+        }
+
+        // Mid-body
+        hull() {
+            body_profile([-73.5,-24.5,0]);
+            body_profile([73.5,-24.5,0]);
+            body_profile([20,-64,0]);
+            body_profile([-20,-64,0]);
+        }
 
         // Front part of body/legs
-        front_flipper(dpt); // Left
-        yrot(180) front_flipper(dpt); // Right
+        front_flipper(); // Left
+        xflip() front_flipper();
 
-        // Rear part of body/legs
-        rear_flipper(dpt); // Left
-        yrot(180) rear_flipper(dpt); // Right
+        // // Rear part of body/legs
+        rear_flipper(10); // Left
+        xflip() rear_flipper(10); // Right
 
-        // Head
-        head(dpt);
+        // // Head
+        //head(10);
     }
 }
 
-module wheel_cutouts(dpt)
+module wheel_cutouts()
 {
-    move([+90,25,-(dpt/2)]) cuboid([60,76,dpt*2], chamfer=2);
-    move([-90,25,-(dpt/2)]) cuboid([60,76,dpt*2], chamfer=2);
+    move([+90,25,-(4)]) cuboid([60,76,6*2], chamfer=2);
+    move([-90,25,-(4)]) cuboid([60,76,6*2], chamfer=2);
+}
+
+module shell_mounts()
+{
+    // M3 screw holes back
+    move([(97/2),65 - 9,-5]) zcyl(h=20, d=2.5);
+    move([-(97/2),65 - 9,-5]) zcyl(h=20, d=2.5);
+
+    // M3 screw hole front
+    move([0,-90,15]) zcyl(h=20, d=2.5);
 }
 
 module render_body(crend, toPrint)
 {
     difference() {
-        body_platform(10);
-        wheel_cutouts(10);
+        body_platform();
+        wheel_cutouts();
+        // shell_mounts();
     }
+    
 }

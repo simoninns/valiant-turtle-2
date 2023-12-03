@@ -111,10 +111,10 @@ module wheelArch()
 
     // Render some lips to help alignment with the body
     // Note: This is just for test printing and isn't correct
-    move([119.5,10,-11]) cuboid([1,20,4]); 
-    move([119.5,10+30,-11]) cuboid([1,20,4]);
-    move([100,-14,-11]) cuboid([20,1,4]); 
-    move([100,61,-11]) cuboid([20,1,4]); 
+    // move([119.5,10,-11]) cuboid([1,20,4]); 
+    // move([119.5,10+30,-11]) cuboid([1,20,4]);
+    // move([100,-14,-11]) cuboid([20,1,4]); 
+    // move([100,61,-11]) cuboid([20,1,4]); 
 }
 
 module wheelCover()
