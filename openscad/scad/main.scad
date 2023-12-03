@@ -28,6 +28,7 @@ use <BOSL/shapes.scad>
 
 // Local includes
 include <body.scad>
+include <head.scad>
 include <shell_top.scad>
 include <shell_bottom.scad>
 
@@ -39,6 +40,7 @@ use_colour = "Colour"; // [Colour, No colour]
 for_printing = "Display"; // [Display, Printing]
 
 display_body = "Yes"; // [Yes, No]
+display_head = "Yes"; // [Yes, No]
 display_shell_top = "Yes"; // [Yes, No]
 display_shell_bottom = "Yes"; // [Yes, No]
 
@@ -47,11 +49,13 @@ module main() {
     toPrint = (for_printing == "Printing") ? true:false;
 
     d_body = (display_body == "Yes") ? true:false;
+    d_head = (display_head == "Yes") ? true:false;
     d_shell_top = (display_shell_top == "Yes") ? true:false;
     d_shell_bottom = (display_shell_bottom == "Yes") ? true:false;
 
     // Render the required items
     if (d_body) render_body(crend, toPrint);
+    if (d_head) render_head(crend, toPrint);
     if (d_shell_top) render_shell_top(crend, toPrint);
     if (d_shell_bottom) render_shell_bottom(crend, toPrint);
 }

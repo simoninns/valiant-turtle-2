@@ -33,7 +33,7 @@ module body_profile(loc)
     }
 }
 
-module lip_profile(loc1, loc2)
+module body_lip_profile(loc1, loc2)
 {
     hull() {
         move(loc1) {
@@ -46,41 +46,22 @@ module lip_profile(loc1, loc2)
     }
 }
 
-module head()
-{
-    dpt=10;
-
-    move([0,0,-5]) hull() {
-        move([0,119.5 - 210,0]) {
-            cuboid([43,65,dpt]);
-            move([0,-32.5,-(dpt/2)]) xrot(90) right_triangle([21.5,dpt,21.5]);
-            yrot(180) move([0,-32.5,-(dpt/2)]) xrot(90) right_triangle([21.5,dpt,21.5]);
-        }
-
-        move([0,119.5 - 210,15]) {
-            cuboid([22,65,20]);
-            move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
-            yrot(180) move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
-        }
-    }
-}
-
 module body_platform()
 {
     pointA = [0, 67.5 - 4, 0];
     pointB = [53, 67.5 - 4, 0];
     pointC = [74.5, 98, 0];
-    pointD = [120, 72.5, 0];
-    pointE = [120,-20,0];
+    pointD = [120.5, 72.5, 0];
+    pointE = [120.5,-20,0];
     pointF = [72.5,-24.5,0];
     pointG = [52.5, -39, 0];
-    pointH = [120, -71.5, 0];
-    pointI = [120, -101, 0];
+    pointH = [120.5, -71.5, 0];
+    pointI = [120.5, -101, 0];
     pointJ = [74, -111.5, 0];
     pointK = [15, -64, 0];
     pointL = [0, -64, 0];
 
-    // Body top surface -----------------------------------------------------------------------------------------------
+    // Body top surface -----------------------------------
     // Middle of body
     hull() {
         body_profile(pointB);
@@ -109,23 +90,29 @@ module body_platform()
         body_profile(pointK);
     }
 
-    // Edge lip -------------------------------------------------------------------------------------------------------
-    lip_profile(pointA, pointB);
-    lip_profile(pointB, pointC);
-    lip_profile(pointC, pointD);
-    lip_profile(pointD, pointE);
-    lip_profile(pointE, pointF);
-    lip_profile(pointF, pointG);
-    lip_profile(pointG, pointH);
-    lip_profile(pointH, pointI);
-    lip_profile(pointI, pointJ);
-    lip_profile(pointJ, pointK);
-    lip_profile(pointK, pointL);
+    // Edge lip -------------------------------------------
+    body_lip_profile(pointA, pointB);
+    body_lip_profile(pointB, pointC);
+    body_lip_profile(pointC, pointD);
+    body_lip_profile(pointD, pointE);
+    body_lip_profile(pointE, pointF);
+    body_lip_profile(pointF, pointG);
+    body_lip_profile(pointG, pointH);
+    body_lip_profile(pointH, pointI);
+    body_lip_profile(pointI, pointJ);
+    body_lip_profile(pointJ, pointK);
+    body_lip_profile(pointK, pointL);
+}
+
+module head_clearance()
+{
+    // Clear head attachment area
+    move([0,-64,-8.01]) cuboid([43,40,10]);
 }
 
 module wheel_cutout()
 {
-    move([+90,25,-(4)]) cuboid([60,76,6*2], chamfer=2);
+    move([+90,25,-(4)]) cuboid([60,76,18], chamfer=2);
 }
 
 module shell_mounts()
@@ -144,9 +131,11 @@ module render_body(crend, toPrint)
         union() {
             body_platform();
             xflip() body_platform();
-            head();
         }
-        //wheel_cutout();
+
+        head_clearance();
+        wheel_cutout();
+        xflip() wheel_cutout();
         // shell_mounts();
     }
 }
