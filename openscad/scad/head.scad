@@ -26,6 +26,8 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
+include <threaded_inserts.scad>
+
 module head_lip_profile(loc1, loc2)
 {
     hull() {
@@ -55,22 +57,6 @@ module head_base_profile(loc)
 
 module head_shape()
 {
-    dpt=10;
-
-    move([0,0,-5]) hull() {
-        // move([0,119.5 - 210,0]) {
-        //     cuboid([43,65,dpt]);
-        //     move([0,-32.5,-(dpt/2)]) xrot(90) right_triangle([21.5,dpt,21.5]);
-        //     yrot(180) move([0,-32.5,-(dpt/2)]) xrot(90) right_triangle([21.5,dpt,21.5]);
-        // }
-
-        // move([0,119.5 - 210,15]) {
-        //     cuboid([22,65,20]);
-        //     move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
-        //     yrot(180) move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
-        // }
-    }
-
     pointA = [0,-50,0];
     pointB = [20,-50,0];
     pointC = [20,-122,0];
@@ -116,7 +102,13 @@ module head_shape()
         head_profile(pointF);
         head_base_profile(pointA);
         head_base_profile(pointB);
-    }    
+    }
+
+    // Add a platform for the threaded inserts
+    hull() {
+        move([13.25,-60,0.25]) cuboid([10.5,17,0.5]);
+        move([9.5,-61,17]) cuboid([3,16,0.5]);
+    } 
 }
 
 module head()
@@ -128,9 +120,16 @@ module head()
         move([5,-122 - 5,8]) zrot(-45) xcyl(h=16,d=6);
 
         // Back access
-        move([0,-50,8.51]) cuboid([18,20,20-3]);
+        move([0,-50,8]) cuboid([16,20,18]);
+
+        // Body mounting slot
+        move([0,-51.5,-1.5]) cuboid([50,40,3]);
+
+        // Threaded insert slot
+        move([12,-58,3.9]) xrot(180) cyl(h=8,d=5);
     }
-    
+
+    move([12,-58,0]) xrot(180) insertM3x57();
 }
 
 module render_head(crend, toPrint)

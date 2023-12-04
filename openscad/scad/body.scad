@@ -125,6 +125,13 @@ module shell_mounts()
     move([0,-90,15]) zcyl(h=20, d=2.5);
 }
 
+module head_mounts()
+{
+     // M3 screw holes
+    move([12,-58,-5]) zcyl(h=20, d=3.1);
+    move([-12,-58,-5]) zcyl(h=20, d=3.1);
+}
+
 module render_body(crend, toPrint)
 {
     difference() {
@@ -137,5 +144,6 @@ module render_body(crend, toPrint)
         wheel_cutout();
         xflip() wheel_cutout();
         // shell_mounts();
+        head_mounts();
     }
 }
