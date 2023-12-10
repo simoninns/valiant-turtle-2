@@ -82,13 +82,13 @@ module wheelArchBase()
     }
 
     hull() {
-        move([0,62,-7.5]) zcyl(h=3,d=3,$fn=16);
-        move([120.5,62,-7.5]) zcyl(h=3,d=3,$fn=16);
+        move([0,63,-7.5]) zcyl(h=3,d=3,$fn=16);
+        move([120.5,63,-7.5]) zcyl(h=3,d=3,$fn=16);
     }
 
     hull() {
         move([120.5,-15,-7.5]) zcyl(h=3,d=3,$fn=16);
-        move([120.5,62,-7.5]) zcyl(h=3,d=3,$fn=16);
+        move([120.5,63,-7.5]) zcyl(h=3,d=3,$fn=16);
     }
 }
 
@@ -118,16 +118,16 @@ module wheelCover()
         // Point cloud for the wheel arch (see doc/wheel_arch_points.jpg)
         pointA = [73.5,-38.5,2];
         pointB = [120.5,-38.5,2];
-        pointC = [120.5,38.5,2];
+        pointC = [120.5,39.5,2];
         // pointD unused
         pointE = [120.5,7.5,22.5];
         pointF = [94,-38.5,13.5];
         pointG = [94,7.5,33.5];
         pointH = [94,-38.5,29.5];
         pointI = [94,7.5,49.5];
-        pointJ = [71.0,38.5,32.5];
-        pointK = [71.0,38.5,23];
-        pointL = [48,38.5,2];
+        pointJ = [70.5,39.5,32];
+        pointK = [70.5,39.5,23];
+        pointL = [48,39.5,2];
 
         // ABF (note: same plane as AFH)
         hull() {
