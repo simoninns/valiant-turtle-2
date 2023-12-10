@@ -171,7 +171,7 @@ module render_head(crend, toPrint)
     xflip() head();
 
     // Caster
-    move([0,-144 + 35,3.5 - 22]) {
+    move([0,-144 + 35,3.5 - 22.5]) {
         caster_ball_base();
         caster_ball_top();
 

@@ -31,6 +31,7 @@ include <body.scad>
 include <head.scad>
 include <shell_top.scad>
 include <shell_bottom.scad>
+include <motor_mounts.scad>
 
 // Rendering resolution
 $fn=50;
@@ -43,6 +44,7 @@ display_body = "Yes"; // [Yes, No]
 display_head = "Yes"; // [Yes, No]
 display_shell_top = "Yes"; // [Yes, No]
 display_shell_bottom = "Yes"; // [Yes, No]
+display_motor_mounts = "Yes"; // [Yes, No]
 
 module main() {
     crend = (use_colour == "Colour") ? true:false;
@@ -52,12 +54,14 @@ module main() {
     d_head = (display_head == "Yes") ? true:false;
     d_shell_top = (display_shell_top == "Yes") ? true:false;
     d_shell_bottom = (display_shell_bottom == "Yes") ? true:false;
+    d_motor_mounts = (display_motor_mounts == "Yes") ? true:false;
 
     // Render the required items
     if (d_body) render_body(crend, toPrint);
     if (d_head) render_head(crend, toPrint);
     if (d_shell_top) render_shell_top(crend, toPrint);
     if (d_shell_bottom) render_shell_bottom(crend, toPrint);
+    if (d_motor_mounts) render_motor_mounts(crend, toPrint);
 }
 
 main();

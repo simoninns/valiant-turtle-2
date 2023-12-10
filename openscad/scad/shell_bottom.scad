@@ -149,11 +149,11 @@ module wheelCover()
         }
 
         // BCE
-        hull() {
-            move(pointC) staggered_sphere(d=3, $fn=16);
-            move(pointB) staggered_sphere(d=3, $fn=16);
-            move(pointE) staggered_sphere(d=3, $fn=16);
-        }
+        // hull() {
+        //     move(pointC) staggered_sphere(d=3, $fn=16);
+        //     move(pointB) staggered_sphere(d=3, $fn=16);
+        //     move(pointE) staggered_sphere(d=3, $fn=16);
+        // }
 
         // CLK (note: same plane as KLJ)
         hull() {
