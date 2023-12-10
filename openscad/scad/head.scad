@@ -120,11 +120,11 @@ module caster_ball_base()
 {
     difference() { 
         union() {
-            move([0,0,-6.5 + 1.5]) cyl(h=2 + 3,d=26, chamfer=0.5); // Lip
-            move([0,0,-10.5]) cyl(h=3,d1=16, d2=24, chamfer1=0.5, center=false); // Ball chamfer
+            move([0,0,-7.5 + 1.5]) cyl(h=2 + 3,d=26, chamfer=0.5); // Lip
+            move([0,0,-11.5]) cyl(h=3,d1=16, d2=24, chamfer1=0.5, center=false); // Ball chamfer
         }
 
-        move([0,0,-3.5]) ball_bearing(20.5);
+        move([0,0,-4.5]) ball_bearing(20.5);
         caster_ball_top();
     }
 }
@@ -138,9 +138,9 @@ module caster_ball_top()
                 move([16,0,34]) cuboid([10,20,5]);
                 move([-16,0,34]) cuboid([10,20,5]);
             }
-            move([0,0,1]) cyl(h=14,d=24);
+            move([0,0,0]) cyl(h=14,d=24);
         }
-        move([0,0,-3.5]) ball_bearing(20.5);
+        move([0,0,-4.5]) ball_bearing(20.5);
     }
 }
 
@@ -171,10 +171,10 @@ module render_head(crend, toPrint)
     xflip() head();
 
     // Caster
-    move([0,-144 + 35,3.5 - 22.5]) {
+    move([0,-144 + 35,3.5 - 22]) {
         caster_ball_base();
         caster_ball_top();
 
-        move([0,0,-3.5]) ball_bearing(20);
+        move([0,0,-4.5]) ball_bearing(20);
     }
 }

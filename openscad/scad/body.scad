@@ -112,7 +112,7 @@ module head_clearance()
 
 module wheel_cutout()
 {
-    move([+90,25,-(4)]) cuboid([65,76,18], chamfer=2);
+    move([+88,27,-4]) cuboid([62,77,18]);
 }
 
 module shell_mounts()
