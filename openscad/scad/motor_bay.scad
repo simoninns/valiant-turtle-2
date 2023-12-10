@@ -38,7 +38,7 @@ module mount_profile_left(pos)
     move(pos) yrot(-90) cyl(h=3, d=3, fillet2=1.5, $fn=16);
 }
 
-module motor_bay()
+module motor_bay_shape()
 {
     pointA = [0,0,-0.5];
     pointB = [0,0,-17];
@@ -185,10 +185,23 @@ module motor_platform()
     move([90-25,53 + 2,-14]) insertM3x57();
 }
 
+module motor_bay()
+{
+    motor_bay_shape();
+    motor_platform();
+}
+
 module render_motor_bay(crend, toPrint)
 {
-    motor_bay();
-    motor_platform();
-    xflip() motor_bay();
-    xflip() motor_platform();
+    if (!toPrint) {
+        color([0.9,0.9,0.6,1]) {
+            motor_bay();
+            xflip() motor_bay();
+        }
+    } else {
+        xrot(180) {
+            motor_bay();
+            xflip() motor_bay();
+        }
+    }
 }

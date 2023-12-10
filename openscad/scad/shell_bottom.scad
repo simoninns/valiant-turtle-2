@@ -288,5 +288,9 @@ module shellBottom()
 // of the shell is 2mm thick
 module render_shell_bottom(crend, toPrint)
 {
-    color([0,0.8,0,1]) shellBottom();
+    if (!toPrint) {
+        color([0,0.8,0,1]) shellBottom();
+    } else {
+        shellBottom();
+    }
 }

@@ -144,7 +144,7 @@ module caster_ball_top()
     }
 }
 
-module head()
+module half_head()
 {
     difference() {
         head_shape();
@@ -169,16 +169,39 @@ module head()
     move([12,-58,0]) xrot(180) insertM3x57();
 }
 
+module head()
+{
+    half_head();
+    xflip() half_head();
+}
+
 module render_head(crend, toPrint)
 {
-    head();
-    xflip() head();
+    if (!toPrint) {
+        color([0.9,0.9,0.6,1]) {
+            head();
 
-    // Caster
-    move([0,-144 + 35,3.5 - 22]) {
-        caster_ball_base();
-        caster_ball_top();
+            // Caster
+            move([0,-144 + 35,3.5 - 22]) {
+                caster_ball_base();
+                caster_ball_top();
+            }
+        }
 
-        move([0,0,-4.5]) color([0.7,0.7,0.7,1]) ball_bearing(20);
+        move([0,-144 + 35,3.5 - 22]) {
+            move([0,0,-4.5]) color([0.7,0.7,0.7,1]) ball_bearing(20);
+        }
+    } else {
+        xrot(180) move([0,90,-20]) {
+            head();
+
+            // Caster
+            move([0,-144 + 35,3.5 - 22]) {
+                caster_ball_top();
+            }
+        }
+
+        xrot(180) move([50,0,3.5]) caster_ball_base();
     }
+
 }

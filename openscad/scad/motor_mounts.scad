@@ -97,26 +97,36 @@ module nema17_mount()
             move([-10,20,31]) xrot(52) yrot(35) cuboid([48,12,14]);
             move([6,22,28]) yrot(45) xrot(-20) cuboid([48,12,14]); 
         }
-
-                   
-
     }
 }
 
 module render_motor_mounts(crend, toPrint)
 {
-    move([98,64-35,-6]) nema17_mount();
-    xflip() move([98,64-35,-6]) nema17_mount();
+    if (!toPrint) {
+        color([0.6,0.3,0.8,1]) {
+            move([98,64-35,-6]) nema17_mount();
+            xflip() move([98,64-35,-6]) nema17_mount();
+        }
+    } else {
+        move([0,0,7]) yrot(90) nema17_mount();
+    }
 }
 
 module render_motor(crend, toPrint)
 {
-    move([98,64-35,-6]) nema17_motor();
-    xflip() move([98,64-35,-6]) nema17_motor();
+    if (!toPrint) {
+        move([98,64-35,-6]) nema17_motor();
+        xflip() move([98,64-35,-6]) nema17_motor();
+    }
 }
 
 module render_rotational_axis(crend, toPrint)
 {
-    // Render the rotational axis to assist with the design
-    move([0,64 - 35,-6]) xcyl(h=255,d=2);
+    if (!toPrint) {
+        // Render the rotational axis to assist with the design
+        move([0,64 - 35,-6]) xcyl(h=255,d=2);
+
+        // Axis for pen
+        move([0,29,40]) zcyl(h=160, d=2);
+    }
 }

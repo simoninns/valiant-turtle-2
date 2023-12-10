@@ -34,6 +34,8 @@ include <shell_bottom.scad>
 include <motor_bay.scad>
 include <motor_mounts.scad>
 include <wheels.scad>
+include <pcb.scad>
+include <leds.scad>
 
 // Rendering resolution
 //
@@ -51,6 +53,7 @@ display_shell_bottom = "Yes"; // [Yes, No]
 display_motor_bay = "Yes"; // [Yes, No]
 display_motor_mounts = "Yes"; // [Yes, No]
 display_wheels = "Yes"; // [Yes, No]
+display_pcb_mounts = "Yes"; // [Yes, No]
 
 // Non-printable parts
 //
@@ -58,6 +61,8 @@ display_motor = "Yes"; // [Yes, No]
 display_rotational_axis = "Yes"; // [Yes, No]
 display_turning_circle = "Yes"; // [Yes, No]
 display_tires = "Yes"; // [Yes, No]
+display_pcb = "Yes"; // [Yes, No]
+display_leds = "Yes"; // [Yes, No]
 
 module main() {
     crend = (use_colour == "Colour") ? true:false;
@@ -70,12 +75,15 @@ module main() {
     d_motor_bay = (display_motor_bay == "Yes") ? true:false;
     d_motor_mounts = (display_motor_mounts == "Yes") ? true:false;
     d_wheels = (display_wheels == "Yes") ? true:false;
+    d_pcb_mounts = (display_pcb_mounts == "Yes") ? true:false;
 
     // Non-printable parts
     d_motor = (display_motor == "Yes") ? true:false;
     d_rotational_axis = (display_rotational_axis == "Yes") ? true:false;
     d_turning_circle = (display_turning_circle == "Yes") ? true:false;
     d_tires = (display_tires == "Yes") ? true:false;
+    d_pcb = (display_pcb == "Yes") ? true:false;
+    d_leds = (display_leds == "Yes") ? true:false;
 
     // Render the printable parts
     if (d_body) render_body(crend, toPrint);
@@ -85,12 +93,15 @@ module main() {
     if (d_motor_bay) render_motor_bay(crend, toPrint);
     if (d_motor_mounts) render_motor_mounts(crend, toPrint);
     if (d_wheels) render_wheels(crend, toPrint);
+    if (d_pcb_mounts) render_pcb_mounts(crend, toPrint);
 
     // Render the non-printable parts
     if (d_motor) render_motor(crend, toPrint);
     if (d_rotational_axis) render_rotational_axis(crend, toPrint);
     if (d_turning_circle) render_turning_circle(crend, toPrint);
     if (d_tires) render_tires(crend, toPrint);
+    if (d_pcb) render_pcb(crend, toPrint);
+    if (d_leds) render_leds(crend, toPrint);
 }
 
 main();

@@ -102,12 +102,16 @@ module body_platform()
     body_lip_profile(pointI, pointJ);
     body_lip_profile(pointJ, pointK);
     body_lip_profile(pointK, pointL);
+
+    // Reenforcements -------------------------------------
+    move([19,12,-6.5]) cuboid([4,100,7]);
+    move([19,-39,-6.5]) cuboid([70,4,7]);
 }
 
 module head_clearance()
 {
     // Clear head attachment area
-    move([0,-64,-8.01]) cuboid([43,40,10]);
+    move([0,-70,-8.01]) cuboid([43,40,10]);
 }
 
 module wheel_cutout()
@@ -129,12 +133,34 @@ module head_mounts()
     move([-12,-58,-5]) zcyl(h=20, d=3.1);
 }
 
-module render_body(crend, toPrint)
+module pen_hole()
+{
+    // Hole for pen
+    move([0,29,20]) zcyl(h=80, d=14);
+}
+
+module pcb_mount_holes()
+{
+    move([0,0,0]) {
+        move([60,-20,0]) cyl(h=10, d=3.5);
+        move([-60,-20,0]) cyl(h=10, d=3.5);
+        move([0,52,0]) cyl(h=10, d=3.5);
+    }
+}
+
+module logo_text()
+{
+    move([-114,-88,-3]) zrot(25) xrot(180) linear_extrude(1) text("Valiant Turtle 2", font = "Liberation Sans");
+}
+
+module body()
 {
     difference() {
         union() {
             body_platform();
             xflip() body_platform();
+
+            logo_text();
         }
 
         head_clearance();
@@ -142,5 +168,18 @@ module render_body(crend, toPrint)
         xflip() wheel_cutout();
         shell_mounts();
         head_mounts();
+        pen_hole();
+        pcb_mount_holes();
+    }
+}
+
+module render_body(crend, toPrint)
+{
+    if (!toPrint) {
+        color([0.9,0.9,0.6,1]) {
+            body();
+        }
+    } else {
+        xrot(180) body();
     }
 }

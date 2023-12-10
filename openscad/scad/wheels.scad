@@ -105,21 +105,31 @@ module wheel()
 
 module render_wheels(crend, toPrint)
 {
-    move([107,64-35,-6]) wheel();
-    xflip() move([107,64-35,-6]) wheel();
+    if (!toPrint) {
+        color([0.9,0.9,0.6,1]) {
+            move([107,64-35,-6]) wheel();
+            xflip() move([107,64-35,-6]) wheel();
+        }
+    } else {
+        move([0,0,0.25]) yrot(-90) wheel();
+    }
 }
 
 module render_turning_circle(crend, toPrint)
 {
-    // Render the turning circle
-    move([0,64-35,-34]) tube(h=1,od=219.5, id=219.5-3, $fn=100);
-    move([0,64-35,-34]) tube(h=1,od=280, id=280-3);
+    if (!toPrint) {
+        // Render the turning circle
+        move([0,64-35,-34]) tube(h=1,od=219.5, id=219.5-3, $fn=100);
+        move([0,64-35,-34]) tube(h=1,od=280, id=280-3);
+    }
 }
 
 module render_tires(crend, toPrint)
 {
-    color([0.4,0.4,0.4,1]) {
-        move([107,64-35,-6]) tire();
-        xflip() move([107,64-35,-6]) tire();
+    if (!toPrint) {
+        color([0.4,0.4,0.4,1]) {
+            move([107,64-35,-6]) tire();
+            xflip() move([107,64-35,-6]) tire();
+        }
     }
 }
