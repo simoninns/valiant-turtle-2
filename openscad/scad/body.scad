@@ -118,11 +118,8 @@ module wheel_cutout()
 module shell_mounts()
 {
     // M3 screw holes back
-    move([(97/2),65 - 9,-5]) zcyl(h=20, d=3.1);
-    move([-(97/2),65 - 9,-5]) zcyl(h=20, d=3.1);
-
-    // M3 screw hole front
-    //move([0,-90,15]) zcyl(h=20, d=2.5);
+    move([(97/2),65 - 9,-5]) zcyl(h=20, d=3.5);
+    move([-(97/2),65 - 9,-5]) zcyl(h=20, d=3.5);
 }
 
 module head_mounts()

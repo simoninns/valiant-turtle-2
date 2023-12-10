@@ -26,6 +26,8 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
+include <threaded_inserts.scad>
+
 // 0 = Back
 // 1 = Right wheel
 // 2 = Right front
@@ -108,13 +110,6 @@ module wheelArch()
         wheelCover();
         move([-1,0,2]) irrPentagonBottom(4);
     }
-
-    // Render some lips to help alignment with the body
-    // Note: This is just for test printing and isn't correct
-    // move([119.5,10,-11]) cuboid([1,20,4]); 
-    // move([119.5,10+30,-11]) cuboid([1,20,4]);
-    // move([100,-14,-11]) cuboid([20,1,4]); 
-    // move([100,61,-11]) cuboid([20,1,4]); 
 }
 
 module wheelCover()
@@ -149,11 +144,11 @@ module wheelCover()
         }
 
         // BCE
-        // hull() {
-        //     move(pointC) staggered_sphere(d=3, $fn=16);
-        //     move(pointB) staggered_sphere(d=3, $fn=16);
-        //     move(pointE) staggered_sphere(d=3, $fn=16);
-        // }
+        hull() {
+            move(pointC) staggered_sphere(d=3, $fn=16);
+            move(pointB) staggered_sphere(d=3, $fn=16);
+            move(pointE) staggered_sphere(d=3, $fn=16);
+        }
 
         // CLK (note: same plane as KLJ)
         hull() {
@@ -208,13 +203,21 @@ module back_screw_mount()
     difference() {
         union() {
             hull() {
-                zcyl(h=10, d=7);
+                move([0,0,-1]) zcyl(h=8, d=8);
                 move([-3,6.5,-3.5]) cuboid([12,1,3]);
             }
         }
 
-        // M3 screw hole
-        zcyl(h=12, d=2.5);
+        // Hole for threaded insert
+        zcyl(h=12, d=5);
+    }
+
+    // Threaded insert
+    difference() {
+        move([0,0,-5]) xrot(180) insertM3x57();
+        
+        // M3 Screw clearance
+        move([0,0,-5]) xrot(180) zcyl(h=18, d=3.25);
     }
 }
 
@@ -229,15 +232,23 @@ module back_screw_mounts()
 
 module front_screw_mount()
 {
-    move([0,-93 + 3,25]) {
+    move([0,-93 + 4,25]) {
         difference() {
             hull() {
-                zcyl(h=10, d=7);
+                move([0,0,-1]) zcyl(h=8, d=8);
                 move([0,5,-3.5]) cuboid([26.5,1,3]);
             }
 
-            // M3 screw hole
-            zcyl(h=12, d=2.5);
+            // Hole for threaded insert
+            zcyl(h=12, d=5);
+        }
+
+        // Threaded insert
+        difference() {
+            move([0,0,-5]) xrot(180) insertM3x57();
+            
+            // M3 Screw clearance
+            move([0,0,-5]) xrot(180) zcyl(h=18, d=3.25);
         }
     }
 }

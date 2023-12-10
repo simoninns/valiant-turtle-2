@@ -160,8 +160,12 @@ module head()
 
         // Threaded insert slot
         move([12,-58,3.9]) xrot(180) cyl(h=8,d=5);
-    }
 
+        // Shell mounting screw hole
+        move([0,-89,20]) cyl(h=20, d=3.5);
+    }
+    
+    // Threaded insert
     move([12,-58,0]) xrot(180) insertM3x57();
 }
 
@@ -175,6 +179,6 @@ module render_head(crend, toPrint)
         caster_ball_base();
         caster_ball_top();
 
-        move([0,0,-4.5]) ball_bearing(20);
+        move([0,0,-4.5]) color([0.7,0.7,0.7,1]) ball_bearing(20);
     }
 }

@@ -92,7 +92,14 @@ module nema17_mount()
             // Lower mount clearance
             move([-24,-26.5,-14.99]) cuboid([38,12,14]); 
             move([-24,26.5,-14.99]) cuboid([38,12,14]); 
+
+            // Upper clearance to avoid hitting the lower shell
+            move([-10,20,31]) xrot(52) yrot(35) cuboid([48,12,14]);
+            move([6,22,28]) yrot(45) xrot(-20) cuboid([48,12,14]); 
         }
+
+                   
+
     }
 }
 
