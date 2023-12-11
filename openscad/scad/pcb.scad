@@ -80,7 +80,7 @@ module render_pcb(crend, toPrint)
 module render_pcb_mounts(crend, toPrint)
 {
     if (!toPrint) {
-        color([0.6,0.3,0.8,1]) pcb_mounts();
+        color([0.2,0.2,0.2,1]) pcb_mounts();
     } else {
         xrot(90) move([0,3.5,0]) pcb_mount();
     }

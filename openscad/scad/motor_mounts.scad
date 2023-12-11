@@ -103,7 +103,7 @@ module nema17_mount()
 module render_motor_mounts(crend, toPrint)
 {
     if (!toPrint) {
-        color([0.6,0.3,0.8,1]) {
+        color([0.2,0.2,0.2,1]) {
             move([98,64-35,-6]) nema17_mount();
             xflip() move([98,64-35,-6]) nema17_mount();
         }
