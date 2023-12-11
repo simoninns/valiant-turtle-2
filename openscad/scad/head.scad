@@ -149,8 +149,8 @@ module half_head()
     difference() {
         head_shape();
 
-        // Eye socket (6mm for LED with grommet)
-        move([5,-122 - 5,8]) zrot(-45) xcyl(h=16,d=6);
+        // Eye socket (8mm for LED with grommet)
+        move([-1,-122,3]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=8);
 
         // Back access
         move([0,-50,8]) cuboid([16,20,18]);
@@ -175,6 +175,19 @@ module head()
     xflip() half_head();
 }
 
+module render_caster_ball_base(crend, toPrint)
+{
+    if (!toPrint) {
+        color([0.9,0.9,0.6,1]) {
+            move([0,-144 + 35,3.5 - 22]) {
+                caster_ball_base();
+            }
+        }
+    } else {
+        xrot(180) move([0,0,3.5]) caster_ball_base();
+    }
+}
+
 module render_head(crend, toPrint)
 {
     if (!toPrint) {
@@ -183,7 +196,6 @@ module render_head(crend, toPrint)
 
             // Caster
             move([0,-144 + 35,3.5 - 22]) {
-                caster_ball_base();
                 caster_ball_top();
             }
         }
@@ -200,8 +212,5 @@ module render_head(crend, toPrint)
                 caster_ball_top();
             }
         }
-
-        xrot(180) move([50,0,3.5]) caster_ball_base();
     }
-
 }

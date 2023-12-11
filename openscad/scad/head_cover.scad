@@ -1,6 +1,6 @@
 /************************************************************************
 
-    leds.scad
+    head_cover.scad
     
     Valiant Turtle 2
     Copyright (C) 2023 Simon Inns
@@ -26,49 +26,51 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-module render_5mm_led()
+module head_cover_half()
 {
-    yrot(90) {
-        color([1,0,0,1]) {
-            staggered_sphere(d=5, $fn=16);
-            move([0,0,2 - 7]) cyl(h=1,d=6);
-            move([0,0,-2.5]) cyl(h=5,d=5);
+    pointA = [0,-52.5,0];
+    pointB = [17.5,-52.5,0];
+    pointC = [17.5,-121,0];
+    pointD = [0,-139.5,0];
+
+    difference() {
+        move([0,0,-4]) hull() {
+            move(pointA) cyl(h=2, d=1);
+            move(pointB) cyl(h=2, d=1);
+            move(pointC) cyl(h=2, d=1);
+            move(pointD) cyl(h=2, d=1);
         }
 
-        color([0.7,0.7,0.7,1]) {
-            move([-1,0,-5]) cyl(h=8,d=0.5);
-            move([1,0,-5]) cyl(h=8,d=0.5);
-        }
+        // Body mount screw hole
+        move([12,-58,-4]) xrot(180) cyl(h=8,d=3.5);
     }
 }
 
-module render_5mm_led_holder()
+module head_cover()
 {
-    yrot(90) {
-        color([0.2,0.2,0.2,1]) difference() {
-            union() {
-                cyl(h=1,d=10, chamfer2=0.5);
-                move([0,0,-2]) cyl(h=5,d=8);
-            }
-            move([0,0,-2]) cyl(h=10,d=5);
+    difference() {
+        union() {
+            head_cover_half();
+            xflip() head_cover_half();
         }
+
+        move([0,-109,-6]) cyl(h=10,d=25);
+        move([0,-89,6.5 - 2]) cyl(h=21, d=7);
+    }
+
+    // Shell mounting screw hole
+    difference() {
+        move([0,-89,6.5]) cyl(h=21, d=9);
+        move([0,-89,6.5 - 2]) cyl(h=21, d=7);
+        move([0,-89,00]) cyl(h=80, d=3.5);
     }
 }
 
-module led_and_holder_5mm()
+module render_head_cover(crend, toPrint)
 {
-    move([-1,-122,3]) zrot(-45) yrot(-22) move([15,0,0]) {
-        render_5mm_led();
-        render_5mm_led_holder();
-    }
-}
-
-module render_leds(crend, toPrint)
-{
-    // move([-1,-122,3]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=8);
-
-    if(!toPrint) {
-        led_and_holder_5mm();
-        xflip() led_and_holder_5mm();
+    if (!toPrint) {
+        color([0.2,0.2,0.2,1]) head_cover();
+    } else {
+        move([0,89,5]) head_cover();
     }
 }

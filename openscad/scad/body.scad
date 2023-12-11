@@ -148,19 +148,12 @@ module pcb_mount_holes()
     }
 }
 
-module logo_text()
-{
-    move([-114,-88,-3]) zrot(25) xrot(180) linear_extrude(1) text("Valiant Turtle 2", font = "Liberation Sans");
-}
-
 module body()
 {
     difference() {
         union() {
             body_platform();
             xflip() body_platform();
-
-            logo_text();
         }
 
         head_clearance();

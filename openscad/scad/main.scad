@@ -36,6 +36,7 @@ include <motor_mounts.scad>
 include <wheels.scad>
 include <pcb.scad>
 include <leds.scad>
+include <head_cover.scad>
 
 // Rendering resolution
 //
@@ -54,6 +55,8 @@ display_motor_bay = "Yes"; // [Yes, No]
 display_motor_mounts = "Yes"; // [Yes, No]
 display_wheels = "Yes"; // [Yes, No]
 display_pcb_mounts = "Yes"; // [Yes, No]
+display_head_cover = "Yes"; // [Yes, No]
+display_caster_ball_base = "Yes"; // [Yes, No]
 
 // Non-printable parts
 //
@@ -76,6 +79,8 @@ module main() {
     d_motor_mounts = (display_motor_mounts == "Yes") ? true:false;
     d_wheels = (display_wheels == "Yes") ? true:false;
     d_pcb_mounts = (display_pcb_mounts == "Yes") ? true:false;
+    d_head_cover = (display_head_cover == "Yes") ? true:false;
+    d_caster_ball_base = (display_caster_ball_base == "Yes") ? true:false;
 
     // Non-printable parts
     d_motor = (display_motor == "Yes") ? true:false;
@@ -94,6 +99,8 @@ module main() {
     if (d_motor_mounts) render_motor_mounts(crend, toPrint);
     if (d_wheels) render_wheels(crend, toPrint);
     if (d_pcb_mounts) render_pcb_mounts(crend, toPrint);
+    if (d_head_cover) render_head_cover(crend, toPrint);
+    if (d_caster_ball_base) render_caster_ball_base(crend, toPrint);
 
     // Render the non-printable parts
     if (d_motor) render_motor(crend, toPrint);
