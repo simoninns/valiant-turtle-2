@@ -50,7 +50,7 @@ module irrPentagonTop()
 
 module shellTop()
 {
-    move([0,1.5,104]) yrot(180) {
+    move([0,1.5,105]) yrot(180) {
         // Centre
         pentagonTop();
 
@@ -68,5 +68,16 @@ module render_shell_top(crend, toPrint)
         color([0,0.8,0,1]) shellTop();
     } else {  
         shellTop();
+    }
+}
+
+// Render support enforcers
+module render_shell_top_se(crend, toPrint)
+{
+    if (toPrint) {
+        hull() {
+            move([0,1.5,105]) yrot(180) pentagonTop();
+            move([0,0,0]) pentagonTop();
+        }
     }
 }

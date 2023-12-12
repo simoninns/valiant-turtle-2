@@ -205,3 +205,12 @@ module render_motor_bay(crend, toPrint)
         }
     }
 }
+
+// Support Enforcers
+module render_motor_bay_se(crend, toPrint)
+{
+    if (toPrint) {
+        move([+88,-27,20]) cuboid([65,80,40]);
+        xflip() move([+88,-27,20]) cuboid([65,80,40]);
+    }
+}

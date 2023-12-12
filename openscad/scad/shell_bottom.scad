@@ -123,9 +123,9 @@ module wheelCover()
         pointE = [120.5,7.5,22.5];
         pointF = [94,-38.5,13.5];
         pointG = [94,7.5,33.5];
-        pointH = [94,-38.5,29.5];
+        pointH = [94,-38.5,28.75];
         pointI = [94,7.5,49.5];
-        pointJ = [70.5,39.5,32];
+        pointJ = [70.5,39.5,31.5];
         pointK = [70.5,39.5,23];
         pointL = [48,39.5,2];
 
@@ -283,6 +283,32 @@ module shellBottom()
     back_screw_mounts();          
 }
 
+module joinerLine()
+{
+    hull() {
+        zrot(360/10) move([0,70,36.75]) xrot(55.5) {
+            zrot((360/5) * 0) move([0,(103/2),0]) staggered_sphere(d=2, $fn=16);
+            zrot((360/5) * 1) move([0,(123/2),0]) staggered_sphere(d=2, $fn=16);
+        }
+    }
+
+    hull() {
+        zrot(360/10) move([0,70,36.75]) xrot(55.5) {
+            zrot((360/5) * 0) move([0,(103/2),0]) staggered_sphere(d=2, $fn=16);
+            zrot((360/5) * 4) move([0,(123/2),0]) staggered_sphere(d=2, $fn=16);
+        }
+    }
+}
+
+module joiner()
+{
+    move([0,1.5,104]) yrot(180) {
+        for ( i = [0:1:4]) {
+            zrot((360/5) * i) joinerLine();
+        }
+    }
+}
+
 // Note: From edge to edge of the wheel covers, the shell is 244mm wide
 // The plastic is 3mm thick around the base of the wheel covers but the rest
 // of the shell is 2mm thick
@@ -290,7 +316,17 @@ module render_shell_bottom(crend, toPrint)
 {
     if (!toPrint) {
         color([0,0.8,0,1]) shellBottom();
+        color([0,0.8,0,1]) joiner();
     } else {
         shellBottom();
+        joiner();
+    }
+}
+
+// Render support enforcers
+module render_shell_bottom_se(crend, toPrint)
+{
+    if (toPrint) {
+        move([0,-90,11]) cuboid([26,14,22]);
     }
 }
