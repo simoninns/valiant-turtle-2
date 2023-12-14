@@ -42,11 +42,11 @@ include <head_cover.scad>
 //
 $fn=50;
 
-// Select rendering parameters
-//
+/* [Rendering Parameters] */
 use_colour = "Colour"; // [Colour, No colour]
 for_printing = "Display"; // [Display, Printing]
 
+/* [Printable Parts] */
 display_body = "Yes"; // [Yes, No]
 display_head = "Yes"; // [Yes, No]
 display_shell_top = "Yes"; // [Yes, No]
@@ -58,20 +58,18 @@ display_pcb_mounts = "Yes"; // [Yes, No]
 display_head_cover = "Yes"; // [Yes, No]
 display_caster_ball_base = "Yes"; // [Yes, No]
 
-// Non-printable parts
-//
-display_motor = "Yes"; // [Yes, No]
-display_rotational_axis = "Yes"; // [Yes, No]
-display_turning_circle = "Yes"; // [Yes, No]
-display_tires = "Yes"; // [Yes, No]
-display_pcb = "Yes"; // [Yes, No]
-display_leds = "Yes"; // [Yes, No]
+/* [Non-Printable Parts] */
+display_motor = "No"; // [Yes, No]
+display_rotational_axis = "No"; // [Yes, No]
+display_turning_circle = "No"; // [Yes, No]
+display_tires = "No"; // [Yes, No]
+display_pcb = "No"; // [Yes, No]
+display_leds = "No"; // [Yes, No]
 
-// Support Enforcers
-//
-display_motor_bay_se = "Yes"; // [Yes, No]
-display_shell_top_se = "Yes"; // [Yes, No]
-display_shell_bottom_se = "Yes"; // [Yes, No]
+/* [Support Enforcers] */
+display_motor_bay_se = "No"; // [Yes, No]
+display_shell_top_se = "No"; // [Yes, No]
+display_shell_bottom_se = "No"; // [Yes, No]
 
 module main() {
     crend = (use_colour == "Colour") ? true:false;
