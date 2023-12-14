@@ -32,8 +32,9 @@ module insertM3x57()
 {
     move([0,0,-4]) difference() {
         cyl(h=8,d=6);
-        move([0,0,8 - 6.7]) cyl(h=8,d=3.9);
-        move([0,0,3.5]) cyl(h=2,d=3.9+1, chamfer1=1);
+        move([0,0,8 - 5]) cyl(h=1,d=4.5);
+        move([0,0,8 - 7]) cyl(h=8,d=4);
+        move([0,0,3.5]) cyl(h=2,d=4+1, chamfer1=1);
     }
 }
 

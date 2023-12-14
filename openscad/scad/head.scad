@@ -135,6 +135,8 @@ module caster_ball_top()
         hull() {
             difference() {
                 move([0,0,34]) cyl(h=4,d=24);
+                //move([0,0,34]) zrot(45) cuboid([20,20,4]);
+                move([0,-10,34]) cuboid([20,10,4]);
                 move([16,0,34]) cuboid([10,20,5]);
                 move([-16,0,34]) cuboid([10,20,5]);
             }
@@ -142,6 +144,8 @@ module caster_ball_top()
         }
         move([0,0,-4.5]) ball_bearing(20.5);
     }
+
+    
 }
 
 module half_head()
@@ -150,7 +154,7 @@ module half_head()
         head_shape();
 
         // Eye socket (8mm for LED with grommet)
-        move([-1,-122,3]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=8);
+        move([-1,-122,3]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=7);
 
         // Back access
         move([0,-50,8]) cuboid([16,20,18]);
