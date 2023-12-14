@@ -26,6 +26,8 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
+include <motor_bay.scad>
+
 module body_profile(loc)
 {
     move(loc) {
@@ -117,7 +119,21 @@ module head_clearance()
 
 module wheel_cutout()
 {
-    move([+88,27,-4]) cuboid([62,77,18]);
+    move([+88,25.75,-4]) cuboid([62,58.5,18]);
+    move([+89,53.5,-4]) cuboid([49,11,18], chamfer=4);
+    
+}
+
+module wheel_cutout_holes()
+{
+    move([0,0,5]) {
+        move([59.5 + 2.5,-7.5,-7]) xrot(180) cyl(h=8,d=3.5);
+        move([116.5 - 2.5,-7.5,-7]) xrot(180) cyl(h=8,d=3.5);
+
+        // Back
+        move([59.5 + 2.5,59,-7]) xrot(180) cyl(h=8,d=3.5);
+        move([116.5 - 2.5,59,-7]) xrot(180) cyl(h=8,d=3.5);   
+    }
 }
 
 module shell_mounts()
@@ -159,12 +175,16 @@ module body()
 
         head_clearance();
         wheel_cutout();
+        wheel_cutout_holes();
         xflip() wheel_cutout();
         shell_mounts();
         head_mounts();
         pen_hole();
         pcb_mount_holes();
     }
+
+    motor_bay_shape1();
+    xflip() motor_bay_shape1();
 }
 
 module render_body(crend, toPrint)

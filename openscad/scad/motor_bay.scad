@@ -38,7 +38,7 @@ module mount_profile_left(pos)
     move(pos) yrot(-90) cyl(h=3, d=3, fillet2=1.5, $fn=16);
 }
 
-module motor_bay_shape()
+module motor_bay_side_panels()
 {
     pointA = [0,0,-0.5];
     pointB = [0,0,-17];
@@ -76,8 +76,39 @@ module motor_bay_shape()
             mount_profile_left(pointG);
         }
     }
+}
 
-    // Front panel
+module motor_bay_shape1()
+{
+    pointA = [0,0,-0.5];
+    pointB = [0,0,-17];
+    pointC = [0,30 - 10,-27];
+    pointD = [0,65,-27];
+    pointE = [0,70,-25];
+    pointF = [0,75,-20];
+    pointG = [0,80,-0.5];
+
+    width = 65;
+    pos = -13;
+
+    // Render the side panels
+    motor_bay_side_panels();
+}
+
+module motor_bay_shape2()
+{
+    pointA = [0,0,-0.5];
+    pointB = [0,0,-17];
+    pointC = [0,30 - 10,-27];
+    pointD = [0,65,-27];
+    pointE = [0,70,-25];
+    pointF = [0,75,-20];
+    pointG = [0,80,-0.5];
+
+    width = 65;
+    pos = -13;
+
+    // Front part
     hull() {
         move([120.5,pos,-1.5]) {
             mount_profile_right(pointA);
@@ -87,6 +118,18 @@ module motor_bay_shape()
         move([120.5 - width,pos,-1.5]) {
             mount_profile_left(pointA);
             mount_profile_left(pointB);
+        }
+    }
+
+    hull() {
+        move([120.5,pos,-1.5]) {
+            mount_profile_right(pointF);
+            mount_profile_right(pointG);
+        }
+
+        move([120.5 - width,pos,-1.5]) {
+            mount_profile_left(pointF);
+            mount_profile_left(pointG);
         }
     }
 
@@ -102,7 +145,7 @@ module motor_bay_shape()
         }
     }
 
-    // Base
+    // Middle part
     difference() {
         hull() {
             move([120.5,pos,-1.5]) {
@@ -117,9 +160,10 @@ module motor_bay_shape()
         }
 
         // Cut-out to allow wheel to come through
-        move([109,pos + 42,-28]) cuboid([8,40,10], chamfer=1);
+        move([112.5,pos + 42,-28]) cuboid([15,40,10], chamfer=1);
     }
 
+    // Back part
     hull() {
         move([120.5,pos,-1.5]) {
             mount_profile_right(pointD);
@@ -144,25 +188,51 @@ module motor_bay_shape()
         }
     }
 
-    hull() {
-        move([120.5,pos,-1.5]) {
-            mount_profile_right(pointF);
-            mount_profile_right(pointG);
+    // Mount points to attach to main body
+    difference() {
+        union() {
+            move([62,-8,-7]) cuboid([10,9,10]);
+            move([62,60.5,-7]) cuboid([10,9.5,10]);
+
+            difference() {
+                move([112,-8,-7]) cuboid([20,9,10]);
+                move([112-9,-7,-7]) zrot(45) cuboid([20,9,12]);
+            }
+            difference() {
+                move([112,60.5,-7]) cuboid([20,10,10]);
+                move([112-9,59,-7]) zrot(-45) cuboid([20,9,12]);
+            }
         }
 
-        move([120.5 - width,pos,-1.5]) {
-            mount_profile_left(pointF);
-            mount_profile_left(pointG);
+        // Front
+        move([0,0,0.1]) {
+            move([59.5 + 2.5,-7.5,-7]) xrot(180) cyl(h=8,d=5);
+            move([116.5 - 2.5,-7.5,-7]) xrot(180) cyl(h=8,d=5);
+
+            // Back
+            move([59.5 + 2.5,59,-7]) xrot(180) cyl(h=8,d=5);
+            move([116.5 - 2.5,59,-7]) xrot(180) cyl(h=8,d=5);   
         }
     }
+
+    // Add the inserts
+    move([0,0,0.1]) {
+        move([59.5 + 2.5,-7.5,-3]) insertM3x57();
+        move([116.5 - 2.5,-7.5,-3]) insertM3x57();
+        move([59.5 + 2.5,59,-3]) insertM3x57();
+        move([116.5 - 2.5,59,-3]) insertM3x57();
+    }
+
+    // Platform to attach the motor mounts to
+    motor_platform();
 }
 
 module motor_platform()
 {
     difference() {
         union() {
-            move([77,3,-21]) cuboid([38,10,14], chamfer=1, edges=EDGES_X_ALL); 
-            move([77,55,-21]) cuboid([38,10,14], chamfer=1, edges=EDGES_X_ALL); 
+            move([76,3,-21]) cuboid([39,10,14], chamfer=1, edges=EDGES_X_ALL); 
+            move([76,55,-21]) cuboid([39,10,14], chamfer=1, edges=EDGES_X_ALL); 
         }
 
         // Threaded insert slot
@@ -170,7 +240,7 @@ module motor_platform()
         move([90-25,5-2,-17.9]) xrot(180) cyl(h=8,d=5);
 
         move([86,53 + 2,-17.9]) xrot(180) cyl(h=8,d=5);
-        move([90-25,53 + 2,-17.9]) xrot(180) cyl(h=8,d=5);
+        move([90-18,53 + 2,-17.9]) xrot(180) cyl(h=8,d=5);
 
         // Trim mounts
         move([77.5,0,-32]) xrot(60) cuboid([42,10,14]);
@@ -182,13 +252,17 @@ module motor_platform()
     move([90-25,5-2,-14]) insertM3x57();
 
     move([86,53 + 2,-14]) insertM3x57();
-    move([90-25,53 + 2,-14]) insertM3x57();
+    move([90-18,53 + 2,-14]) insertM3x57();
 }
 
 module motor_bay()
 {
-    motor_bay_shape();
-    motor_platform();
+    difference() {
+        motor_bay_shape2();
+        move([52,10,-25]) cuboid([10,120,50]);
+        move([124,10,-25]) cuboid([10,120,50]);
+        move([84,26,2]) cuboid([80,90,10]);
+    }    
 }
 
 module render_motor_bay(crend, toPrint)
@@ -199,18 +273,7 @@ module render_motor_bay(crend, toPrint)
             xflip() motor_bay();
         }
     } else {
-        xrot(180) {
-            motor_bay();
-            xflip() motor_bay();
-        }
-    }
-}
-
-// Support Enforcers
-module render_motor_bay_se(crend, toPrint)
-{
-    if (toPrint) {
-        move([+88,-27,20]) cuboid([65,80,40]);
-        xflip() move([+88,-27,20]) cuboid([65,80,40]);
+        move([10,0,-57]) yrot(-90) motor_bay();
+        xflip() move([10,0,-57]) yrot(-90) motor_bay();
     }
 }

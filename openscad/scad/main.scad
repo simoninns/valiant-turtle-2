@@ -66,7 +66,6 @@ display_pcb = "No"; // [Yes, No]
 display_leds = "No"; // [Yes, No]
 
 /* [Support Enforcers] */
-display_motor_bay_se = "No"; // [Yes, No]
 display_shell_top_se = "No"; // [Yes, No]
 display_shell_bottom_se = "No"; // [Yes, No]
 
@@ -93,7 +92,6 @@ module main() {
     d_leds = (display_leds == "Yes") ? true:false;
 
     // Support enforcers
-    d_motor_bay_se = (display_motor_bay_se == "Yes") ? true:false;
     d_shell_top_se = (display_shell_top_se == "Yes") ? true:false;
     d_shell_bottom_se = (display_shell_bottom_se == "Yes") ? true:false;
 
@@ -117,7 +115,6 @@ module main() {
     if (d_leds) render_leds(crend, toPrint);
 
     // Render the support enforcers
-    if (d_motor_bay_se) render_motor_bay_se(crend, toPrint);
     if (d_shell_top_se) render_shell_top_se(crend, toPrint);
     if (d_shell_bottom_se) render_shell_bottom_se(crend, toPrint);
 }

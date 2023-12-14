@@ -54,7 +54,7 @@ module nema17_mount()
 
                 // Faceplate arms
                 move([-20,-26,-4]) cuboid([47,10,8], chamfer=1, edges=EDGES_X_ALL);
-                move([-20,26,-4]) cuboid([47,10,8], chamfer=1, edges=EDGES_X_ALL);
+                move([-20,26,-4]) cuboid([28,10,8], chamfer=1, edges=EDGES_X_ALL);
 
                 // NEMA 17 Lip
                 move([-(7/2) - 2.5,0,1.25]) cuboid([5,46,43.5], chamfer=1, edges=EDGES_X_ALL);
@@ -74,14 +74,14 @@ module nema17_mount()
 
             // Motor mounting screws through the arms
             move([-15.5,26,0]) xrot(180) cyl(h=30,d=3.25);
-            move([-15.5-21,26,0]) xrot(180) cyl(h=30,d=3.25);
+            move([-15.5-14,26,0]) xrot(180) cyl(h=30,d=3.25);
 
             move([-15.5,-26,0]) xrot(180) cyl(h=30,d=3.25);
             move([-15.5-21,-26,0]) xrot(180) cyl(h=30,d=3.25);
 
             // Motor mounting screw heads
             move([-15.5,26,2]) xrot(180) cyl(h=10,d=7);
-            move([-15.5-21,26,2]) xrot(180) cyl(h=10,d=7);
+            move([-15.5-14,26,2]) xrot(180) cyl(h=10,d=7);
 
             move([-15.5,-26,2]) xrot(180) cyl(h=10,d=7);
             move([-15.5-21,-26,2]) xrot(180) cyl(h=10,d=7);
