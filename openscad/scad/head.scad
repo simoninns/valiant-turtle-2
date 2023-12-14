@@ -116,19 +116,6 @@ module ball_bearing(diameter)
     staggered_sphere(d=diameter, circum=true, $fn=60);
 }
 
-module caster_ball_base()
-{
-    difference() { 
-        union() {
-            move([0,0,-7.5 + 1.5]) cyl(h=2 + 3,d=26, chamfer=0.5); // Lip
-            move([0,0,-11.5]) cyl(h=3,d1=16, d2=24, chamfer1=0.5, center=false); // Ball chamfer
-        }
-
-        move([0,0,-4.5]) ball_bearing(20.5);
-        caster_ball_top();
-    }
-}
-
 module caster_ball_top()
 {
     difference() { 
@@ -177,19 +164,6 @@ module head()
 {
     half_head();
     xflip() half_head();
-}
-
-module render_caster_ball_base(crend, toPrint)
-{
-    if (!toPrint) {
-        color([0.9,0.9,0.6,1]) {
-            move([0,-144 + 35,3.5 - 22]) {
-                caster_ball_base();
-            }
-        }
-    } else {
-        xrot(180) move([0,0,3.5]) caster_ball_base();
-    }
 }
 
 module render_head(crend, toPrint)
