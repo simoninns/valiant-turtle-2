@@ -124,7 +124,7 @@ module render_turning_circle(crend, toPrint)
 {
     if (!toPrint) {
         // Render the turning circle
-        move([0,64-35,-34]) tube(h=1,od=219.5, id=219.5-3, $fn=100);
+        move([0,64-35,-34]) tube(h=1,od=223.5, id=221.5-5, $fn=100);
         move([0,64-35,-34]) tube(h=1,od=280, id=280-3);
     }
 }
