@@ -110,6 +110,10 @@ module body_platform()
     move([19,12,-6.5]) cuboid([4,100,7]);
     move([19,-39,-6.5]) cuboid([70,4,7]);
     move([26,-56,-6.5]) cuboid([4,31,7]);
+
+    // Wheel bay reenforcements
+    move([88,68.5,-4]) cuboid([65,2,4]);
+    move([88,-15.5,-4]) cuboid([66,2,4], chamfer=0.5, edges=EDGES_Z_ALL);
 }
 
 module head_clearance()
@@ -122,7 +126,6 @@ module wheel_cutout()
 {
     move([+88,25.75,-4]) cuboid([62,58.5,18]);
     move([+89,53.5,-4]) cuboid([49,11,18], chamfer=4);
-    
 }
 
 module wheel_cutout_holes()
