@@ -82,7 +82,7 @@ module wheelArchBase()
     }
 
     hull() {
-        move([0,63,-7.5]) zcyl(h=3,d=3,$fn=16);
+        move([46,63,-7.5]) zcyl(h=3,d=3,$fn=16);
         move([120.5,63,-7.5]) zcyl(h=3,d=3,$fn=16);
     }
 
@@ -120,13 +120,13 @@ module wheelCover()
         pointB = [120.5,-38.5,2];
         pointC = [120.5,39.5,2];
         // pointD unused
-        pointE = [120.5,7.5,22.5];
-        pointF = [94,-38.5,13.5];
-        pointG = [94,7.5,33.5];
+        pointE = [120.5,7.5,22.5]; // Outermid
+        pointF = [94,-38.5,18.5]; // Back
+        pointG = [94,7.5,39]; // Mid
         pointH = [94,-38.5,28.75];
         pointI = [94,7.5,49.5];
         pointJ = [70.5,39.5,31.5];
-        pointK = [70.5,39.5,23];
+        pointK = [70.5,39.5,20]; // Front
         pointL = [48,39.5,2];
 
         // ABF (note: same plane as AFH)
@@ -203,13 +203,13 @@ module back_screw_mount()
     difference() {
         union() {
             hull() {
-                move([0,0,-1]) zcyl(h=8, d=8);
-                move([-3,6.5,-3.5]) cuboid([12,1,3]);
+                move([0,0,-1]) zcyl(h=8, d=10);
+                move([-4,17.75,11]) xrot(-40.5) cuboid([8,1,28]);
             }
         }
 
         // Hole for threaded insert
-        zcyl(h=12, d=5);
+        move([0,0,-1]) zcyl(h=9, d=5);
     }
 
     // Threaded insert
@@ -235,8 +235,8 @@ module front_screw_mount()
     move([0,-93 + 4,25]) {
         difference() {
             hull() {
-                move([0,0,-1]) zcyl(h=8, d=8);
-                move([0,5,-3.5]) cuboid([26.5,1,3]);
+                move([0,0,-1]) zcyl(h=8, d=10);
+                move([0,-1,12]) xrot(-34) cuboid([20,1,10]);
             }
 
             // Hole for threaded insert
@@ -258,6 +258,10 @@ module shellBottom()
     move([0,1.5,9]) difference() {
         union() {
             irrPentagonBottom(0);
+            hull() {
+                move([0,62.25,-7.5]) cuboid([95,2.5,4]);
+                move([0,67.25,-2]) cuboid([98,1,1]);
+            }
             
             difference() {
                 union() {
@@ -318,15 +322,9 @@ module render_shell_bottom(crend, toPrint)
         color([0,0.8,0,1]) shellBottom();
         color([0,0.8,0,1]) joiner();
     } else {
-        shellBottom();
-        joiner();
-    }
-}
-
-// Render support enforcers
-module render_shell_bottom_se(crend, toPrint)
-{
-    if (toPrint) {
-        move([0,-90,11]) cuboid([26,14,22]);
+        move([0,0,106]) xrot(180) {
+            shellBottom();
+            joiner();
+        }
     }
 }

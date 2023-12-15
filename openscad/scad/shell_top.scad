@@ -67,17 +67,8 @@ module render_shell_top(crend, toPrint)
     if (!toPrint) {
         color([0,0.8,0,1]) shellTop();
     } else {  
-        shellTop();
-    }
-}
-
-// Render support enforcers
-module render_shell_top_se(crend, toPrint)
-{
-    if (toPrint) {
-        hull() {
-            move([0,1.5,105]) yrot(180) pentagonTop();
-            move([0,0,0]) pentagonTop();
+        move([0,0,106]) xrot(180) {
+            shellTop();
         }
     }
 }

@@ -65,10 +65,6 @@ display_tires = "No"; // [Yes, No]
 display_pcb = "No"; // [Yes, No]
 display_leds = "No"; // [Yes, No]
 
-/* [Support Enforcers] */
-display_shell_top_se = "No"; // [Yes, No]
-display_shell_bottom_se = "No"; // [Yes, No]
-
 module main() {
     crend = (use_colour == "Colour") ? true:false;
     toPrint = (for_printing == "Printing") ? true:false;
@@ -91,10 +87,6 @@ module main() {
     d_pcb = (display_pcb == "Yes") ? true:false;
     d_leds = (display_leds == "Yes") ? true:false;
 
-    // Support enforcers
-    d_shell_top_se = (display_shell_top_se == "Yes") ? true:false;
-    d_shell_bottom_se = (display_shell_bottom_se == "Yes") ? true:false;
-
     // Render the printable parts
     if (d_body) render_body(crend, toPrint);
     if (d_head) render_head(crend, toPrint);
@@ -113,10 +105,6 @@ module main() {
     if (d_tires) render_tires(crend, toPrint);
     if (d_pcb) render_pcb(crend, toPrint);
     if (d_leds) render_leds(crend, toPrint);
-
-    // Render the support enforcers
-    if (d_shell_top_se) render_shell_top_se(crend, toPrint);
-    if (d_shell_bottom_se) render_shell_bottom_se(crend, toPrint);
 }
 
 main();
