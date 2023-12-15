@@ -30,7 +30,12 @@ use <BOSL/nema_steppers.scad>
 module nema17_motor()
 {
     // Render the motor with the shaft pointing right and the cable to the back
-    xrot(-90) yrot(90) nema17_stepper(h=40, shaft=5, shaft_len=20, orient=ORIENT_Z);
+    //
+    // NEMA 17 - 42mm (front face)
+    // Motors are normally 20mm, 24, 40mm, and 48mm
+    //
+    // Shafts are 22-24, 
+    xrot(-90) yrot(90) nema17_stepper(h=48, shaft=5, shaft_len=24, orient=ORIENT_Z);
 }
 
 module nema17_mount()
@@ -53,8 +58,8 @@ module nema17_mount()
                 }
 
                 // Faceplate arms
-                move([-20,-26,-4]) cuboid([47,10,8], chamfer=1, edges=EDGES_X_ALL);
-                move([-20,26,-4]) cuboid([28,10,8], chamfer=1, edges=EDGES_X_ALL);
+                move([-20,-26,-4]) cuboid([39,10,8], chamfer=1, edges=EDGES_X_ALL);
+                move([-20,26,-4]) cuboid([20,10,8], chamfer=1, edges=EDGES_X_ALL);
 
                 // NEMA 17 Lip
                 move([-(7/2) - 2.5,0,1.25]) cuboid([5,46,43.5], chamfer=1, edges=EDGES_X_ALL);
@@ -73,18 +78,29 @@ module nema17_mount()
             move([7,0,0]) rotate([0,-90,0]) cyl(h=10,d=25, chamfer2=2, $fn=60);
 
             // Motor mounting screws through the arms
-            move([-15.5,26,0]) xrot(180) cyl(h=30,d=3.25);
-            move([-15.5-14,26,0]) xrot(180) cyl(h=30,d=3.25);
+            move([-15.5 + 4,26,0]) xrot(180) cyl(h=30,d=3.25);
+            move([-15.5-10,26,0]) xrot(180) cyl(h=30,d=3.25);
 
-            move([-15.5,-26,0]) xrot(180) cyl(h=30,d=3.25);
-            move([-15.5-21,-26,0]) xrot(180) cyl(h=30,d=3.25);
+            move([-15.5 + 4,-26,0]) xrot(180) cyl(h=30,d=3.25);
+            move([-15.5-21 + 4,-26,0]) xrot(180) cyl(h=30,d=3.25);
 
             // Motor mounting screw heads
-            move([-15.5,26,2]) xrot(180) cyl(h=10,d=7);
-            move([-15.5-14,26,2]) xrot(180) cyl(h=10,d=7);
+            move([-15.5 + 4,26,7]) xrot(180) cyl(h=20,d=7);
+            move([-15.5-10,26,2]) xrot(180) cyl(h=10,d=7);
 
-            move([-15.5,-26,2]) xrot(180) cyl(h=10,d=7);
-            move([-15.5-21,-26,2]) xrot(180) cyl(h=10,d=7);
+            move([-15.5 + 4,-26,7]) xrot(180) cyl(h=20,d=7);
+            move([-15.5-21 + 4,-26,2]) xrot(180) cyl(h=10,d=7);
+
+            // Clean up for printing
+            hull() {
+                move([-15.5 + 4,-26,7]) xrot(180) cyl(h=20,d=7);
+                move([-15.5 + 0,-26,10]) xrot(180) cyl(h=20,d=7);
+            }
+
+            hull() {
+                move([-15.5 + 4,26,7]) xrot(180) cyl(h=20,d=7);
+                move([-15.5 + 0,26,10]) xrot(180) cyl(h=20,d=7);
+            }
 
             // NEMA 17 clearance
             move([-38.5,0,0]) cuboid([70,43,43]);
@@ -104,8 +120,8 @@ module render_motor_mounts(crend, toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) {
-            move([98,64-35,-6]) nema17_mount();
-            xflip() move([98,64-35,-6]) nema17_mount();
+            move([98-4,64-35,-6]) nema17_mount();
+            xflip() move([98-4,64-35,-6]) nema17_mount();
         }
     } else {
         move([30,0,7]) yrot(90) nema17_mount();
@@ -116,8 +132,8 @@ module render_motor_mounts(crend, toPrint)
 module render_motor(crend, toPrint)
 {
     if (!toPrint) {
-        move([98,64-35,-6]) nema17_motor();
-        xflip() move([98,64-35,-6]) nema17_motor();
+        move([98-4,64-35,-6]) nema17_motor();
+        xflip() move([98-4,64-35,-6]) nema17_motor();
     }
 }
 

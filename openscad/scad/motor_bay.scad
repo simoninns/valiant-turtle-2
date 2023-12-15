@@ -42,7 +42,7 @@ module motor_bay_side_panels()
 {
     pointA = [0,0,-0.5];
     pointB = [0,0,-17];
-    pointC = [0,30 - 10,-27];
+    pointC = [0,30 - 10.5,-27];
     pointD = [0,65,-27];
     pointE = [0,70,-25];
     pointF = [0,75,-20];
@@ -78,28 +78,11 @@ module motor_bay_side_panels()
     }
 }
 
-module motor_bay_shape1()
-{
-    pointA = [0,0,-0.5];
-    pointB = [0,0,-17];
-    pointC = [0,30 - 10,-27];
-    pointD = [0,65,-27];
-    pointE = [0,70,-25];
-    pointF = [0,75,-20];
-    pointG = [0,80,-0.5];
-
-    width = 65;
-    pos = -13;
-
-    // Render the side panels
-    motor_bay_side_panels();
-}
-
 module motor_bay_shape2()
 {
     pointA = [0,0,-0.5];
     pointB = [0,0,-17];
-    pointC = [0,30 - 10,-27];
+    pointC = [0,30 - 10.5,-27];
     pointD = [0,65,-27];
     pointE = [0,70,-25];
     pointF = [0,75,-20];
@@ -161,7 +144,12 @@ module motor_bay_shape2()
 
         // Cut-out to allow wheel to come through
         move([112.5,pos + 42,-28]) cuboid([15,40,10], chamfer=1);
+
+        // Additional motor clearance
+        move([74,pos + 42,-23]) cuboid([45,44,10], chamfer=0.5);
     }
+
+    
 
     // Back part
     hull() {
@@ -231,8 +219,8 @@ module motor_platform()
 {
     difference() {
         union() {
-            move([76,3,-21]) cuboid([39,10,14], chamfer=1, edges=EDGES_X_ALL); 
-            move([76,55,-21]) cuboid([39,10,14], chamfer=1, edges=EDGES_X_ALL); 
+            move([76-4,2.5,-21]) cuboid([39,9,14], chamfer=1, edges=EDGES_X_ALL); 
+            move([76-4,55.5,-21]) cuboid([39,9,14], chamfer=1, edges=EDGES_X_ALL); 
         }
 
         // Threaded insert slot

@@ -126,6 +126,9 @@ module wheel_cutout()
 {
     move([+88,25.75,-4]) cuboid([62,58.5,18]);
     move([+89,53.5,-4]) cuboid([49,11,18], chamfer=4);
+
+    // Back of motor
+    move([51.5,29,-6]) cuboid([13,44,50]);
 }
 
 module wheel_cutout_holes()
@@ -175,6 +178,9 @@ module body()
         union() {
             body_platform();
             xflip() body_platform();
+
+            motor_bay_side_panels();
+            xflip() motor_bay_side_panels();
         }
 
         head_clearance();
@@ -186,9 +192,6 @@ module body()
         pen_hole();
         pcb_mount_holes();
     }
-
-    motor_bay_shape1();
-    xflip() motor_bay_shape1();
 }
 
 module render_body(crend, toPrint)
