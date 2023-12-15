@@ -27,14 +27,17 @@ use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 use <BOSL/nema_steppers.scad>
 
-module nema17_motor()
+module nema17_motor_small()
 {
     // Render the motor with the shaft pointing right and the cable to the back
-    //
-    // NEMA 17 - 42mm (front face)
-    // Motors are normally 20mm, 24, 40mm, and 48mm
-    //
-    // Shafts are 22-24, 
+    // 24mm depth with 20mm shaft
+    xrot(-90) yrot(90) nema17_stepper(h=24, shaft=5, shaft_len=20, orient=ORIENT_Z);
+}
+
+module nema17_motor_large()
+{
+    // Render the motor with the shaft pointing right and the cable to the back
+    // 48mm depth with 24mm shaft
     xrot(-90) yrot(90) nema17_stepper(h=48, shaft=5, shaft_len=24, orient=ORIENT_Z);
 }
 
@@ -129,11 +132,19 @@ module render_motor_mounts(crend, toPrint)
     }
 }
 
-module render_motor(crend, toPrint)
+module render_motor_small(crend, toPrint)
 {
     if (!toPrint) {
-        move([98-4,64-35,-6]) nema17_motor();
-        xflip() move([98-4,64-35,-6]) nema17_motor();
+        move([98-4,64-35,-6]) nema17_motor_small();
+        xflip() move([98-4,64-35,-6]) nema17_motor_small();
+    }
+}
+
+module render_motor_large(crend, toPrint)
+{
+    if (!toPrint) {
+        move([98-4,64-35,-6]) nema17_motor_large();
+        xflip() move([98-4,64-35,-6]) nema17_motor_large();
     }
 }
 

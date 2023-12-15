@@ -147,10 +147,11 @@ module motor_bay_shape2()
 
         // Additional motor clearance
         move([74,pos + 42,-23]) cuboid([45,44,10], chamfer=0.5);
+
+        // Wheel position marker to align wheel on axel
+        move([110,pos + 42,-27]) cuboid([4.5,43,2]);
     }
-
     
-
     // Back part
     hull() {
         move([120.5,pos,-1.5]) {

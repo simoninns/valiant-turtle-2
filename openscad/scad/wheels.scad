@@ -79,6 +79,11 @@ module wheel_hub_decoration()
             move([5.25,0,14]) yrot(-90) cyl(h=4,d=5, chamfer=1, $fn=16);
             move([5.25,0,21.5]) yrot(-90) cyl(h=4,d=5, chamfer=1, $fn=16);
         }
+
+        move([-6.5,0,0]) xrot(rot) hull() {
+            move([5.25,0,14]) yrot(-90) cyl(h=4,d=5, chamfer=1, $fn=16);
+            move([5.25,0,21.5]) yrot(-90) cyl(h=4,d=5, chamfer=1, $fn=16);
+        }
     }
 }
 
@@ -90,7 +95,7 @@ module tire()
 
 module wheel()
 {
-    difference() {
+    zrot(180) move([-5,0,0]) difference() {
         union() {
             wheel_body();
             wheel_hub();
@@ -111,7 +116,7 @@ module render_wheels(crend, toPrint)
             xflip() move([107,64-35,-6]) wheel();
         }
     } else {
-        move([0,0,0.25]) yrot(-90) wheel();
+        move([0,0,5.25]) yrot(90) wheel();
     }
 }
 
@@ -128,7 +133,7 @@ module render_tires(crend, toPrint)
 {
     if (!toPrint) {
         color([0.4,0.4,0.4,1]) {
-            move([107,64-35,-6]) tire();
+            move([108,64-35,-6]) tire();
             xflip() move([107,64-35,-6]) tire();
         }
     }

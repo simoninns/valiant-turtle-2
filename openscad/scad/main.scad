@@ -58,7 +58,8 @@ display_pcb_mounts = "Yes"; // [Yes, No]
 display_head_cover = "Yes"; // [Yes, No]
 
 /* [Non-Printable Parts] */
-display_motor = "No"; // [Yes, No]
+display_motor_small = "No"; // [Yes, No]
+display_motor_large = "No"; // [Yes, No]
 display_rotational_axis = "No"; // [Yes, No]
 display_turning_circle = "No"; // [Yes, No]
 display_tires = "No"; // [Yes, No]
@@ -80,7 +81,8 @@ module main() {
     d_head_cover = (display_head_cover == "Yes") ? true:false;
 
     // Non-printable parts
-    d_motor = (display_motor == "Yes") ? true:false;
+    d_motor_small = (display_motor_small == "Yes") ? true:false;
+    d_motor_large = (display_motor_large == "Yes") ? true:false;
     d_rotational_axis = (display_rotational_axis == "Yes") ? true:false;
     d_turning_circle = (display_turning_circle == "Yes") ? true:false;
     d_tires = (display_tires == "Yes") ? true:false;
@@ -99,7 +101,8 @@ module main() {
     if (d_head_cover) render_head_cover(crend, toPrint);
 
     // Render the non-printable parts
-    if (d_motor) render_motor(crend, toPrint);
+    if (d_motor_small) render_motor_small(crend, toPrint);
+    if (d_motor_large) render_motor_large(crend, toPrint);
     if (d_rotational_axis) render_rotational_axis(crend, toPrint);
     if (d_turning_circle) render_turning_circle(crend, toPrint);
     if (d_tires) render_tires(crend, toPrint);
