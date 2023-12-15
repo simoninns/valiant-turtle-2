@@ -109,6 +109,7 @@ module body_platform()
     // Reenforcements -------------------------------------
     move([19,12,-6.5]) cuboid([4,100,7]);
     move([19,-39,-6.5]) cuboid([70,4,7]);
+    move([26,-56,-6.5]) cuboid([4,31,7]);
 }
 
 module head_clearance()
