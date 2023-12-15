@@ -108,7 +108,8 @@ module render_motor_mounts(crend, toPrint)
             xflip() move([98,64-35,-6]) nema17_mount();
         }
     } else {
-        move([0,0,7]) yrot(90) nema17_mount();
+        move([30,0,7]) yrot(90) nema17_mount();
+        xflip() move([30,0,7]) yrot(90) nema17_mount();
     }
 }
 
