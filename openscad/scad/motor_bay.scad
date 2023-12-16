@@ -180,36 +180,40 @@ module motor_bay_shape2()
     // Mount points to attach to main body
     difference() {
         union() {
-            move([62,-8,-7]) cuboid([10,9,10]);
-            move([62,60.5,-7]) cuboid([10,9.5,10]);
+            move([62,-8,-7]) cuboid([10,9,18]);
+            move([62,60.5,-7]) cuboid([10,9.5,18]);
 
             difference() {
-                move([112,-8,-7]) cuboid([20,9,10]);
-                move([112-9,-7,-7]) zrot(45) cuboid([20,9,12]);
+                move([112,-8,-7]) cuboid([20,9,18]);
+                move([112-9,-7,-7]) zrot(45) cuboid([20,9,22]);
             }
             difference() {
-                move([112,62,-7]) cuboid([20,7.5,10]);
-                move([112-9,60,-7]) zrot(-45) cuboid([20,9,12]);
+                move([112,62,-7]) cuboid([20,7.5,18]);
+                move([112-9,60,-7]) zrot(-45) cuboid([20,9,22]);
             }
         }
 
         // Front
         move([0,0,0.1]) {
-            move([59.5 + 2.5,-7.5,-7]) xrot(180) cyl(h=8,d=5);
-            move([116.5 - 2.5,-7.5,-7]) xrot(180) cyl(h=8,d=5);
+            move([59.5 + 2.5,-7.5,-10]) xrot(180) cyl(h=18,d=5);
+            move([116.5 - 2.5,-7.5,-10]) xrot(180) cyl(h=18,d=5);
 
             // Back
-            move([59.5 + 2.5,62,-7]) xrot(180) cyl(h=8,d=5);
-            move([116.5 - 2.5,62,-7]) xrot(180) cyl(h=8,d=5);   
+            move([59.5 + 2.5,62,-10]) xrot(180) cyl(h=18,d=5);
+            move([116.5 - 2.5,62,-10]) xrot(180) cyl(h=18,d=5);   
         }
+
+        move([100,70,-14]) xrot(-13) cuboid([90,10,18]);
     }
+    
+
 
     // Add the inserts
     move([0,0,0.1]) {
-        move([59.5 + 2.5,-7.5,-3]) insertM3x57();
-        move([116.5 - 2.5,-7.5,-3]) insertM3x57();
-        move([59.5 + 2.5,62, -3]) insertM3x57();
-        move([116.5 - 2.5,62,-3]) insertM3x57();
+        move([59.5 + 2.5,-7.5,-3]) insertM3x57_th();
+        move([116.5 - 2.5,-7.5,-3]) insertM3x57_th();
+        move([59.5 + 2.5,62, -3]) insertM3x57_th();
+        move([116.5 - 2.5,62,-3]) insertM3x57_th();
     }
 
     // Platform to attach the motor mounts to
