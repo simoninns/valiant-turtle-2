@@ -90,7 +90,7 @@ module wheel_hub_decoration()
 module tire()
 {
     // O-ring Tire - R31 - AS 568 225 - ID=47.22, OD=54.28, section=3.53
-    move([2,0,0]) yrot(90) torus(id=47.22, od=54.28);
+    move([3,0,0]) yrot(90) torus(id=47.22, od=54.28);
 }
 
 module wheel()
@@ -133,7 +133,7 @@ module render_tires(crend, toPrint)
 {
     if (!toPrint) {
         color([0.4,0.4,0.4,1]) {
-            move([108,64-35,-6]) tire();
+            move([107,64-35,-6]) tire();
             xflip() move([107,64-35,-6]) tire();
         }
     }

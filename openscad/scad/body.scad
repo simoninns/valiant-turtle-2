@@ -213,7 +213,7 @@ module head_clearance()
 module wheel_cutout()
 {
     move([+88,25.75,-4]) cuboid([62,58.5,18]);
-    move([+89,53.5,-4]) cuboid([49,11,18], chamfer=4);
+    move([+89,53.5,-4]) cuboid([49+2,11,18], chamfer=4);
 
     // Back of motor
     move([51.5,29,-6]) cuboid([13,44,50]);
@@ -226,8 +226,17 @@ module wheel_cutout_holes()
         move([116.5 - 2.5,-7.5,-7]) xrot(180) cyl(h=8,d=3.5);
 
         // Back
-        move([59.5 + 2.5,59,-7]) xrot(180) cyl(h=8,d=3.5);
-        move([116.5 - 2.5,59,-7]) xrot(180) cyl(h=8,d=3.5);   
+        move([59.5 + 2.5,62,-7]) xrot(180) cyl(h=8,d=3.5);
+        move([116.5 - 2.5,62,-7]) xrot(180) cyl(h=8,d=3.5);   
+    }
+
+    move([0,0,9 - 1.5]) {
+        move([59.5 + 2.5,-7.5,-7]) xrot(180) cyl(h=4,d=7);
+        move([116.5 - 2.5,-7.5,-7]) xrot(180) cyl(h=4,d=7);
+
+        // Back
+        move([59.5 + 2.5,62,-7]) xrot(180) cyl(h=4,d=7);
+        move([116.5 - 2.5,62,-7]) xrot(180) cyl(h=4,d=7);   
     }
 }
 

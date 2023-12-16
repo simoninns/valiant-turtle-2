@@ -188,8 +188,8 @@ module motor_bay_shape2()
                 move([112-9,-7,-7]) zrot(45) cuboid([20,9,12]);
             }
             difference() {
-                move([112,60.5,-7]) cuboid([20,10,10]);
-                move([112-9,59,-7]) zrot(-45) cuboid([20,9,12]);
+                move([112,62,-7]) cuboid([20,7.5,10]);
+                move([112-9,60,-7]) zrot(-45) cuboid([20,9,12]);
             }
         }
 
@@ -199,8 +199,8 @@ module motor_bay_shape2()
             move([116.5 - 2.5,-7.5,-7]) xrot(180) cyl(h=8,d=5);
 
             // Back
-            move([59.5 + 2.5,59,-7]) xrot(180) cyl(h=8,d=5);
-            move([116.5 - 2.5,59,-7]) xrot(180) cyl(h=8,d=5);   
+            move([59.5 + 2.5,62,-7]) xrot(180) cyl(h=8,d=5);
+            move([116.5 - 2.5,62,-7]) xrot(180) cyl(h=8,d=5);   
         }
     }
 
@@ -208,8 +208,8 @@ module motor_bay_shape2()
     move([0,0,0.1]) {
         move([59.5 + 2.5,-7.5,-3]) insertM3x57();
         move([116.5 - 2.5,-7.5,-3]) insertM3x57();
-        move([59.5 + 2.5,59,-3]) insertM3x57();
-        move([116.5 - 2.5,59,-3]) insertM3x57();
+        move([59.5 + 2.5,62, -3]) insertM3x57();
+        move([116.5 - 2.5,62,-3]) insertM3x57();
     }
 
     // Platform to attach the motor mounts to
@@ -270,13 +270,13 @@ module render_motor_bay(crend, toPrint)
 
 module motor_bay_screws()
 {
-    move([0,0,7]) {
+    move([0,0,6]) {
         move([59.5 + 2.5,-7.5,-7]) m3x10_screw();
         move([116.5 - 2.5,-7.5,-7]) m3x10_screw();
 
         // Back
-        move([59.5 + 2.5,59,-7]) m3x10_screw();
-        move([116.5 - 2.5,59,-7]) m3x10_screw(); 
+        move([59.5 + 2.5,62,-7]) m3x10_screw();
+        move([116.5 - 2.5,62,-7]) m3x10_screw(); 
     }
 }
 
