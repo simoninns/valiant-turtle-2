@@ -101,8 +101,8 @@ module wheel()
             wheel_hub();
         }
 
-        // Hub
-        move([5,0,0]) yrot(-90) cyl(h=20,d=5);
+        // Hub (shaft should be 5mm, but we use 5.5 to make an easy fit)
+        move([5,0,0]) yrot(-90) cyl(h=20,d=5.5);
 
         wheel_hub_decoration();
     }
