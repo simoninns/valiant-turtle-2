@@ -47,7 +47,8 @@ use_colour = "Colour"; // [Colour, No colour]
 for_printing = "Display"; // [Display, Printing]
 
 /* [Printable Parts] */
-display_body = "Yes"; // [Yes, No]
+display_body_left = "Yes"; // [Yes, No]
+display_body_right = "Yes"; // [Yes, No]
 display_head = "Yes"; // [Yes, No]
 display_shell_top = "Yes"; // [Yes, No]
 display_shell_bottom = "Yes"; // [Yes, No]
@@ -70,7 +71,8 @@ module main() {
     crend = (use_colour == "Colour") ? true:false;
     toPrint = (for_printing == "Printing") ? true:false;
 
-    d_body = (display_body == "Yes") ? true:false;
+    d_body_left = (display_body_left == "Yes") ? true:false;
+    d_body_right = (display_body_right == "Yes") ? true:false;
     d_head = (display_head == "Yes") ? true:false;
     d_shell_top = (display_shell_top == "Yes") ? true:false;
     d_shell_bottom = (display_shell_bottom == "Yes") ? true:false;
@@ -90,7 +92,8 @@ module main() {
     d_leds = (display_leds == "Yes") ? true:false;
 
     // Render the printable parts
-    if (d_body) render_body(crend, toPrint);
+    if (d_body_left) render_body_left(crend, toPrint);
+    if (d_body_right) render_body_right(crend, toPrint);
     if (d_head) render_head(crend, toPrint);
     if (d_shell_top) render_shell_top(crend, toPrint);
     if (d_shell_bottom) render_shell_bottom(crend, toPrint);

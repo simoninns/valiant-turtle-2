@@ -27,11 +27,28 @@ use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
 include <motor_bay.scad>
+include <threaded_inserts.scad>
 
 module body_profile(loc)
 {
     move(loc) {
         move([0,0,-1.5]) cyl(h=3,d=3,chamfer2=1);
+    }
+}
+
+// Internal back profile
+module body_profile_intbk(loc)
+{
+    move(loc) {
+        move([0,0,-1.5]) cuboid([3,3,3], chamfer=1, edges=EDGE_TOP_BK);
+    }
+}
+
+// Internal front profile
+module body_profile_intfr(loc)
+{
+    move(loc) {
+        move([0,0,-1.5]) cuboid([3,3,3], chamfer=1, edges=EDGE_TOP_FR);
     }
 }
 
@@ -48,9 +65,22 @@ module body_lip_profile(loc1, loc2)
     }
 }
 
+module body_lip_profile_int(loc1, loc2)
+{
+    hull() {
+        move(loc1) {
+            move([0,0,-6.5]) cuboid([3,3,7]);
+        }
+
+        move(loc2) {
+            move([0,0,-6.5]) cuboid([3,3,7]);
+        }
+    }
+}
+
 module body_platform()
 {
-    pointA = [0, 67.5 - 4, 0];
+    pointA = [1.5, 67.5 - 4, 0];
     pointB = [53, 67.5 - 4, 0];
     pointC = [74.5, 98 - 2, 0];
     pointD = [120.5, 72.5, 0];
@@ -62,7 +92,7 @@ module body_platform()
     pointI = [120.5, -101 + 3, 0];
     pointJ = [74, -111.5 + 5, 0];
     pointK = [15, -64, 0];
-    pointL = [0, -64, 0];
+    pointL = [1.5, -64, 0];
 
     // Body top surface -----------------------------------
     // Middle of body
@@ -71,8 +101,8 @@ module body_platform()
         body_profile(pointF);
         body_profile(pointG);
         body_profile(pointK);
-        body_profile(pointL);
-        body_profile(pointA);
+        body_profile_intfr(pointL);
+        body_profile_intbk(pointA);
     }
 
     // Rear flipper
@@ -105,15 +135,73 @@ module body_platform()
     body_lip_profile(pointI, pointJ);
     body_lip_profile(pointJ, pointK);
     body_lip_profile(pointK, pointL);
+    body_lip_profile_int(pointL, pointA);
 
     // Reenforcements -------------------------------------
-    move([19,12,-6.5]) cuboid([4,100,7]);
-    move([19,-39,-6.5]) cuboid([70,4,7]);
-    move([26,-56,-6.5]) cuboid([4,31,7]);
+    //move([19,12,-6.5]) cuboid([4,100,7]); // Back
+    move([26.5,-39,-6.5]) cuboid([53,4,7]); // Front cross
+    move([26,-56,-6.5]) cuboid([4,31,7]); // Front
 
     // Wheel bay reenforcements
     move([88,68.5,-4]) cuboid([65,2,4]);
     move([88,-15.5,-4]) cuboid([66,2,4], chamfer=0.5, edges=EDGES_Z_ALL);
+}
+
+module body_joiners_left()
+{
+    difference() {
+        move([6, 44,-6]) cuboid([10,8,8]);
+        move([4, 44,-6]) xcyl(h=9,d=5);
+    }
+}
+
+module body_joiners_left_clearance()
+{
+    move([0, 44,-6]) xcyl(h=9,d=5);
+
+    // Holes for right screws
+    move([0,-33,-6]) xcyl(h=9,d=3.5);
+    move([0,10,-6]) xcyl(h=9,d=3.5);
+
+    // Additional screw head clearance against body
+    move([-9,-33,-6]) xcyl(h=12,d=8);
+    move([-9,10,-6]) xcyl(h=12,d=8);
+}
+
+module body_joiners_left_inserts()
+{
+    move([0, 44,-6]) yrot(90) insertM3x57();
+}
+
+module body_joiners_right()
+{
+    difference() {
+        move([6,-33,-6]) cuboid([10,8,8]);
+        move([4,-33,-6]) xcyl(h=8,d=5);
+    }
+
+    difference() {
+        move([6,10,-6]) cuboid([10,8,8]);
+        move([4,10,-6]) xcyl(h=8,d=5);
+    }
+}
+
+module body_joiners_right_clearance()
+{
+    move([4,-33,-6]) xcyl(h=9,d=5);
+    move([4,10,-6]) xcyl(h=9,d=5);
+
+    // Hole for left screw
+    move([4, 44,-6]) xcyl(h=9,d=3.5);
+
+    // Additional screw head clearance against body
+    move([9, 44,-6]) xcyl(h=12,d=8);
+}
+
+module body_joiners_right_inserts()
+{
+    move([0,-33,-6]) yrot(-90) insertM3x57();
+    move([0,10,-6]) yrot(-90) insertM3x57();
 }
 
 module head_clearance()
@@ -163,24 +251,38 @@ module pen_hole()
     move([0,29,20]) zcyl(h=80, d=14);
 }
 
-module pcb_mount_holes()
+module pen_hole_lip()
 {
-    move([0,0,0]) {
-        move([60,-20,0]) cyl(h=10, d=3.5);
-        move([-60,-20,0]) cyl(h=10, d=3.5);
-        move([0,52,0]) cyl(h=10, d=3.5);
+    // Lip around the pen hole
+    difference() {
+        move([0,29,-5]) zcyl(h=10, d=14+5);
+        move([0,29,20]) zcyl(h=80, d=14);
+        move([-9,29,-5]) cuboid([20,20,12]);
     }
 }
 
-module body()
+module pcb_mount_holes()
 {
+    move([0,0,0]) {
+        // Front
+        move([60,-20,0]) cyl(h=10, d=3.5);
+        move([-60,-20,0]) cyl(h=10, d=3.5);
+        
+        // Back
+        move([7,52,0]) cyl(h=10, d=3.5);
+        move([-7,52,0]) cyl(h=10, d=3.5);
+    }
+}
+
+module body_right()
+{
+    // Right side (viewed from front)
     difference() {
         union() {
             body_platform();
-            xflip() body_platform();
-
             motor_bay_side_panels();
-            xflip() motor_bay_side_panels();
+            pen_hole_lip();
+            body_joiners_right();
         }
 
         head_clearance();
@@ -191,16 +293,55 @@ module body()
         head_mounts();
         pen_hole();
         pcb_mount_holes();
+
+        body_joiners_right_clearance();
     }
+    body_joiners_right_inserts();
 }
 
-module render_body(crend, toPrint)
+module body_left()
+{
+    // Left side (viewed from front)
+    difference() {
+        union() xflip() {
+            body_platform();
+            motor_bay_side_panels();
+            pen_hole_lip();
+            body_joiners_left();
+        }
+
+        head_clearance();
+        wheel_cutout();
+        wheel_cutout_holes();
+        xflip() wheel_cutout();
+        shell_mounts();
+        head_mounts();
+        pen_hole();
+        pcb_mount_holes();
+
+        body_joiners_left_clearance();
+    }
+    body_joiners_left_inserts();
+}
+
+module render_body_right(crend, toPrint)
 {
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) {
-            body();
+            body_right();
         }
     } else {
-        xrot(180) body();
+        xrot(180) body_right();
+    }
+}
+
+module render_body_left(crend, toPrint)
+{
+    if (!toPrint) {
+        color([0.9,0.9,0.6,1]) {
+            body_left();
+        }
+    } else {
+        xrot(180) body_left();
     }
 }
