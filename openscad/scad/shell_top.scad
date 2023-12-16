@@ -62,13 +62,41 @@ module shellTop()
     }
 }
 
+module joinerLine()
+{
+    hull() {
+        zrot(360/10) move([0,70,36.75]) xrot(55.5) {
+            zrot((360/5) * 0) move([0,(103/2),0]) staggered_sphere(d=2, $fn=16);
+            zrot((360/5) * 1) move([0,(123/2),0]) staggered_sphere(d=2, $fn=16);
+        }
+    }
+
+    hull() {
+        zrot(360/10) move([0,70,36.75]) xrot(55.5) {
+            zrot((360/5) * 0) move([0,(103/2),0]) staggered_sphere(d=2, $fn=16);
+            zrot((360/5) * 4) move([0,(123/2),0]) staggered_sphere(d=2, $fn=16);
+        }
+    }
+}
+
+module joiner()
+{
+    move([0,1.5,104]) yrot(180) {
+        for ( i = [0:1:4]) {
+            zrot((360/5) * i) joinerLine();
+        }
+    }
+}
+
 module render_shell_top(crend, toPrint)
 {
     if (!toPrint) {
         color([0,0.8,0,1]) shellTop();
+        color([0,0.8,0,1]) joiner();
     } else {  
         move([0,0,106]) xrot(180) {
             shellTop();
+            joiner();
         }
     }
 }
