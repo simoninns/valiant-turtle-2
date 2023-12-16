@@ -28,7 +28,7 @@ use <BOSL/shapes.scad>
 
 include <threaded_inserts.scad>
 
-module pcb_mount()
+module pcb_mount_front()
 {
     difference() {
         cyl(h=50, d=8, $fn=6);
@@ -42,12 +42,41 @@ module pcb_mount()
     move([0,0,-25]) xrot(180) insertM3x57();
 }
 
-module pcb_mounts()
+module pcb_mount_back()
+{
+    difference() {
+        union() {
+
+            cyl(h=50, d=8, $fn=6);
+            hull() {
+            move([7,0,-19]) cyl(h=12, d=8, $fn=6);
+            move([-7,0,-19]) cyl(h=12, d=8, $fn=6);
+            }
+        }
+
+        // Threaded insert slots
+        move([0,0,21.1]) xrot(180) cyl(h=8,d=5);
+        move([7,0,-21.1]) xrot(180) cyl(h=8,d=5);
+        move([-7,0,-21.1]) xrot(180) cyl(h=8,d=5);
+    }
+
+    move([0,0,25]) insertM3x57();
+    move([7,0,-25]) xrot(180) insertM3x57();
+    move([-7,0,-25]) xrot(180) insertM3x57();
+}
+
+module pcb_mounts_front()
 {
     move([0,0,25]) {
-        move([60,-20,0]) pcb_mount();
-        move([-60,-20,0]) pcb_mount();
-        move([0,52,0]) pcb_mount();
+        move([60,-20,0]) pcb_mount_front();
+        move([-60,-20,0]) pcb_mount_front();
+    }
+}
+
+module pcb_mounts_back()
+{
+    move([0,0,25]) {
+        move([0,52,0]) pcb_mount_back();
     }
 }
 
@@ -77,11 +106,20 @@ module render_pcb(crend, toPrint)
     }
 }
 
-module render_pcb_mounts(crend, toPrint)
+module render_pcb_mounts_front(crend, toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1]) pcb_mounts();
+        color([0.2,0.2,0.2,1]) pcb_mounts_front();
     } else {
-        xrot(90) move([0,3.5,0]) pcb_mount();
+        xrot(90) move([0,3.5,0]) pcb_mounts_front();
+    }
+}
+
+module render_pcb_mounts_back(crend, toPrint)
+{
+    if (!toPrint) {
+        color([0.2,0.2,0.2,1]) pcb_mounts_back();
+    } else {
+        xrot(90) move([0,3.5,0]) pcb_mounts_back();
     }
 }

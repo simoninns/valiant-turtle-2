@@ -55,7 +55,8 @@ display_shell_bottom = "Yes"; // [Yes, No]
 display_motor_bay = "Yes"; // [Yes, No]
 display_motor_mounts = "Yes"; // [Yes, No]
 display_wheels = "Yes"; // [Yes, No]
-display_pcb_mounts = "Yes"; // [Yes, No]
+display_pcb_mounts_front = "Yes"; // [Yes, No]
+display_pcb_mounts_back = "Yes"; // [Yes, No]
 display_head_cover = "Yes"; // [Yes, No]
 
 /* [Non-Printable Parts] */
@@ -79,7 +80,8 @@ module main() {
     d_motor_bay = (display_motor_bay == "Yes") ? true:false;
     d_motor_mounts = (display_motor_mounts == "Yes") ? true:false;
     d_wheels = (display_wheels == "Yes") ? true:false;
-    d_pcb_mounts = (display_pcb_mounts == "Yes") ? true:false;
+    d_pcb_mounts_front = (display_pcb_mounts_front == "Yes") ? true:false;
+    d_pcb_mounts_back = (display_pcb_mounts_back == "Yes") ? true:false;
     d_head_cover = (display_head_cover == "Yes") ? true:false;
 
     // Non-printable parts
@@ -100,7 +102,8 @@ module main() {
     if (d_motor_bay) render_motor_bay(crend, toPrint);
     if (d_motor_mounts) render_motor_mounts(crend, toPrint);
     if (d_wheels) render_wheels(crend, toPrint);
-    if (d_pcb_mounts) render_pcb_mounts(crend, toPrint);
+    if (d_pcb_mounts_front) render_pcb_mounts_front(crend, toPrint);
+    if (d_pcb_mounts_back) render_pcb_mounts_back(crend, toPrint);
     if (d_head_cover) render_head_cover(crend, toPrint);
 
     // Render the non-printable parts
