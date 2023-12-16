@@ -70,6 +70,8 @@ display_leds = "No"; // [Yes, No]
 
 /* [Screws] */
 display_motor_mounts_screws = "Yes"; // [Yes, No]
+display_body_left_screws = "Yes"; // [Yes, No]
+display_body_right_screws = "Yes"; // [Yes, No]
 
 module main() {
     crend = (use_colour == "Colour") ? true:false;
@@ -98,6 +100,8 @@ module main() {
 
     // Screws
     d_motor_mounts_screws = (display_motor_mounts_screws == "Yes") ? true:false;
+    d_body_left_screws = (display_body_left_screws == "Yes") ? true:false;
+    d_body_right_screws = (display_body_right_screws == "Yes") ? true:false;
 
     // Render the printable parts
     if (d_body_left) render_body_left(crend, toPrint);
@@ -123,6 +127,8 @@ module main() {
 
     // Render screws
     if (d_motor_mounts_screws) render_motor_mounts_screws(crend, toPrint);
+    if (d_body_left_screws) render_body_left_screws(crend, toPrint);
+    if (d_body_right_screws) render_body_right_screws(crend, toPrint);
 }
 
 main();

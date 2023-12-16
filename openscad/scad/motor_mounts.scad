@@ -28,6 +28,8 @@ use <BOSL/shapes.scad>
 use <BOSL/nema_steppers.scad>
 use <BOSL/metric_screws.scad>
 
+include <threaded_inserts.scad>
+
 module nema17_motor_small()
 {
     // Render the motor with the shaft pointing right and the cable to the back
@@ -163,16 +165,16 @@ module render_rotational_axis(crend, toPrint)
 module motor_mounts_screws()
 {
     // Motors require M3x10mm screws
-        move([101 - 1,13.5,9.5]) yrot(90) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
-        move([101 - 1,13.5+31,9.5]) yrot(90) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
-        move([101 - 1,13.5,-21.5]) yrot(90) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
-        move([101 - 1,13.5+31,-21.5]) yrot(90) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+    move([101 - 1,13.5,9.5]) yrot(90) m3x10_screw();
+    move([101 - 1,13.5+31,9.5]) yrot(90) m3x10_screw();
+    move([101 - 1,13.5,-21.5]) yrot(90) m3x10_screw();
+    move([101 - 1,13.5+31,-21.5]) yrot(90) m3x10_screw();
 
-        // Body attachment requires M3x10mm screws
-        move([86,3,-9]) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
-        move([65,3,-9]) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
-        move([86,55,-9]) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
-        move([72,55,-9]) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+    // Body attachment requires M3x10mm screws
+    move([86,3,-9]) m3x10_screw();
+    move([65,3,-9]) m3x10_screw();
+    move([86,55,-9]) m3x10_screw();
+    move([72,55,-9]) m3x10_screw();
 }
 
 module render_motor_mounts_screws(crend, toPrint)

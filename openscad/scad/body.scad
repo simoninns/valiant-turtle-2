@@ -164,8 +164,8 @@ module body_joiners_left_clearance()
     move([0,10,-6]) xcyl(h=9,d=3.5);
 
     // Additional screw head clearance against body
-    move([-9,-33,-6]) xcyl(h=12,d=8);
-    move([-9,10,-6]) xcyl(h=12,d=8);
+    move([-9,-33,-6]) xcyl(h=12,d=7);
+    move([-9,10,-6]) xcyl(h=12,d=7);
 }
 
 module body_joiners_left_inserts()
@@ -195,7 +195,7 @@ module body_joiners_right_clearance()
     move([4, 44,-6]) xcyl(h=9,d=3.5);
 
     // Additional screw head clearance against body
-    move([9, 44,-6]) xcyl(h=12,d=8);
+    move([9, 44,-6]) xcyl(h=12,d=7);
 }
 
 module body_joiners_right_inserts()
@@ -288,7 +288,6 @@ module body_right()
         head_clearance();
         wheel_cutout();
         wheel_cutout_holes();
-        xflip() wheel_cutout();
         shell_mounts();
         head_mounts();
         pen_hole();
@@ -312,7 +311,7 @@ module body_left()
 
         head_clearance();
         wheel_cutout();
-        wheel_cutout_holes();
+        xflip() wheel_cutout_holes();
         xflip() wheel_cutout();
         shell_mounts();
         head_mounts();
@@ -343,5 +342,30 @@ module render_body_left(crend, toPrint)
         }
     } else {
         xrot(180) body_left();
+    }
+}
+
+module body_left_screws()
+{
+    move([-3,-33,-6]) yrot(-90) m3x10_screw();
+    move([-3,10,-6]) yrot(-90) m3x10_screw();
+}
+
+module render_body_left_screws(crend, toPrint)
+{
+    if (!toPrint) {
+        body_left_screws();
+    }
+}
+
+module body_right_screws()
+{
+    move([3,44,-6]) yrot(90) m3x10_screw();
+}
+
+module render_body_right_screws(crend, toPrint)
+{
+    if (!toPrint) {
+        body_right_screws();
     }
 }

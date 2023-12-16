@@ -47,3 +47,9 @@ module insertM3x57_th()
         move([0,0,-3.1 - 4]) cyl(h=2,d=3.25);
     }
 }
+
+// M3x10mm Philips head screw
+module m3x10_screw()
+{
+    metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+}
