@@ -68,6 +68,9 @@ display_tires = "No"; // [Yes, No]
 display_pcb = "No"; // [Yes, No]
 display_leds = "No"; // [Yes, No]
 
+/* [Screws] */
+display_motor_mounts_screws = "Yes"; // [Yes, No]
+
 module main() {
     crend = (use_colour == "Colour") ? true:false;
     toPrint = (for_printing == "Printing") ? true:false;
@@ -93,6 +96,9 @@ module main() {
     d_pcb = (display_pcb == "Yes") ? true:false;
     d_leds = (display_leds == "Yes") ? true:false;
 
+    // Screws
+    d_motor_mounts_screws = (display_motor_mounts_screws == "Yes") ? true:false;
+
     // Render the printable parts
     if (d_body_left) render_body_left(crend, toPrint);
     if (d_body_right) render_body_right(crend, toPrint);
@@ -114,6 +120,9 @@ module main() {
     if (d_tires) render_tires(crend, toPrint);
     if (d_pcb) render_pcb(crend, toPrint);
     if (d_leds) render_leds(crend, toPrint);
+
+    // Render screws
+    if (d_motor_mounts_screws) render_motor_mounts_screws(crend, toPrint);
 }
 
 main();

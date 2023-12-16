@@ -26,6 +26,7 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 use <BOSL/nema_steppers.scad>
+use <BOSL/metric_screws.scad>
 
 module nema17_motor_small()
 {
@@ -72,10 +73,10 @@ module nema17_mount()
             rotate([0,-90,0]) nema17_mount_holes(depth=8, l=0, $fn=60);
 
             // Recess the mount holes
-            move([5.5 - 3,31/2,31/2]) xcyl(h=4,d=6);
-            move([5.5 - 3,31/2,-31/2]) xcyl(h=4,d=6);
-            move([5.5 - 3,-31/2,31/2]) xcyl(h=4,d=6);
-            move([5.5 - 3,-31/2,-31/2]) xcyl(h=4,d=6);
+            move([5.5 - 1,31/2,31/2]) xcyl(h=4,d=7);
+            move([5.5 - 1,31/2,-31/2]) xcyl(h=4,d=7);
+            move([5.5 - 1,-31/2,31/2]) xcyl(h=4,d=7);
+            move([5.5 - 1,-31/2,-31/2]) xcyl(h=4,d=7);
 
             // Chamfer the edge around the shaft
             move([7,0,0]) rotate([0,-90,0]) cyl(h=10,d=25, chamfer2=2, $fn=60);
@@ -156,5 +157,28 @@ module render_rotational_axis(crend, toPrint)
 
         // Axis for pen
         move([0,29,40]) zcyl(h=160, d=2);
+    }
+}
+
+module motor_mounts_screws()
+{
+    // Motors require M3x10mm screws
+        move([101 - 1,13.5,9.5]) yrot(90) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+        move([101 - 1,13.5+31,9.5]) yrot(90) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+        move([101 - 1,13.5,-21.5]) yrot(90) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+        move([101 - 1,13.5+31,-21.5]) yrot(90) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+
+        // Body attachment requires M3x10mm screws
+        move([86,3,-9]) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+        move([65,3,-9]) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+        move([86,55,-9]) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+        move([72,55,-9]) metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
+}
+
+module render_motor_mounts_screws(crend, toPrint)
+{
+    if (!toPrint) {
+        motor_mounts_screws();
+        xflip() motor_mounts_screws();
     }
 }
