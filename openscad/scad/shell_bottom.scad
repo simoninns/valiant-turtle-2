@@ -48,6 +48,38 @@ module irrPentagonBottom(pos)
     }
 }
 
+module irrPentagonBottom_topedge(pos)
+{
+    zrot((360/5) * pos) {
+        move([0,69,0]) xrot(54) { // 36.25
+            hull() {
+                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 1) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
+            }
+
+            hull() {
+                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 4) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
+            }
+        }
+    }
+}
+
+module irrPentagonBottom2(pos)
+{
+    zrot((360/5) * pos) {
+        move([0,69,0]) xrot(54) { // 36.25
+            hull() {
+                zrot((360/5) * 0) move([0,(104/2)+4,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 1) move([0,(122/2)+4,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 2) move([0,(107/2)+4,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 3) move([0,(107/2)+4,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 4) move([0,(122/2)+4,0]) staggered_sphere(d=2, $fn=16);
+            }
+        }
+    }
+}
+
 // Cut a slot in the bottom shell front for the body's head
 module headCutout()
 {
@@ -71,44 +103,46 @@ module headCutout()
 module wheelArchBase()
 {
     // Wheel arch base is 3mm wide (rest of shell is 2mm)
-    difference() {
-        hull() {
-            move([71,-15,-7.5]) zcyl(h=3,d=3,$fn=16);
-            move([120.5,-15,-7.5]) zcyl(h=3,d=3,$fn=16);
-        }
-
-        // Trim the end to make it flush with the shell
-        move([65,-15,-7.5]) yrot(40) cuboid([10,10,20]);
+    hull() {
+        move([71,-15,-7.5]) zcyl(h=3,d=3,$fn=16);
+        move([120.5,-15,-7.5]) zcyl(h=3,d=3,$fn=16);
     }
 
     hull() {
-        move([46,63,-7.5]) zcyl(h=3,d=3,$fn=16);
-        move([120.5,63,-7.5]) zcyl(h=3,d=3,$fn=16);
+        move([46.5,62.5,-7.5]) zcyl(h=3,d=3,$fn=16);
+        move([120.5,62.5,-7.5]) zcyl(h=3,d=3,$fn=16);
     }
 
     hull() {
         move([120.5,-15,-7.5]) zcyl(h=3,d=3,$fn=16);
-        move([120.5,63,-7.5]) zcyl(h=3,d=3,$fn=16);
+        move([120.5,62.5,-7.5]) zcyl(h=3,d=3,$fn=16);
     }
 }
 
 module wheelArch()
 {
-    // Plot the side of the shell and cutout the wheel arch space
     difference() {
         union() {
-            irrPentagonBottom(4);
-            wheelArchBase();
+            // Plot the side of the shell and cutout the wheel arch space
+            difference() {
+                union() {
+                    irrPentagonBottom(4);
+                    wheelArchBase();
+                }
+
+                // Cut space for the wheel arch
+                move([80-2,23.75,20]) cuboid([82,74.5,60]);
+            }
+            
+            // Add the top edge of the pentagon back in
+            irrPentagonBottom_topedge(4);
+
+            // Render the wheelcover
+            wheelCover();
         }
 
-        // Cut space for the wheel arch
-        move([80,23.5,20]) cuboid([78 - 0,80 - 6,60]);
-    }
-
-    // Render the wheelcover and use the pentagon to clip the inside edge
-    difference() {
-        wheelCover();
-        move([-1,0,2]) irrPentagonBottom(4);
+        // Smooth the inside of the wheel arch
+        move([-1,0,2]) irrPentagonBottom2(4);
     }
 }
 
@@ -118,16 +152,16 @@ module wheelCover()
         // Point cloud for the wheel arch (see doc/wheel_arch_points.jpg)
         pointA = [73.5,-38.5,2];
         pointB = [120.5,-38.5,2];
-        pointC = [120.5,39.5,2];
+        pointC = [120.5,39,2];
         // pointD unused
         pointE = [120.5,7.5,22.5];
         pointF = [94,-38.5,13.5];
         pointG = [94,7.5,33.5];
-        pointH = [94,-38.5,28.75];
+        pointH = [94,-38.5,29];
         pointI = [94,7.5,49.5];
-        pointJ = [70.5,39.5,31.5];
-        pointK = [70.5,39.5,23];
-        pointL = [48,39.5,2];
+        pointJ = [70.5,39.0,31.5];
+        pointK = [70.5,39.0,23];
+        pointL = [48,39.0,2];
 
         // ABF (note: same plane as AFH)
         hull() {
