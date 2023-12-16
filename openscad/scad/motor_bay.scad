@@ -267,3 +267,23 @@ module render_motor_bay(crend, toPrint)
         xflip() move([10,0,-57]) yrot(-90) motor_bay();
     }
 }
+
+module motor_bay_screws()
+{
+    move([0,0,7]) {
+        move([59.5 + 2.5,-7.5,-7]) m3x10_screw();
+        move([116.5 - 2.5,-7.5,-7]) m3x10_screw();
+
+        // Back
+        move([59.5 + 2.5,59,-7]) m3x10_screw();
+        move([116.5 - 2.5,59,-7]) m3x10_screw(); 
+    }
+}
+
+module render_motor_bay_screws(crend, toPrint)
+{
+    if (!toPrint) {
+        motor_bay_screws();
+        xflip() motor_bay_screws();
+    }
+}
