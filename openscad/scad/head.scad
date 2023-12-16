@@ -131,8 +131,6 @@ module caster_ball_top()
         }
         move([0,0,-4.5]) ball_bearing(20.5);
     }
-
-    
 }
 
 module half_head()
@@ -190,5 +188,18 @@ module render_head(crend, toPrint)
                 caster_ball_top();
             }
         }
+    }
+}
+
+module head_screws()
+{
+    move([12,-58,-5]) xrot(180) m3x10_screw();
+    move([-12,-58,-5]) xrot(180) m3x10_screw();
+}
+
+module render_head_screws(crend, toPrint)
+{
+    if (!toPrint) {
+        head_screws();
     }
 }
