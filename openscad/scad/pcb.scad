@@ -46,11 +46,12 @@ module pcb_mount_back()
 {
     difference() {
         union() {
-
             cyl(h=50, d=8, $fn=6);
+            
             hull() {
-            move([7,0,-19]) cyl(h=12, d=8, $fn=6);
-            move([-7,0,-19]) cyl(h=12, d=8, $fn=6);
+                move([0,0,-17]) cyl(h=16, d=8, $fn=6);
+                move([7,0,-20]) cyl(h=10, d=8, $fn=6);
+                move([-7,0,-20]) cyl(h=10, d=8, $fn=6);
             }
         }
 
@@ -111,7 +112,7 @@ module render_pcb_mounts_front(crend, toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) pcb_mounts_front();
     } else {
-        xrot(90) move([0,3.5,0]) pcb_mounts_front();
+        xrot(90) move([0,3.5,0]) pcb_mount_front();
     }
 }
 
@@ -120,6 +121,6 @@ module render_pcb_mounts_back(crend, toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) pcb_mounts_back();
     } else {
-        xrot(90) move([0,3.5,0]) pcb_mounts_back();
+        xrot(90) move([0,3.5,0]) pcb_mount_back();
     }
 }
