@@ -126,6 +126,9 @@ module render_turning_circle(crend, toPrint)
         // Render the turning circle
         move([0,64-35,-34]) tube(h=1,od=223.5, id=221.5-5, $fn=100);
         move([0,64-35,-34]) tube(h=1,od=280, id=280-3);
+
+        // Show the rotational axis across the pen
+        move([0,64-35,-34]) cuboid([300,1,1]);
     }
 }
 

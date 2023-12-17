@@ -140,7 +140,7 @@ module body_platform()
     // Reenforcements -------------------------------------
     //move([19,12,-6.5]) cuboid([4,100,7]); // Back
     move([26.5,-39,-6.5]) cuboid([53,4,7]); // Front cross
-    move([26,-56,-6.5]) cuboid([4,31,7]); // Front
+    move([26,-56,-6.5]) cuboid([4,33.5,7]); // Front
 
     // Wheel bay reenforcements
     move([88,68.5,-4]) cuboid([65,2,4]);
@@ -272,17 +272,17 @@ module head_mounts()
 module pen_hole()
 {
     // Hole for pen
-    move([0,29,20]) zcyl(h=80, d=14);
-    move([0,29,3.5]) cyl(h=10, d=14+4, chamfer1=2);
+    move([0,29,20]) zcyl(h=80, d=16);
+    move([0,29,3.5]) cyl(h=10, d=16+4, chamfer1=2);
 }
 
 module pen_hole_lip()
 {
     // Lip around the pen hole
     difference() {
-        move([0,29,-5]) zcyl(h=10, d=14+5);
-        move([0,29,20]) zcyl(h=80, d=14);
-        move([-9,29,-5]) cuboid([20,20,12]);
+        move([0,29,-5]) zcyl(h=10, d=16+5);
+        move([0,29,20]) zcyl(h=80, d=16);
+        move([-9,29,-5]) cuboid([22,22,12]);
     }
 }
 

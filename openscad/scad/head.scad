@@ -164,6 +164,13 @@ module head()
     xflip() half_head();
 }
 
+module display_ball_bearing()
+{
+    move([0,-144 + 35,3.5 - 22]) {
+        move([0,0,-4.5]) color([0.7,0.7,0.7,1]) ball_bearing(20);
+    }
+}
+
 module render_head(crend, toPrint)
 {
     if (!toPrint) {
@@ -175,10 +182,6 @@ module render_head(crend, toPrint)
                 caster_ball_top();
             }
         }
-
-        move([0,-144 + 35,3.5 - 22]) {
-            move([0,0,-4.5]) color([0.7,0.7,0.7,1]) ball_bearing(20);
-        }
     } else {
         xrot(180) move([0,90,-20]) {
             head();
@@ -188,6 +191,13 @@ module render_head(crend, toPrint)
                 caster_ball_top();
             }
         }
+    }
+}
+
+module render_ball_bearing(crend, toPrint)
+{
+    if (!toPrint) {
+        display_ball_bearing();
     }
 }
 

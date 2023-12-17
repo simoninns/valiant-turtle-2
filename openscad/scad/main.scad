@@ -37,6 +37,8 @@ include <wheels.scad>
 include <pcb.scad>
 include <leds.scad>
 include <head_cover.scad>
+include <pen_holder_base.scad>
+include <pen_holder_top.scad>
 
 // Rendering resolution
 //
@@ -58,6 +60,10 @@ display_wheels = "Yes"; // [Yes, No]
 display_pcb_mounts_front = "Yes"; // [Yes, No]
 display_pcb_mounts_back = "Yes"; // [Yes, No]
 display_head_cover = "Yes"; // [Yes, No]
+display_pen_holder_base = "Yes"; // [Yes, No]
+display_pen_holder_top_small = "Yes"; // [Yes, No]
+display_pen_holder_top_medium = "Yes"; // [Yes, No]
+display_pen_holder_top_large = "Yes"; // [Yes, No]
 
 /* [Non-Printable Parts] */
 display_motor_small = "No"; // [Yes, No]
@@ -67,6 +73,8 @@ display_turning_circle = "No"; // [Yes, No]
 display_tires = "No"; // [Yes, No]
 display_pcb = "No"; // [Yes, No]
 display_leds = "No"; // [Yes, No]
+display_ball_bearing = "No"; // [Yes, No]
+display_pen =  "No"; // [Yes, No]
 
 /* [Screws] */
 display_motor_mounts_screws = "Yes"; // [Yes, No]
@@ -90,6 +98,10 @@ module main() {
     d_pcb_mounts_front = (display_pcb_mounts_front == "Yes") ? true:false;
     d_pcb_mounts_back = (display_pcb_mounts_back == "Yes") ? true:false;
     d_head_cover = (display_head_cover == "Yes") ? true:false;
+    d_pen_holder_base = (display_pen_holder_base == "Yes") ? true:false;
+    d_pen_holder_top_small = (display_pen_holder_top_small == "Yes") ? true:false;
+    d_pen_holder_top_medium = (display_pen_holder_top_medium == "Yes") ? true:false;
+    d_pen_holder_top_large = (display_pen_holder_top_large == "Yes") ? true:false;
 
     // Non-printable parts
     d_motor_small = (display_motor_small == "Yes") ? true:false;
@@ -99,6 +111,8 @@ module main() {
     d_tires = (display_tires == "Yes") ? true:false;
     d_pcb = (display_pcb == "Yes") ? true:false;
     d_leds = (display_leds == "Yes") ? true:false;
+    d_ball_bearing = (display_ball_bearing == "Yes") ? true:false;
+    d_pen = (display_pen == "Yes") ? true:false;
 
     // Screws
     d_motor_mounts_screws = (display_motor_mounts_screws == "Yes") ? true:false;
@@ -119,6 +133,10 @@ module main() {
     if (d_pcb_mounts_front) render_pcb_mounts_front(crend, toPrint);
     if (d_pcb_mounts_back) render_pcb_mounts_back(crend, toPrint);
     if (d_head_cover) render_head_cover(crend, toPrint);
+    if (d_pen_holder_base) render_pen_holder_base(crend, toPrint);
+    if (d_pen_holder_top_small) render_pen_holder_top_small(crend, toPrint);
+    if (d_pen_holder_top_medium) render_pen_holder_top_medium(crend, toPrint);
+    if (d_pen_holder_top_large) render_pen_holder_top_large(crend, toPrint);
 
     // Render the non-printable parts
     if (d_motor_small) render_motor_small(crend, toPrint);
@@ -128,6 +146,8 @@ module main() {
     if (d_tires) render_tires(crend, toPrint);
     if (d_pcb) render_pcb(crend, toPrint);
     if (d_leds) render_leds(crend, toPrint);
+    if (d_ball_bearing) render_ball_bearing(crend, toPrint);
+    if (d_pen) render_pen(crend, toPrint);
 
     // Render screws
     if (d_motor_mounts_screws) render_motor_mounts_screws(crend, toPrint);
