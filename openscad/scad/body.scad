@@ -88,9 +88,9 @@ module body_platform()
     pointF = [72.5,-24.5,0];
 
     pointG = [52.5, -39, 0];
-    pointH = [120.5, -71.5 + 3, 0];
-    pointI = [120.5, -101 + 3, 0];
-    pointJ = [74, -111.5 + 5, 0];
+    pointH = [120.5, -71.5, 0];
+    pointI = [120.5, -101, 0];
+    pointJ = [73, -111.5, 0];
     pointK = [15, -64, 0];
     pointL = [1.5, -64, 0];
 
