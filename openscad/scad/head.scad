@@ -139,7 +139,7 @@ module half_head()
         head_shape();
 
         // Eye socket (8mm for LED with grommet)
-        move([-1,-122,3]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=7);
+        move([-1,-120,2]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=7);
 
         // Back access
         move([0,-50,8]) cuboid([16,20,18]);

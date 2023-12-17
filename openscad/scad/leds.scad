@@ -57,7 +57,7 @@ module render_5mm_led_holder()
 
 module led_and_holder_5mm()
 {
-    move([-1,-122,3]) zrot(-45) yrot(-22) move([15,0,0]) {
+    move([-1,-120,2]) zrot(-45) yrot(-22) move([16.5,0,0]) {
         render_5mm_led();
         render_5mm_led_holder();
     }
@@ -65,8 +65,6 @@ module led_and_holder_5mm()
 
 module render_leds(crend, toPrint)
 {
-    // move([-1,-122,3]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=8);
-
     if(!toPrint) {
         led_and_holder_5mm();
         xflip() led_and_holder_5mm();
