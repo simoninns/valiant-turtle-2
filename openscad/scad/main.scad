@@ -39,6 +39,7 @@ include <leds.scad>
 include <head_cover.scad>
 include <pen_holder_base.scad>
 include <pen_holder_top.scad>
+include <servo.scad>
 
 // Rendering resolution
 //
@@ -74,7 +75,8 @@ display_tires = "No"; // [Yes, No]
 display_pcb = "No"; // [Yes, No]
 display_leds = "No"; // [Yes, No]
 display_ball_bearing = "No"; // [Yes, No]
-display_pen =  "No"; // [Yes, No]
+display_pen = "No"; // [Yes, No]
+display_servo = "No"; // [Yes, No]
 
 /* [Screws] */
 display_motor_mounts_screws = "Yes"; // [Yes, No]
@@ -113,6 +115,7 @@ module main() {
     d_leds = (display_leds == "Yes") ? true:false;
     d_ball_bearing = (display_ball_bearing == "Yes") ? true:false;
     d_pen = (display_pen == "Yes") ? true:false;
+    d_servo = (display_servo == "Yes") ? true:false;
 
     // Screws
     d_motor_mounts_screws = (display_motor_mounts_screws == "Yes") ? true:false;
@@ -148,6 +151,7 @@ module main() {
     if (d_leds) render_leds(crend, toPrint);
     if (d_ball_bearing) render_ball_bearing(crend, toPrint);
     if (d_pen) render_pen(crend, toPrint);
+    if (d_servo) render_9g_servo(crend, toPrint);
 
     // Render screws
     if (d_motor_mounts_screws) render_motor_mounts_screws(crend, toPrint);
