@@ -299,6 +299,25 @@ module pcb_mount_holes()
     }
 }
 
+module pen_servo_mount_holes()
+{
+    // M3 screw holes
+    move([38.5,53,-3.75]) cyl(h=8,d=5);
+    move([38.5,23,-3.75]) cyl(h=8,d=5);
+}
+
+module pen_servo_mount_material()
+{
+    move([38.5,53,-5]) cyl(h=10,d=8);
+    move([38.5,23,-5]) cyl(h=10,d=8);
+}
+
+module pen_servo_mount_inserts()
+{
+    move([38.5,53,0]) insertM3x57_th();
+    move([38.5,23,0]) insertM3x57_th();
+}
+
 module body_right()
 {
     // Right side (viewed from front)
@@ -309,6 +328,7 @@ module body_right()
             pen_hole_lip();
             body_joiners_right();
             wheel_cutout_supports();
+            pen_servo_mount_material();
         }
 
         head_clearance();
@@ -318,10 +338,13 @@ module body_right()
         head_mounts();
         pen_hole();
         pcb_mount_holes();
+        pen_servo_mount_holes();
 
         body_joiners_right_clearance();
     }
+
     body_joiners_right_inserts();
+    pen_servo_mount_inserts();
 }
 
 module body_left()

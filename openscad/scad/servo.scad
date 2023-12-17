@@ -74,7 +74,9 @@ module nineg_servo()
 module render_9g_servo(crend, toPrint)
 {
     if (!toPrint) {
-        nineg_servo();
-        nineg_servo_arm();
+        move([32,38,10]) xrot(-90) yrot(-90) {
+            nineg_servo();
+            nineg_servo_arm();
+        }
     }
 }

@@ -40,6 +40,7 @@ include <head_cover.scad>
 include <pen_holder_base.scad>
 include <pen_holder_top.scad>
 include <servo.scad>
+include <servo_holder.scad>
 
 // Rendering resolution
 //
@@ -65,6 +66,7 @@ display_pen_holder_base = "Yes"; // [Yes, No]
 display_pen_holder_top_small = "Yes"; // [Yes, No]
 display_pen_holder_top_medium = "Yes"; // [Yes, No]
 display_pen_holder_top_large = "Yes"; // [Yes, No]
+display_servo_holder = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
 display_motor_small = "No"; // [Yes, No]
@@ -79,11 +81,12 @@ display_pen = "No"; // [Yes, No]
 display_servo = "No"; // [Yes, No]
 
 /* [Screws] */
-display_motor_mounts_screws = "Yes"; // [Yes, No]
-display_body_left_screws = "Yes"; // [Yes, No]
-display_body_right_screws = "Yes"; // [Yes, No]
-display_motor_bay_screws = "Yes"; // [Yes, No]
-display_head_screws = "Yes"; // [Yes, No]
+display_motor_mounts_screws = "No"; // [Yes, No]
+display_body_left_screws = "No"; // [Yes, No]
+display_body_right_screws = "No"; // [Yes, No]
+display_motor_bay_screws = "No"; // [Yes, No]
+display_head_screws = "No"; // [Yes, No]
+display_servo_holder_screws = "No"; // [Yes, No]
 
 module main() {
     crend = (use_colour == "Colour") ? true:false;
@@ -104,6 +107,7 @@ module main() {
     d_pen_holder_top_small = (display_pen_holder_top_small == "Yes") ? true:false;
     d_pen_holder_top_medium = (display_pen_holder_top_medium == "Yes") ? true:false;
     d_pen_holder_top_large = (display_pen_holder_top_large == "Yes") ? true:false;
+    d_servo_holder = (display_servo_holder == "Yes") ? true:false;
 
     // Non-printable parts
     d_motor_small = (display_motor_small == "Yes") ? true:false;
@@ -123,6 +127,7 @@ module main() {
     d_body_right_screws = (display_body_right_screws == "Yes") ? true:false;
     d_motor_bay_screws = (display_motor_bay_screws == "Yes") ? true:false;
     d_head_screws = (display_head_screws == "Yes") ? true:false;
+    d_servo_holder_screws = (display_servo_holder_screws == "Yes") ? true:false;
 
     // Render the printable parts
     if (d_body_left) render_body_left(crend, toPrint);
@@ -140,6 +145,7 @@ module main() {
     if (d_pen_holder_top_small) render_pen_holder_top_small(crend, toPrint);
     if (d_pen_holder_top_medium) render_pen_holder_top_medium(crend, toPrint);
     if (d_pen_holder_top_large) render_pen_holder_top_large(crend, toPrint);
+    if (d_servo_holder) render_servo_holder(crend, toPrint);
 
     // Render the non-printable parts
     if (d_motor_small) render_motor_small(crend, toPrint);
@@ -159,6 +165,7 @@ module main() {
     if (d_body_right_screws) render_body_right_screws(crend, toPrint);
     if (d_motor_bay_screws) render_motor_bay_screws(crend, toPrint);
     if (d_head_screws) render_head_screws(crend, toPrint);
+    if (d_servo_holder_screws) render_servo_holder_screws(crend, toPrint);
 }
 
 main();

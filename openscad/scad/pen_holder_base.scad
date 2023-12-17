@@ -37,6 +37,21 @@ module holder_body()
 
     move([0,0,38]) cyl(h=8, d=15.5, center=false, chamfer=0.25);
     move([0,0,46 - 1]) cyl(h=5, d=8, center=false, chamfer=0.25); // tip
+
+    // Servo arm interface
+    difference() {
+        move([0,0,0]) cyl(h=9.5, d=29, center=false);
+
+        // Remove some material to make it look nicer
+        for(rota=[0: 360/15: 360]) { // for(variable = [start : increment : end])
+            rotate([0,0,rota]) move([11.5,0,4.75]) cyl(h=12, d=3); // Top
+        }
+    }
+
+    // Knurled top outer
+    for(rota=[0: 360/60: 360]) { // for(variable = [start : increment : end])
+        rotate([0,0,rota]) move([14.5,0,4.75]) cyl(h=9.5, d=1, chamfer2=0.25); // Top
+    }
 }
 
 module inner_profile()
@@ -75,7 +90,7 @@ module render_pen_holder_base(crend, toPrint)
 }
 
 // Render mock-up model of a fine-liner pen
-// (Based on a Faber Castell Multimark 1523 permanent)
+// (Based on a Faber Castell Multimark 1523 permanent with the eraser removed)
 module pen()
 {
     color([0.4,0.4,0.4]) move([0,29,53]) {
