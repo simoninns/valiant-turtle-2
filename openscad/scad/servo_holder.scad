@@ -54,7 +54,7 @@ module render_servo_holder(crend, toPrint)
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) servo_holder();
     } else {
-        servo_holder();
+        move([10,-40,-28]) yrot(-90) servo_holder();
     }
 }
 
