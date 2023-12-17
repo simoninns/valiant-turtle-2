@@ -207,7 +207,7 @@ module body_joiners_right_inserts()
 module head_clearance()
 {
     // Clear head attachment area
-    move([0,-70,-8.01]) cuboid([43,40,10]);
+    move([0,-70,-8.01]) cuboid([43,45,10]);
 }
 
 module wheel_cutout()
@@ -217,6 +217,9 @@ module wheel_cutout()
 
     // Back of motor
     move([51.5,29,-6]) cuboid([13,44,50]);
+
+    // Additional wheel clearance
+    move([113,51.5,-4]) cuboid([12,11,18]);
 }
 
 module wheel_cutout_holes()
@@ -231,12 +234,24 @@ module wheel_cutout_holes()
     }
 
     move([0,0,9 - 1.5]) {
-        move([59.5 + 2.5,-7.5,-7]) xrot(180) cyl(h=4,d=7);
-        move([116.5 - 2.5,-7.5,-7]) xrot(180) cyl(h=4,d=7);
+        move([59.5 + 2.5,-7.5,-8]) xrot(180) cyl(h=4,d=7);
+        move([116.5 - 2.5,-7.5,-8]) xrot(180) cyl(h=4,d=7);
 
         // Back
-        move([59.5 + 2.5,62,-7]) xrot(180) cyl(h=4,d=7);
-        move([116.5 - 2.5,62,-7]) xrot(180) cyl(h=4,d=7);   
+        move([59.5 + 2.5,62,-8]) xrot(180) cyl(h=4,d=7);
+        move([116.5 - 2.5,62,-8]) xrot(180) cyl(h=4,d=7);   
+    }
+}
+
+module wheel_cutout_supports()
+{
+    move([0,0,9 - 1.5]) {
+        move([59.5 + 2.5,-7.5,-10]) xrot(180) cyl(h=4,d=8);
+        move([116.5 - 2.5,-7.5,-10]) xrot(180) cyl(h=4,d=8);
+
+        // Back
+        move([59.5 + 2.5,62,-10]) xrot(180) cyl(h=4,d=8);
+        move([116.5 - 2.5,62,-10]) xrot(180) cyl(h=4,d=8);   
     }
 }
 
@@ -258,6 +273,7 @@ module pen_hole()
 {
     // Hole for pen
     move([0,29,20]) zcyl(h=80, d=14);
+    move([0,29,3.5]) cyl(h=10, d=14+4, chamfer1=2);
 }
 
 module pen_hole_lip()
@@ -292,6 +308,7 @@ module body_right()
             motor_bay_side_panels();
             pen_hole_lip();
             body_joiners_right();
+            wheel_cutout_supports();
         }
 
         head_clearance();
@@ -316,6 +333,7 @@ module body_left()
             motor_bay_side_panels();
             pen_hole_lip();
             body_joiners_left();
+            wheel_cutout_supports();
         }
 
         head_clearance();
@@ -339,7 +357,7 @@ module render_body_right(crend, toPrint)
             body_right();
         }
     } else {
-        xrot(180) body_right();
+        xrot(180) zrot(-90) body_right();
     }
 }
 
@@ -350,7 +368,7 @@ module render_body_left(crend, toPrint)
             body_left();
         }
     } else {
-        xrot(180) body_left();
+        xrot(180) zrot(90) body_left();
     }
 }
 

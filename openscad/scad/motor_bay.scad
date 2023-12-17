@@ -206,8 +206,6 @@ module motor_bay_shape2()
         move([100,70,-14]) xrot(-13) cuboid([90,10,18]);
     }
     
-
-
     // Add the inserts
     move([0,0,0.1]) {
         move([59.5 + 2.5,-7.5,-3]) insertM3x57_th();
@@ -248,6 +246,18 @@ module motor_platform()
     move([90-18,53 + 2,-14]) insertM3x57();
 }
 
+module body_recess()
+{
+    move([0,0,9 - 1.5]) {
+        move([59.5 + 2.5,-7.5,-10]) xrot(180) cyl(h=4.5,d=9);
+        move([116.5 - 2.5,-7.5,-10]) xrot(180) cyl(h=4.5,d=9);
+
+        // Back
+        move([59.5 + 2.5,62,-10]) xrot(180) cyl(h=4.5,d=9);
+        move([116.5 - 2.5,62,-10]) xrot(180) cyl(h=4.5,d=9);   
+    }
+}
+
 module motor_bay()
 {
     difference() {
@@ -256,7 +266,8 @@ module motor_bay()
         move([124,10,-25]) cuboid([10,120,50]);
         move([84,26,2]) cuboid([80,90,10]);
         move([84,69.5,-5]) cuboid([80,4,8]);
-    }    
+        body_recess();
+    }
 }
 
 module render_motor_bay(crend, toPrint)
@@ -275,12 +286,12 @@ module render_motor_bay(crend, toPrint)
 module motor_bay_screws()
 {
     move([0,0,6]) {
-        move([59.5 + 2.5,-7.5,-7]) m3x10_screw();
-        move([116.5 - 2.5,-7.5,-7]) m3x10_screw();
+        move([59.5 + 2.5,-7.5,-8]) m3x10_screw();
+        move([116.5 - 2.5,-7.5,-8]) m3x10_screw();
 
         // Back
-        move([59.5 + 2.5,62,-7]) m3x10_screw();
-        move([116.5 - 2.5,62,-7]) m3x10_screw(); 
+        move([59.5 + 2.5,62,-8]) m3x10_screw();
+        move([116.5 - 2.5,62,-8]) m3x10_screw(); 
     }
 }
 
