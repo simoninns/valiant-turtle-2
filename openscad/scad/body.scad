@@ -316,6 +316,16 @@ module pen_servo_mount_inserts()
 {
     move([38.5,53,0]) insertM3x57_th();
     move([38.5,23,0]) insertM3x57_th();
+    
+}
+
+module battery_strap_holes()
+{
+    move([17,-42,0]) cuboid([12,2,30]);
+    move([17,8,0]) cuboid([12,2,30]);
+
+    move([-17,-42,0]) cuboid([12,2,30]);
+    move([-17,8,0]) cuboid([12,2,30]);
 }
 
 module body_right()
@@ -339,6 +349,7 @@ module body_right()
         pen_hole();
         pcb_mount_holes();
         pen_servo_mount_holes();
+        battery_strap_holes();
 
         body_joiners_right_clearance();
     }
@@ -367,6 +378,7 @@ module body_left()
         head_mounts();
         pen_hole();
         pcb_mount_holes();
+        battery_strap_holes();
 
         body_joiners_left_clearance();
     }
