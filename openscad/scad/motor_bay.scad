@@ -146,7 +146,7 @@ module motor_bay_shape()
         move([112.5,pos + 42,-28]) cuboid([15,40,10], chamfer=1);
 
         // Additional motor clearance
-        move([74,pos + 42,-23]) cuboid([45,44,10], chamfer=0.5);
+        move([74,pos + 42,-22.75]) cuboid([45,44,10], chamfer=1);
 
         // Wheel position marker to align wheel on axel
         move([110,pos + 42,-27]) cuboid([4.5,43,2]);
@@ -188,8 +188,8 @@ module motor_bay_shape()
                 move([112-9,-7,-13]) zrot(45) cuboid([20,9,22]);
             }
             difference() {
-                move([112,62,-12]) cuboid([20,7.5,20]);
-                move([112-9,60,-13]) zrot(-45) cuboid([20,9,22]);
+                move([112,62,-12]) cuboid([20,7.5,23]);
+                move([112-9,60,-13]) zrot(-45) cuboid([20,9,25]);
             }
         }
 
@@ -206,8 +206,11 @@ module motor_bay_shape()
         // Clean up the outer edges
         move([100,70,-14]) xrot(-13) cuboid([90,10,20]);
         move([100,-10,-26]) xrot(62) cuboid([90,10,20]);
+        move([100,66,-26]) xrot(-45) cuboid([90,10,20]);
     }
     
+    
+
     // Add the inserts
     move([0,0,-2]) {
         move([59.5 + 2.5,-7.5,-3]) insertM3x57_th();
