@@ -42,6 +42,7 @@ include <pen_holder_top.scad>
 include <servo.scad>
 include <servo_holder.scad>
 include <battery.scad>
+include <pen_holder_cap.scad>
 
 // Rendering resolution
 //
@@ -67,6 +68,7 @@ display_pen_holder_base = "Yes"; // [Yes, No]
 display_pen_holder_top_small = "Yes"; // [Yes, No]
 display_pen_holder_top_medium = "Yes"; // [Yes, No]
 display_pen_holder_top_large = "Yes"; // [Yes, No]
+display_pen_holder_cap = "Yes"; // [Yes, No]
 display_servo_holder = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
@@ -109,6 +111,7 @@ module main() {
     d_pen_holder_top_small = (display_pen_holder_top_small == "Yes") ? true:false;
     d_pen_holder_top_medium = (display_pen_holder_top_medium == "Yes") ? true:false;
     d_pen_holder_top_large = (display_pen_holder_top_large == "Yes") ? true:false;
+    d_pen_holder_cap = (display_pen_holder_cap == "Yes") ? true:false;
     d_servo_holder = (display_servo_holder == "Yes") ? true:false;
 
     // Non-printable parts
@@ -148,6 +151,7 @@ module main() {
     if (d_pen_holder_top_small) render_pen_holder_top_small(crend, toPrint);
     if (d_pen_holder_top_medium) render_pen_holder_top_medium(crend, toPrint);
     if (d_pen_holder_top_large) render_pen_holder_top_large(crend, toPrint);
+    if (d_pen_holder_cap) render_pen_holder_cap(crend, toPrint);
     if (d_servo_holder) render_servo_holder(crend, toPrint);
 
     // Render the non-printable parts

@@ -208,8 +208,6 @@ module motor_bay_shape()
         move([100,-10,-26]) xrot(62) cuboid([90,10,20]);
         move([100,66,-26]) xrot(-45) cuboid([90,10,20]);
     }
-    
-    
 
     // Add the inserts
     move([0,0,-2]) {
