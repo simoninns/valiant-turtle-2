@@ -65,6 +65,8 @@ module irrPentagonBottom_topedge(pos)
     }
 }
 
+// This is a slightly deeper version of the pentagon used to remove
+// any material protruding through the panels of the wheel arches
 module irrPentagonBottom2(pos)
 {
     zrot((360/5) * pos) {
@@ -238,7 +240,7 @@ module back_screw_mount()
         union() {
             hull() {
                 move([0,0,-1]) zcyl(h=8, d=10);
-                move([-4,17.75,11]) xrot(-40.5) cuboid([8,1,28]);
+                move([0,5,-3]) cuboid([8,6,4]);
             }
         }
 
@@ -264,26 +266,30 @@ module back_screw_mounts()
     }
 }
 
-module front_screw_mount()
+module shellBottomArches()
 {
-    move([0,-93 + 4,25]) {
-        difference() {
-            hull() {
-                move([0,0,-1]) zcyl(h=8, d=10);
-                move([0,-1,12]) xrot(-34) cuboid([20,1,10]);
-            }
+    move([0,1.5,9]) difference() {
+        union() {
+            // Wheel arches
+            wheelArch();
+            xflip() wheelArch();
 
-            // Hole for threaded insert
-            zcyl(h=12, d=5);
+            irrPentagonBottom(0);
         }
 
-        // Threaded insert
-        difference() {
-            move([0,0,-5]) xrot(180) insertM3x57();
-            
-            // M3 Screw clearance
-            move([0,0,-5]) xrot(180) zcyl(h=18, d=3.25);
-        }
+        // Slice the bottom of the shell to make it flush with the body
+        move([0,0,-29]) cuboid([200,200,40]);
+    }
+}
+
+module shellBottom_attachement()
+{
+    difference() {
+        move([0,58,0]) xrot(-36.25) move([0,0,52]) cyl(h=5, d=10, $fn=6);
+
+        // Hole for M3x10mm screw
+        move([0,58,0]) xrot(-36.25) move([0,0,53]) cyl(h=8, d=3);
+        move([0,58,0]) xrot(-36.25) move([0,0,50]) cyl(h=4, d=7);
     }
 }
 
@@ -291,34 +297,25 @@ module shellBottom()
 {
     move([0,1.5,9]) difference() {
         union() {
-            irrPentagonBottom(0);
+            // Back lower edge reenforcement
             hull() {
                 move([0,62.25,-7.5]) cuboid([95,2.5,4]);
                 move([0,67.25,-2]) cuboid([98,1,1]);
-            }
-            
-            difference() {
-                union() {
-                    irrPentagonBottom(2);
-                    irrPentagonBottom(3);
-                }
-                
-                // Head cutout
-                headCutout();
-            }
-
-            // Wheel arches
-            wheelArch();
-            xflip() wheelArch();
+            }   
         }
 
         // Slice the bottom of the shell to make it flush with the body
         move([0,0,-29]) cuboid([200,200,40]);
-    }
 
-    // Render front and back screw mounts
-    front_screw_mount();
-    back_screw_mounts();          
+        // Screwdriver path (for upper shell mount)
+        move([0,-1.5,-9]) move([0,58,0]) xrot(-36.25) move([0,0,4]) cyl(h=16, d=6);
+    }
+    
+    // Render back screw mounts
+    back_screw_mounts();
+
+    // Render the attachment for attaching the upper shell
+    shellBottom_attachement();
 }
 
 // Note: From edge to edge of the wheel covers, the shell is 244mm wide
@@ -327,10 +324,23 @@ module shellBottom()
 module render_shell_bottom(crend, toPrint)
 {
     if (!toPrint) {
-        color([0,0.8,0,1]) shellBottom();
+        difference() {
+            union() {
+                color([0,0.8,0,1]) shellBottom();
+                color([0,0.8,0,1]) shellBottomArches();
+            }
+
+            render_shell_top(crend, toPrint);
+        }
     } else {
-        move([0,0,106]) xrot(180) {
-            shellBottom();
+        move([0,0,0]) xrot(0) {
+            difference() {
+                union() {
+                    shellBottom();
+                    shellBottomArches();
+                }
+                render_shell_top(crend, false);
+            }
         }
     }
 }

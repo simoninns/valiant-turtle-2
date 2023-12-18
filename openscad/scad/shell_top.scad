@@ -88,15 +88,80 @@ module joiner()
     }
 }
 
+module front_screw_mount()
+{
+    move([0,-93 + 4,25]) {
+        difference() {
+            hull() {
+                move([0,0,-1]) zcyl(h=8, d=10);
+                move([0,-1,12]) xrot(-34) cuboid([20,1,10]);
+            }
+
+            // Hole for threaded insert
+            zcyl(h=12, d=5);
+        }
+
+        // Threaded insert
+        difference() {
+            move([0,0,-5]) xrot(180) insertM3x57();
+            
+            // M3 Screw clearance
+            move([0,0,-5]) xrot(180) zcyl(h=18, d=3.25);
+        }
+    }
+}
+
+module front_panels()
+{
+    move([0,1.5,9]) difference() {
+        union() {
+            // Front panels
+            difference() {
+                union() {
+                    irrPentagonBottom(2);
+                    irrPentagonBottom(3);
+                }
+                
+                // Head cutout
+                headCutout();
+            }
+        }
+
+        // Slice the bottom of the shell to make it flush with the body
+        move([0,0,-29]) cuboid([200,200,40]);
+    }
+
+    front_screw_mount();
+}
+
+module shellTop_attachement()
+{
+    difference() {
+        move([0,58,0]) xrot(-36.25) move([0,0,62.5]) cyl(h=16, d=10, $fn=6);
+        move([0,58,0]) xrot(-40) move([2,0,72.5]) yrot(28) cuboid([20,20,8]);
+        move([0,58,0]) xrot(-40) move([2,0,74.5]) yrot(-28) cuboid([20,20,8]);
+        move([0,58,-9]) xrot(-36.25) move([0,0,63.5]) cuboid([20,4,40]);
+        move([0,58,0]) xrot(-36.25) move([0,0,58]) cyl(h=8, d=5);
+    }
+
+    move([0,58,0]) xrot(-36.25) move([0,0,55]) xrot(180) insertM3x57();
+}
+
 module render_shell_top(crend, toPrint)
 {
     if (!toPrint) {
-        color([0,0.8,0,1]) shellTop();
-        color([0,0.8,0,1]) joiner();
+        color([0,0.8,0,1]) {
+            shellTop();
+            joiner();
+            front_panels();
+            shellTop_attachement();
+        }
     } else {  
         move([0,0,106]) xrot(180) {
             shellTop();
             joiner();
+            front_panels();
+            shellTop_attachement();
         }
     }
 }
