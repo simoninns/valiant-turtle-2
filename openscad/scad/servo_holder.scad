@@ -39,8 +39,8 @@ module servo_holder()
             move([0,0,1.5]) cuboid([30,24,13]);
 
             // Servo mounting holes
-            move([0,14,1.5]) xcyl(h=10,d=1.5);
-            move([0,-14,1.5]) xcyl(h=10,d=1.5);
+            move([0,14,1.5]) xcyl(h=10,d=2);
+            move([0,-14,1.5]) xcyl(h=10,d=2);
 
             // M3 screw holes
             move([8,15,-7]) cyl(h=5,d=3);
