@@ -78,7 +78,7 @@ module motor_bay_side_panels()
     }
 }
 
-module motor_bay_shape2()
+module motor_bay_shape()
 {
     pointA = [0,0,-0.5];
     pointB = [0,0,-17];
@@ -180,16 +180,16 @@ module motor_bay_shape2()
     // Mount points to attach to main body
     difference() {
         union() {
-            move([62,-8,-7]) cuboid([10,9,18]);
-            move([62,60.5,-7]) cuboid([10,9.5,18]);
+            move([62,-8,-11]) cuboid([10,9,24]);
+            move([62,60.5,-12]) cuboid([10,9.5,20]);
 
             difference() {
-                move([112,-8,-7]) cuboid([20,9,18]);
-                move([112-9,-7,-7]) zrot(45) cuboid([20,9,22]);
+                move([112,-8,-13]) cuboid([20,9,20]);
+                move([112-9,-7,-13]) zrot(45) cuboid([20,9,22]);
             }
             difference() {
-                move([112,62,-7]) cuboid([20,7.5,18]);
-                move([112-9,60,-7]) zrot(-45) cuboid([20,9,22]);
+                move([112,62,-12]) cuboid([20,7.5,20]);
+                move([112-9,60,-13]) zrot(-45) cuboid([20,9,22]);
             }
         }
 
@@ -203,11 +203,13 @@ module motor_bay_shape2()
             move([116.5 - 2.5,62,-10]) xrot(180) cyl(h=18,d=5);   
         }
 
-        move([100,70,-14]) xrot(-13) cuboid([90,10,18]);
+        // Clean up the outer edges
+        move([100,70,-14]) xrot(-13) cuboid([90,10,20]);
+        move([100,-10,-26]) xrot(62) cuboid([90,10,20]);
     }
     
     // Add the inserts
-    move([0,0,0.1]) {
+    move([0,0,-2]) {
         move([59.5 + 2.5,-7.5,-3]) insertM3x57_th();
         move([116.5 - 2.5,-7.5,-3]) insertM3x57_th();
         move([59.5 + 2.5,62, -3]) insertM3x57_th();
@@ -248,24 +250,22 @@ module motor_platform()
 
 module body_recess()
 {
-    move([0,0,9 - 1.5]) {
-        move([59.5 + 2.5,-7.5,-10]) xrot(180) cyl(h=4.5,d=9);
-        move([116.5 - 2.5,-7.5,-10]) xrot(180) cyl(h=4.5,d=9);
-
-        // Back
-        move([59.5 + 2.5,62,-10]) xrot(180) cyl(h=4.5,d=9);
-        move([116.5 - 2.5,62,-10]) xrot(180) cyl(h=4.5,d=9);   
-    }
+    move([88,-7.5,-2.5]) cuboid([64,9,4]);
+    move([88,62-1.5,-2.5]) cuboid([64,12,4]);
 }
 
 module motor_bay()
 {
     difference() {
-        motor_bay_shape2();
+        motor_bay_shape();
+
+        // Trim all the egdes to fit into body
         move([52,10,-25]) cuboid([10,120,50]);
         move([124,10,-25]) cuboid([10,120,50]);
         move([84,26,2]) cuboid([80,90,10]);
         move([84,69.5,-5]) cuboid([80,4,8]);
+
+        // Recess the top of the body screw holes
         body_recess();
     }
 }
