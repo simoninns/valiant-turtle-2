@@ -34,15 +34,18 @@ module head_cover_half()
     pointD = [0,-139.5,0];
 
     difference() {
-        move([0,0,-4]) hull() {
-            move(pointA) cyl(h=2, d=1);
-            move(pointB) cyl(h=2, d=1);
-            move(pointC) cyl(h=2, d=1);
-            move(pointD) cyl(h=2, d=1);
+        move([0,0,-5.5]) hull() {
+            move(pointA) cyl(h=4, d=1);
+            move(pointB) cyl(h=4, d=1);
+            move(pointC) cyl(h=4, d=1);
+            move(pointD) cyl(h=4, d=1);
         }
 
         // Body mount screw hole
         move([12,-58,-4]) xrot(180) cyl(h=8,d=3.5);
+
+        // Screw head recess
+        move([12,-58,-9.5 + 2]) xrot(180) cyl(h=4,d=7);
     }
 }
 
@@ -55,15 +58,16 @@ module head_cover()
         }
 
         move([0,-109,-6]) cyl(h=10,d=25);
-        move([0,-89,6.5 - 2]) cyl(h=21, d=7);
+        move([0,-89,6.5 - 4]) cyl(h=21, d=7);
     }
 
     // Shell mounting screw hole
     difference() {
         move([0,-89,6.5]) cyl(h=21, d=9);
         move([0,-89,6.5 - 2]) cyl(h=21, d=7);
-        move([0,-89,00]) cyl(h=80, d=3.5);
+        move([0,-89,-10]) cyl(h=80, d=3.5);
     }
+    
 }
 
 module render_head_cover(crend, toPrint)
@@ -71,6 +75,6 @@ module render_head_cover(crend, toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) head_cover();
     } else {
-        move([0,89,5]) head_cover();
+        move([0,89,7.5]) head_cover();
     }
 }

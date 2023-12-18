@@ -122,7 +122,6 @@ module caster_ball_top()
         hull() {
             difference() {
                 move([0,0,34]) cyl(h=4,d=24);
-                //move([0,0,34]) zrot(45) cuboid([20,20,4]);
                 move([0,-10,34]) cuboid([20,10,4]);
                 move([16,0,34]) cuboid([10,20,5]);
                 move([-16,0,34]) cuboid([10,20,5]);
@@ -144,8 +143,11 @@ module half_head()
         // Back access
         move([0,-50,8]) cuboid([16,20,18]);
 
-        // Body mounting slot
-        move([0,-51.5,-1.5]) cuboid([50,40,3]);
+        // Body mounting
+        move([0,-51.5,-6]) cuboid([50,40,12],chamfer=1);
+
+        // Round off the top lower edge
+        move([0,-67.5,-12]) xrot(45) cuboid([50,10,10]);
 
         // Threaded insert slot
         move([12,-58,3.9]) xrot(180) cyl(h=8,d=5);
@@ -156,6 +158,9 @@ module half_head()
     
     // Threaded insert
     move([12,-58,0]) xrot(180) insertM3x57();
+
+
+    
 }
 
 module head()
@@ -203,8 +208,8 @@ module render_ball_bearing(crend, toPrint)
 
 module head_screws()
 {
-    move([12,-58,-5]) xrot(180) m3x10_screw();
-    move([-12,-58,-5]) xrot(180) m3x10_screw();
+    move([12,-58,-6]) xrot(180) m3x10_screw();
+    move([-12,-58,-6]) xrot(180) m3x10_screw();
 }
 
 module render_head_screws(crend, toPrint)
