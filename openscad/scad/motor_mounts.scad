@@ -74,12 +74,6 @@ module nema17_mount()
             // Add NEMA 17 mount holes
             rotate([0,-90,0]) nema17_mount_holes(depth=8, l=0, $fn=60);
 
-            // Recess the mount holes
-            move([5.5 - 1,31/2,31/2]) xcyl(h=4,d=7);
-            move([5.5 - 1,31/2,-31/2]) xcyl(h=4,d=7);
-            move([5.5 - 1,-31/2,31/2]) xcyl(h=4,d=7);
-            move([5.5 - 1,-31/2,-31/2]) xcyl(h=4,d=7);
-
             // Chamfer the edge around the shaft
             move([7,0,0]) rotate([0,-90,0]) cyl(h=10,d=25, chamfer2=2, $fn=60);
 
