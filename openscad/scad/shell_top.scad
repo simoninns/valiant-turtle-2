@@ -90,23 +90,43 @@ module joiner()
 
 module front_screw_mount()
 {
-    move([0,-93 + 4,25]) {
+    move([0,-93 + 6,23]) {
         difference() {
             hull() {
-                move([0,0,-1]) zcyl(h=8, d=10);
-                move([0,-1,12]) xrot(-34) cuboid([20,1,10]);
+                move([0,-2,-1]) zcyl(h=8, d=7);
+                move([0,-5.5,11]) xrot(-34) cuboid([14,1,10]);
             }
 
             // Hole for threaded insert
-            zcyl(h=12, d=5);
+            move([0,-2,0]) zcyl(h=12, d=5);
         }
 
         // Threaded insert
-        difference() {
+        move([0,-2,0]) difference() {
             move([0,0,-5]) xrot(180) insertM3x57();
             
             // M3 Screw clearance
             move([0,0,-5]) xrot(180) zcyl(h=18, d=3.25);
+        }
+    }
+}
+
+// Cut a slot in the bottom shell front for the body's head
+module headCutout()
+{
+    move([0,-1,-14]) {
+        hull() {
+            move([0,119.5 - 210,0]) {
+                cuboid([43.5,65,10]);
+                move([0,-32.5,-(10/2)]) xrot(90) right_triangle([21.5,10,21.5]);
+                yrot(180) move([0,-32.5,-(10/2)]) xrot(90) right_triangle([21.5,10,21.5]);
+            }
+
+            move([0,119.5 - 210,13]) {
+                cuboid([22.5,65,20]);
+                move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
+                yrot(180) move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
+            }
         }
     }
 }
@@ -121,6 +141,9 @@ module front_panels()
                     irrPentagonBottom(2);
                     irrPentagonBottom(3);
                 }
+
+                // Hole for threaded insert
+                move([0,-93 + 4 - 1.5,23 - 9]) zcyl(h=12, d=5);
                 
                 // Head cutout
                 headCutout();
@@ -130,7 +153,7 @@ module front_panels()
         // Slice the bottom of the shell to make it flush with the body
         move([0,0,-29]) cuboid([200,200,40]);
     }
-
+    
     front_screw_mount();
 }
 

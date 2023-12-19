@@ -82,26 +82,6 @@ module irrPentagonBottom2(pos)
     }
 }
 
-// Cut a slot in the bottom shell front for the body's head
-module headCutout()
-{
-    move([0,-1,-14]) {
-        hull() {
-            move([0,119.5 - 210,0]) {
-                cuboid([44,65,10]);
-                move([0,-32.5,-(10/2)]) xrot(90) right_triangle([21.5,10,21.5]);
-                yrot(180) move([0,-32.5,-(10/2)]) xrot(90) right_triangle([21.5,10,21.5]);
-            }
-
-            move([0,119.5 - 210,15]) {
-                cuboid([23,65,20]);
-                move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
-                yrot(180) move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
-            }
-        }
-    }
-}
-
 module wheelArchBase()
 {
     // Wheel arch base is 3mm wide (rest of shell is 2mm)

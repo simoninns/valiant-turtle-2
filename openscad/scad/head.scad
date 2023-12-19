@@ -163,7 +163,7 @@ module half_head()
 module head()
 {
     half_head();
-    //xflip() half_head();
+    xflip() half_head();
 }
 
 module display_ball_bearing()
