@@ -62,10 +62,10 @@ module head_shape()
     pointC = [20,-122,0];
     pointD = [0,-143,0];
 
-    pointE = [0,-54,20];
-    pointF = [10,-54,20];
-    pointG = [10,-122,20];
-    pointH = [0,-143 + 10,20];
+    pointE = [0,-54,18];
+    pointF = [10,-54,18];
+    pointG = [10,-122,18];
+    pointH = [0,-143 + 10,18];
 
     // Base of head
     head_lip_profile(pointA, pointB);
@@ -107,7 +107,7 @@ module head_shape()
     // Add a platform for the threaded inserts
     hull() {
         move([13.25,-60,0.25]) cuboid([10.5,17,0.5]);
-        move([9.5,-61,17]) cuboid([3,16,0.5]);
+        move([9.5,-61,15]) cuboid([3,16,0.5]);
     } 
 }
 
@@ -121,10 +121,10 @@ module caster_ball_top()
     difference() { 
         hull() {
             difference() {
-                move([0,0,34]) cyl(h=4,d=24);
-                move([0,-10,34]) cuboid([20,10,4]);
-                move([16,0,34]) cuboid([10,20,5]);
-                move([-16,0,34]) cuboid([10,20,5]);
+                move([0,0,32.5]) cyl(h=2,d=24);
+                move([0,-10,32]) cuboid([20,10,4]);
+                move([16,0,32]) cuboid([10,20,5]);
+                move([-16,0,32]) cuboid([10,20,5]);
             }
             move([0,0,0]) cyl(h=14,d=24);
         }
@@ -138,10 +138,10 @@ module half_head()
         head_shape();
 
         // Eye socket (8mm for LED with grommet)
-        move([-1,-120,2]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=7);
+        move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=7);
 
         // Back access
-        move([0,-50,8]) cuboid([16,20,18]);
+        move([0,-50,6]) cuboid([16,20,18]);
 
         // Body mounting
         move([0,-51.5,-6]) cuboid([50,40,12],chamfer=1);
@@ -157,16 +157,13 @@ module half_head()
     }
     
     // Threaded insert
-    move([12,-58,0]) xrot(180) insertM3x57();
-
-
-    
+    move([12,-58,0]) xrot(180) insertM3x57();    
 }
 
 module head()
 {
     half_head();
-    xflip() half_head();
+    //xflip() half_head();
 }
 
 module display_ball_bearing()
@@ -188,7 +185,7 @@ module render_head(crend, toPrint)
             }
         }
     } else {
-        xrot(180) move([0,90,-20]) {
+        xrot(180) move([0,90,-18]) {
             head();
 
             // Caster

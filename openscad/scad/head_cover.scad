@@ -63,11 +63,10 @@ module head_cover()
 
     // Shell mounting screw hole
     difference() {
-        move([0,-89,6.5]) cyl(h=21, d=9);
-        move([0,-89,6.5 - 2]) cyl(h=21, d=7);
-        move([0,-89,-10]) cyl(h=80, d=3.5);
+        move([0,-89,5]) cyl(h=20, d=9);
+        move([0,-89,5 - 3]) cyl(h=21, d=7);
+        move([0,-89,0]) cyl(h=40, d=3.5);
     }
-    
 }
 
 module render_head_cover(crend, toPrint)
