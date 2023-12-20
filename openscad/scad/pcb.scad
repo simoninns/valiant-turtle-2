@@ -124,3 +124,19 @@ module render_pcb_mounts_back(crend, toPrint)
         xrot(90) move([0,3.5,0]) pcb_mount_back();
     }
 }
+
+module render_pcb_mounts_front_screws(crend, toPrint)
+{
+    if (!toPrint) {
+        move([60,-20,-3]) xrot(180) m3x10_screw();
+        move([-60,-20,-3]) xrot(180) m3x10_screw();
+    }
+}
+
+module render_pcb_mounts_back_screws(crend, toPrint)
+{
+    if (!toPrint) {
+        move([7,52,-3]) xrot(180) m3x10_screw();
+        move([-7,52,-3]) xrot(180) m3x10_screw();
+    }
+}
