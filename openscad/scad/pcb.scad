@@ -34,12 +34,12 @@ module pcb_mount_front()
         cyl(h=50, d=8, $fn=6);
 
         // Threaded insert slots
-        move([0,0,21.1]) xrot(180) cyl(h=8,d=5);
-        move([0,0,-21.1]) xrot(180) cyl(h=8,d=5);
+        move([0,0,19.1]) xrot(180) cyl(h=12,d=5);
+        move([0,0,-19.1]) xrot(180) cyl(h=12,d=5);
     }
 
-    move([0,0,25]) insertM3x57();
-    move([0,0,-25]) xrot(180) insertM3x57();
+    move([0,0,25]) insertM3x57_th();
+    move([0,0,-25]) xrot(180) insertM3x57_th();
 }
 
 module pcb_mount_back()
@@ -50,20 +50,20 @@ module pcb_mount_back()
             
             hull() {
                 move([0,0,-17]) cyl(h=16, d=8, $fn=6);
-                move([7,0,-20]) cyl(h=10, d=8, $fn=6);
-                move([-7,0,-20]) cyl(h=10, d=8, $fn=6);
+                move([7,0,-18.5]) cyl(h=13, d=8, $fn=6);
+                move([-7,0,-18.5]) cyl(h=13, d=8, $fn=6);
             }
         }
 
         // Threaded insert slots
-        move([0,0,21.1]) xrot(180) cyl(h=8,d=5);
-        move([7,0,-21.1]) xrot(180) cyl(h=8,d=5);
-        move([-7,0,-21.1]) xrot(180) cyl(h=8,d=5);
+        move([0,0,19.1]) xrot(180) cyl(h=12,d=5);
+        move([7,0,-19.1]) xrot(180) cyl(h=12,d=5);
+        move([-7,0,-19.1]) xrot(180) cyl(h=12,d=5);
     }
 
-    move([0,0,25]) insertM3x57();
-    move([7,0,-25]) xrot(180) insertM3x57();
-    move([-7,0,-25]) xrot(180) insertM3x57();
+    move([0,0,25]) insertM3x57_th();
+    move([7,0,-25]) xrot(180) insertM3x57_th();
+    move([-7,0,-25]) xrot(180) insertM3x57_th();
 }
 
 module pcb_mounts_front()
