@@ -93,6 +93,7 @@ display_head_screws = "No"; // [Yes, No]
 display_servo_holder_screws = "No"; // [Yes, No]
 display_pcb_mounts_front_screws = "Yes"; // [Yes, No]
 display_pcb_mounts_back_screws = "Yes"; // [Yes, No]
+display_shell_bottom_screws = "Yes"; // [Yes, No]
 
 module main() {
     crend = (use_colour == "Colour") ? true:false;
@@ -138,6 +139,7 @@ module main() {
     d_servo_holder_screws = (display_servo_holder_screws == "Yes") ? true:false;
     d_pcb_mounts_front_screws = (display_pcb_mounts_front_screws == "Yes") ? true:false;
     d_pcb_mounts_back_screws = (display_pcb_mounts_back_screws == "Yes") ? true:false;
+    d_shell_bottom_screws = (display_shell_bottom_screws == "Yes") ? true:false;
 
     // Render the printable parts
     if (d_body_left) render_body_left(crend, toPrint);
@@ -180,6 +182,7 @@ module main() {
     if (d_servo_holder_screws) render_servo_holder_screws(crend, toPrint);
     if (d_pcb_mounts_front_screws) render_pcb_mounts_front_screws(crend, toPrint);
     if (d_pcb_mounts_back_screws) render_pcb_mounts_back_screws(crend, toPrint);
+    if (d_shell_bottom_screws) render_shell_bottom_screws(crend, toPrint);
 }
 
 main();

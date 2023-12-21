@@ -324,3 +324,11 @@ module render_shell_bottom(crend, toPrint)
         }
     }
 }
+
+module render_shell_bottom_screws(crend, toPrint)
+{
+    if (!toPrint) {
+        move([48.5,56,-3]) xrot(180) m3x10_screw();
+        move([-48.5,56,-3]) xrot(180) m3x10_screw();
+    }
+}

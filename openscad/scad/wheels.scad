@@ -92,16 +92,21 @@ module tire()
 
 module wheel()
 {
-    zrot(180) move([-5,0,0]) difference() {
-        union() {
-            wheel_body();
-            wheel_hub();
+    zrot(180) move([-5,0,0]) {
+        difference() {
+            union() {
+                wheel_body();
+                wheel_hub();
+            }
+
+            // Hub for D-shaped NEMA 17 5mm shaft (with 1mm D)
+            difference() {
+                move([5,0,0]) yrot(-90) cyl(h=20,d=5);
+                move([5,0,3.25 - 0.75]) yrot(-90) cuboid([1,6,20]);
+            }
+
+            wheel_hub_decoration();
         }
-
-        // Hub (shaft should be 5mm, but we use 5.5 to make an easy fit)
-        move([5,0,0]) yrot(-90) cyl(h=20,d=5.5);
-
-        wheel_hub_decoration();
     }
 }
 
@@ -109,8 +114,8 @@ module render_wheels(crend, toPrint)
 {
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) {
-            move([106.5,64-35,-6]) wheel();
-            xflip() move([106.5,64-35,-6]) wheel();
+            move([106.5,64-35,-6]) xrot(90) wheel();
+            xflip() move([106.5,64-35,-6]) xrot(90) wheel();
         }
     } else {
         move([0,0,6.25]) yrot(90) wheel();
