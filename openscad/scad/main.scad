@@ -29,8 +29,7 @@ use <BOSL/shapes.scad>
 // Local includes
 include <body.scad>
 include <head.scad>
-include <shell_top.scad>
-include <shell_bottom.scad>
+include <shell.scad>
 include <motor_bay.scad>
 include <motor_mounts.scad>
 include <wheels.scad>
@@ -57,8 +56,8 @@ display_body_left = "Yes"; // [Yes, No]
 display_body_right = "Yes"; // [Yes, No]
 display_head = "Yes"; // [Yes, No]
 display_head_cover = "Yes"; // [Yes, No]
-display_shell_top = "Yes"; // [Yes, No]
-display_shell_bottom = "Yes"; // [Yes, No]
+display_shell_lid = "Yes"; // [Yes, No]
+display_shell = "Yes"; // [Yes, No]
 display_motor_bay = "Yes"; // [Yes, No]
 display_motor_mounts = "Yes"; // [Yes, No]
 display_wheels = "Yes"; // [Yes, No]
@@ -102,8 +101,8 @@ module main() {
     d_body_left = (display_body_left == "Yes") ? true:false;
     d_body_right = (display_body_right == "Yes") ? true:false;
     d_head = (display_head == "Yes") ? true:false;
-    d_shell_top = (display_shell_top == "Yes") ? true:false;
-    d_shell_bottom = (display_shell_bottom == "Yes") ? true:false;
+    d_shell_lid = (display_shell_lid == "Yes") ? true:false;
+    d_shell = (display_shell == "Yes") ? true:false;
     d_motor_bay = (display_motor_bay == "Yes") ? true:false;
     d_motor_mounts = (display_motor_mounts == "Yes") ? true:false;
     d_wheels = (display_wheels == "Yes") ? true:false;
@@ -145,8 +144,8 @@ module main() {
     if (d_body_left) render_body_left(crend, toPrint);
     if (d_body_right) render_body_right(crend, toPrint);
     if (d_head) render_head(crend, toPrint);
-    if (d_shell_top) render_shell_top(crend, toPrint);
-    if (d_shell_bottom) render_shell_bottom(crend, toPrint);
+    if (d_shell_lid) render_shell_lid(crend, toPrint);
+    if (d_shell) render_shell(crend, toPrint);
     if (d_motor_bay) render_motor_bay(crend, toPrint);
     if (d_motor_mounts) render_motor_mounts(crend, toPrint);
     if (d_wheels) render_wheels(crend, toPrint);

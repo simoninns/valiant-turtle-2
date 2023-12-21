@@ -1,6 +1,6 @@
 /************************************************************************
 
-    shell_bottom.scad
+    shell_top.scad
     
     Valiant Turtle 2
     Copyright (C) 2023 Simon Inns
@@ -26,7 +26,202 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-include <threaded_inserts.scad>
+
+// Shell lid ----------------------------------------------------------------------------------------------------------
+module shell_lid_top()
+{
+    difference() {
+        union() {
+            move([0,1.5,105]) yrot(180) {
+                for ( i = [0:1:4]) {
+                    zrot((360/5) * i) {
+                        zrot(360/10) move([0,70,36.75]) xrot(55.5) irrPentagonTop();
+                    }
+                }
+            }
+
+            move([0,1.5,105]) yrot(180) {
+                hull() {
+                    zrot((360/5) * 0) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                    zrot((360/5) * 1) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                    zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                    zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                    zrot((360/5) * 4) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                }
+            }
+        }
+
+        move([0,0,34]) cuboid([220,220,140]);
+    }
+}
+
+module shell_lid_lip()
+{
+    width2 = 106.5;
+
+    move([0,1.5,103]) yrot(180) {
+        hull() {
+            zrot((360/5) * 0) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+            zrot((360/5) * 1) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+        }
+
+        hull() {
+            zrot((360/5) * 1) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+            zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+        }
+
+        hull() {
+            zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+            zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+        }
+
+        hull() {
+            zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+            zrot((360/5) * 3) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+        }
+
+        hull() {
+            zrot((360/5) * 3) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+            zrot((360/5) * 4) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+        }
+
+        hull() {
+            zrot((360/5) * 4) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+            zrot((360/5) * 0) move([0,width2/2,0]) xrot(45) cyl(d=2, h=2, $fn=16);
+        }  
+    }
+}
+
+module shell_lid()
+{
+    shell_lid_top();
+    shell_lid_lip();
+}
+
+// Top half of shell --------------------------------------------------------------------------------------------------
+
+module irrPentagonTop()
+{
+    hull() {
+        zrot((360/5) * 0) move([0,103/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 1) move([0,123/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 4) move([0,123/2,0]) staggered_sphere(d=2, $fn=16);
+    }
+}
+
+module shellTop()
+{
+    difference() {
+        move([0,1.5,105]) yrot(180) {
+            for ( i = [0:1:4]) {
+                zrot((360/5) * i) {
+                    zrot(360/10) move([0,70,36.75]) xrot(55.5) irrPentagonTop();
+                }
+            }
+        }
+
+        move([0,0,105]) cuboid([140,140,2]);
+    }
+}
+
+module joinerLine()
+{
+    hull() {
+        zrot(360/10) move([0,70,36.75]) xrot(55.5) {
+            zrot((360/5) * 0) move([0,(103/2),0]) staggered_sphere(d=2, $fn=16);
+            zrot((360/5) * 1) move([0,(123/2),0]) staggered_sphere(d=2, $fn=16);
+        }
+    }
+
+    hull() {
+        zrot(360/10) move([0,70,36.75]) xrot(55.5) {
+            zrot((360/5) * 0) move([0,(103/2),0]) staggered_sphere(d=2, $fn=16);
+            zrot((360/5) * 4) move([0,(123/2),0]) staggered_sphere(d=2, $fn=16);
+        }
+    }
+}
+
+module joiner()
+{
+    move([0,1.5,104]) yrot(180) {
+        for ( i = [0:1:4]) {
+            zrot((360/5) * i) joinerLine();
+        }
+    }
+}
+
+module front_screw_mount()
+{
+    move([0,-93 + 6,23]) {
+        difference() {
+            hull() {
+                move([0,-2,-1]) zcyl(h=8, d=7);
+                move([0,-5.5,11]) xrot(-34) cuboid([14,1,10]);
+            }
+
+            // Hole for threaded insert
+            move([0,-2,0]) zcyl(h=12, d=5);
+        }
+
+        // Threaded insert
+        move([0,-2,0]) difference() {
+            move([0,0,-5]) xrot(180) insertM3x57();
+            
+            // M3 Screw clearance
+            move([0,0,-5]) xrot(180) zcyl(h=18, d=3.25);
+        }
+    }
+}
+
+// Cut a slot in the bottom shell front for the body's head
+module headCutout()
+{
+    move([0,-1,-14]) {
+        hull() {
+            move([0,119.5 - 210,0]) {
+                cuboid([43.5,65,10]);
+                move([0,-32.5,-(10/2)]) xrot(90) right_triangle([21.5,10,21.5]);
+                yrot(180) move([0,-32.5,-(10/2)]) xrot(90) right_triangle([21.5,10,21.5]);
+            }
+
+            move([0,119.5 - 210,13]) {
+                cuboid([22.5,65,20]);
+                move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
+                yrot(180) move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
+            }
+        }
+    }
+}
+
+module front_panels()
+{
+    move([0,1.5,9]) difference() {
+        union() {
+            // Front panels
+            difference() {
+                union() {
+                    irrPentagonBottom(2);
+                    irrPentagonBottom(3);
+                }
+
+                // Hole for threaded insert
+                move([0,-93 + 4 - 1.5,23 - 9]) zcyl(h=12, d=5);
+                
+                // Head cutout
+                headCutout();
+            }
+        }
+
+        // Slice the bottom of the shell to make it flush with the body
+        move([0,0,-29]) cuboid([200,200,40]);
+    }
+    
+    front_screw_mount();
+}
+
+// Shell lower part ---------------------------------------------------------------------------------------------------
 
 // 0 = Back
 // 1 = Right wheel
@@ -262,17 +457,6 @@ module shellBottomArches()
     }
 }
 
-module shellBottom_attachement()
-{
-    difference() {
-        move([0,58,0]) xrot(-36.25) move([0,0,52]) cyl(h=5, d=10, $fn=6);
-
-        // Hole for M3x10mm screw
-        move([0,58,0]) xrot(-36.25) move([0,0,53]) cyl(h=8, d=3);
-        move([0,58,0]) xrot(-36.25) move([0,0,50]) cyl(h=4, d=7);
-    }
-}
-
 module shellBottom()
 {
     move([0,1.5,9]) difference() {
@@ -286,46 +470,49 @@ module shellBottom()
 
         // Slice the bottom of the shell to make it flush with the body
         move([0,0,-29]) cuboid([200,200,40]);
-
-        // Screwdriver path (for upper shell mount)
-        move([0,-1.5,-9]) move([0,58,0]) xrot(-36.25) move([0,0,4]) cyl(h=16, d=6);
     }
     
     // Render back screw mounts
     back_screw_mounts();
-
-    // Render the attachment for attaching the upper shell
-    shellBottom_attachement();
 }
 
-// Note: From edge to edge of the wheel covers, the shell is 244mm wide
-// The plastic is 3mm thick around the base of the wheel covers but the rest
-// of the shell is 2mm thick
-module render_shell_bottom(crend, toPrint)
+module render_shell(crend, toPrint)
 {
     if (!toPrint) {
-        difference() {
-            union() {
-                color([0,0.8,0,1]) shellBottom();
-                color([0,0.8,0,1]) shellBottomArches();
-            }
+        color([0,0.8,0,1]) {
+            // Top
+            shellTop();
+            joiner();
+            front_panels();
 
-            render_shell_top(crend, toPrint);
+            // Bottom
+            shellBottom();
+            shellBottomArches();
         }
-    } else {
+    } else {  
         move([0,0,0]) xrot(0) {
-            difference() {
-                union() {
-                    shellBottom();
-                    shellBottomArches();
-                }
-                render_shell_top(crend, false);
-            }
+            // Top
+            shellTop();
+            joiner();
+            front_panels();
+
+            // Bottom
+            shellBottom();
+            shellBottomArches();
         }
     }
 }
 
-module render_shell_bottom_screws(crend, toPrint)
+module render_shell_lid(crend, toPrint)
+{
+    if (!toPrint) {
+        color([0,0.8,0,1]) shell_lid();
+    } else {
+        move([0,0,106]) xrot(180) shell_lid();
+    }
+}
+
+module render_shell_screws(crend, toPrint)
 {
     if (!toPrint) {
         move([48.5,56,-3]) xrot(180) m3x10_screw();
