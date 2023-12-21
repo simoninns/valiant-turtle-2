@@ -328,22 +328,23 @@ module wheelCover()
     move([0,23.5,-8]) {
         // Point cloud for the wheel arch (see doc/wheel_arch_points.jpg)
         pointA = [73.5,-38.5,2];
-        pointB = [120.5,-38.5,2];
+        pointB = [120.5,-38.5,2 + 5];
         pointC = [120.5,39,2];
-        // pointD unused
-        pointE = [120.5,7.5,22.5];
-        pointF = [94,-38.5,13.5];
-        pointG = [94,7.5,33.5];
+        pointD = [120.5,-38.5,2];
+        pointE = [120.5,7.5,22.5 + 7.5];
+        pointF = [94,-38.5,13.5 + 4];
+        pointG = [94,7.5,33.5 + 6];
         pointH = [94,-38.5,29];
         pointI = [94,7.5,49.5];
         pointJ = [70.5,39.0,31.5];
-        pointK = [70.5,39.0,23];
+        pointK = [70.5,39.0,23 - 3];
         pointL = [48,39.0,2];
 
-        // ABF (note: same plane as AFH)
+        // ADBF
         hull() {
             move(pointA) staggered_sphere(d=3, $fn=16);
             move(pointB) staggered_sphere(d=3, $fn=16);
+            move(pointD) staggered_sphere(d=3, $fn=16);
             move(pointF) staggered_sphere(d=3, $fn=16);
         }
 
@@ -354,10 +355,11 @@ module wheelCover()
             move(pointH) staggered_sphere(d=3, $fn=16);
         }
 
-        // BCE
+        // BCDE
         hull() {
             move(pointC) staggered_sphere(d=3, $fn=16);
             move(pointB) staggered_sphere(d=3, $fn=16);
+            move(pointD) staggered_sphere(d=3, $fn=16);
             move(pointE) staggered_sphere(d=3, $fn=16);
         }
 
