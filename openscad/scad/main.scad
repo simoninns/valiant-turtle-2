@@ -42,6 +42,7 @@ include <servo.scad>
 include <servo_holder.scad>
 include <battery.scad>
 include <pen_holder_cap.scad>
+include <logotype.scad>
 
 // Rendering resolution
 //
@@ -69,6 +70,7 @@ display_pen_holder_top_medium = "Yes"; // [Yes, No]
 display_pen_holder_top_large = "Yes"; // [Yes, No]
 display_pen_holder_cap = "Yes"; // [Yes, No]
 display_servo_holder = "No"; // [Yes, No]
+display_logotype = "No"; // [Yes, No]
 
 /* [Print Supports] */
 display_shell_support = "Yes"; // [Yes, No]
@@ -118,6 +120,7 @@ module main() {
     d_pen_holder_top_large = (display_pen_holder_top_large == "Yes") ? true:false;
     d_pen_holder_cap = (display_pen_holder_cap == "Yes") ? true:false;
     d_servo_holder = (display_servo_holder == "Yes") ? true:false;
+    d_logotype = (display_logotype == "Yes") ? true:false;
 
     // Print supports
     d_shell_support = (display_shell_support == "Yes") ? true:false;
@@ -164,6 +167,7 @@ module main() {
     if (d_pen_holder_top_large) render_pen_holder_top_large(crend, toPrint);
     if (d_pen_holder_cap) render_pen_holder_cap(crend, toPrint);
     if (d_servo_holder) render_servo_holder(crend, toPrint);
+    if (d_logotype) render_logotype(crend, toPrint);
 
     // Render the print supports
     if (d_shell_support) render_shell_support(crend, toPrint);
