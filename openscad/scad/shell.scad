@@ -157,7 +157,7 @@ module front_screw_mount()
     move([0,-93 + 6,23]) {
         difference() {
             hull() {
-                move([0,-2,-1]) zcyl(h=8, d=7);
+                move([0,-2,0]) zcyl(h=10, d=7);
                 move([0,-5.5,11]) xrot(-34) cuboid([14,1,10]);
             }
 
@@ -511,6 +511,13 @@ module render_shell_lid(crend, toPrint)
         color([0,0.8,0,1]) shell_lid();
     } else {
         move([0,0,106]) xrot(180) shell_lid();
+    }
+}
+
+module render_shell_support(crend, toPrint)
+{
+    if (toPrint) {
+        move([0,-83,9.5]) cuboid([23,20,19]);
     }
 }
 

@@ -70,6 +70,9 @@ display_pen_holder_top_large = "Yes"; // [Yes, No]
 display_pen_holder_cap = "Yes"; // [Yes, No]
 display_servo_holder = "No"; // [Yes, No]
 
+/* [Print Supports] */
+display_shell_support = "Yes"; // [Yes, No]
+
 /* [Non-Printable Parts] */
 display_motor_small = "No"; // [Yes, No]
 display_motor_large = "No"; // [Yes, No]
@@ -116,6 +119,9 @@ module main() {
     d_pen_holder_cap = (display_pen_holder_cap == "Yes") ? true:false;
     d_servo_holder = (display_servo_holder == "Yes") ? true:false;
 
+    // Print supports
+    d_shell_support = (display_shell_support == "Yes") ? true:false;
+
     // Non-printable parts
     d_motor_small = (display_motor_small == "Yes") ? true:false;
     d_motor_large = (display_motor_large == "Yes") ? true:false;
@@ -158,6 +164,9 @@ module main() {
     if (d_pen_holder_top_large) render_pen_holder_top_large(crend, toPrint);
     if (d_pen_holder_cap) render_pen_holder_cap(crend, toPrint);
     if (d_servo_holder) render_servo_holder(crend, toPrint);
+
+    // Render the print supports
+    if (d_shell_support) render_shell_support(crend, toPrint);
 
     // Render the non-printable parts
     if (d_motor_small) render_motor_small(crend, toPrint);
