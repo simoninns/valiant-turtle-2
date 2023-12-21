@@ -152,7 +152,7 @@ module render_rotational_axis(crend, toPrint)
         move([0,64 - 35,-6]) xcyl(h=255,d=2);
 
         // Axis for pen
-        move([0,29,40]) zcyl(h=160, d=2);
+        move([0,29,44]) zcyl(h=154, d=2);
     }
 }
 

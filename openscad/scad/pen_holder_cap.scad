@@ -28,15 +28,18 @@ use <BOSL/shapes.scad>
 
 module pen_holder_cap()
 {
-    move([0,0,5]) {
+    move([0,0,4]) {
         difference() {
-            cyl(h=14, d=12, chamfer2=0.75);
-            move([0,0,-8 + 6.5]) cyl(h=14, d=8, chamfer2=0.25);
+            cyl(h=14, d=12, chamfer2=0.5);
+            move([0,0,-8 + 6]) cyl(h=14, d=8, chamfer2=0.5);
 
             // Knurled top outer
             for(rota=[0: 360/16: 360]) { // for(variable = [start : increment : end])
                 rotate([0,0,rota]) move([6.25,0,3.25 - 4.5]) cyl(h=12, d=1.5, chamfer2=0.25); // Top
             }
+
+            // Test only
+            //move([0,-9,-8 + 6.5]) cuboid([18,18,18]);
         }
     }
 }
@@ -48,6 +51,6 @@ module render_pen_holder_cap(crend, toPrint)
             move([0,29,-25]) xrot(180) pen_holder_cap();
         }
     } else {
-        move([0,0,12]) xrot(180) pen_holder_cap();
+        move([0,0,11]) xrot(180) pen_holder_cap();
     }
 }    

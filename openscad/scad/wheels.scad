@@ -130,7 +130,7 @@ module render_turning_circle(crend, toPrint)
         move([0,64-35,-34]) tube(h=1,od=280, id=280-3);
 
         // Show the rotational axis across the pen
-        move([0,64-35,-34]) cuboid([300,1,1]);
+        move([0,64-35,-33]) cuboid([300,1,0.25]);
     }
 }
 

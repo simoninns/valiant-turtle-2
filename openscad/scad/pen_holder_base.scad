@@ -27,31 +27,26 @@ use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 use <BOSL/threading.scad>
 
+module pen_servo_interface()
+{
+    move([0,0,8]) {
+        move([0,0,0]) cyl(h=1, d=31, center=false, chamfer2=0.5);
+        move([0,0,-5]) cyl(h=5, d2=31, d1= 20, center=false);
+    }
+}
+
 module holder_body()
 {
     // Base of holder
-    move([0,0,0]) cyl(h=16, d=19, center=false);
+    move([0,0,0]) cyl(h=23, d=20, center=false, chamfer=0.5);
 
-    // Main Shaft
-    move([0,0,15.5]) cyl(h=23, d=15.5, center=false, chamfer=0.25); // main shaft
+    // Main Shaft (pen hole is 16mm)
+    move([0,0,22]) cyl(h=23, d=15.75, center=false, chamfer2=0.5); // main shaft
 
-    move([0,0,38]) cyl(h=8, d=15.5, center=false, chamfer=0.25);
-    move([0,0,46 - 1]) cyl(h=5, d=8, center=false, chamfer=0.25); // tip
+    // Tip
+    move([0,0,46 - 1]) cyl(h=5, d=8, center=false, chamfer2=0.5);
 
-    // Servo arm interface
-    difference() {
-        move([0,0,0]) cyl(h=9.5, d=29, center=false);
-
-        // Remove some material to make it look nicer
-        for(rota=[0: 360/15: 360]) { // for(variable = [start : increment : end])
-            rotate([0,0,rota]) move([11.5,0,4.75]) cyl(h=12, d=3); // Top
-        }
-    }
-
-    // Knurled top outer
-    for(rota=[0: 360/60: 360]) { // for(variable = [start : increment : end])
-        rotate([0,0,rota]) move([14.5,0,4.75]) cyl(h=9.5, d=1, chamfer2=0.25); // Top
-    }
+    pen_servo_interface();
 }
 
 module inner_profile()
@@ -93,6 +88,8 @@ module render_pen_holder_base(crend, toPrint)
 // (Based on a Faber Castell Multimark 1523 permanent with the eraser removed)
 module pen()
 {
+    // Make the tip of the pen 1mm over the wheel base to ensure
+    // that it makes good contact with the surface
     color([0.4,0.4,0.4]) move([0,29,53]) {
         move([0,0,43]) cyl(h=6, d=9);
         cyl(h=80, d=10.5);
