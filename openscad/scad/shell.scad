@@ -115,7 +115,7 @@ module shellTop()
 {
     difference() {
         move([0,1.5,105]) yrot(180) {
-            for ( i = [0:1:3]) {
+            for ( i = [0:1:4]) {
                 zrot((360/5) * i) {
                     zrot(360/10) move([0,70,36.75]) xrot(55.5) irrPentagonTop();
                 }
