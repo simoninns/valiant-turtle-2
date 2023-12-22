@@ -290,7 +290,7 @@ module pen_hole_lip()
 
 module pen_hole_key()
 {
-    move([0,29 + 8,-5.75]) cuboid([5,2,8.5]);
+    move([2.5/2,29 + 8,-5.75]) cuboid([5/2,2,8.5]);
 }
 
 module pcb_mount_holes()
@@ -392,7 +392,7 @@ module body_left()
         body_joiners_left_clearance();
     }
     body_joiners_left_inserts();
-    pen_hole_key();
+    xflip() pen_hole_key();
 }
 
 module render_body_right(crend, toPrint)
