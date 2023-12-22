@@ -29,6 +29,8 @@ use <BOSL/shapes.scad>
 include <motor_bay.scad>
 include <threaded_inserts.scad>
 
+include <logotype.scad>
+
 module body_profile(loc)
 {
     move(loc) {
@@ -272,18 +274,23 @@ module head_mounts()
 module pen_hole()
 {
     // Hole for pen
-    move([0,29,20]) zcyl(h=80, d=16);
-    move([0,29,3.5]) cyl(h=10, d=16+4, chamfer1=2);
+    move([0,29,20]) cyl(h=80, d=16, $fn=8);
+    move([0,29,3.5]) cyl(h=10, d=16+4, chamfer1=2, $fn=8);
 }
 
 module pen_hole_lip()
 {
     // Lip around the pen hole
     difference() {
-        move([0,29,-5]) zcyl(h=10, d=16+5);
-        move([0,29,20]) zcyl(h=80, d=16);
+        move([0,29,-5]) cyl(h=10, d=16+5, $fn=8);
+        move([0,29,20]) cyl(h=80, d=16, $fn=8);
         move([-9,29,-5]) cuboid([22,22,12]);
     }
+}
+
+module pen_hole_key()
+{
+    move([0,29 + 8,-5.75]) cuboid([5,2,8.5]);
 }
 
 module pcb_mount_holes()
@@ -308,8 +315,8 @@ module pen_servo_mount_holes()
 
 module pen_servo_mount_material()
 {
-    move([38.5,53,-5]) cyl(h=10,d=8);
-    move([38.5,23,-5]) cyl(h=10,d=8);
+    move([38.5,53,-5]) cyl(h=10,d=8, $fn=8);
+    move([38.5,23,-5]) cyl(h=10,d=8, $fn=8);
 }
 
 module pen_servo_mount_inserts()
@@ -356,6 +363,7 @@ module body_right()
 
     body_joiners_right_inserts();
     pen_servo_mount_inserts();
+    pen_hole_key();
 }
 
 module body_left()
@@ -379,10 +387,12 @@ module body_left()
         pen_hole();
         pcb_mount_holes();
         battery_strap_holes();
+        move([-70,-75,-2.501]) zrot(39) logotype();
 
         body_joiners_left_clearance();
     }
     body_joiners_left_inserts();
+    pen_hole_key();
 }
 
 module render_body_right(crend, toPrint)

@@ -29,22 +29,30 @@ use <BOSL/threading.scad>
 
 module pen_servo_interface()
 {
+    difference() {
     move([0,0,8]) {
-        move([0,0,0]) cyl(h=1, d=31, center=false, chamfer2=0.5);
-        move([0,0,-5]) cyl(h=5, d2=31, d1= 20, center=false);
+        move([0,0,0]) cyl(h=1, d=31, center=false, chamfer2=0.5, $fn=8);
+        move([0,0,-5]) cyl(h=5, d2=31, d1= 20, center=false, $fn=8);
+    }
+
+    move([-10,0,5]) cuboid([20,40,12]);
     }
 }
 
 module holder_body()
 {
     // Base of holder
-    move([0,0,0]) cyl(h=23, d=20, center=false, chamfer=0.5);
+    move([0,0,0]) cyl(h=23, d=20, center=false, chamfer=0.5, $fn=8);
 
     // Main Shaft (pen hole is 16mm)
-    move([0,0,22]) cyl(h=23, d=15.75, center=false, chamfer2=0.5); // main shaft
+    difference() {
+        move([0,0,22]) cyl(h=23, d=15.75, center=false, chamfer2=0.5, $fn=8);
+        move([0,-12,26]) cuboid([10,10,40]);
+    }
+    move([0,-5,45]) cuboid([3,4,1], chamfer=0.5);
 
     // Tip
-    move([0,0,46 - 1]) cyl(h=5, d=8, center=false, chamfer2=0.5);
+    move([0,0,46 - 1]) cyl(h=5, d=8, center=false, chamfer2=0.5, $fn=32);
 
     pen_servo_interface();
 }
