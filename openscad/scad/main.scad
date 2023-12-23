@@ -51,6 +51,7 @@ $fn=50;
 /* [Rendering Parameters] */
 use_colour = "Colour"; // [Colour, No colour]
 for_printing = "Display"; // [Display, Printing]
+pen_up = "Pen Up"; // [False, True]
 
 /* [Printable Parts] */
 display_body_left = "Yes"; // [Yes, No]
@@ -70,10 +71,11 @@ display_pen_holder_top_medium = "No"; // [Yes, No]
 display_pen_holder_top_large = "No"; // [Yes, No]
 display_pen_holder_cap = "No"; // [Yes, No]
 display_servo_holder = "No"; // [Yes, No]
+display_servo_horn = "No"; // [Yes, No]
 display_logotype = "No"; // [Yes, No]
 
 /* [Print Supports] */
-display_shell_support = "Yes"; // [Yes, No]
+display_shell_support = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
 display_motor_small = "No"; // [Yes, No]
@@ -102,6 +104,7 @@ display_shell_screws = "No"; // [Yes, No]
 module main() {
     crend = (use_colour == "Colour") ? true:false;
     toPrint = (for_printing == "Printing") ? true:false;
+    penUp = (pen_up == "True") ? true:false;
 
     d_body_left = (display_body_left == "Yes") ? true:false;
     d_body_right = (display_body_right == "Yes") ? true:false;
@@ -120,6 +123,7 @@ module main() {
     d_pen_holder_top_large = (display_pen_holder_top_large == "Yes") ? true:false;
     d_pen_holder_cap = (display_pen_holder_cap == "Yes") ? true:false;
     d_servo_holder = (display_servo_holder == "Yes") ? true:false;
+    d_servo_horn = (display_servo_horn == "Yes") ? true:false;
     d_logotype = (display_logotype == "Yes") ? true:false;
 
     // Print supports
@@ -161,12 +165,13 @@ module main() {
     if (d_pcb_mounts_front) render_pcb_mounts_front(crend, toPrint);
     if (d_pcb_mounts_back) render_pcb_mounts_back(crend, toPrint);
     if (d_head_cover) render_head_cover(crend, toPrint);
-    if (d_pen_holder_base) render_pen_holder_base(crend, toPrint);
-    if (d_pen_holder_top_small) render_pen_holder_top_small(crend, toPrint);
-    if (d_pen_holder_top_medium) render_pen_holder_top_medium(crend, toPrint);
-    if (d_pen_holder_top_large) render_pen_holder_top_large(crend, toPrint);
+    if (d_pen_holder_base) render_pen_holder_base(crend, toPrint, penUp);
+    if (d_pen_holder_top_small) render_pen_holder_top_small(crend, toPrint, penUp);
+    if (d_pen_holder_top_medium) render_pen_holder_top_medium(crend, toPrint, penUp);
+    if (d_pen_holder_top_large) render_pen_holder_top_large(crend, toPrint, penUp);
     if (d_pen_holder_cap) render_pen_holder_cap(crend, toPrint);
     if (d_servo_holder) render_servo_holder(crend, toPrint);
+    if (d_servo_horn) render_micro_servo_horn(crend, toPrint, penUp);
     if (d_logotype) render_logotype(crend, toPrint);
 
     // Render the print supports
@@ -181,8 +186,8 @@ module main() {
     if (d_pcb) render_pcb(crend, toPrint);
     if (d_leds) render_leds(crend, toPrint);
     if (d_ball_bearing) render_ball_bearing(crend, toPrint);
-    if (d_pen) render_pen(crend, toPrint);
-    if (d_servo) render_9g_servo(crend, toPrint);
+    if (d_pen) render_pen(crend, toPrint, penUp);
+    if (d_servo) render_micro_servo(crend, toPrint);
     if (d_battery) render_battery(crend, toPrint);
 
     // Render screws

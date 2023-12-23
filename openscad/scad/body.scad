@@ -309,21 +309,20 @@ module pcb_mount_holes()
 module pen_servo_mount_holes()
 {
     // M3 screw holes
-    move([38.5,53,-3.75]) cyl(h=8,d=5);
-    move([38.5,23,-3.75]) cyl(h=8,d=5);
+    move([38.5,49.5,-3.75]) cyl(h=8,d=5);
+    move([38.5,16.5,-3.75]) cyl(h=8,d=5);
 }
 
 module pen_servo_mount_material()
 {
-    move([38.5,53,-5]) cyl(h=10,d=8, $fn=8);
-    move([38.5,23,-5]) cyl(h=10,d=8, $fn=8);
+    move([38.5,49.5,-5]) cyl(h=10,d=8, $fn=8);
+    move([38.5,16.5,-5]) cyl(h=10,d=8, $fn=8);
 }
 
 module pen_servo_mount_inserts()
 {
-    move([38.5,53,0]) insertM3x57_th();
-    move([38.5,23,0]) insertM3x57_th();
-    
+    move([38.5,49.5,0]) insertM3x57_th();
+    move([38.5,16.5,0]) insertM3x57_th();
 }
 
 module battery_strap_holes()

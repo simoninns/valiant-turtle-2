@@ -28,15 +28,21 @@ use <BOSL/shapes.scad>
 
 module servo_holder()
 {
-    move([30.5,38,8.5]) {
+    move([30.5,34.5,8.5]) {
         difference() {
             union() {
-                move([1,0,0.5]) cuboid([7,39,18], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
-                move([6.5,0,-7]) cuboid([12,39,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);    
-            }
+                difference() {
+                    union() {
+                        move([1,-14,0.5]) cuboid([7,7,16], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
+                        move([1,+14,0.5]) cuboid([7,7,16], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
+                    }
 
-            // Servo clearance
-            move([0,0,1.5]) cuboid([30,24,13]);
+                    // Servo clearance
+                    move([0,0,0]) cuboid([30,24,18]);
+                }
+
+                move([5,-1.5,-7]) cuboid([15,42,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);    
+            }
 
             // Servo mounting holes
             move([0,14,1.5]) xcyl(h=10,d=2);
@@ -44,7 +50,7 @@ module servo_holder()
 
             // M3 screw holes
             move([8,15,-7]) cyl(h=5,d=3);
-            move([8,-15,-7]) cyl(h=5,d=3);
+            move([8,-18,-7]) cyl(h=5,d=3);
         }
     }
 }

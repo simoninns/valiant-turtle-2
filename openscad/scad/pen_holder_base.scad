@@ -29,14 +29,7 @@ use <BOSL/threading.scad>
 
 module pen_servo_interface()
 {
-    difference() {
-    move([0,0,8]) {
-        move([0,0,0]) cyl(h=1, d=31, center=false, chamfer2=0.5, $fn=8);
-        move([0,0,-5]) cyl(h=5, d2=31, d1= 20, center=false, $fn=8);
-    }
-
-    move([-10,0,5]) cuboid([20,40,12]);
-    }
+    move([10,0,3.75]) cuboid([10,8,7.5], chamfer=0.5);
 }
 
 module holder_body()
@@ -73,22 +66,24 @@ module inner_profile()
     }
 }
 
-module render_pen_holder_base(crend, toPrint)
+module pen_holder()
+{
+    difference() {
+        holder_body();
+        inner_profile();
+        move([0,0,3]) trapezoidal_threaded_rod(d=16, l=7, pitch=1.2, thread_angle=30, internal=true, $fn=32);
+    }
+}
+
+module render_pen_holder_base(crend, toPrint, penUp)
 {
     if (!toPrint) {
         color([0.8,0.8,0.8]) {
-            move([0,29,16+7]) xrot(180) difference() {
-                holder_body();
-                inner_profile();
-                move([0,0,3]) trapezoidal_threaded_rod(d=16, l=7, pitch=1.2, thread_angle=30, internal=true, $fn=32);
-            }
+            if(penUp) move([0,29,23+4]) xrot(180) pen_holder();
+            else move([0,29,23]) xrot(180) pen_holder();
         }
     } else {
-        difference() {
-            holder_body();
-            inner_profile();
-            move([0,0,3]) trapezoidal_threaded_rod(d=16, l=7, pitch=1.2, thread_angle=30, internal=true, $fn=32);
-        }
+        pen_holder();
     }
 }
 
@@ -111,7 +106,10 @@ module pen()
     }
 }
 
-module render_pen(crend, toPrint)
+module render_pen(crend, toPrint, penUp)
 {
-    if (!toPrint) pen();
+    if (!toPrint) {
+        if (penUp) move([0,0,4]) pen();
+        else pen();
+    }
 }

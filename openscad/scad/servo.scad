@@ -26,25 +26,35 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-module nineg_servo_arm()
+module micro_servo_horn(angle)
 {
-    shaft_c = [0.9,0.9,0.9];
-
-    color(shaft_c) difference() {
+    zrot(angle) difference() {
         union() {
-            move([5.5,0,18.5]) cyl(d=6.75, h=4.5, $fn=20, center=true);
-
             hull() {
-                move([5.5,0,20]) cyl(d=6, h=1.5, $fn=20, center=true);
-                move([5.5-15,0,20]) cyl(d=5, h=1.5, $fn=20, center=true);
+                // Rounded rhombus
+                move([6.5,0,0]) cyl(d=4, h=4, center=true, chamfer2=0.5);
+                move([0,0,0]) cyl(d=8, h=4, center=true, chamfer2=0.5);
+                move([-6.5,0,0]) cyl(d=4, h=4, center=true, chamfer2=0.5);
             }
+
+            // Shaft
+            move([0,0,1.5]) cyl(d=7, h=4.5, center=true);
         }
 
-        move([5.5,0,20]) cyl(d=4.5, h=2, $fn=20, center=true);
+        // Remove center material from shaft
+        move([0,0,-2]) cyl(d=5, h=4, center=true);
+        move([0,0,2]) cyl(d=2.5, h=6, center=true);
+        move([0,0,2.5]) cyl(d=5, h=3, center=true);
+    }
+
+    // Servo shaft grip 21T d=4.8mm
+    // Note: On a standard FFF printer this is more of a press-fit - but it works fine anyway
+    for(rota=[0: 360/21: 360]) {
+        rotate([0,0,rota]) move([5.25 / 2,0,2.25]) zrot(45) cuboid([0.5,0.5,3]);
     }
 }
 
-module nineg_servo()
+module micro_servo()
 {
     // Colours
     shell_c = [0.1,0.4,0.9];
@@ -71,12 +81,27 @@ module nineg_servo()
 	}
 }
 
-module render_9g_servo(crend, toPrint)
+module render_micro_servo(crend, toPrint)
 {
     if (!toPrint) {
-        move([32,38,10]) xrot(-90) yrot(-90) {
-            nineg_servo();
-            nineg_servo_arm();
+        move([32,34.5,10]) xrot(90) yrot(-90) {
+            micro_servo();
         }
+    }
+}
+
+module render_micro_servo_horn(crend, toPrint, penUp)
+{
+    if (!toPrint) {
+        move([0,0,0]) {
+            color([0.9,0.9,0.9,1]) yrot(90) {
+                move([-11,29,12.5]) {
+                    if (penUp) micro_servo_horn(0);
+                    else micro_servo_horn(90);
+                }
+            }
+        }
+    } else {
+        move([0,0,2]) micro_servo_horn(0);
     }
 }

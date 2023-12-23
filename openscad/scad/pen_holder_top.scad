@@ -134,30 +134,33 @@ module holder_insert_large()
 }
 
 // Blue, small holder
-module render_pen_holder_top_small(crend, toPrint)
+module render_pen_holder_top_small(crend, toPrint, penUp)
 {
     if (!toPrint) {
-        color([0.8,0.8,0.8]) move([0,29,16 + 7]) rotate([180,0,0]) holder_insert_small();
+        if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 4]) rotate([180,0,0]) holder_insert_small();
+        else color([0.8,0.8,0.8]) move([0,29,16 + 7 + 0]) rotate([180,0,0]) holder_insert_small();
     } else {
         move([0,0,9.5]) rotate([0,-15,0]) holder_insert_small();
     }
 }    
 
 // White, medium holder
-module render_pen_holder_top_medium(crend, toPrint)
+module render_pen_holder_top_medium(crend, toPrint, penUp)
 {
     if (!toPrint) {
-        color([0.8,0.8,0.8]) move([0,29,16 + 7]) rotate([180,0,0]) holder_insert_medium();
+        if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 4]) rotate([180,0,0]) holder_insert_medium();
+        else color([0.8,0.8,0.8]) move([0,29,16 + 7]) rotate([180,0,0]) holder_insert_medium();
     } else {
         move([0,0,9.5]) rotate([0,-15,0]) holder_insert_medium();
     }
 }
 
 // Grey, large holder
-module render_pen_holder_top_large(crend, toPrint)
+module render_pen_holder_top_large(crend, toPrint, penUp)
 {
     if (!toPrint) {
-        color([0.8,0.8,0.8]) move([0,29,16 + 7]) rotate([180,0,0]) holder_insert_large();
+        if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 4]) rotate([180,0,0]) holder_insert_large();
+        else color([0.8,0.8,0.8]) move([0,29,16 + 7]) rotate([180,0,0]) holder_insert_large();
     }
     else move([0,0,9.5]) rotate([0,-15,0]) holder_insert_large();
 }    
