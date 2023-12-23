@@ -44,11 +44,12 @@ module pen_holder_cap()
     }
 }
 
-module render_pen_holder_cap(crend, toPrint)
+module render_pen_holder_cap(crend, toPrint, penUp)
 {
     if (!toPrint) {
         color([0.8,0.8,0.8]) {
-            move([0,29,-25]) xrot(180) pen_holder_cap();
+            if(penUp) move([0,29,-25 + 4]) xrot(180) pen_holder_cap();
+            else move([0,29,-25]) xrot(180) pen_holder_cap();
         }
     } else {
         move([0,0,11]) xrot(180) pen_holder_cap();

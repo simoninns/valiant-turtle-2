@@ -39,10 +39,9 @@ module holder_body()
 
     // Main Shaft (pen hole is 16mm)
     difference() {
-        move([0,0,22]) cyl(h=23, d=15.75, center=false, chamfer2=0.5, $fn=8);
-        move([0,-12,26]) cuboid([10,10,40]);
+        move([0,0,22]) cyl(h=23, d=15.5, center=false, chamfer2=0.5, $fn=8);
+        move([0,-11.75,26]) cuboid([10,10,40]);
     }
-    move([0,-5,45]) cuboid([3,4,1], chamfer=0.5);
 
     // Tip
     move([0,0,46 - 1]) cyl(h=5, d=8, center=false, chamfer2=0.5, $fn=32);
@@ -95,6 +94,7 @@ module pen()
     // that it makes good contact with the surface
     color([0.4,0.4,0.4]) move([0,29,53]) {
         move([0,0,43]) cyl(h=6, d=9);
+        move([0,0,40.5]) cyl(h=1, d1=10.5, d2=9);
         cyl(h=80, d=10.5);
         move([0,0,-55]) cyl(h=30, d=8.5);
         move([0,0,-72.5]) cyl(h=5, d=6);
@@ -102,7 +102,7 @@ module pen()
         move([0,0,-78.5]) cyl(h=7, d2=6, d1=4);
 
         move([0,0,-83]) cyl(h=2, d2=2, d1=1);
-        move([0,0,-84.5]) cyl(h=5, d=0.75);
+        move([0,0,-84.5]) cyl(h=5, d=1);
     }
 }
 

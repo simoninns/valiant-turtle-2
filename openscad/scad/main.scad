@@ -169,7 +169,7 @@ module main() {
     if (d_pen_holder_top_small) render_pen_holder_top_small(crend, toPrint, penUp);
     if (d_pen_holder_top_medium) render_pen_holder_top_medium(crend, toPrint, penUp);
     if (d_pen_holder_top_large) render_pen_holder_top_large(crend, toPrint, penUp);
-    if (d_pen_holder_cap) render_pen_holder_cap(crend, toPrint);
+    if (d_pen_holder_cap) render_pen_holder_cap(crend, toPrint,penUp);
     if (d_servo_holder) render_servo_holder(crend, toPrint);
     if (d_servo_horn) render_micro_servo_horn(crend, toPrint, penUp);
     if (d_logotype) render_logotype(crend, toPrint);
