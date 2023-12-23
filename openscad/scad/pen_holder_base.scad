@@ -93,16 +93,16 @@ module pen()
     // Make the tip of the pen 1mm over the wheel base to ensure
     // that it makes good contact with the surface
     color([0.4,0.4,0.4]) move([0,29,53]) {
-        move([0,0,43]) cyl(h=6, d=9);
-        move([0,0,40.5]) cyl(h=1, d1=10.5, d2=9);
-        cyl(h=80, d=10.5);
-        move([0,0,-55]) cyl(h=30, d=8.5);
-        move([0,0,-72.5]) cyl(h=5, d=6);
+        move([0,0,43]) cyl(h=6, d=9, $fn=16);
+        move([0,0,40.5]) cyl(h=1, d1=10.5, d2=9, $fn=16);
+        cyl(h=80, d=10.5, $fn=16);
+        move([0,0,-55]) cyl(h=30, d=8.5, $fn=16);
+        move([0,0,-72.5]) cyl(h=5, d=6, $fn=16);
 
-        move([0,0,-78.5]) cyl(h=7, d2=6, d1=4);
+        move([0,0,-78.5]) cyl(h=7, d2=6, d1=4, $fn=16);
 
-        move([0,0,-83]) cyl(h=2, d2=2, d1=1);
-        move([0,0,-84.5]) cyl(h=5, d=1);
+        move([0,0,-83]) cyl(h=2, d2=2, d1=1, $fn=16);
+        move([0,0,-84.5]) cyl(h=5, d=1, $fn=16);
     }
 }
 

@@ -67,9 +67,9 @@ module render_servo_holder(crend, toPrint)
 module render_servo_holder_screws(crend, toPrint)
 {
     if (!toPrint) {
-        move([30.5,38,8.5]) {
+        move([30.5,34.5,8.5]) {
             move([8,15,-5.5]) m3x10_screw();
-            move([8,-15,-5.5]) m3x10_screw();
+            move([8,-18,-5.5]) m3x10_screw();
         }
     }
 }
