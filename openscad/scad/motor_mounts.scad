@@ -70,7 +70,7 @@ module nema17_mount()
                 // NEMA 17 Lip
                 move([-(7/2) - 2.5,0,1.25]) cuboid([5,46,43.5], chamfer=1, edges=EDGES_X_ALL);
 
-                // Shell positioner
+                // Shell positioner ('arms' that keep the shell in the correct place)
                 move([0.5,-3.75,8.5]) cuboid([6,74.5,5], chamfer=1, edges=EDGES_X_ALL);
             }
             

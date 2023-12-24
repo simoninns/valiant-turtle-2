@@ -26,6 +26,8 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
+// Note: Both the left and right screw platforms are made to fit between the shell
+// back screw mounts; this is to stop the shell sliding around sideways
 module servo_holder()
 {
     move([30.5,34.5,8.5]) {
@@ -33,6 +35,7 @@ module servo_holder()
             union() {
                 difference() {
                     union() {
+                        // Servo attachement towers
                         move([1,-14,0.5]) cuboid([7,7,16], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
                         move([1,+14,0.5]) cuboid([7,7,16], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
                     }
@@ -41,7 +44,8 @@ module servo_holder()
                     move([0,0,0]) cuboid([30,24,18]);
                 }
 
-                move([5,-1.5,-7]) cuboid([15,42,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);    
+                // Right screw platform
+                move([5,-1.5 + 3,-7]) cuboid([16,42+6,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);    
             }
 
             // Servo mounting holes
@@ -59,7 +63,8 @@ module servo_holder()
 
     move([-30.5,34.5,8.5]) {
         difference() {
-            move([-5,-1.5,-7]) cuboid([15,42,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
+            // Left screw platform
+            move([-5,-1.5 + 3,-7]) cuboid([16,42+6,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
 
             // M3 screw holes
             move([-8,15,-7]) cyl(h=5,d=3);
