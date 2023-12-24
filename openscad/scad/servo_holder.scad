@@ -52,15 +52,58 @@ module servo_holder()
             move([8,15,-7]) cyl(h=5,d=3);
             move([8,-18,-7]) cyl(h=5,d=3);
         }
+
+        // Platform to make installing the servo easier
+        move([4.5,0,-6]) cuboid([14,25,2], chamfer=0.5);
+    }
+
+    move([-30.5,34.5,8.5]) {
+        difference() {
+            move([-5,-1.5,-7]) cuboid([15,42,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
+
+            // M3 screw holes
+            move([-8,15,-7]) cyl(h=5,d=3);
+            move([-8,-18,-7]) cyl(h=5,d=3);
+        }
+    }
+}
+
+module pen_support()
+{
+    move([0,29,0]) {
+        difference() {
+            union() {
+                cyl(h=24, d=25, center=false, chamfer2=0.5, $fn=8);
+                move([0,0.5,1.5]) cuboid([60,35,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL); 
+            }
+            
+            // Shaft center
+            move([0,0,-1]) cyl(h=28, d=20.5, center=false, $fn=8);
+
+            // Cut out for servo interface
+            move([12,0,17]) cuboid([10,8.5,28]);
+
+            // Servo horn clearance
+            move([11.5,0,17.01]) cuboid([3,18,28]);
+
+            // Round top edge of slot
+            move([10,0,25]) xrot(45) cuboid([8.5,8.5,8.5]);
+        }
     }
 }
 
 module render_servo_holder(crend, toPrint)
 {
     if (!toPrint) {
-        color([0.9,0.9,0.6,1]) servo_holder();
+        color([0.9,0.9,0.6,1]) {
+            servo_holder();
+            pen_support();
+        }
     } else {
-        move([10,-40,-28]) yrot(-90) servo_holder();
+        move([0,-29,0]) {
+            servo_holder();
+            pen_support();
+        }
     }
 }
 
@@ -70,6 +113,11 @@ module render_servo_holder_screws(crend, toPrint)
         move([30.5,34.5,8.5]) {
             move([8,15,-5.5]) m3x10_screw();
             move([8,-18,-5.5]) m3x10_screw();
+        }
+
+        move([-30.5,34.5,8.5]) {
+            move([-8,15,-5.5]) m3x10_screw();
+            move([-8,-18,-5.5]) m3x10_screw();
         }
     }
 }

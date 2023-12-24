@@ -375,6 +375,7 @@ module body_left()
             pen_hole_lip();
             body_joiners_left();
             wheel_cutout_supports();
+            pen_servo_mount_material();
         }
 
         head_clearance();
@@ -385,12 +386,14 @@ module body_left()
         head_mounts();
         pen_hole();
         pcb_mount_holes();
+        xflip() pen_servo_mount_holes();
         battery_strap_holes();
         move([-70,-75,-2.501]) zrot(39) logotype();
 
         body_joiners_left_clearance();
     }
     body_joiners_left_inserts();
+    xflip() pen_servo_mount_inserts();
     xflip() pen_hole_key();
 }
 
