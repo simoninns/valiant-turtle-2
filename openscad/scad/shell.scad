@@ -483,13 +483,13 @@ module render_shell(crend, toPrint)
     if (!toPrint) {
         color([0,0.8,0,1]) {
             // Top
-            // shellTop();
-            // joiner();
-            // front_panels();
+            shellTop();
+            joiner();
+            front_panels();
 
             // Bottom
             shellBottom();
-            //shellBottomArches();
+            shellBottomArches();
         }
     } else {  
         move([0,0,0]) xrot(0) {
