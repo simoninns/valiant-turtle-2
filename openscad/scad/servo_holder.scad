@@ -88,6 +88,10 @@ module pen_support()
 
             // Round top edge of slot
             move([10,0,25]) xrot(45) cuboid([8.5,8.5,8.5]);
+
+            // Clearance for servo horn in the base plate
+            move([11.49,0,4]) cuboid([7,8.5,10]);
+            move([13.5,0,4]) cuboid([7,12.5,6], chamfer=2, edges=EDGES_RIGHT+EDGES_X_ALL);
         }
     }
 }
