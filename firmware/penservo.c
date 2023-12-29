@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    penservo.c
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -26,37 +26,47 @@
 
 #include <stdio.h>
 #include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#include "hardware/pwm.h"
+#include "hardware/clocks.h"
 
-#include "leds.h"
 #include "penservo.h"
 
-int main()
+float clockDiv = 64;
+float wrap = 39062;
+
+void penServoInitialise(void)
 {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    ledInitialise();
-    penServoInitialise();
+    gpio_set_function(PENSERVOGPIO, GPIO_FUNC_PWM);
+    uint slice_num = pwm_gpio_to_slice_num(PENSERVOGPIO);
+    pwm_config config = pwm_get_default_config();
+    
+    // Calculate required clock speed
+    uint64_t clockspeed = clock_get_hz(5);
+    clockDiv = 64;
+    wrap = 39062;
 
-    // Show a banner on the terminal output
-    printf("\r\n\r\n\r\nValiant Turtle 2\r\n");
-    printf("Copyright (C)2023 Simon Inns\r\n");
-    printf("GPLv3 Open-Source\r\n");
-    printf("\r\n");
+    while (clockspeed/clockDiv/50 > 65535 && clockDiv < 256) clockDiv += 64; 
+    wrap = clockspeed/clockDiv/50;
 
-    while (true) {
-        ledControl(LED_SYSTEM, true);
-        penDown();
-        sleep_ms(1000);
+    pwm_config_set_clkdiv(&config, clockDiv);
+    pwm_config_set_wrap(&config, wrap);
 
-        penUp();
-        sleep_ms(1000);
+    pwm_init(slice_num, &config, true);
+}
 
-        ledControl(LED_SYSTEM, false);
-        penOff();
-        sleep_ms(1000);
-        sleep_ms(1000);
-        sleep_ms(1000);
-    }
+void penDown(void)
+{
+    float ms = 1000;
+    pwm_set_gpio_level(PENSERVOGPIO, (ms/20000.f)*wrap);
+}
+
+void penUp(void)
+{
+    float ms = 2000;
+    pwm_set_gpio_level(PENSERVOGPIO, (ms/20000.f)*wrap);
+}
+
+void penOff(void)
+{
+    pwm_set_gpio_level(PENSERVOGPIO, 0);
 }
