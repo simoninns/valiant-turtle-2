@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    drivemotors.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -24,28 +24,28 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef DRIVEMOTORS_H_
+#define DRIVEMOTORS_H_
 
-#include "cli.h"
-#include "leds.h"
-#include "penservo.h"
-#include "drivemotors.h"
+// Hardware mapping
+// Drive motors enable - GPIO 02 (pin 4)
+#define DM_ENABLE_GPIO 2
 
-int main()
-{
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    ledInitialise();
-    penServoInitialise();
-    driveMotorsInitialise();
+// Drive motors left step - GPIO 03 (pin 5)
+// Drive motors right step - GPIO 05 (pin 7)
+#define DM_LSTEP_GPIO 3
+#define DM_RSTEP_GPIO 5
 
-    // Turn on the system LED
-    ledControl(LED_SYSTEM, true);
+// Drive motors left direction - GPIO 04 (pin 6)
+// Drive motors right direction - GPIO 06 (pin 9)
+#define DM_LDIR_GPIO 4
+#define DM_RDIR_GPIO 6
 
-    while (true) {
-        cliProcess();
-    }
-}
+void driveMotorsInitialise(void);
+void driveMotorsEnable(bool state);
+void driveMotorLeftDir(bool state);
+void driveMotorRightDir(bool state);
+void driveMotorLeftStep(uint16_t steps);
+void driveMotorRightStep(uint16_t steps);
+
+#endif /* DRIVEMOTORS_H_ */

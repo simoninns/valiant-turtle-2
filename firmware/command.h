@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    command.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -24,28 +24,13 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef COMMAND_H_
+#define COMMAND_H_
 
-#include "cli.h"
-#include "leds.h"
-#include "penservo.h"
-#include "drivemotors.h"
+uint16_t commandProcess(char *command, uint16_t parameter);
 
-int main()
-{
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    ledInitialise();
-    penServoInitialise();
-    driveMotorsInitialise();
+void commandHelp(void);
+void commandPen(uint16_t commandType);
+void commandMotor(uint16_t commandType, uint16_t commandParameter);
 
-    // Turn on the system LED
-    ledControl(LED_SYSTEM, true);
-
-    while (true) {
-        cliProcess();
-    }
-}
+#endif /* COMMAND_H_ */

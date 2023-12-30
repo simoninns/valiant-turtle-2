@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
-add_executable(${PROJECT_NAME} main.c leds.c penservo.c)
+add_executable(${PROJECT_NAME} main.c leds.c penservo.c cli.c command.c drivemotors.c)
 
 pico_add_extra_outputs(${PROJECT_NAME})
 

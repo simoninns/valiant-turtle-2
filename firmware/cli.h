@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    cli.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -24,28 +24,40 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef CLI_H_
+#define CLI_H_
 
-#include "cli.h"
-#include "leds.h"
-#include "penservo.h"
-#include "drivemotors.h"
+// Enumerations
+typedef enum {
+    CLI_START,
+    CLI_PROMPT,
+	CLI_COLLECT,
+    CLI_INTERPRET,
+	CLI_ERROR,
+    CLI_PENCTRL,
+    CLI_MOTORCTRL
+} cli_state_t;
 
-int main()
-{
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    ledInitialise();
-    penServoInitialise();
-    driveMotorsInitialise();
+typedef enum {
+    ERR_CMD_NONE,
+    ERR_CMD_SHORT,
+    ERR_CMD_UNKNOWN,
+    ERR_CMD_PARAMISSING
+} cli_error_t;
 
-    // Turn on the system LED
-    ledControl(LED_SYSTEM, true);
+// Prototypes
+void cliResetCommandBuffers(void);
+void cliInitialise(void);
+void cliProcess(void);
 
-    while (true) {
-        cliProcess();
-    }
-}
+// States
+cli_state_t cliState_Start(void);
+cli_state_t cliState_Prompt(void);
+cli_state_t cliState_Collect(void);
+cli_state_t cliState_Interpret(void);
+cli_state_t cliState_Error(void);
+
+// Utilities
+void convUppercase(char *temp);
+
+#endif /* CLI_H_ */
