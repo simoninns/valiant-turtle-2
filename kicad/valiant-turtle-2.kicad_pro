@@ -330,6 +330,14 @@
     [
       "3e3711ee-f980-4193-ae36-e2257847eb0e",
       "NEMA 17 Stepper Drivers"
+    ],
+    [
+      "ac6669a2-ab2c-45b0-9a1c-7412e0fcd7d5",
+      "Battery Monitor"
+    ],
+    [
+      "2c100eaa-8b72-47f8-a08f-708ddfdf52ff",
+      "Pen Servo"
     ]
   ],
   "text_variables": {}

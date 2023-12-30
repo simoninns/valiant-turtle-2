@@ -76,6 +76,7 @@ display_pen_holder_cap = "No"; // [Yes, No]
 display_servo_holder = "No"; // [Yes, No]
 display_servo_horn = "No"; // [Yes, No]
 display_logotype = "No"; // [Yes, No]
+display_battery_holder = "No"; // [Yes, No]
 
 /* [Print Supports] */
 display_shell_support = "No"; // [Yes, No]
@@ -128,6 +129,7 @@ module main() {
     d_servo_holder = (display_servo_holder == "Yes") ? true:false;
     d_servo_horn = (display_servo_horn == "Yes") ? true:false;
     d_logotype = (display_logotype == "Yes") ? true:false;
+    d_battery_holder = (display_battery_holder == "Yes") ? true:false;
 
     // Print supports
     d_shell_support = (display_shell_support == "Yes") ? true:false;
@@ -176,6 +178,7 @@ module main() {
     if (d_servo_holder) render_servo_holder(crend, toPrint);
     if (d_servo_horn) render_micro_servo_horn(crend, toPrint, penUp);
     if (d_logotype) render_logotype(crend, toPrint);
+    if (d_battery_holder) render_battery_holder(crend, toPrint);
 
     // Render the print supports
     if (d_shell_support) render_shell_support(crend, toPrint);
@@ -212,5 +215,6 @@ if (for_printing == "Printing") {
 } else {
     $fn=20;
     // Place the centre of the axis on the centre rotation point of the model
-    move([0,-29,6]) main();
+    //move([0,-29,6]) main();
+    main();
 }
