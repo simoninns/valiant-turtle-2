@@ -89,9 +89,9 @@ void driveMotorRightStep(uint16_t steps)
         printf("I00 - Right stepping %d\r\n", steps);
         for (uint16_t cnt = 0; cnt < steps; cnt++) {
             gpio_put(DM_RSTEP_GPIO, 1);
-            sleep_us(2);
+            sleep_ms(1.9);
             gpio_put(DM_RSTEP_GPIO, 0);
-            sleep_us(2);
+            sleep_ms(1.9);
         }
     }
 }
