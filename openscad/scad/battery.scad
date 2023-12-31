@@ -63,7 +63,7 @@ module battery_tab_slot(length)
     move([0,6.5,-(length/2)+2.25+0.125]) cuboid([7,9,0.75]);
 }
 
-module battery_tab_holder(length)
+module battery_tab_holder_bottom(length)
 {
     move([0,4.75,(length/2)-2.5]) {
         difference() {
@@ -82,6 +82,41 @@ module battery_tab_holder(length)
             move([0,0,-1]) cuboid([7,14,2.5]);
 
             move([0,7.5,0]) xrot(-45) cuboid([10,9,3]);
+        }
+    }
+}
+
+module battery_tab_holder_top(length)
+{
+    move([0,4.75,(length/2)-2.5]) {
+        difference() {
+            union() {
+                difference() {
+                    move([0,1.5,0]) cuboid([9,8,2.5]);
+                    cuboid([5,14,3]);
+                    move([0,0,1]) cuboid([7,14,2.5]);
+                }
+
+                move([0,6.5,0]) xrot(-90) zrot(90) right_triangle([2.5, 9, 2.5], center=true);
+            }
+
+            move([0,6.5,2]) xrot(-45) cuboid([2,2,8]);
+        }
+    }
+
+    move([0,4.75,-(length/2)+2.5]) {
+        difference() {
+            union() {
+                difference() {
+                    move([0,1.5,0]) cuboid([9,8,2.5]);
+                    cuboid([5,14,3]);
+                    move([0,0,-1]) cuboid([7,14,2.5]);
+                }
+
+                move([0,6.5,0]) xrot(-90) zrot(-90) right_triangle([2.5, 9, 2.5], center=true);
+            }
+
+            move([0,6.5,-2]) xrot(45) cuboid([2,2,8]);
         }
     }
 }
@@ -118,7 +153,7 @@ module battery18650_holder()
             // Sticky-out bit to make it easier to remove batteries
             difference() {
                 move([24,2,0]) cuboid([12,40,34],chamfer=1, edges=EDGES_ALL-EDGES_LEFT-EDGES_FRONT);
-                move([22,-2,0]) cuboid([12,40+4,34-4],chamfer=1, edges=EDGES_ALL-EDGES_LEFT);
+                move([22,-2,0]) cuboid([12,40+4,30],chamfer=1, edges=EDGES_ALL-EDGES_LEFT);
             }
         }
         move([0,-16,0]) cuboid([36,44,length-4],chamfer=0);
@@ -161,17 +196,27 @@ module battery18650_holder()
 
     // Battery tab holders
     move([0,9.5 + 1,0]) {
-        move([-9.5,0,0]) battery_tab_holder(length);
-        move([9.5,0,0]) battery_tab_holder(length);
+        move([-9.5,0,0]) battery_tab_holder_bottom(length);
+        move([9.5,0,0]) battery_tab_holder_bottom(length);
     }
     move([0,-9.5 + 1,0]) {
-        move([-9.5,0,0]) battery_tab_holder(length);
-        move([9.5,0,0]) battery_tab_holder(length);
+        move([-9.5,0,0]) battery_tab_holder_top(length);
+        move([9.5,0,0]) battery_tab_holder_top(length);
     }
 
     // Threaded inserts for mounting
     move([0,-18,44.5]) xrot(90) insertM3x57_th();
     move([0,-18,-44.5]) xrot(90) insertM3x57_th();
+
+    // lid insert
+    difference() {
+        hull() {
+            move([24,-12,0]) xrot(90) cyl(h=12,d=8, $fn=6);
+            move([28.5,-8,0]) cuboid([1,20,7]);
+        }
+        move([24,-15,0]) xrot(90) cyl(h=8,d=5);
+    }
+    move([24,-18,0]) xrot(90) insertM3x57_th();
 }
 
 module render_battery_holder(crend, toPrint)
