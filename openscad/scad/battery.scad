@@ -40,38 +40,47 @@ module battery18650()
 
 module battery18650_holder()
 {
+    length=83;
+
     move([0,-1,0]) difference() {
-        move([0,2,0]) cuboid([20,20,86+2], chamfer=1);
-        move([0,-1,0]) cuboid([20-2,22,86-2]);
-        move([0,-9,0]) cuboid([22,22,86-2],chamfer=1);
-        move([0,-3,0]) cuboid([22,22,20],chamfer=1);
+        move([-10,-8,-(length/2)]) cuboid([20,20,length], chamfer=1, center=false);
+        move([0,0,0]) cyl(h=length-4, d=19.5);
 
-        move([0,2,0]) cuboid([20-10,22,86-16], chamfer=1);
+        move([0,-9,0]) cuboid([22,22,length-4],chamfer=1);
+
+        // Central cross-section
+        move([0,-3,0]) cuboid([22,22,30],chamfer=1);
+
+        // Base cut-out
+        move([0,2,0]) cuboid([20-14,22,length-18], chamfer=1);
+
+        // Slots for battery tabs
+        hull() {
+            move([0,4.5,-(length/2)+1]) cuboid([1.5,1,4]);
+            move([0,11.51,-(length/2)+1]) cuboid([2,1,4]);
+        }
 
         hull() {
-            move([0,4.5,-43]) cuboid([1.5,1,4]);
-            move([0,11.51,-43]) cuboid([2,1,4]);
+            move([0,4.5,(length/2)-1]) cuboid([1.5,1,4]);
+            move([0,11.51,(length/2)-1]) cuboid([2,1,4]);
         }
-        move([0,-3,-43]) cyl(h=4,d=2);
 
-        hull() {
-            move([0,4.5,43]) cuboid([1.5,1,4]);
-            move([0,11.51,43]) cuboid([2,1,4]);
-        }
-        move([0,-3,43]) cyl(h=4,d=2);
+        // Battery tab clearance
+        move([0,6.5,(length/2)-2.25-0.125]) cuboid([7,9,0.75]);
+        move([0,6.5,-(length/2)+2.25+0.125]) cuboid([7,9,0.75]);
     }
-   
+    
     // Battery tab holders
-    move([0,5,41]) difference() {
+    move([0,5,(length/2)-2.5]) difference() {
         cuboid([9,8,2.5]);
         cuboid([5,9,3]);
         move([0,0,1]) cuboid([7,9,2.5]);
     }
 
-    move([0,5,-41]) difference() {
-        cuboid([8,8,2]);
-        cuboid([4,9,3]);
-        move([0,0,-1]) cuboid([6,9,2]);
+    move([0,5,-(length/2)+2.5]) difference() {
+        cuboid([9,8,2.5]);
+        cuboid([5,9,3]);
+        move([0,0,-1]) cuboid([7,9,2.5]);
     }
 }
 
