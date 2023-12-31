@@ -38,50 +38,12 @@ module battery18650()
     move([0,0,(69/2)+0.25]) cyl(h=1, d=5);
 }
 
-module battery18650_holder_single()
+module batteries()
 {
-    length=83;
-
-    move([0,-1,0]) difference() {
-        move([-10,-8,-(length/2)]) cuboid([20,20,length], chamfer=1, center=false);
-        move([0,0,0]) cyl(h=length-4, d=19.5);
-
-        move([0,-9,0]) cuboid([22,22,length-4],chamfer=1);
-
-        // Central cross-section
-        move([0,-3,0]) cuboid([22,22,30],chamfer=1);
-
-        // Base cut-out
-        move([0,2,0]) cuboid([20-14,22,length-18], chamfer=1);
-
-        // Slots for battery tabs
-        hull() {
-            move([0,4.5,-(length/2)+1]) cuboid([1.5,1,4]);
-            move([0,11.51,-(length/2)+1]) cuboid([2,1,4]);
-        }
-
-        hull() {
-            move([0,4.5,(length/2)-1]) cuboid([1.5,1,4]);
-            move([0,11.51,(length/2)-1]) cuboid([2,1,4]);
-        }
-
-        // Battery tab clearance
-        move([0,6.5,(length/2)-2.25-0.125]) cuboid([7,9,0.75]);
-        move([0,6.5,-(length/2)+2.25+0.125]) cuboid([7,9,0.75]);
-    }
-    
-    // Battery tab holders
-    move([0,5,(length/2)-2.5]) difference() {
-        cuboid([9,8,2.5]);
-        cuboid([5,9,3]);
-        move([0,0,1]) cuboid([7,9,2.5]);
-    }
-
-    move([0,5,-(length/2)+2.5]) difference() {
-        cuboid([9,8,2.5]);
-        cuboid([5,9,3]);
-        move([0,0,-1]) cuboid([7,9,2.5]);
-    }
+    move([9.5,9.5,0]) battery18650();
+    move([-9.5,-9.5,0]) battery18650();
+    move([-9.5,9.5,0]) battery18650();
+    move([9.5,-9.5,0]) battery18650();
 }
 
 module battery_tab_slot(length)
@@ -103,72 +65,104 @@ module battery_tab_slot(length)
 
 module battery_tab_holder(length)
 {
-    move([0,5,(length/2)-2.5]) difference() {
-        cuboid([9,8,2.5]);
-        cuboid([5,9,3]);
-        move([0,0,1]) cuboid([7,9,2.5]);
+    move([0,4.75,(length/2)-2.5]) {
+        difference() {
+            move([0,2,0]) cuboid([9,10,2.5]);
+            cuboid([5,14,3]);
+            move([0,0,1]) cuboid([7,14,2.5]);
+
+            move([0,7.5,0]) xrot(45) cuboid([10,9,3]);
+        }
     }
 
-    move([0,5,-(length/2)+2.5]) difference() {
-        cuboid([9,8,2.5]);
-        cuboid([5,9,3]);
-        move([0,0,-1]) cuboid([7,9,2.5]);
+    move([0,4.75,-(length/2)+2.5]) difference() {
+        difference() {
+            move([0,2,0]) cuboid([9,10,2.5]);
+            cuboid([5,14,3]);
+            move([0,0,-1]) cuboid([7,14,2.5]);
+
+            move([0,7.5,0]) xrot(-45) cuboid([10,9,3]);
+        }
     }
 }
 
-module battery18650_holder_double()
+module battery18650_holder()
 {
     length=83;
 
     move([0,-1,0]) difference() {
-        move([-20,-8,-(length/2)]) cuboid([40,20,length], chamfer=1, center=false);
-        move([-9.5,0,0]) cyl(h=length-4, d=19.5);
-        move([9.5,0,0]) cyl(h=length-4, d=19.5);
+        move([-21,-8 - 10,-(length/2)]) cuboid([42,40,length], chamfer=1, center=false);
+        move([0,-16,0]) cuboid([36,44,length-4],chamfer=0);
 
-        move([0,-12,0]) cuboid([44,18,length-4],chamfer=1);
+        move([0,9.5,0]) {
+            move([-9.5,0,0]) cyl(h=length-4, d=19.5);
+            move([9.5,0,0]) cyl(h=length-4, d=19.5);
 
-        // Centre clearance
-        move([0,-1,0]) cuboid([10,18,length-4],chamfer=1);
+            // Centre clearance
+            move([0,-1,0]) cuboid([10,18,length-4],chamfer=1);
 
-        // Central cross-section
-        move([0,-3,0]) cuboid([44,22,30],chamfer=1);
+            // Central cross-section
+            move([0,-20,0]) cuboid([46,45,30],chamfer=1);
 
-        // Base cut-out
-        move([0,2,0]) cuboid([20-14,22,length-18], chamfer=1);
+            // Base cut-out
+            move([0,2,0]) cuboid([20-14,22,length-18], chamfer=1);
 
-        // Slots for battery tabs
-        move([-9.5,0,0]) battery_tab_slot(length);
-        move([9.5,0,0]) battery_tab_slot(length);
+            // Slots for battery tabs
+            move([-9.5,0,0]) battery_tab_slot(length);
+            move([9.5,0,0]) battery_tab_slot(length);
+        }
+
+        move([0,-9.5,0]) {
+            move([-9.5,0,0]) cyl(h=length-4, d=19.5);
+            move([9.5,0,0]) cyl(h=length-4, d=19.5);
+
+            // Centre clearance
+            move([0,-1,0]) cuboid([10,18,length-4],chamfer=1);
+
+            // Central cross-section
+            move([0,-20,0]) cuboid([44,44,30],chamfer=1);
+
+            // Base cut-out
+            move([0,2,0]) cuboid([20-14,22,length-18], chamfer=1);
+
+            // Slots for battery tabs
+            move([-9.5,0,0]) battery_tab_slot(length);
+            move([9.5,0,0]) battery_tab_slot(length);
+        }
     }
 
-    
-    
     // Battery tab holders
-    move([-9.5,0,0]) battery_tab_holder(length);
-    move([9.5,0,0]) battery_tab_holder(length);
+    move([0,9.5,0]) {
+        move([-9.5,0,0]) battery_tab_holder(length);
+        move([9.5,0,0]) battery_tab_holder(length);
+    }
+    move([0,-9.5,0]) {
+        move([-9.5,0,0]) battery_tab_holder(length);
+        move([9.5,0,0]) battery_tab_holder(length);
+    }
 }
 
 module render_battery_holder(crend, toPrint)
 {
     if (!toPrint) {
-        //color([0.4,0.4,0.5]) battery18650_holder_single();
-        color([0.4,0.4,0.5]) battery18650_holder_double();
+        color([0.4,0.4,0.5]) {
+            move([0,-18,19]) {
+                xrot(90) yrot(90) battery18650_holder();
+            }
+        }
     } else {
-        //move([0,0,11]) xrot(-90) battery18650_single();
-        move([0,0,11]) xrot(-90) battery18650_holder_double();
+        move([0,0,21]) xrot(-90) battery18650_holder();
     }
 }
 
 module render_battery(crend, toPrint)
 {
     if (!toPrint) {
-        // 1 Battery
-        //color([0.3,0.8,0.5]) battery18650();
-
-        // 2 Batteries
+        // 4 Batteries
         color([0.3,0.8,0.5]) {
-            move([9.5,0,0]) battery18650();
-            move([-9.5,0,0]) battery18650();
+            move([0,0,19]) {
+                xrot(90) yrot(90) batteries();
+            }
         }
     }
 }
