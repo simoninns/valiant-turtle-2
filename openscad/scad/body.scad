@@ -162,12 +162,11 @@ module body_joiners_left_clearance()
     move([0, 44,-6]) xcyl(h=9,d=5);
 
     // Holes for right screws
-    move([0,-33,-6]) xcyl(h=9,d=3.5);
-    move([0,10,-6]) xcyl(h=9,d=3.5);
+    move([0,-44,-6]) xcyl(h=9,d=3.5);
+    move([0,13,-6]) xcyl(h=9,d=3.5);
 
-    // Additional screw head clearance against body
-    move([-9,-33,-6]) xcyl(h=12,d=7);
-    move([-9,10,-6]) xcyl(h=12,d=7);
+    // Make a channel for the screwdriver
+    move([-16,-44,-10]) xcyl(h=26,d=5);
 }
 
 module body_joiners_left_inserts()
@@ -178,32 +177,29 @@ module body_joiners_left_inserts()
 module body_joiners_right()
 {
     difference() {
-        move([6,-33,-6]) cuboid([10,8,8]);
-        move([4,-33,-6]) xcyl(h=8,d=5);
+        move([6,-44,-6]) cuboid([10,8,8]);
+        move([4,-44,-6]) xcyl(h=8,d=5);
     }
 
     difference() {
-        move([6,10,-6]) cuboid([10,8,8]);
-        move([4,10,-6]) xcyl(h=8,d=5);
+        move([6,13,-6]) cuboid([10,8,8]);
+        move([4,13,-6]) xcyl(h=8,d=5);
     }
 }
 
 module body_joiners_right_clearance()
 {
-    move([4,-33,-6]) xcyl(h=9,d=5);
-    move([4,10,-6]) xcyl(h=9,d=5);
+    move([4,-44,-6]) xcyl(h=9,d=5);
+    move([4,13,-6]) xcyl(h=9,d=5);
 
     // Hole for left screw
     move([4, 44,-6]) xcyl(h=9,d=3.5);
-
-    // Additional screw head clearance against body
-    move([9, 44,-6]) xcyl(h=12,d=7);
 }
 
 module body_joiners_right_inserts()
 {
-    move([0,-33,-6]) yrot(-90) insertM3x57();
-    move([0,10,-6]) yrot(-90) insertM3x57();
+    move([0,-44,-6]) yrot(-90) insertM3x57();
+    move([0,13,-6]) yrot(-90) insertM3x57();
 }
 
 module head_clearance()
@@ -325,6 +321,16 @@ module pen_servo_mount_inserts()
     move([38.5,16.5,0]) insertM3x57_th();
 }
 
+module battery_access_hole()
+{
+    move([0,-19,0]) cuboid([79,36,22]);
+    move([0,-1,0]) cuboid([30,20,22]);
+
+    // M3 Mounting screw holes
+    move([44.5,-19,-2]) cyl(h=8,d=3.5);
+    move([-44.5,-19,-2]) cyl(h=8,d=3.5);
+}
+
 module body_right()
 {
     // Right side (viewed from front)
@@ -347,6 +353,7 @@ module body_right()
         pcb_mount_holes();
         pen_servo_mount_holes();
         body_joiners_right_clearance();
+        battery_access_hole();
     }
 
     body_joiners_right_inserts();
@@ -378,6 +385,7 @@ module body_left()
         xflip() pen_servo_mount_holes();
         move([-70,-75,-2.501]) zrot(39) logotype();
         body_joiners_left_clearance();
+        battery_access_hole();
     }
     body_joiners_left_inserts();
     xflip() pen_servo_mount_inserts();
@@ -408,8 +416,8 @@ module render_body_left(crend, toPrint)
 
 module body_left_screws()
 {
-    move([-3,-33,-6]) yrot(-90) m3x10_screw();
-    move([-3,10,-6]) yrot(-90) m3x10_screw();
+    move([-3,-44,-6]) yrot(-90) m3x10_screw();
+    move([-3,13,-6]) yrot(-90) m3x10_screw();
 }
 
 module render_body_left_screws(crend, toPrint)
