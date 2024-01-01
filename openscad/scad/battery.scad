@@ -219,6 +219,94 @@ module battery18650_holder()
     move([24,-18,0]) xrot(90) insertM3x57_th();
 }
 
+module battery_diagram1()
+{
+    move([-3,-3,-0]) {
+        difference() {
+            union() {
+                cuboid([40,8,1], chamfer=1, edges=EDGES_Z_ALL);
+                move([-20.5,0,0]) cuboid([2,4,1], chamfer=0.5, edges=EDGES_Z_ALL);
+            }
+            move([3,3,0]) cuboid([40,8,2], chamfer=1, edges=EDGES_Z_ALL);
+            cuboid([40-2,8-2,2], chamfer=1, edges=EDGES_Z_ALL);
+        }
+    }
+
+    difference() {
+        union() {
+            cuboid([40,8,1], chamfer=1, edges=EDGES_Z_ALL);
+            move([20.5,0,0]) cuboid([2,4,1], chamfer=0.5, edges=EDGES_Z_ALL);
+        }
+        cuboid([40-2,8-2,2], chamfer=1, edges=EDGES_Z_ALL);
+    }
+
+    // Positive symbol
+    move([16,0,0]) cuboid([4,1,1]);
+    move([16,0,0]) cuboid([1,4,1]);
+
+    // Negative symbol
+    move([-16,0,0]) cuboid([4,1,1]);
+}
+
+module battery_diagram2()
+{
+    move([-3,-3,-0]) {
+        difference() {
+            union() {
+                cuboid([40,8,1], chamfer=1, edges=EDGES_Z_ALL);
+                move([20.5,0,0]) cuboid([2,4,1], chamfer=0.5, edges=EDGES_Z_ALL);
+            }
+            move([3,3,0]) cuboid([40,8,2], chamfer=1, edges=EDGES_Z_ALL);
+            cuboid([40-2,8-2,2], chamfer=1, edges=EDGES_Z_ALL);
+        }
+    }
+
+    difference() {
+        union() {
+            cuboid([40,8,1], chamfer=1, edges=EDGES_Z_ALL);
+            move([-20.5,0,0]) cuboid([2,4,1], chamfer=0.5, edges=EDGES_Z_ALL);
+        }
+        cuboid([40-2,8-2,2], chamfer=1, edges=EDGES_Z_ALL);
+    }
+    
+    // Positive symbol
+    move([-16,0,0]) cuboid([4,1,1]);
+    move([-16,0,0]) cuboid([1,4,1]);
+
+    // Negative symbol
+    move([16,0,0]) cuboid([4,1,1]);
+}
+
+module battery_cover()
+{
+    difference() {
+        union() {
+            move([0,-19,-2]) cuboid([79+2,36,4], chamfer=1, edges=EDGES_Z_ALL);
+            move([0,-1,-2]) cuboid([30,20,4], chamfer=1, edges=EDGES_Z_ALL);
+        }
+
+        move([0,-19,-4]) cuboid([79,36-2,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+        move([0,-1,-4]) cuboid([30-2,20-2,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+
+        // M3 holding screw hole
+        move([0,5,0]) cyl(h=10,d=3.5);
+        move([0,5,-5]) cyl(h=4,d=6);
+    }
+
+    // M3 screw head guide
+    difference() {
+        move([0,5,-3]) cyl(h=2,d=8);
+        move([0,5,-3]) cyl(h=4,d=6);
+    }
+
+    // Diagram of battery orientation
+    move([0,-25,-3.49]) battery_diagram1();
+    move([0,-10,-3.49]) battery_diagram2();
+
+    // Lip
+    move([0,-37,-2]) xrot(45) cuboid([60,2,2]);
+}
+
 module render_battery_holder(crend, toPrint)
 {
     if (!toPrint) {
@@ -229,6 +317,15 @@ module render_battery_holder(crend, toPrint)
         }
     } else {
         move([0,0,21]) xrot(-90) battery18650_holder();
+    }
+}
+
+module render_battery_cover(crend, toPrint)
+{
+    if (!toPrint) {
+        color([0.4,0.4,0.5]) battery_cover();
+    } else {
+        move([0,-19,0]) xrot(180) battery_cover();
     }
 }
 
