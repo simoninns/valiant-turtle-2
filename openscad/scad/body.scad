@@ -335,6 +335,21 @@ module battery_access_hole()
     move([0,-37.5,-0.75]) cuboid([60+1,2,2.5]);
 }
 
+module control_panel_hole()
+{
+    move([-23.5,29,-2]) cuboid([21,30,12], chamfer=1, edges=EDGES_Z_ALL);
+}
+
+module control_panel_surround()
+{
+    move([-23.5,29,-4]) {
+        difference() {
+            cuboid([21+2,30+2,2], chamfer=1, edges=EDGES_Z_ALL);
+            cuboid([21,30,14], chamfer=1, edges=EDGES_Z_ALL);
+        }
+    }
+}
+
 module body_right()
 {
     // Right side (viewed from front)
@@ -390,10 +405,12 @@ module body_left()
         move([-70,-75,-2.501]) zrot(39) logotype();
         body_joiners_left_clearance();
         battery_access_hole();
+        control_panel_hole();
     }
     body_joiners_left_inserts();
     xflip() pen_servo_mount_inserts();
     xflip() pen_hole_key();
+    control_panel_surround();
 }
 
 module render_body_right(crend, toPrint)
