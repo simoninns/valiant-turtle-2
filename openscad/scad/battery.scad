@@ -192,6 +192,26 @@ module battery18650_holder()
             move([-9.5,0,0]) battery_tab_slot(length);
             move([9.5,0,0]) battery_tab_slot(length);
         }
+
+        // Polarity markers
+        move([-9,10,-41.5]) positive_symbol();
+        move([9,10,-41.5]) negative_symbol();
+
+        move([-9,-10,-41.5]) negative_symbol();
+        move([9,-10,-41.5]) positive_symbol();
+
+        move([-9,10,41.5]) negative_symbol();
+        move([9,10,41.5]) positive_symbol();
+
+        move([-9,-10,41.5]) positive_symbol();
+        move([9,-10,41.5]) negative_symbol();
+
+        // Cabing markers
+        move([0,18,-41.5]) cuboid([8,1,1]);
+        move([0,1,-41.5]) cuboid([8,1,1]);
+        move([16,6,41.5]) cuboid([1,16,1]);
+        move([-14,10,41.5]) cyl(h=1,d=3); // Output
+        move([-14,-10,41.5]) cyl(h=1,d=3); // Output
     }
 
     // Battery tab holders
@@ -217,6 +237,20 @@ module battery18650_holder()
         move([24,-15,0]) xrot(90) cyl(h=8,d=5);
     }
     move([24,-18,0]) xrot(90) insertM3x57_th();
+
+    // Cable guides
+   
+}
+
+module positive_symbol()
+{
+    cuboid([4,1,1]);
+    cuboid([1,4,1]);
+}
+
+module negative_symbol()
+{
+    cuboid([4,1,1]);
 }
 
 module battery_diagram1()
@@ -241,11 +275,10 @@ module battery_diagram1()
     }
 
     // Positive symbol
-    move([16,0,0]) cuboid([4,1,1]);
-    move([16,0,0]) cuboid([1,4,1]);
+    move([16,0,0]) positive_symbol();
 
     // Negative symbol
-    move([-16,0,0]) cuboid([4,1,1]);
+    move([-16,0,0]) negative_symbol();
 }
 
 module battery_diagram2()
@@ -281,8 +314,8 @@ module battery_cover()
 {
     difference() {
         union() {
-            move([0,-19,-2]) cuboid([79+2,36,4], chamfer=1, edges=EDGES_Z_ALL);
-            move([0,-1,-2]) cuboid([30,20,4], chamfer=1, edges=EDGES_Z_ALL);
+            move([0,-19,-2]) cuboid([79+2,36,4], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP-EDGES_FRONT);
+            move([0,-1,-2]) cuboid([30,20,4], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
         }
 
         move([0,-19,-4]) cuboid([79,36-2,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
@@ -300,11 +333,17 @@ module battery_cover()
     }
 
     // Diagram of battery orientation
-    move([0,-25,-3.49]) battery_diagram1();
-    move([0,-10,-3.49]) battery_diagram2();
+    move([0,-26,-3.49]) battery_diagram1();
+    move([0,-12,-3.49]) battery_diagram2();
 
     // Lip
     move([0,-37,-2]) xrot(45) cuboid([60,2,2]);
+
+    // Tab (to help open)
+    hull() {
+        move([0,-3,-5]) cuboid([24,3,6], chamfer=1);
+        move([0,-3,-7]) cuboid([6,3,8], chamfer=1);
+    }
 }
 
 module render_battery_holder(crend, toPrint)
@@ -344,9 +383,6 @@ module render_battery(crend, toPrint)
 module render_battery_screws(crend, toPrint)
 {
     if (!toPrint) {
-        // move([48.5,56,-3]) xrot(180) m3x10_screw();
-        // move([-48.5,56,-3]) xrot(180) m3x10_screw();
-
         move([44.5,-19,-3]) xrot(180) m3x10_screw();
         move([-44.5,-19,-3]) xrot(180) m3x10_screw();
         move([0,5,-3]) xrot(180) m3x10_screw();
