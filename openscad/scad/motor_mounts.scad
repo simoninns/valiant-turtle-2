@@ -40,8 +40,8 @@ module nema17_motor_small()
 module nema17_motor_large()
 {
     // Render the motor with the shaft pointing right and the cable to the back
-    // 48mm depth with 24mm shaft
-    xrot(-90) yrot(90) nema17_stepper(h=48, shaft=5, shaft_len=24, orient=ORIENT_Z);
+    // 40mm depth with 24mm shaft
+    xrot(-90) yrot(90) nema17_stepper(h=40, shaft=5, shaft_len=24, orient=ORIENT_Z);
 }
 
 module nema17_mount()

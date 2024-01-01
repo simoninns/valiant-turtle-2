@@ -214,7 +214,7 @@ module wheel_cutout()
     move([+89,53.5,-4]) cuboid([49+2,11,18], chamfer=4);
 
     // Back of motor
-    move([51.5,29,-6]) cuboid([13,44,50]);
+    move([58,29,-6]) cuboid([10,44,50]);
 
     // Additional wheel clearance
     move([113,51.5,-4]) cuboid([12,11,18]);
