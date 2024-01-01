@@ -314,12 +314,12 @@ module battery_cover()
 {
     difference() {
         union() {
-            move([0,-19,-2]) cuboid([79+2,36,4], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP-EDGES_FRONT);
-            move([0,-1,-2]) cuboid([30,20,4], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+            move([0,-19,-2]) cuboid([80.5,35.5,4], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP-EDGES_FRONT);
+            move([0,-1,-2]) cuboid([29.5,19.5,4], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
         }
 
-        move([0,-19,-4]) cuboid([79,36-2,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
-        move([0,-1,-4]) cuboid([30-2,20-2,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+        move([0,-19,-4]) cuboid([78.5,33.5,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+        move([0,-1,-4]) cuboid([27.5,17.5,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
 
         // M3 holding screw hole
         move([0,5,0]) cyl(h=10,d=3.5);
@@ -328,7 +328,7 @@ module battery_cover()
 
     // M3 screw head guide
     difference() {
-        move([0,5,-3]) cyl(h=2,d=8);
+        move([0,5,-3]) cyl(h=2,d=7);
         move([0,5,-3]) cyl(h=4,d=6);
     }
 
@@ -342,7 +342,7 @@ module battery_cover()
     // Tab (to help open)
     hull() {
         move([0,-3,-5]) cuboid([24,3,6], chamfer=1);
-        move([0,-3,-7]) cuboid([6,3,8], chamfer=1);
+        move([0,-3,-7]) cuboid([12,3,8], chamfer=1);
     }
 }
 
