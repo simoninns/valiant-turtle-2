@@ -340,3 +340,15 @@ module render_battery(crend, toPrint)
         }
     }
 }
+
+module render_battery_screws(crend, toPrint)
+{
+    if (!toPrint) {
+        // move([48.5,56,-3]) xrot(180) m3x10_screw();
+        // move([-48.5,56,-3]) xrot(180) m3x10_screw();
+
+        move([44.5,-19,-3]) xrot(180) m3x10_screw();
+        move([-44.5,-19,-3]) xrot(180) m3x10_screw();
+        move([0,5,-3]) xrot(180) m3x10_screw();
+    }
+}

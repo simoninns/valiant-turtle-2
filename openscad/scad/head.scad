@@ -65,7 +65,7 @@ module head_shape()
     pointE = [0,-54,18];
     pointF = [10,-54,18];
     pointG = [10,-122,18];
-    pointH = [0,-143 + 10,18];
+    pointH = [0,-143 + 10.5,18];
 
     // Base of head
     head_lip_profile(pointA, pointB);
@@ -111,27 +111,6 @@ module head_shape()
     } 
 }
 
-module ball_bearing(diameter)
-{
-    staggered_sphere(d=diameter, circum=true, $fn=60);
-}
-
-module caster_ball_top()
-{
-    difference() { 
-        hull() {
-            difference() {
-                move([0,0,32.5]) cyl(h=2,d=24);
-                move([0,-10,32]) cuboid([20,10,4]);
-                move([16,0,32]) cuboid([10,20,5]);
-                move([-16,0,32]) cuboid([10,20,5]);
-            }
-            move([0,0,0]) cyl(h=14,d=24);
-        }
-        move([0,0,-4.5]) ball_bearing(20.5);
-    }
-}
-
 module half_head()
 {
     difference() {
@@ -157,19 +136,31 @@ module half_head()
     }
     
     // Threaded insert
-    move([12,-58,0]) xrot(180) insertM3x57();    
+    move([12,-58,0]) xrot(180) insertM3x57(); 
 }
 
 module head()
 {
     half_head();
     xflip() half_head();
-}
 
-module display_ball_bearing()
-{
-    move([0,-144 + 35,3.5 - 22]) {
-        move([0,0,-4.5]) color([0.7,0.7,0.7,1]) ball_bearing(20);
+    // Front threaded insert
+    difference() {
+        hull() {
+            move([0,-133,3]) xrot(180) cyl(h=12,d=8);
+            move([0,-133+2,14]) xrot(180) cuboid([5,2,2]);
+            move([0,-138,-2]) xrot(180) cuboid([7,6,2]);
+        }
+
+        // Threaded insert slot
+        move([0,-133,0]) xrot(180) cyl(h=10,d=5);
+    }
+    move([0,-133,-3]) xrot(180) insertM3x57(); 
+    
+    // Screw guide for shell mounting hole
+    difference() {
+        move([0,-89,7]) cyl(h=20, d=10);
+        move([0,-89,7]) cyl(h=26, d=8);
     }
 }
 
@@ -178,35 +169,20 @@ module render_head(crend, toPrint)
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) {
             head();
-
-            // Caster
-            move([0,-144 + 35,3.5 - 22]) {
-                caster_ball_top();
-            }
         }
     } else {
         xrot(180) move([0,90,-18]) {
             head();
-
-            // Caster
-            move([0,-144 + 35,3.5 - 22]) {
-                caster_ball_top();
-            }
         }
-    }
-}
-
-module render_ball_bearing(crend, toPrint)
-{
-    if (!toPrint) {
-        display_ball_bearing();
     }
 }
 
 module head_screws()
 {
-    move([12,-58,-6]) xrot(180) m3x10_screw();
-    move([-12,-58,-6]) xrot(180) m3x10_screw();
+    move([12,-58,-7]) xrot(180) m3x10_screw();
+    move([-12,-58,-7]) xrot(180) m3x10_screw();
+
+    move([0,-133,-7]) xrot(180) m3x10_screw();
 }
 
 module render_head_screws(crend, toPrint)

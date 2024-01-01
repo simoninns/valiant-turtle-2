@@ -34,18 +34,28 @@ module head_cover_half()
     pointD = [0,-139.5,0];
 
     difference() {
-        move([0,0,-5.5]) hull() {
-            move(pointA) cyl(h=4, d=1);
-            move(pointB) cyl(h=4, d=1);
-            move(pointC) cyl(h=4, d=1);
-            move(pointD) cyl(h=4, d=1);
+        move([0,0,-6]) hull() {
+            move(pointA) cyl(h=6, d=1, chamfer1=0.5);
+            move(pointB) cyl(h=6, d=1, chamfer1=0.5);
+            move(pointC) cyl(h=6, d=1, chamfer1=0.5);
+            move(pointD) cyl(h=6, d=1, chamfer1=0.5);
         }
 
-        // Body mount screw hole
+        // Body mount screw holes
         move([12,-58,-4]) xrot(180) cyl(h=8,d=3.5);
+        move([0,-133,-4]) xrot(180) cyl(h=8,d=3.5);
 
         // Screw head recess
-        move([12,-58,-9.5 + 2]) xrot(180) cyl(h=4,d=7);
+        move([12,-58,-8.5]) xrot(180) cyl(h=4,d=7);
+        move([0,-133,-8.5]) xrot(180) cyl(h=4,d=7);
+    }
+}
+
+module bearing_mount()
+{
+    move([0,-144 + 35,3.5 - 22])difference() {        
+        move([0,0,2]) cyl(h=18,d=24);
+        move([0,0,-4.5]) ball_bearing(20.5);
     }
 }
 
@@ -57,16 +67,12 @@ module head_cover()
             xflip() head_cover_half();
         }
 
-        move([0,-109,-6]) cyl(h=10,d=25);
-        move([0,-89,6.5 - 4]) cyl(h=21, d=7);
+        // Shell mount hole
+        move([0,-89,6.5 - 4]) cyl(h=24, d=8);
+        move([0,-89,-11]) cyl(h=8, d=10, chamfer=2);
     }
 
-    // Shell mounting screw hole
-    difference() {
-        move([0,-89,5]) cyl(h=20, d=9);
-        move([0,-89,5 - 3]) cyl(h=21, d=7);
-        move([0,-89,0]) cyl(h=40, d=3.5);
-    }
+    bearing_mount();
 }
 
 module render_head_cover(crend, toPrint)
@@ -74,6 +80,25 @@ module render_head_cover(crend, toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) head_cover();
     } else {
-        move([0,89,7.5]) head_cover();
+        move([0,-89,-3]) xrot(180) head_cover();
+    }
+}
+
+module ball_bearing(diameter)
+{
+    staggered_sphere(d=diameter, circum=true, $fn=60);
+}
+
+module display_ball_bearing()
+{
+    move([0,-144 + 35,3.5 - 22]) {
+        move([0,0,-4.5]) color([0.7,0.7,0.7,1]) ball_bearing(20);
+    }
+}
+
+module render_ball_bearing(crend, toPrint)
+{
+    if (!toPrint) {
+        display_ball_bearing();
     }
 }
