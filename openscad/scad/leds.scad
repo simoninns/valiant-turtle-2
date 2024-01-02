@@ -26,47 +26,58 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-module render_5mm_led()
+module led_5mm()
 {
-    yrot(90) {
+    move([0,0,4.5]) {
+        // LED Body
         color([1,0,0,1]) {
-            staggered_sphere(d=5, $fn=16);
-            move([0,0,2 - 7]) cyl(h=1,d=6);
-            move([0,0,-2.5]) cyl(h=5,d=5);
-        }
-
-        color([0.7,0.7,0.7,1]) {
-            move([-1,0,-5]) cyl(h=8,d=0.5);
-            move([1,0,-5]) cyl(h=8,d=0.5);
-        }
-    }
-}
-
-module render_5mm_led_holder()
-{
-    yrot(90) {
-        color([0.2,0.2,0.2,1]) difference() {
-            union() {
-                cyl(h=1,d=10, chamfer2=0.5);
-                move([0,0,-2]) cyl(h=5,d=8);
+            hull() {
+            move([0,0,(8.6/2) - (4.9/2)]) staggered_sphere(d=4.9, $fn=16);
+            move([0,0,-1.4]) cyl(h=8.6 - (4.9/2), d=4.9);
             }
-            move([0,0,-2]) cyl(h=10,d=5);
+
+            difference() {
+                move([0,0,-4]) cyl(h=1,d=5.8);
+                move([3.5,0,-4]) cuboid([2,10,2]);
+            }
+        }
+
+        // LED legs
+        color([0.7,0.7,0.7,1]) {
+            move([-1,0,-5]) cuboid([0.5,0.5,8]);
+            move([1,0,-5]) cuboid([0.5,0.5,8]);
         }
     }
 }
 
-module led_and_holder_5mm()
+module led_holder()
 {
-    move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([16.5,0,0]) {
-        render_5mm_led();
-        render_5mm_led_holder();
+    difference() {
+        union() {
+            move([0,0,0.5]) cyl(h=1,d=10, chamfer1=0.5);
+            move([0,0,3]) cyl(h=5,d=8);
+        }
+        move([0,0,3]) cyl(h=10,d=5);
+    }
+}
+
+module render_led_holders(crend, toPrint)
+{
+    if(!toPrint) {
+        color([0.2,0.2,0.2,1]) {
+            move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([16.5,0,0]) yrot(270) led_holder();
+            xflip() move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([16.5,0,0]) yrot(270) led_holder();
+        }
+    } else {
+        led_holder();
+        //move([0,0,6.4]) xrot(180) led_5mm();
     }
 }
 
 module render_leds(crend, toPrint)
 {
     if(!toPrint) {
-        led_and_holder_5mm();
-        xflip() led_and_holder_5mm();
+        move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) yrot(90) led_5mm();
+        xflip() move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) yrot(90) led_5mm();
     }
 }
