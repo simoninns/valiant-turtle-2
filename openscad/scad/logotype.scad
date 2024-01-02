@@ -93,7 +93,7 @@ module render_logotype(crend, toPrint)
 {
     if (!toPrint) {
         color([0.9,0.5,0.0,1]) {
-            move([-70,-75,-2.75]) zrot(39) logotype();
+            move([-76,-80,-2.75]) zrot(39) logotype();
         }
     } else {
         logotype();

@@ -144,6 +144,8 @@ module body_platform()
     move([26.5,-39,-6.5]) cuboid([53,4,7]); // Front cross
     move([26,-56,-6.5]) cuboid([4,33.5,7]); // Front
 
+    move([52,-43.5,-6.5]) cuboid([4,101,7]); // Front
+
     // Wheel bay reenforcements
     move([88,68.5,-4]) cuboid([65,2,4]);
     move([88,-15.5,-4]) cuboid([66,2,4], chamfer=0.5, edges=EDGES_Z_ALL);
@@ -402,7 +404,7 @@ module body_left()
         pen_hole();
         pcb_mount_holes();
         xflip() pen_servo_mount_holes();
-        move([-70,-75,-2.501]) zrot(39) logotype();
+        move([-76,-80,-2.501]) zrot(39) logotype();
         body_joiners_left_clearance();
         battery_access_hole();
         control_panel_hole();

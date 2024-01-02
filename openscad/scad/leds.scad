@@ -111,34 +111,13 @@ module render_led_holders(crend, toPrint)
         }
     } else {
         move([-7,0,0]) {
-            move([0,0,2]) xrot(20) zrot(45) led_holder();
+            move([0,0,0]) led_holder();
             move([0,15,-3.75]) led_holder_snap();
         }
 
         move([7,0,0]) {
-            move([0,0,2]) xrot(20) zrot(45) led_holder();
+            move([0,0,0]) led_holder();
             move([0,15,-3.75]) led_holder_snap();
-        }
-    }
-}
-
-module render_led_holders_support(crend, toPrint)
-{
-    if(toPrint) {
-        move([-7,0,0]) {
-            difference() {
-                move([0,0,2]) xrot(20) zrot(45) move([0,0,-2]) cyl(h=5,d=10);
-                move([0,0,2]) xrot(20) zrot(45) move([0,0,-2]) cyl(h=10,d=5);
-                move([0,0,-3]) cuboid([12,13,6]);
-            }
-        }
-
-        move([7,0,0]) {
-            difference() {
-                move([0,0,2]) xrot(20) zrot(45) move([0,0,-2]) cyl(h=5,d=10);
-                move([0,0,2]) xrot(20) zrot(45) move([0,0,-2]) cyl(h=10,d=5);
-                move([0,0,-3]) cuboid([12,13,6]);
-            }
         }
     }
 }
