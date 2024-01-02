@@ -50,14 +50,49 @@ module led_5mm()
     }
 }
 
+module led_holder_snap()
+{
+    move([0,0,5.5]) {
+        difference() {
+            move([0,0,0.25]) cyl(h=4,d=10);
+            move([0,0,1]) cyl(h=4,d=9, chamfer=0.5);
+            move([0,0,-3.25]) cyl(h=4,d=8, chamfer=0.5);
+            cyl(h=6,d=8);
+        }
+    }
+}
+
 module led_holder()
 {
     difference() {
+        // Main holder body
         union() {
-            move([0,0,0.5]) cyl(h=1,d=10, chamfer1=0.5);
-            move([0,0,3]) cyl(h=5,d=8);
+            difference() {
+                union() {
+                    move([0,0,0.5]) cyl(h=1,d=10, chamfer1=0.5);
+                    move([0,0,3]) cyl(h=5,d=7);
+                    move([0,0,5.75]) cyl(h=3,d=8, chamfer=0.5);
+                }
+                move([0,0,3]) cyl(h=16,d=5);
+                move([0,0,5.9]) cyl(h=1.5,d=6, chamfer=0.25);
+                move([0,0,7.75]) cyl(h=2,d=6, chamfer=0.5);
+                move([0,0,7]) cyl(h=2,d=5.5);
+                move([0,0,6]) cyl(h=10,d=5.5);
+            }
         }
-        move([0,0,3]) cyl(h=10,d=5);
+
+        // Cut outs
+        move([0,0,0]) {
+            hull() {
+                move([0,0,2.5]) ycyl(h=10,d=1);
+                move([0,0,7.5]) ycyl(h=10,d=1.5);
+            }
+
+            hull() {
+                move([0,0,2.5]) xcyl(h=10,d=1);
+                move([0,0,7.5]) xcyl(h=10,d=1.5);
+            }
+        }
     }
 }
 
@@ -65,12 +100,46 @@ module render_led_holders(crend, toPrint)
 {
     if(!toPrint) {
         color([0.2,0.2,0.2,1]) {
-            move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([16.5,0,0]) yrot(270) led_holder();
-            xflip() move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([16.5,0,0]) yrot(270) led_holder();
+            move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([16.5,0,0]) yrot(270) {
+                led_holder();
+                led_holder_snap();
+            }
+            xflip() move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([16.5,0,0]) yrot(270) {
+                led_holder();
+                led_holder_snap();
+            }
         }
     } else {
-        led_holder();
-        //move([0,0,6.4]) xrot(180) led_5mm();
+        move([-7,0,0]) {
+            move([0,0,2]) xrot(20) zrot(45) led_holder();
+            move([0,15,-3.75]) led_holder_snap();
+        }
+
+        move([7,0,0]) {
+            move([0,0,2]) xrot(20) zrot(45) led_holder();
+            move([0,15,-3.75]) led_holder_snap();
+        }
+    }
+}
+
+module render_led_holders_support(crend, toPrint)
+{
+    if(toPrint) {
+        move([-7,0,0]) {
+            difference() {
+                move([0,0,2]) xrot(20) zrot(45) move([0,0,-2]) cyl(h=5,d=10);
+                move([0,0,2]) xrot(20) zrot(45) move([0,0,-2]) cyl(h=10,d=5);
+                move([0,0,-3]) cuboid([12,13,6]);
+            }
+        }
+
+        move([7,0,0]) {
+            difference() {
+                move([0,0,2]) xrot(20) zrot(45) move([0,0,-2]) cyl(h=5,d=10);
+                move([0,0,2]) xrot(20) zrot(45) move([0,0,-2]) cyl(h=10,d=5);
+                move([0,0,-3]) cuboid([12,13,6]);
+            }
+        }
     }
 }
 

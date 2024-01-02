@@ -82,6 +82,7 @@ display_led_holders = "No"; // [Yes, No]
 
 /* [Print Supports] */
 display_shell_support = "No"; // [Yes, No]
+display_led_holders_support = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
 display_motor_small = "No"; // [Yes, No]
@@ -138,6 +139,7 @@ module main() {
 
     // Print supports
     d_shell_support = (display_shell_support == "Yes") ? true:false;
+    d_led_holders_support = (display_led_holders_support == "Yes") ? true:false;
 
     // Non-printable parts
     d_motor_small = (display_motor_small == "Yes") ? true:false;
@@ -190,6 +192,7 @@ module main() {
 
     // Render the print supports
     if (d_shell_support) render_shell_support(crend, toPrint);
+    if (d_led_holders_support) render_led_holders_support(crend, toPrint);
 
     // Render the non-printable parts
     if (d_motor_small) render_motor_small(crend, toPrint);

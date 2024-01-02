@@ -114,11 +114,31 @@ module head_shape()
 module half_head()
 {
     difference() {
-        head_shape();
+        union() {
+            head_shape();
 
-        // Eye socket (8mm for LED with grommet)
+            // Front threaded insert
+            difference() {
+                hull() {
+                    move([0,-133,3]) xrot(180) cyl(h=12,d=8);
+                    move([0,-133+2,14]) xrot(180) cuboid([5,2,2]);
+                    move([0,-138,-2]) xrot(180) cuboid([7,6,2]);
+                }
+
+                // Threaded insert slot
+                move([0,-133,0]) xrot(180) cyl(h=10,d=5);
+
+                // Slice half
+                move([-5.5,-133,5]) cuboid([10,17,20]);
+
+                // Space for LED holder
+                move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=7,d=11);
+            }     
+        }
+
+        // Eye socket (7mm for LED with grommet)
         move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=7);
-
+        
         // Back access
         move([0,-50,6]) cuboid([16,20,18]);
 
@@ -134,7 +154,7 @@ module half_head()
         // Shell mounting screw hole
         move([0,-89,20]) cyl(h=20, d=3.5);
     }
-    
+
     // Threaded insert
     move([12,-58,0]) xrot(180) insertM3x57(); 
 }
@@ -145,21 +165,11 @@ module head()
     xflip() half_head();
 
     // Front threaded insert
-    difference() {
-        hull() {
-            move([0,-133,3]) xrot(180) cyl(h=12,d=8);
-            move([0,-133+2,14]) xrot(180) cuboid([5,2,2]);
-            move([0,-138,-2]) xrot(180) cuboid([7,6,2]);
-        }
-
-        // Threaded insert slot
-        move([0,-133,0]) xrot(180) cyl(h=10,d=5);
-    }
     move([0,-133,-3]) xrot(180) insertM3x57(); 
     
     // Screw guide for shell mounting hole
     difference() {
-        move([0,-89,7]) cyl(h=20, d=10);
+        move([0,-89,7]) cyl(h=20, d=11);
         move([0,-89,7]) cyl(h=26, d=8);
     }
 }
