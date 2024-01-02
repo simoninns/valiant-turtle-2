@@ -63,6 +63,7 @@ display_head = "Yes"; // [Yes, No]
 display_head_cover = "No"; // [Yes, No]
 display_shell_lid = "No"; // [Yes, No]
 display_shell = "No"; // [Yes, No]
+display_shell_dot = "No"; // [Yes, No]
 display_motor_bay = "Yes"; // [Yes, No]
 display_motor_mounts = "No"; // [Yes, No]
 display_wheels = "No"; // [Yes, No]
@@ -118,6 +119,7 @@ module main() {
     d_head = (display_head == "Yes") ? true:false;
     d_shell_lid = (display_shell_lid == "Yes") ? true:false;
     d_shell = (display_shell == "Yes") ? true:false;
+    d_shell_dot = (display_shell_dot == "Yes") ? true:false;
     d_motor_bay = (display_motor_bay == "Yes") ? true:false;
     d_motor_mounts = (display_motor_mounts == "Yes") ? true:false;
     d_wheels = (display_wheels == "Yes") ? true:false;
@@ -170,6 +172,7 @@ module main() {
     if (d_head) render_head(crend, toPrint);
     if (d_shell_lid) render_shell_lid(crend, toPrint);
     if (d_shell) render_shell(crend, toPrint);
+    if (d_shell_dot) render_shell_dot(crend, toPrint);
     if (d_motor_bay) render_motor_bay(crend, toPrint);
     if (d_motor_mounts) render_motor_mounts(crend, toPrint);
     if (d_wheels) render_wheels(crend, toPrint);

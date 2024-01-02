@@ -52,6 +52,8 @@ module shell_lid_top()
         }
 
         move([0,0,34.01]) cuboid([220,220,140]);
+
+        move([0,-44 + 25,106]) cyl(h=1,d=15);
     }
 }
 
@@ -478,6 +480,14 @@ module shellBottom()
     back_screw_mounts();
 }
 
+module shell_dot()
+{
+    hull() {
+        cyl(h=1, d=15, chamfer2=0.5);
+        move([0,0,0.75]) cyl(h=0.5, d=10);
+    }
+}
+
 module render_shell(crend, toPrint)
 {
     if (!toPrint) {
@@ -511,6 +521,15 @@ module render_shell_lid(crend, toPrint)
         color([0,0.8,0,1]) shell_lid();
     } else {
         move([0,0,106]) xrot(180) shell_lid();
+    }
+}
+
+module render_shell_dot(crend, toPrint)
+{
+    if (!toPrint) {
+        color([0.2,0.2,0.2,1]) move([0,-44 + 25,106]) shell_dot();
+    } else {
+        shell_dot();
     }
 }
 
