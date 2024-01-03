@@ -121,6 +121,38 @@ module battery_tab_holder_top(length)
     }
 }
 
+module holder_cable_guides()
+{
+    difference() {
+        move([0,10,-43.5]) cuboid([10,24,6], chamfer=1, edges=EDGES_ALL-EDGES_TOP);
+        move([0,2,-43]) yrot(90) cyl(h=12,d=3);
+        move([0,19,-43]) yrot(90) cyl(h=12,d=3);
+    }
+
+    difference() {
+        move([0,10,43.5]) cuboid([10,24,6], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+        
+        // +ve pipe
+        move([2,16,43]) xrot(90) cyl(h=20,d=3);
+        move([-6,2,43]) yrot(90) cyl(h=8,d=3);
+        difference() {
+            move([-2,6,43]) torus(id=8-3,od=11);
+            move([-2 - 6,6,43]) cuboid([12,12,4]);
+            move([-2,6 + 6,43]) cuboid([12,12,4]);
+        }
+
+        // -ve pipe
+        move([-2,23.5,43]) xrot(90) cyl(h=5.5,d=3);
+        move([-7,19,43]) yrot(90) cyl(h=6.5,d=3);
+
+        difference() {
+            move([-4,21,43]) torus(id=1,od=7);
+            move([-4 - 4,21,43]) cuboid([8,8,4]);
+            move([-4,21 + 4,43]) cuboid([8,8,4]);
+        }
+    }
+}
+
 module battery18650_holder()
 {
     length=83;
@@ -139,14 +171,14 @@ module battery18650_holder()
             move([0,-13,44.5]) {
                 hull() {
                     xrot(90) cyl(h=10,d=10, $fn=6);
-                    move([0,12,-5]) cuboid([10,1,1]);
+                    move([0,11,-1]) cuboid([10,4,6], chamfer=1);
                 }
             }
             
             move([0,-13,-44.5]) {
                 hull() {
                     xrot(90) cyl(h=10,d=10, $fn=6);
-                    move([0,12,5]) cuboid([10,1,1]);
+                    move([0,11,1]) cuboid([10,4,6], chamfer=1);
                 }
             }
 
@@ -207,8 +239,6 @@ module battery18650_holder()
         move([9,-10,41.5]) negative_symbol();
 
         // Cabing markers
-        move([0,18,-41.5]) cuboid([8,1,1]);
-        move([0,1,-41.5]) cuboid([8,1,1]);
         move([16,6,41.5]) cuboid([1,16,1]);
         move([-14,10,41.5]) cyl(h=1,d=3); // Output
         move([-14,-10,41.5]) cyl(h=1,d=3); // Output
@@ -231,7 +261,7 @@ module battery18650_holder()
     // lid insert
     difference() {
         hull() {
-            move([24,-12,0]) xrot(90) cyl(h=12,d=8, $fn=6);
+            move([24,-12,0]) xrot(90) zrot(360/12) cyl(h=12,d=8, $fn=6);
             move([28.5,-8,0]) cuboid([1,20,7]);
         }
         move([24,-15,0]) xrot(90) cyl(h=8,d=5);
@@ -239,7 +269,7 @@ module battery18650_holder()
     move([24,-18,0]) xrot(90) insertM3x57_th();
 
     // Cable guides
-   
+    holder_cable_guides();
 }
 
 module positive_symbol()
