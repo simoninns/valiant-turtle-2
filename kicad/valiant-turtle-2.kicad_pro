@@ -336,8 +336,8 @@
       "Battery Monitor"
     ],
     [
-      "2c100eaa-8b72-47f8-a08f-708ddfdf52ff",
-      "Pen Servo"
+      "a57e45ab-589b-483a-9feb-d46dd0df0751",
+      "PWM Driver"
     ]
   ],
   "text_variables": {}
