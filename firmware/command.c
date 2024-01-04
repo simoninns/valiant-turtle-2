@@ -33,12 +33,24 @@
 #include "command.h"
 #include "penservo.h"
 #include "drivemotors.h"
+#include "i2cbus.h"
+#include "ina260.h"
 
 uint16_t commandProcess(char *command, uint16_t parameter)
 {
     // Help
     if (strcmp(command, "HLP") == 0) {
         commandHelp();
+        return 0;
+    }
+
+    if (strcmp(command, "IIC") == 0) {
+        commandI2cScan(parameter);
+        return 0;
+    }
+
+    if (strcmp(command, "POW") == 0) {
+        commandPowerMonitor();
         return 0;
     }
 
@@ -88,8 +100,6 @@ uint16_t commandProcess(char *command, uint16_t parameter)
         return 0;
     }
 
-    // Drive motor commands
-
     // Unknown command
     return 1;
 }
@@ -98,6 +108,9 @@ void commandHelp(void)
 {
     printf("Help:\r\n");
         printf("  HLP - Show this help text\r\n");
+        printf("\r\n");
+        printf("  IICx - Scan I2C bus (bus number)\r\n");
+        printf("  POW - Read power information from the INA260\r\n");
         printf("\r\n");
         printf("  PEU      - Pen servo up\r\n");
         printf("  PED      - Pen servo down\r\n");
@@ -113,6 +126,25 @@ void commandHelp(void)
         printf("  LDRxx    - LED Red intensity (0-15)\r\n");
         printf("  LDGxx    - LED Green intensity (0-15)\r\n");
         printf("  LDBxx    - LED Blue intensity (0-15)\r\n");
+}
+
+void commandI2cScan(uint16_t commandParameter)
+{
+    if (commandParameter > 1) {
+        printf("E04 - Parameter out of range\r\n");
+        return;
+    }
+
+    // Scan the I2C bus
+    i2cBusScan(commandParameter);
+}
+
+void commandPowerMonitor(void)
+{
+    printf("INA260 Power information:\r\n");
+    printf("      Current: %.2f mA\r\n", ina260ReadCurrent());
+    printf("  Bus voltage: %.2f mV\r\n", ina260ReadBusVoltage());
+    printf("        Power: %.2f mW\r\n", ina260ReadPower());
 }
 
 void commandPen(uint16_t commandType)

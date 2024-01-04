@@ -336,8 +336,8 @@
       "Power supply"
     ],
     [
-      "a57e45ab-589b-483a-9feb-d46dd0df0751",
-      "PWM Driver"
+      "5348bc4c-1b60-46a4-ae88-0946c3882d19",
+      "RGB LED Driver"
     ]
   ],
   "text_variables": {}

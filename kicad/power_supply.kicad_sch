@@ -4,6 +4,15 @@
 
   (paper "A4")
 
+  (title_block
+    (title "Valiant Turtle 2")
+    (date "2024-01-04")
+    (rev "1_0")
+    (company "https://www.waitingforfriday.com")
+    (comment 1 "(c) 2024 Simon Inns")
+    (comment 2 "License: Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)")
+  )
+
   (lib_symbols
     (symbol "Connector_Generic:Conn_01x02" (pin_names (offset 1.016) hide) (in_bom yes) (on_board yes)
       (property "Reference" "J" (at 0 2.54 0)

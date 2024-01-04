@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    i2cbus.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -24,32 +24,17 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef I2CBUS_H_
+#define I2CBUS_H_
 
-#include "cli.h"
-#include "leds.h"
-#include "penservo.h"
-#include "drivemotors.h"
-#include "i2cbus.h"
-#include "ina260.h"
+#define SDA0_GPIO 8
+#define SCL0_GPIO 9
+#define SDA1_GPIO 10
+#define SCL1_GPIO 11
 
-int main()
-{
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    i2cInitialise();
-    ina260Initialise();
-    ledInitialise();
-    penServoInitialise();
-    driveMotorsInitialise();
+// Function prototypes
+void i2cInitialise(void);
+bool i2cReservedAddr(uint8_t addr);
+void i2cBusScan(uint16_t busNumber);
 
-    // Turn on the system LED
-    ledControl(LED_SYSTEM, true);
-
-    while (true) {
-        cliProcess();
-    }
-}
+#endif /* I2CBUS_H_ */

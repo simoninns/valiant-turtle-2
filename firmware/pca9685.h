@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    pca9685.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -24,32 +24,17 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef PCA9685_H_
+#define PCA9685_H_
 
-#include "cli.h"
-#include "leds.h"
-#include "penservo.h"
-#include "drivemotors.h"
-#include "i2cbus.h"
-#include "ina260.h"
+// PCA9685 I2C address
+#define PCA9685_ADDR _u(0x40)
 
-int main()
-{
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    i2cInitialise();
-    ina260Initialise();
-    ledInitialise();
-    penServoInitialise();
-    driveMotorsInitialise();
+// hardware registers
+#define PCA9685_REG_CONFIG _u(0x00)
+#define PCA9685_REG_CURRENT _u(0x01)
 
-    // Turn on the system LED
-    ledControl(LED_SYSTEM, true);
+// Prototypes
+void pca9685Initialise(void);
 
-    while (true) {
-        cliProcess();
-    }
-}
+#endif /* PCA9685_H_ */

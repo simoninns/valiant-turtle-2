@@ -30,6 +30,8 @@
 uint16_t commandProcess(char *command, uint16_t parameter);
 
 void commandHelp(void);
+void commandI2cScan(uint16_t commandParameter);
+void commandPowerMonitor(void);
 void commandPen(uint16_t commandType);
 void commandMotor(uint16_t commandType, uint16_t commandParameter);
 

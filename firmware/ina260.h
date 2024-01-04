@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    ina260.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -24,32 +24,30 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef INA260_H_
+#define INA260_H_
 
-#include "cli.h"
-#include "leds.h"
-#include "penservo.h"
-#include "drivemotors.h"
-#include "i2cbus.h"
-#include "ina260.h"
+// INA260 I2C address
+#define INA260_ADDR _u(0x40)
 
-int main()
-{
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    i2cInitialise();
-    ina260Initialise();
-    ledInitialise();
-    penServoInitialise();
-    driveMotorsInitialise();
+// hardware registers
+#define INA260_REG_CONFIG _u(0x00)
 
-    // Turn on the system LED
-    ledControl(LED_SYSTEM, true);
+#define INA260_REG_CURRENT _u(0x01)
+#define INA260_REG_VOLTAGE _u(0x02)
+#define INA260_REG_POWER _u(0x03)
 
-    while (true) {
-        cliProcess();
-    }
-}
+#define INA260_REG_MASK _u(0x06)
+#define INA260_REG_ALERT _u(0x07)
+#define INA260_REG_MANU _u(0xfe)
+#define INA260_REG_DIE _u(0xff)
+
+// Prototypes
+void ina260Initialise(void);
+float ina260ReadCurrent(void);
+float ina260ReadBusVoltage(void);
+float ina260ReadPower(void);
+uint16_t ina260ReadManuId(void);
+uint16_t ina260ReadDieId(void);
+
+#endif /* INA260_H_ */
