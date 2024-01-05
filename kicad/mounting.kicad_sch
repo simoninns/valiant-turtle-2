@@ -94,54 +94,6 @@
     )
   )
 
-  (symbol (lib_id "Mechanical:MountingHole") (at 26.035 112.395 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 1c9c3dc3-9c85-44b8-8409-a43b0b1c71fb)
-    (property "Reference" "H10" (at 29.21 111.125 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Value" "AddOn_MountingHole" (at 29.21 113.665 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5" (at 26.035 112.395 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 26.035 112.395 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (instances
-      (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d0ad464f-bba0-4eab-82dd-352f2a497683"
-          (reference "H10") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Mechanical:MountingHole") (at 26.035 106.68 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 219160d9-78cb-4ef9-9a06-deedf2248e4b)
-    (property "Reference" "H9" (at 29.21 105.41 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Value" "AddOn_MountingHole" (at 29.21 107.95 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5" (at 26.035 106.68 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 26.035 106.68 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (instances
-      (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d0ad464f-bba0-4eab-82dd-352f2a497683"
-          (reference "H9") (unit 1)
-        )
-      )
-    )
-  )
-
   (symbol (lib_id "Mechanical:MountingHole") (at 25.4 34.29 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 694fecca-1826-4532-9398-15289846b9ad)
@@ -161,30 +113,6 @@
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d0ad464f-bba0-4eab-82dd-352f2a497683"
           (reference "H3") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Mechanical:MountingHole") (at 26.035 100.965 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 7cca9f88-c892-42cb-ad72-696792c79b21)
-    (property "Reference" "H8" (at 29.21 99.695 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Value" "AddOn_MountingHole" (at 29.21 102.235 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5" (at 26.035 100.965 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 26.035 100.965 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (instances
-      (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d0ad464f-bba0-4eab-82dd-352f2a497683"
-          (reference "H8") (unit 1)
         )
       )
     )
@@ -233,30 +161,6 @@
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d0ad464f-bba0-4eab-82dd-352f2a497683"
           (reference "H6") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Mechanical:MountingHole") (at 26.035 118.11 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 9bababf6-bb53-4a1f-9920-4b4407478ca2)
-    (property "Reference" "H11" (at 29.21 116.84 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Value" "AddOn_MountingHole" (at 29.21 119.38 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5" (at 26.035 118.11 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 26.035 118.11 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (instances
-      (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d0ad464f-bba0-4eab-82dd-352f2a497683"
-          (reference "H11") (unit 1)
         )
       )
     )

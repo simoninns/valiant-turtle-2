@@ -81,13 +81,33 @@ module pcb_mounts_back()
     }
 }
 
-module pcb()
+module pcb_complete()
 {
     difference() {
-        zrot(-90) cyl(h=1.5, d=140, $fn=5);
+        pcb();
+        pcb_penhole();
+        pcb_screws();
+    }
+}
 
-        // Hole for pen
-        move([0,29,20]) zcyl(h=80, d=14);
+module pcb()
+{
+    zrot(-90) cyl(h=1.5, d=140, $fn=5);
+}
+
+module pcb_penhole()
+{
+    // Hole for pen
+    move([0,29,20]) zcyl(h=80, d=14);
+}
+
+module pcb_screws()
+{
+     // M3 screw holes
+    move([0,0,0]) {
+        move([60,-20,0]) cyl(h=10, d=3.5);
+        move([-60,-20,0]) cyl(h=10, d=3.5);
+        move([0,52,0]) cyl(h=10, d=3.5);
     }
 }
 
@@ -95,13 +115,16 @@ module render_pcb(crend, toPrint)
 {
     if (!toPrint) {
         difference() {
-            move([0,0,50.75]) color([0,0.6,0,1]) pcb();
-
-            // M3 screw holes
-            move([0,0,48]) {
-                move([60,-20,0]) cyl(h=10, d=3.5);
-                move([-60,-20,0]) cyl(h=10, d=3.5);
-                move([0,52,0]) cyl(h=10, d=3.5);
+            move([0,0,50.75]) color([0,0.6,0,1]) pcb_complete();
+        }
+    } else {
+        // This will allow you to render and export a DXF file that
+        // can be used as a KiCAD PCB outline...
+        projection() {
+            difference() {
+                pcb();
+                pcb_penhole();
+                pcb_screws();
             }
         }
     }
