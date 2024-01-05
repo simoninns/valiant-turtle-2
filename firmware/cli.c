@@ -82,7 +82,7 @@ cli_state_t cliState_Start(void)
 {
     // Show a banner on the CLI
     printf("\r\nValiant Turtle 2\r\n");
-    printf("Copyright (C)2023 Simon Inns\r\n");
+    printf("Copyright (C)2024 Simon Inns\r\n");
     printf("Use HLP to show available commands\r\n");
 
     return CLI_PROMPT;

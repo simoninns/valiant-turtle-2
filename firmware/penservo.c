@@ -36,8 +36,8 @@ float wrap = 39062;
 
 void penServoInitialise(void)
 {
-    gpio_set_function(PENSERVOGPIO, GPIO_FUNC_PWM);
-    uint slice_num = pwm_gpio_to_slice_num(PENSERVOGPIO);
+    gpio_set_function(PENSERVO_GPIO, GPIO_FUNC_PWM);
+    uint slice_num = pwm_gpio_to_slice_num(PENSERVO_GPIO);
     pwm_config config = pwm_get_default_config();
     
     // Calculate required clock speed
@@ -57,16 +57,16 @@ void penServoInitialise(void)
 void penDown(void)
 {
     float ms = 1000;
-    pwm_set_gpio_level(PENSERVOGPIO, (ms/20000.f)*wrap);
+    pwm_set_gpio_level(PENSERVO_GPIO, (ms/20000.f)*wrap);
 }
 
 void penUp(void)
 {
     float ms = 2000;
-    pwm_set_gpio_level(PENSERVOGPIO, (ms/20000.f)*wrap);
+    pwm_set_gpio_level(PENSERVO_GPIO, (ms/20000.f)*wrap);
 }
 
 void penOff(void)
 {
-    pwm_set_gpio_level(PENSERVOGPIO, 0);
+    pwm_set_gpio_level(PENSERVO_GPIO, 0);
 }

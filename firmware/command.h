@@ -34,5 +34,6 @@ void commandI2cScan(uint16_t commandParameter);
 void commandPowerMonitor(void);
 void commandPen(uint16_t commandType);
 void commandMotor(uint16_t commandType, uint16_t commandParameter);
+void commandLed(uint16_t ledNumber, uint16_t commandParameter);
 
 #endif /* COMMAND_H_ */

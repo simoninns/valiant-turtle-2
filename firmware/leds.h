@@ -28,22 +28,18 @@
 #define LEDS_H_
 
 // Hardware mapping
-#define LED_USB_PIN 2
-#define LED_MIDI_OUT_PIN 3
-#define LED_MIDI_IN_PIN 4
-#define LED_STATUS_PIN 5
-
-// Enumerations
-typedef enum {
-    LED_SYSTEM,
-	LED_USB,
-	LED_MIDI_IN,
-    LED_MIDI_OUT,
-    LED_STATUS,
-} led_id_t;
+#define LED_R_GPIO 16
+#define LED_G_GPIO 22
+#define LED_B_GPIO 26
 
 // Function prototypes
 void ledInitialise(void);
-void ledControl(led_id_t id, bool ledState);
+void ledSystem(bool ledState);
+void ledRedInitialise(void);
+void ledGreenInitialise(void);
+void ledBlueInitialise(void);
+void ledRedSet(int16_t brightness);
+void ledGreenSet(int16_t brightness);
+void ledBlueSet(int16_t brightness);
 
 #endif /* LEDS_H_ */

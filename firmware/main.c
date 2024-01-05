@@ -47,7 +47,7 @@ int main()
     driveMotorsInitialise();
 
     // Turn on the system LED
-    ledControl(LED_SYSTEM, true);
+    ledSystem(true);
 
     while (true) {
         cliProcess();

@@ -35,6 +35,7 @@
 #include "drivemotors.h"
 #include "i2cbus.h"
 #include "ina260.h"
+#include "leds.h"
 
 uint16_t commandProcess(char *command, uint16_t parameter)
 {
@@ -97,6 +98,22 @@ uint16_t commandProcess(char *command, uint16_t parameter)
 
     if (strcmp(command, "MRS") == 0) {
         commandMotor(5, parameter);
+        return 0;
+    }
+
+    // LED Commands
+    if (strcmp(command, "LDR") == 0) {
+        commandLed(0, parameter);
+        return 0;
+    }
+
+    if (strcmp(command, "LDG") == 0) {
+        commandLed(1, parameter);
+        return 0;
+    }
+
+    if (strcmp(command, "LDB") == 0) {
+        commandLed(2, parameter);
         return 0;
     }
 
@@ -200,6 +217,30 @@ void commandMotor(uint16_t commandType, uint16_t commandParameter)
         case 5: // Motor right step
             driveMotorRightStep(commandParameter);
             printf("R00 - Motor right step");
+            break;
+    }
+}
+
+void commandLed(uint16_t ledNumber, uint16_t commandParameter)
+{
+    // Range check the requested brightness
+    if (commandParameter < 0) commandParameter = 0;
+    if (commandParameter > 255) commandParameter = 255;
+
+    switch(ledNumber) {
+        case 0:
+            ledRedSet(commandParameter);
+            printf("R00 - LED Red intensity set to %d", commandParameter);
+            break;
+        
+        case 1:
+            ledGreenSet(commandParameter);
+            printf("R00 - LED Green intensity set to %d", commandParameter);
+            break;
+
+        case 2:
+            ledBlueSet(commandParameter);
+            printf("R00 - LED Blue intensity set to %d", commandParameter);
             break;
     }
 }

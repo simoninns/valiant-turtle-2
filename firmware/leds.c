@@ -27,27 +27,85 @@
 #include <stdio.h>
 #include <pico/stdlib.h>
 #include "pico/cyw43_arch.h"
+#include "hardware/pwm.h"
+#include "hardware/clocks.h"
 
 #include "leds.h"
 
 // Initialise all LED GPIO functions
 void ledInitialise(void)
 {
-    // Nothing to do here
+    // Set default LED states
+    ledSystem(false);
+
+    // Initialise the RGB LEDs
+    ledRedInitialise();
+    ledGreenInitialise();
+    ledBlueInitialise();
+
+    // Set all LEDs to off
+    ledRedSet(0);
+    ledGreenSet(0);
+    ledBlueSet(0);
 }
 
-// Control the LEDs
-void ledControl(led_id_t id, bool ledState)
+void ledRedInitialise(void)
 {
-    switch(id) {
-        // Note: On the Pico W the system LED is connected to the the CYW43
-        case LED_SYSTEM:
-            if (ledState) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-            else cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
-            break;
-        // case LED_STATUS:
-        //     if (ledState) gpio_put(LED_SYSTEM_PIN, 1);
-        //     else gpio_put(LED_SYSTEM_PIN, 0);
-        //     break;
-    }
+    gpio_set_function(LED_R_GPIO, GPIO_FUNC_PWM);
+    uint slice_num = pwm_gpio_to_slice_num(LED_R_GPIO);
+
+    pwm_config config = pwm_get_default_config();
+    pwm_config_set_clkdiv(&config, 4.f);
+    pwm_init(slice_num, &config, true);
+}
+
+void ledGreenInitialise(void)
+{
+    gpio_set_function(LED_G_GPIO, GPIO_FUNC_PWM);
+    uint slice_num = pwm_gpio_to_slice_num(LED_G_GPIO);
+
+    pwm_config config = pwm_get_default_config();
+    pwm_config_set_clkdiv(&config, 4.f);
+    pwm_init(slice_num, &config, true);
+}
+
+void ledBlueInitialise(void)
+{
+    gpio_set_function(LED_B_GPIO, GPIO_FUNC_PWM);
+    uint slice_num = pwm_gpio_to_slice_num(LED_B_GPIO);
+
+    pwm_config config = pwm_get_default_config();
+    pwm_config_set_clkdiv(&config, 4.f);
+    pwm_init(slice_num, &config, true);
+}
+
+// Control the onboard system LED
+void ledSystem(bool ledState)
+{
+    if (ledState) cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+    else cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
+}
+
+void ledRedSet(int16_t brightness)
+{
+    if (brightness < 0) brightness = 0;
+    if (brightness > 255) brightness = 255;
+
+    pwm_set_gpio_level(LED_R_GPIO, brightness * brightness);
+}
+
+void ledGreenSet(int16_t brightness)
+{
+    if (brightness < 0) brightness = 0;
+    if (brightness > 255) brightness = 255;
+
+    pwm_set_gpio_level(LED_G_GPIO, brightness * brightness);
+}
+
+void ledBlueSet(int16_t brightness)
+{
+    if (brightness < 0) brightness = 0;
+    if (brightness > 255) brightness = 255;
+
+    pwm_set_gpio_level(LED_B_GPIO, brightness * brightness);
 }

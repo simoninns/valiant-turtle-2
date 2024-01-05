@@ -28,18 +28,18 @@
 #define DRIVEMOTORS_H_
 
 // Hardware mapping
-// Drive motors enable - GPIO 02 (pin 4)
-#define DM_ENABLE_GPIO 2
+// Drive motors enable - GPIO 06 (pin 9)
+#define DM_ENABLE_GPIO 6
 
-// Drive motors left step - GPIO 03 (pin 5)
-// Drive motors right step - GPIO 05 (pin 7)
-#define DM_LSTEP_GPIO 3
-#define DM_RSTEP_GPIO 5
+// Drive motors left step - GPIO 02 (pin 4)
+// Drive motors right step - GPIO 04 (pin 6)
+#define DM_LSTEP_GPIO 2
+#define DM_RSTEP_GPIO 4
 
-// Drive motors left direction - GPIO 04 (pin 6)
-// Drive motors right direction - GPIO 06 (pin 9)
-#define DM_LDIR_GPIO 4
-#define DM_RDIR_GPIO 6
+// Drive motors left direction - GPIO 03 (pin 5)
+// Drive motors right direction - GPIO 05 (pin 7)
+#define DM_LDIR_GPIO 3
+#define DM_RDIR_GPIO 5
 
 void driveMotorsInitialise(void);
 void driveMotorsEnable(bool state);
