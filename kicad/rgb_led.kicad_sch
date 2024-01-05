@@ -745,7 +745,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x07") (at 110.49 66.675 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 35dcb7fc-7880-428e-a6c6-8a33929c5f7f)
-    (property "Reference" "J9" (at 110.49 60.325 90)
+    (property "Reference" "J10" (at 110.49 60.325 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "RGB LED Eyeballs" (at 110.49 62.865 90)
@@ -767,7 +767,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "J9") (unit 1)
+          (reference "J10") (unit 1)
         )
       )
     )
