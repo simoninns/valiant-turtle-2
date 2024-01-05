@@ -5,7 +5,7 @@
   (paper "A4")
 
   (title_block
-    (title "Valiant Turtle 2")
+    (title "Valiant Turtle 2 - RGB LED Driver")
     (date "2024-01-04")
     (rev "1_0")
     (company "https://www.waitingforfriday.com")
@@ -637,7 +637,7 @@
   (symbol (lib_id "Device:R") (at 184.15 111.76 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0634ae2c-51a8-4c0c-84b7-71296bded1e1)
-    (property "Reference" "R9" (at 184.15 106.045 90)
+    (property "Reference" "R14" (at 184.15 106.045 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 184.15 108.585 90)
@@ -654,7 +654,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R11") (unit 1)
+          (reference "R14") (unit 1)
         )
       )
     )
@@ -663,7 +663,7 @@
   (symbol (lib_id "Transistor_FET:BSS138") (at 100.33 111.76 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 14fd967e-df84-47e6-9ad6-b11a53d81543)
-    (property "Reference" "Q4" (at 106.045 110.49 0)
+    (property "Reference" "Q1" (at 106.045 110.49 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "BSS138" (at 106.045 113.03 0)
@@ -690,7 +690,7 @@
   (symbol (lib_id "Transistor_FET:BSS138") (at 200.66 111.76 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 23a69873-c483-4ffe-a6bc-5282a48ecfd1)
-    (property "Reference" "Q2" (at 206.375 110.49 0)
+    (property "Reference" "Q3" (at 206.375 110.49 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "BSS138" (at 206.375 113.03 0)
@@ -736,7 +736,7 @@
           (reference "#PWR014") (unit 1)
         )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "#PWR027") (unit 1)
+          (reference "#PWR033") (unit 1)
         )
       )
     )
@@ -745,7 +745,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x07") (at 110.49 66.675 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 35dcb7fc-7880-428e-a6c6-8a33929c5f7f)
-    (property "Reference" "J6" (at 110.49 60.325 90)
+    (property "Reference" "J8" (at 110.49 60.325 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "RGB LED Eyeballs" (at 110.49 62.865 90)
@@ -767,7 +767,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "J6") (unit 1)
+          (reference "J8") (unit 1)
         )
       )
     )
@@ -776,7 +776,7 @@
   (symbol (lib_id "Device:R") (at 141.605 118.11 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4241a167-4c07-44bc-9826-53a77b72475d)
-    (property "Reference" "R7" (at 144.145 116.84 0)
+    (property "Reference" "R11" (at 144.145 116.84 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100K" (at 144.145 119.38 0)
@@ -793,7 +793,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R8") (unit 1)
+          (reference "R11") (unit 1)
         )
       )
     )
@@ -802,7 +802,7 @@
   (symbol (lib_id "Device:R") (at 113.03 99.06 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 5803e43f-ab9a-485e-a8b8-34c972eaa95a)
-    (property "Reference" "R12" (at 115.57 97.79 0)
+    (property "Reference" "R9" (at 115.57 97.79 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "150R" (at 115.57 100.33 0)
@@ -819,7 +819,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R6") (unit 1)
+          (reference "R9") (unit 1)
         )
       )
     )
@@ -845,7 +845,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R10") (unit 1)
+          (reference "R13") (unit 1)
         )
       )
     )
@@ -854,7 +854,7 @@
   (symbol (lib_id "Device:R") (at 203.2 99.06 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 7ff20fb9-b7e8-4a1a-a512-5c3742cd60ec)
-    (property "Reference" "R11" (at 205.74 97.79 0)
+    (property "Reference" "R16" (at 205.74 97.79 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100R" (at 205.74 100.33 0)
@@ -871,7 +871,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R13") (unit 1)
+          (reference "R16") (unit 1)
         )
       )
     )
@@ -899,7 +899,7 @@
           (reference "#PWR014") (unit 1)
         )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "#PWR026") (unit 1)
+          (reference "#PWR032") (unit 1)
         )
       )
     )
@@ -908,7 +908,7 @@
   (symbol (lib_id "Device:R") (at 153.035 99.06 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid af4a62f5-2d86-4a3e-b07f-1d7e4c89822f)
-    (property "Reference" "R8" (at 154.94 97.79 0)
+    (property "Reference" "R12" (at 154.94 97.79 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100R" (at 154.94 100.33 0)
@@ -925,7 +925,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R9") (unit 1)
+          (reference "R12") (unit 1)
         )
       )
     )
@@ -934,7 +934,7 @@
   (symbol (lib_id "Device:R") (at 102.87 99.06 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid b77a991f-431d-4fa2-a4eb-af7a763c5692)
-    (property "Reference" "R5" (at 105.41 97.79 0)
+    (property "Reference" "R8" (at 105.41 97.79 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "150R" (at 105.41 100.33 0)
@@ -951,7 +951,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R5") (unit 1)
+          (reference "R8") (unit 1)
         )
       )
     )
@@ -960,7 +960,7 @@
   (symbol (lib_id "Transistor_FET:BSS138") (at 150.495 111.76 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid bb6ba17e-6ead-4ed2-a5a2-ed3dc72cdebb)
-    (property "Reference" "Q1" (at 156.21 110.49 0)
+    (property "Reference" "Q2" (at 156.21 110.49 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "BSS138" (at 156.21 113.03 0)
@@ -987,7 +987,7 @@
   (symbol (lib_id "Device:R") (at 91.44 118.11 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid d9f0f84f-17f8-4f76-87c5-9db849b8f6b5)
-    (property "Reference" "R4" (at 93.98 116.84 0)
+    (property "Reference" "R7" (at 93.98 116.84 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100K" (at 93.98 119.38 0)
@@ -1004,7 +1004,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R4") (unit 1)
+          (reference "R7") (unit 1)
         )
       )
     )
@@ -1013,7 +1013,7 @@
   (symbol (lib_id "Device:R") (at 191.77 118.11 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e0511df9-add3-4376-aa3f-4b6edd36b7e2)
-    (property "Reference" "R10" (at 194.31 116.84 0)
+    (property "Reference" "R15" (at 194.31 116.84 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100K" (at 194.31 119.38 0)
@@ -1030,7 +1030,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R12") (unit 1)
+          (reference "R15") (unit 1)
         )
       )
     )
@@ -1039,7 +1039,7 @@
   (symbol (lib_id "Device:R") (at 133.985 111.76 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e251dfda-1684-4ff4-b46a-77f4816f71fa)
-    (property "Reference" "R6" (at 133.985 106.045 90)
+    (property "Reference" "R10" (at 133.985 106.045 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 133.985 108.585 90)
@@ -1056,7 +1056,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R7") (unit 1)
+          (reference "R10") (unit 1)
         )
       )
     )
@@ -1065,7 +1065,7 @@
   (symbol (lib_id "power:+5V") (at 96.52 64.135 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid e57823e4-e760-49c2-843d-8720f055d559)
-    (property "Reference" "#PWR027" (at 96.52 67.945 0)
+    (property "Reference" "#PWR031" (at 96.52 67.945 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (at 96.52 59.69 0)
@@ -1081,7 +1081,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "#PWR025") (unit 1)
+          (reference "#PWR031") (unit 1)
         )
       )
     )
@@ -1109,7 +1109,7 @@
           (reference "#PWR014") (unit 1)
         )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "#PWR032") (unit 1)
+          (reference "#PWR034") (unit 1)
         )
       )
     )
@@ -1144,7 +1144,7 @@
   (symbol (lib_id "Device:R") (at 83.82 111.76 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid fd880c34-cb3b-4255-96ff-86449b877551)
-    (property "Reference" "R3" (at 83.82 106.045 90)
+    (property "Reference" "R6" (at 83.82 106.045 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "1K" (at 83.82 108.585 90)
@@ -1161,7 +1161,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "R3") (unit 1)
+          (reference "R6") (unit 1)
         )
       )
     )
