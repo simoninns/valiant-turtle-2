@@ -740,7 +740,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x04") (at 172.72 118.745 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 11e2577b-8b4c-4bf4-8d37-d14a9672a352)
-    (property "Reference" "J7" (at 175.26 118.745 0)
+    (property "Reference" "J10" (at 175.26 118.745 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "Right Motor" (at 175.26 121.285 0)
@@ -758,11 +758,8 @@
     (pin "3" (uuid d378a26c-358f-4f27-a2a8-75351b1186fb))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "J7") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-          (reference "J6") (unit 1)
+          (reference "J10") (unit 1)
         )
       )
     )
@@ -771,7 +768,7 @@
   (symbol (lib_id "power:GND") (at 146.05 139.065 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 43490a2e-8663-47e3-b928-6634c49704d1)
-    (property "Reference" "#PWR018" (at 146.05 145.415 0)
+    (property "Reference" "#PWR014" (at 146.05 145.415 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 146.05 144.145 0)
@@ -786,9 +783,6 @@
     (pin "1" (uuid 1225f39f-36dc-4392-b358-9ccb11c5f944))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "#PWR018") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
           (reference "#PWR014") (unit 1)
         )
@@ -799,7 +793,7 @@
   (symbol (lib_name "DRV8825_Breakout_1") (lib_id "drv8825:DRV8825_Breakout") (at 147.32 120.015 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 592eb505-0b0c-4817-9247-4a601214d17a)
-    (property "Reference" "A4" (at 149.5141 100.965 0)
+    (property "Reference" "A2" (at 149.5141 100.965 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "DRV8825_Breakout" (at 149.5141 103.505 0)
@@ -829,9 +823,6 @@
     (pin "3" (uuid 736af9e8-ae46-4c0a-83a9-e3d56fb8908f))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "A4") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
           (reference "A2") (unit 1)
         )
@@ -842,7 +833,7 @@
   (symbol (lib_id "Device:C_Polarized") (at 210.82 90.805 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 8f655135-028e-4961-a8fd-292f34d25071)
-    (property "Reference" "C2" (at 214.63 88.646 0)
+    (property "Reference" "C4" (at 214.63 88.646 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100uF" (at 214.63 91.186 0)
@@ -858,9 +849,6 @@
     (pin "1" (uuid 47abcc9b-a1a1-4198-a8b7-a45f9bdb8674))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "C2") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
           (reference "C4") (unit 1)
         )
@@ -871,7 +859,7 @@
   (symbol (lib_id "power:+12V") (at 196.85 83.185 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9a9691e9-e6b1-442e-a41c-5a6252db39b7)
-    (property "Reference" "#PWR05" (at 196.85 86.995 0)
+    (property "Reference" "#PWR017" (at 196.85 86.995 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+12V" (at 196.85 78.105 0)
@@ -886,9 +874,6 @@
     (pin "1" (uuid b56053ac-f108-4a81-add7-59aee0955ee4))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "#PWR05") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
           (reference "#PWR017") (unit 1)
         )
@@ -899,7 +884,7 @@
   (symbol (lib_id "power:GND") (at 196.85 98.425 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9f79b4b7-ff26-47a5-9337-d92bc15aeade)
-    (property "Reference" "#PWR06" (at 196.85 104.775 0)
+    (property "Reference" "#PWR018" (at 196.85 104.775 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 196.85 103.505 0)
@@ -914,9 +899,6 @@
     (pin "1" (uuid ce7b9ac7-6fa9-4d2c-b3be-3ed29714baa3))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "#PWR06") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
           (reference "#PWR018") (unit 1)
         )
@@ -927,7 +909,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x04") (at 172.72 65.405 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a3f9fbdd-2625-40af-aa9e-5bf6b9ab8212)
-    (property "Reference" "J6" (at 175.26 65.405 0)
+    (property "Reference" "J9" (at 175.26 65.405 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "Left Motor" (at 175.26 67.945 0)
@@ -945,11 +927,8 @@
     (pin "3" (uuid 05dc18e5-90c3-4ed5-8da6-dc460f213e8e))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "J6") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-          (reference "J5") (unit 1)
+          (reference "J9") (unit 1)
         )
       )
     )
@@ -958,7 +937,7 @@
   (symbol (lib_id "Device:C_Polarized") (at 196.85 90.805 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid c1ff5d48-c62a-4107-93df-3d334d2a84be)
-    (property "Reference" "C1" (at 200.66 88.646 0)
+    (property "Reference" "C3" (at 200.66 88.646 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100uF" (at 200.66 91.186 0)
@@ -974,9 +953,6 @@
     (pin "1" (uuid 8af41672-5e5c-4f02-b663-0188ac0af312))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "C1") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
           (reference "C3") (unit 1)
         )
@@ -987,7 +963,7 @@
   (symbol (lib_id "power:GND") (at 146.05 85.725 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid dd1c44c7-c293-4b68-9daf-83525d479126)
-    (property "Reference" "#PWR017" (at 146.05 92.075 0)
+    (property "Reference" "#PWR013" (at 146.05 92.075 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 146.05 90.805 0)
@@ -1002,9 +978,6 @@
     (pin "1" (uuid 335a7b37-08b2-40a0-baca-a40dd8a596fb))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "#PWR017") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
           (reference "#PWR013") (unit 1)
         )
@@ -1015,7 +988,7 @@
   (symbol (lib_id "drv8825:DRV8825_Breakout") (at 147.32 66.675 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e98ea25a-2f30-49c9-bafa-6ddab8cd5637)
-    (property "Reference" "A3" (at 149.5141 47.625 0)
+    (property "Reference" "A1" (at 149.5141 47.625 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "DRV8825_Breakout" (at 149.5141 50.165 0)
@@ -1045,9 +1018,6 @@
     (pin "3" (uuid 9655fd03-cf34-43db-a669-a19145ea0eb6))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "A3") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
           (reference "A1") (unit 1)
         )
@@ -1073,9 +1043,6 @@
     (pin "1" (uuid b86b33d5-c5c0-4114-9425-003b329d955d))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "#PWR015") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
           (reference "#PWR015") (unit 1)
         )
@@ -1101,9 +1068,6 @@
     (pin "1" (uuid e51eb0a0-2c1d-4d62-97b0-7c9dd31e507e))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "#PWR016") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
           (reference "#PWR016") (unit 1)
         )

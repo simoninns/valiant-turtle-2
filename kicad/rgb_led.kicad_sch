@@ -717,7 +717,7 @@
   (symbol (lib_id "power:GND") (at 153.035 127 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 2ec66939-b608-4767-b80a-41870004852a)
-    (property "Reference" "#PWR014" (at 153.035 133.35 0)
+    (property "Reference" "#PWR036" (at 153.035 133.35 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 153.035 132.08 0)
@@ -732,11 +732,8 @@
     (pin "1" (uuid 6b8dcfe8-6f61-44fc-b51a-9c74fa5d39ff))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "#PWR014") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "#PWR033") (unit 1)
+          (reference "#PWR036") (unit 1)
         )
       )
     )
@@ -745,7 +742,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x07") (at 110.49 66.675 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 35dcb7fc-7880-428e-a6c6-8a33929c5f7f)
-    (property "Reference" "J10" (at 110.49 60.325 90)
+    (property "Reference" "J14" (at 110.49 60.325 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "RGB LED Eyeballs" (at 110.49 62.865 90)
@@ -767,7 +764,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "J10") (unit 1)
+          (reference "J14") (unit 1)
         )
       )
     )
@@ -880,7 +877,7 @@
   (symbol (lib_id "power:GND") (at 102.87 127 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 86ff0bfe-e7ab-4667-bd74-6b3f9985bae4)
-    (property "Reference" "#PWR014" (at 102.87 133.35 0)
+    (property "Reference" "#PWR035" (at 102.87 133.35 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 102.87 132.08 0)
@@ -895,11 +892,8 @@
     (pin "1" (uuid 9c21cde6-e1e8-485d-b8cc-9f7964d0ef54))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "#PWR014") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "#PWR032") (unit 1)
+          (reference "#PWR035") (unit 1)
         )
       )
     )
@@ -1065,7 +1059,7 @@
   (symbol (lib_id "power:+5V") (at 96.52 64.135 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid e57823e4-e760-49c2-843d-8720f055d559)
-    (property "Reference" "#PWR031" (at 96.52 67.945 0)
+    (property "Reference" "#PWR034" (at 96.52 67.945 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (at 96.52 59.69 0)
@@ -1081,7 +1075,7 @@
     (instances
       (project "valiant-turtle-2"
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "#PWR031") (unit 1)
+          (reference "#PWR034") (unit 1)
         )
       )
     )
@@ -1090,7 +1084,7 @@
   (symbol (lib_id "power:GND") (at 203.2 127 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e616bf5e-965c-4fce-9190-60351cfe1507)
-    (property "Reference" "#PWR014" (at 203.2 133.35 0)
+    (property "Reference" "#PWR037" (at 203.2 133.35 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 203.2 132.08 0)
@@ -1105,11 +1099,8 @@
     (pin "1" (uuid 7cbee32d-a777-4914-98dc-7de248e02b88))
     (instances
       (project "valiant-turtle-2"
-        (path "/e9f328a3-a444-4353-b569-ffbeea9f702f"
-          (reference "#PWR014") (unit 1)
-        )
         (path "/e9f328a3-a444-4353-b569-ffbeea9f702f/5348bc4c-1b60-46a4-ae88-0946c3882d19"
-          (reference "#PWR034") (unit 1)
+          (reference "#PWR037") (unit 1)
         )
       )
     )
