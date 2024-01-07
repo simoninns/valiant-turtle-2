@@ -43,6 +43,7 @@ include <servo_holder.scad>
 include <battery.scad>
 include <pen_holder_cap.scad>
 include <logotype.scad>
+include <toggle_switch.scad>
 
 // // Viewport translation
 // $vpt = [0, 0, 0];
@@ -95,6 +96,7 @@ display_ball_bearing = "No"; // [Yes, No]
 display_pen = "No"; // [Yes, No]
 display_servo = "No"; // [Yes, No]
 display_battery = "No"; // [Yes, No]
+display_toggle_switch = "No"; // [Yes, No]
 
 /* [Screws] */
 display_motor_mounts_screws = "No"; // [Yes, No]
@@ -151,6 +153,7 @@ module main() {
     d_pen = (display_pen == "Yes") ? true:false;
     d_servo = (display_servo == "Yes") ? true:false;
     d_battery = (display_battery == "Yes") ? true:false;
+    d_toggle_switch = (display_toggle_switch == "Yes") ? true:false;
 
     // Screws
     d_motor_mounts_screws = (display_motor_mounts_screws == "Yes") ? true:false;
@@ -204,6 +207,7 @@ module main() {
     if (d_pen) render_pen(toPrint, penUp);
     if (d_servo) render_micro_servo(toPrint);
     if (d_battery) render_battery(toPrint);
+    if (d_toggle_switch) render_toggle_switch(toPrint);
 
     // Render screws
     if (d_motor_mounts_screws) render_motor_mounts_screws(toPrint);
@@ -225,5 +229,6 @@ if (for_printing == "Printing") {
 } else {
     $fn=20;
     // Place the centre of the axis on the centre rotation point of the model
-    move([0,-29,6]) main();
+    //move([0,-29,6]) main();
+    main();
 }

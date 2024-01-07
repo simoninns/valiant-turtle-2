@@ -97,6 +97,27 @@ module pen_support()
             // Clearance for servo horn in the base plate
             move([11.49,0,4]) cuboid([7,8.5,10]);
             move([13.5,0,4]) cuboid([7,12.5,6], chamfer=2, edges=EDGES_RIGHT+EDGES_X_ALL);
+
+            // Hole for toggle switch
+            move([-23.5,37-29,0]) {
+                cyl(h=10,d=7);
+                move([6,0,0]) cyl(h=10,d=2);
+            }
+        }
+    }
+}
+
+module switch_support()
+{
+    move([-23.5,37,7]) {
+        difference() {
+            cuboid([17,10,8], chamfer=0.5, edges=EDGES_ALL-EDGES_BOTTOM);
+
+            move([0,0,2]) cuboid([14,7,8]); // 13,6.5,9
+
+            // Armature hole
+            cyl(h=10,d=7);
+            move([6,0,0]) cyl(h=10,d=2);
         }
     }
 }
@@ -107,11 +128,13 @@ module render_servo_holder(toPrint)
         color([0.2,0.2,0.2,1])  {
             servo_holder();
             pen_support();
+            switch_support();
         }
     } else {
         move([0,-29,0]) {
             servo_holder();
             pen_support();
+            switch_support();
         }
     }
 }
