@@ -75,7 +75,7 @@ module servo_holder()
 
 module pen_support()
 {
-    move([0,29,0]) {
+    move([0,29,0.001]) {
         difference() {
             union() {
                 cyl(h=24, d=25, center=false, chamfer2=0.5, $fn=8);

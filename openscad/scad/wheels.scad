@@ -113,7 +113,7 @@ module wheel()
 module render_wheels(toPrint)
 {
     if (!toPrint) {
-        color([0.9,0.9,0.6,1]) {
+        color([0.2,0.2,0.2,1]) {
             move([106.5,64-35,-6]) xrot(90) wheel();
             xflip() move([106.5,64-35,-6]) xrot(90) wheel();
         }

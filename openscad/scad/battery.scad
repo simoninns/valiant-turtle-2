@@ -160,6 +160,7 @@ module battery18650_holder()
     difference() {
         union() {
             move([-21,-8 - 10,-(length/2)]) cuboid([42,40,length], chamfer=1, center=false, edges=EDGES_ALL-EDGES_FRONT);
+            move([24,2,0]) cuboid([12,40,34],chamfer=1, edges=EDGES_ALL-EDGES_LEFT-EDGES_FRONT);
 
             // Mounting lip
             hull() move([0,-17,0]) {
@@ -181,14 +182,9 @@ module battery18650_holder()
                     move([0,11,1]) cuboid([10,4,6], chamfer=1);
                 }
             }
-
-            // Sticky-out bit to make it easier to remove batteries
-            difference() {
-                move([24,2,0]) cuboid([12,40,34],chamfer=1, edges=EDGES_ALL-EDGES_LEFT-EDGES_FRONT);
-                move([22,-2,0]) cuboid([12,40+4,30],chamfer=1, edges=EDGES_ALL-EDGES_LEFT);
-            }
         }
-        move([0,-16,0]) cuboid([36,44,length-4],chamfer=0);
+        move([0,-16,0]) cuboid([35.99,44,length-4],chamfer=0);
+        move([22,-2,0]) cuboid([11.99,40+4,29.99],chamfer=1, edges=EDGES_ALL-EDGES_LEFT);
 
         // Threaded insert holes
         move([0,-15,44.5]) xrot(90) cyl(h=8,d=5);
@@ -203,7 +199,7 @@ module battery18650_holder()
             move([0,-1,0]) cuboid([10,18,length-4],chamfer=1);
 
             // Central cross-section
-            move([20,-12,0]) cuboid([16,45,30],chamfer=1);
+            move([20,-6,0]) cuboid([16,34,30],chamfer=1);
 
             // Base cut-out
             move([9.5,2,0]) cuboid([20-14,22,length-18], chamfer=1);
