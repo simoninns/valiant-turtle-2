@@ -48,14 +48,19 @@ module head_cover_half()
         // Screw head recess
         move([12,-58,-8.5]) xrot(180) cyl(h=4,d=7);
         move([0,-133,-8.5]) xrot(180) cyl(h=4,d=7);
+
+        move([0,-144 + 35,3.5 - 22]) cyl(h=40, d=2.5); // Hole to release bearing through
     }
 }
 
 module bearing_mount()
 {
-    move([0,-144 + 35,3.5 - 22])difference() {        
-        move([0,0,2]) cyl(h=18,d=24);
-        move([0,0,-4.5]) ball_bearing(20.5);
+    move([0,-144 + 35,3.5 - 22]) {
+        difference() {        
+            move([0,0,2]) cyl(h=18,d=24);
+            move([0,0,-4.5]) ball_bearing(20.5);
+            move([0,0,0]) cyl(h=40, d=2.5); // Hole to release bearing through
+        }
     }
 }
 
