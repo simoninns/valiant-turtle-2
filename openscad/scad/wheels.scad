@@ -3,7 +3,7 @@
     wheels.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ module wheel()
     }
 }
 
-module render_wheels(crend, toPrint)
+module render_wheels(toPrint)
 {
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) {
@@ -122,7 +122,7 @@ module render_wheels(crend, toPrint)
     }
 }
 
-module render_turning_circle(crend, toPrint)
+module render_turning_circle(toPrint)
 {
     if (!toPrint) {
         // Render the turning circle
@@ -134,7 +134,7 @@ module render_turning_circle(crend, toPrint)
     }
 }
 
-module render_tires(crend, toPrint)
+module render_tires(toPrint)
 {
     if (!toPrint) {
         color([0.4,0.4,0.4,1]) {

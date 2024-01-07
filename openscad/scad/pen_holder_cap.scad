@@ -3,7 +3,7 @@
     pen_holder_cap.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -44,10 +44,10 @@ module pen_holder_cap()
     }
 }
 
-module render_pen_holder_cap(crend, toPrint, penUp)
+module render_pen_holder_cap(toPrint, penUp)
 {
     if (!toPrint) {
-        color([0.8,0.8,0.8]) {
+        color([0.9,0.5,0.0,1]) {
             if(penUp) move([0,29,-25 + 4]) xrot(180) pen_holder_cap();
             else move([0,29,-25]) xrot(180) pen_holder_cap();
         }

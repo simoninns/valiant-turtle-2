@@ -3,7 +3,7 @@
     pcb.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ module pcb_screws()
     }
 }
 
-module render_pcb(crend, toPrint)
+module render_pcb(toPrint)
 {
     if (!toPrint) {
         difference() {
@@ -130,7 +130,7 @@ module render_pcb(crend, toPrint)
     }
 }
 
-module render_pcb_mounts_front(crend, toPrint)
+module render_pcb_mounts_front(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) pcb_mounts_front();
@@ -139,7 +139,7 @@ module render_pcb_mounts_front(crend, toPrint)
     }
 }
 
-module render_pcb_mounts_back(crend, toPrint)
+module render_pcb_mounts_back(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) pcb_mounts_back();
@@ -148,7 +148,7 @@ module render_pcb_mounts_back(crend, toPrint)
     }
 }
 
-module render_pcb_mounts_front_screws(crend, toPrint)
+module render_pcb_mounts_front_screws(toPrint)
 {
     if (!toPrint) {
         move([60,-20,-3]) xrot(180) m3x10_screw();
@@ -156,7 +156,7 @@ module render_pcb_mounts_front_screws(crend, toPrint)
     }
 }
 
-module render_pcb_mounts_back_screws(crend, toPrint)
+module render_pcb_mounts_back_screws(toPrint)
 {
     if (!toPrint) {
         move([7,52,-3]) xrot(180) m3x10_screw();

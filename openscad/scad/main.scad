@@ -3,7 +3,7 @@
     main.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -52,7 +52,6 @@ include <logotype.scad>
 // $vpd = 950;
 
 /* [Rendering Parameters] */
-use_colour = "Colour"; // [Colour, No colour]
 for_printing = "Display"; // [Display, Printing]
 pen_up = "Pen Up"; // [False, True]
 
@@ -110,7 +109,6 @@ display_shell_screws = "No"; // [Yes, No]
 display_battery_screws = "No"; // [Yes, No]
 
 module main() {
-    crend = (use_colour == "Colour") ? true:false;
     toPrint = (for_printing == "Printing") ? true:false;
     penUp = (pen_up == "True") ? true:false;
 
@@ -167,57 +165,57 @@ module main() {
     d_battery_screws = (display_battery_screws == "Yes") ? true:false;
 
     // Render the printable parts
-    if (d_body_left) render_body_left(crend, toPrint);
-    if (d_body_right) render_body_right(crend, toPrint);
-    if (d_head) render_head(crend, toPrint);
-    if (d_shell_lid) render_shell_lid(crend, toPrint);
-    if (d_shell) render_shell(crend, toPrint);
-    if (d_shell_dot) render_shell_dot(crend, toPrint);
-    if (d_motor_bay) render_motor_bay(crend, toPrint);
-    if (d_motor_mounts) render_motor_mounts(crend, toPrint);
-    if (d_wheels) render_wheels(crend, toPrint);
-    if (d_pcb_mounts_front) render_pcb_mounts_front(crend, toPrint);
-    if (d_pcb_mounts_back) render_pcb_mounts_back(crend, toPrint);
-    if (d_head_cover) render_head_cover(crend, toPrint);
-    if (d_pen_holder_base) render_pen_holder_base(crend, toPrint, penUp);
-    if (d_pen_holder_top_small) render_pen_holder_top_small(crend, toPrint, penUp);
-    if (d_pen_holder_top_medium) render_pen_holder_top_medium(crend, toPrint, penUp);
-    if (d_pen_holder_top_large) render_pen_holder_top_large(crend, toPrint, penUp);
-    if (d_pen_holder_cap) render_pen_holder_cap(crend, toPrint,penUp);
-    if (d_servo_holder) render_servo_holder(crend, toPrint);
-    if (d_servo_horn) render_micro_servo_horn(crend, toPrint, penUp);
-    if (d_logotype) render_logotype(crend, toPrint);
-    if (d_battery_holder) render_battery_holder(crend, toPrint);
-    if (d_battery_cover) render_battery_cover(crend, toPrint);
-    if (d_led_holders) render_led_holders(crend, toPrint);
+    if (d_body_left) render_body_left(toPrint);
+    if (d_body_right) render_body_right(toPrint);
+    if (d_head) render_head(toPrint);
+    if (d_shell_lid) render_shell_lid(toPrint);
+    if (d_shell) render_shell(toPrint);
+    if (d_shell_dot) render_shell_dot(toPrint);
+    if (d_motor_bay) render_motor_bay(toPrint);
+    if (d_motor_mounts) render_motor_mounts(toPrint);
+    if (d_wheels) render_wheels(toPrint);
+    if (d_pcb_mounts_front) render_pcb_mounts_front(toPrint);
+    if (d_pcb_mounts_back) render_pcb_mounts_back(toPrint);
+    if (d_head_cover) render_head_cover(toPrint);
+    if (d_pen_holder_base) render_pen_holder_base(toPrint, penUp);
+    if (d_pen_holder_top_small) render_pen_holder_top_small(toPrint, penUp);
+    if (d_pen_holder_top_medium) render_pen_holder_top_medium(toPrint, penUp);
+    if (d_pen_holder_top_large) render_pen_holder_top_large(toPrint, penUp);
+    if (d_pen_holder_cap) render_pen_holder_cap(toPrint,penUp);
+    if (d_servo_holder) render_servo_holder(toPrint);
+    if (d_servo_horn) render_micro_servo_horn(toPrint, penUp);
+    if (d_logotype) render_logotype(toPrint);
+    if (d_battery_holder) render_battery_holder(toPrint);
+    if (d_battery_cover) render_battery_cover(toPrint);
+    if (d_led_holders) render_led_holders(toPrint);
 
     // Render the print supports
-    if (d_shell_support) render_shell_support(crend, toPrint);
+    if (d_shell_support) render_shell_support(toPrint);
 
     // Render the non-printable parts
-    if (d_motor_small) render_motor_small(crend, toPrint);
-    if (d_motor_large) render_motor_large(crend, toPrint);
-    if (d_rotational_axis) render_rotational_axis(crend, toPrint);
-    if (d_turning_circle) render_turning_circle(crend, toPrint);
-    if (d_tires) render_tires(crend, toPrint);
-    if (d_pcb) render_pcb(crend, toPrint);
-    if (d_leds) render_leds(crend, toPrint);
-    if (d_ball_bearing) render_ball_bearing(crend, toPrint);
-    if (d_pen) render_pen(crend, toPrint, penUp);
-    if (d_servo) render_micro_servo(crend, toPrint);
-    if (d_battery) render_battery(crend, toPrint);
+    if (d_motor_small) render_motor_small(toPrint);
+    if (d_motor_large) render_motor_large(toPrint);
+    if (d_rotational_axis) render_rotational_axis(toPrint);
+    if (d_turning_circle) render_turning_circle(toPrint);
+    if (d_tires) render_tires(toPrint);
+    if (d_pcb) render_pcb(toPrint);
+    if (d_leds) render_leds(toPrint);
+    if (d_ball_bearing) render_ball_bearing(toPrint);
+    if (d_pen) render_pen(toPrint, penUp);
+    if (d_servo) render_micro_servo(toPrint);
+    if (d_battery) render_battery(toPrint);
 
     // Render screws
-    if (d_motor_mounts_screws) render_motor_mounts_screws(crend, toPrint);
-    if (d_body_left_screws) render_body_left_screws(crend, toPrint);
-    if (d_body_right_screws) render_body_right_screws(crend, toPrint);
-    if (d_motor_bay_screws) render_motor_bay_screws(crend, toPrint);
-    if (d_head_screws) render_head_screws(crend, toPrint);
-    if (d_servo_holder_screws) render_servo_holder_screws(crend, toPrint);
-    if (d_pcb_mounts_front_screws) render_pcb_mounts_front_screws(crend, toPrint);
-    if (d_pcb_mounts_back_screws) render_pcb_mounts_back_screws(crend, toPrint);
-    if (d_shell_screws) render_shell_screws(crend, toPrint);
-    if (d_battery_screws) render_battery_screws(crend, toPrint);
+    if (d_motor_mounts_screws) render_motor_mounts_screws(toPrint);
+    if (d_body_left_screws) render_body_left_screws(toPrint);
+    if (d_body_right_screws) render_body_right_screws(toPrint);
+    if (d_motor_bay_screws) render_motor_bay_screws(toPrint);
+    if (d_head_screws) render_head_screws(toPrint);
+    if (d_servo_holder_screws) render_servo_holder_screws(toPrint);
+    if (d_pcb_mounts_front_screws) render_pcb_mounts_front_screws(toPrint);
+    if (d_pcb_mounts_back_screws) render_pcb_mounts_back_screws(toPrint);
+    if (d_shell_screws) render_shell_screws(toPrint);
+    if (d_battery_screws) render_battery_screws(toPrint);
 }
 
 // Set the arc resolution higher when in printing mode

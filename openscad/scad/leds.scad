@@ -3,7 +3,7 @@
     leds.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ module led_holder()
     }
 }
 
-module render_led_holders(crend, toPrint)
+module render_led_holders(toPrint)
 {
     if(!toPrint) {
         color([0.2,0.2,0.2,1]) {
@@ -122,7 +122,7 @@ module render_led_holders(crend, toPrint)
     }
 }
 
-module render_leds(crend, toPrint)
+module render_leds(toPrint)
 {
     if(!toPrint) {
         move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) yrot(90) led_5mm();

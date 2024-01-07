@@ -3,7 +3,7 @@
     pen_holder_top.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -134,7 +134,7 @@ module holder_insert_large()
 }
 
 // Blue, small holder
-module render_pen_holder_top_small(crend, toPrint, penUp)
+module render_pen_holder_top_small(toPrint, penUp)
 {
     if (!toPrint) {
         if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 4]) rotate([180,0,0]) holder_insert_small();
@@ -145,7 +145,7 @@ module render_pen_holder_top_small(crend, toPrint, penUp)
 }    
 
 // White, medium holder
-module render_pen_holder_top_medium(crend, toPrint, penUp)
+module render_pen_holder_top_medium(toPrint, penUp)
 {
     if (!toPrint) {
         if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 4]) rotate([180,0,0]) holder_insert_medium();
@@ -156,7 +156,7 @@ module render_pen_holder_top_medium(crend, toPrint, penUp)
 }
 
 // Grey, large holder
-module render_pen_holder_top_large(crend, toPrint, penUp)
+module render_pen_holder_top_large(toPrint, penUp)
 {
     if (!toPrint) {
         if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 4]) rotate([180,0,0]) holder_insert_large();

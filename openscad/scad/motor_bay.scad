@@ -3,7 +3,7 @@
     motor_bay.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -271,7 +271,7 @@ module motor_bay()
     }
 }
 
-module render_motor_bay(crend, toPrint)
+module render_motor_bay(toPrint)
 {
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) {
@@ -296,7 +296,7 @@ module motor_bay_screws()
     }
 }
 
-module render_motor_bay_screws(crend, toPrint)
+module render_motor_bay_screws(toPrint)
 {
     if (!toPrint) {
         motor_bay_screws();

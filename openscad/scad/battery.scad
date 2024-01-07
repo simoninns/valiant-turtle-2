@@ -3,7 +3,7 @@
     battery.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -376,10 +376,10 @@ module battery_cover()
     }
 }
 
-module render_battery_holder(crend, toPrint)
+module render_battery_holder(toPrint)
 {
     if (!toPrint) {
-        color([0.4,0.4,0.5]) {
+        color([0.2,0.2,0.2,1]) {
             move([0,-19,18]) {
                 xrot(90) yrot(90) battery18650_holder();
             }
@@ -389,16 +389,16 @@ module render_battery_holder(crend, toPrint)
     }
 }
 
-module render_battery_cover(crend, toPrint)
+module render_battery_cover(toPrint)
 {
     if (!toPrint) {
-        color([0.4,0.4,0.5]) battery_cover();
+        color([0.9,0.9,0.6,1]) battery_cover();
     } else {
         move([0,-19,0]) xrot(180) battery_cover();
     }
 }
 
-module render_battery(crend, toPrint)
+module render_battery(toPrint)
 {
     if (!toPrint) {
         // 4 Batteries
@@ -410,7 +410,7 @@ module render_battery(crend, toPrint)
     }
 }
 
-module render_battery_screws(crend, toPrint)
+module render_battery_screws(toPrint)
 {
     if (!toPrint) {
         move([44.5,-19,-3]) xrot(180) m3x10_screw();

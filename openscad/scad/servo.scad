@@ -3,7 +3,7 @@
     servo.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ module micro_servo()
 	}
 }
 
-module render_micro_servo(crend, toPrint)
+module render_micro_servo(toPrint)
 {
     if (!toPrint) {
         move([32,34.5,10]) xrot(90) yrot(-90) {
@@ -90,7 +90,7 @@ module render_micro_servo(crend, toPrint)
     }
 }
 
-module render_micro_servo_horn(crend, toPrint, penUp)
+module render_micro_servo_horn(toPrint, penUp)
 {
     if (!toPrint) {
         move([0,0,0]) {

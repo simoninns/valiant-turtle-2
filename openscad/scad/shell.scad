@@ -3,7 +3,7 @@
     shell_top.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -488,7 +488,7 @@ module shell_dot()
     }
 }
 
-module render_shell(crend, toPrint)
+module render_shell(toPrint)
 {
     if (!toPrint) {
         color([0,0.8,0,1]) {
@@ -515,7 +515,7 @@ module render_shell(crend, toPrint)
     }
 }
 
-module render_shell_lid(crend, toPrint)
+module render_shell_lid(toPrint)
 {
     if (!toPrint) {
         color([0,0.8,0,1]) shell_lid();
@@ -524,7 +524,7 @@ module render_shell_lid(crend, toPrint)
     }
 }
 
-module render_shell_dot(crend, toPrint)
+module render_shell_dot(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) move([0,-44 + 25,106]) shell_dot();
@@ -533,14 +533,14 @@ module render_shell_dot(crend, toPrint)
     }
 }
 
-module render_shell_support(crend, toPrint)
+module render_shell_support(toPrint)
 {
     if (toPrint) {
         move([0,-83,9.5]) cuboid([23,20,19]);
     }
 }
 
-module render_shell_screws(crend, toPrint)
+module render_shell_screws(toPrint)
 {
     if (!toPrint) {
         move([48.5,56,-3]) xrot(180) m3x10_screw();

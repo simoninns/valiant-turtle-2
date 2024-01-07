@@ -3,7 +3,7 @@
     head.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -174,7 +174,7 @@ module head()
     }
 }
 
-module render_head(crend, toPrint)
+module render_head(toPrint)
 {
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) {
@@ -195,7 +195,7 @@ module head_screws()
     move([0,-133,-7]) xrot(180) m3x10_screw();
 }
 
-module render_head_screws(crend, toPrint)
+module render_head_screws(toPrint)
 {
     if (!toPrint) {
         head_screws();

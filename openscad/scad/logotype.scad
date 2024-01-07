@@ -3,7 +3,7 @@
     logotype.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ module logotype()
     logo_graphics();
 }
 
-module render_logotype(crend, toPrint)
+module render_logotype(toPrint)
 {
     if (!toPrint) {
         color([0.9,0.5,0.0,1]) {

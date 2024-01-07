@@ -3,7 +3,7 @@
     motor_mounts.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -119,7 +119,7 @@ module nema17_mount()
     }
 }
 
-module render_motor_mounts(crend, toPrint)
+module render_motor_mounts(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) {
@@ -132,7 +132,7 @@ module render_motor_mounts(crend, toPrint)
     }
 }
 
-module render_motor_small(crend, toPrint)
+module render_motor_small(toPrint)
 {
     if (!toPrint) {
         move([98-4,64-35,-6]) nema17_motor_small();
@@ -140,7 +140,7 @@ module render_motor_small(crend, toPrint)
     }
 }
 
-module render_motor_large(crend, toPrint)
+module render_motor_large(toPrint)
 {
     if (!toPrint) {
         move([98-4,64-35,-6]) nema17_motor_large();
@@ -148,7 +148,7 @@ module render_motor_large(crend, toPrint)
     }
 }
 
-module render_rotational_axis(crend, toPrint)
+module render_rotational_axis(toPrint)
 {
     if (!toPrint) {
         // Render the rotational axis to assist with the design
@@ -174,7 +174,7 @@ module motor_mounts_screws()
     move([72,55,-9]) m3x10_screw();
 }
 
-module render_motor_mounts_screws(crend, toPrint)
+module render_motor_mounts_screws(toPrint)
 {
     if (!toPrint) {
         motor_mounts_screws();

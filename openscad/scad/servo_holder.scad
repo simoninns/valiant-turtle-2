@@ -3,7 +3,7 @@
     servo_holder.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -101,10 +101,10 @@ module pen_support()
     }
 }
 
-module render_servo_holder(crend, toPrint)
+module render_servo_holder(toPrint)
 {
     if (!toPrint) {
-        color([0.9,0.9,0.6,1]) {
+        color([0.2,0.2,0.2,1])  {
             servo_holder();
             pen_support();
         }
@@ -116,7 +116,7 @@ module render_servo_holder(crend, toPrint)
     }
 }
 
-module render_servo_holder_screws(crend, toPrint)
+module render_servo_holder_screws(toPrint)
 {
     if (!toPrint) {
         move([30.5,34.5,8.5]) {

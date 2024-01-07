@@ -3,7 +3,7 @@
     head_cover.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -75,10 +75,10 @@ module head_cover()
     bearing_mount();
 }
 
-module render_head_cover(crend, toPrint)
+module render_head_cover(toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1]) head_cover();
+        color([0.9,0.9,0.6,1]) head_cover();
     } else {
         move([0,-89,-3]) xrot(180) head_cover();
     }
@@ -96,7 +96,7 @@ module display_ball_bearing()
     }
 }
 
-module render_ball_bearing(crend, toPrint)
+module render_ball_bearing(toPrint)
 {
     if (!toPrint) {
         display_ball_bearing();

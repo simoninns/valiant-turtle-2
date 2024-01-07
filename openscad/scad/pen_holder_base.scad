@@ -3,7 +3,7 @@
     pen_holder_base.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ module pen_holder()
     }
 }
 
-module render_pen_holder_base(crend, toPrint, penUp)
+module render_pen_holder_base(toPrint, penUp)
 {
     if (!toPrint) {
         color([0.8,0.8,0.8]) {
@@ -106,7 +106,7 @@ module pen()
     }
 }
 
-module render_pen(crend, toPrint, penUp)
+module render_pen(toPrint, penUp)
 {
     if (!toPrint) {
         if (penUp) move([0,0,4]) pen();

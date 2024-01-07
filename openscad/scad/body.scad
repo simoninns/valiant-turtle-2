@@ -3,7 +3,7 @@
     body.scad
     
     Valiant Turtle 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -415,7 +415,7 @@ module body_left()
     control_panel_surround();
 }
 
-module render_body_right(crend, toPrint)
+module render_body_right(toPrint)
 {
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) {
@@ -426,7 +426,7 @@ module render_body_right(crend, toPrint)
     }
 }
 
-module render_body_left(crend, toPrint)
+module render_body_left(toPrint)
 {
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) {
@@ -443,7 +443,7 @@ module body_left_screws()
     move([-3,13,-6]) yrot(-90) m3x10_screw();
 }
 
-module render_body_left_screws(crend, toPrint)
+module render_body_left_screws(toPrint)
 {
     if (!toPrint) {
         body_left_screws();
@@ -455,7 +455,7 @@ module body_right_screws()
     move([3,44,-6]) yrot(90) m3x10_screw();
 }
 
-module render_body_right_screws(crend, toPrint)
+module render_body_right_screws(toPrint)
 {
     if (!toPrint) {
         body_right_screws();
