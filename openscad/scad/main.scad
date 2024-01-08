@@ -229,6 +229,6 @@ if (for_printing == "Printing") {
 } else {
     $fn=20;
     // Place the centre of the axis on the centre rotation point of the model
-    //move([0,-29,6]) main();
-    main();
+    move([0,-29,6]) main();
+    //main();
 }
