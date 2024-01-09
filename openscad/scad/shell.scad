@@ -52,7 +52,14 @@ module shell_lid_top()
         }
 
         move([0,0,34.01]) cuboid([220,220,140]);
-        //move([0,-44 + 25,106]) cyl(h=1,d=15);
+
+        // Gap for dot
+        move([0,-44 + 25,104]) {
+            difference() {
+                cyl(h=3, d=8);
+                move([0,-5,0]) cuboid([10,10,4]);
+            }
+        }
     }
 }
 
@@ -467,9 +474,13 @@ module shellBottom()
 
 module shell_dot()
 {
-    hull() {
-        cyl(h=1, d=15, chamfer2=0.5);
-        move([0,0,0.75]) cyl(h=0.5, d=10);
+    move([0,0,0.5]) cyl(h=1, d=15, chamfer1=0.5);
+
+    move([0,0,2]) {
+        difference() {
+            cyl(h=3, d=8, chamfer2=0.5);
+            move([0,5,0]) cuboid([10,10,4]);
+        }
     }
 }
 
@@ -510,7 +521,7 @@ module render_shell_lid(toPrint)
 module render_shell_dot(toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1]) move([0,-44 + 25,106]) shell_dot();
+        color([0.2,0.2,0.2,1]) move([0,-44 + 25,105.5]) xrot(180) shell_dot();
     } else {
         shell_dot();
     }
