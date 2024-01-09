@@ -32,7 +32,7 @@ module shell_lid_top()
 {
     difference() {
         union() {
-            move([0,1.5,105]) yrot(180) {
+            move([0,1.5,104]) yrot(180) {
                 for ( i = [0:1:4]) {
                     zrot((360/5) * i) {
                         zrot(360/10) move([0,70,36.75]) xrot(55.5) irrPentagonTop();
@@ -40,20 +40,19 @@ module shell_lid_top()
                 }
             }
 
-            move([0,1.5,105]) yrot(180) {
+            move([0,1.5,104]) yrot(180) {
                 hull() {
-                    zrot((360/5) * 0) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
-                    zrot((360/5) * 1) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
-                    zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
-                    zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
-                    zrot((360/5) * 4) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                    zrot((360/5) * 0) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
+                    zrot((360/5) * 1) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
+                    zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
+                    zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
+                    zrot((360/5) * 4) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
                 }
             }
         }
 
         move([0,0,34.01]) cuboid([220,220,140]);
-
-        move([0,-44 + 25,106]) cyl(h=1,d=15);
+        //move([0,-44 + 25,106]) cyl(h=1,d=15);
     }
 }
 
@@ -61,36 +60,42 @@ module shell_lid_lip()
 {
     width2 = 107.25;
 
-    move([0,1.5,102.5]) yrot(180) {
-        hull() {
-            zrot((360/5) * 0) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-            zrot((360/5) * 1) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-        }
+    move([0,1.5,102.75]) yrot(180) {
+        difference() {
+            union() {
+                hull() {
+                    zrot((360/5) * 0) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 1) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                }
 
-        hull() {
-            zrot((360/5) * 1) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-            zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-        }
+                hull() {
+                    zrot((360/5) * 1) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                }
 
-        hull() {
-            zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-            zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-        }
+                hull() {
+                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                }
 
-        hull() {
-            zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-            zrot((360/5) * 3) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-        }
+                hull() {
+                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 3) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                }
 
-        hull() {
-            zrot((360/5) * 3) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-            zrot((360/5) * 4) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-        }
+                hull() {
+                    zrot((360/5) * 3) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 4) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                }
 
-        hull() {
-            zrot((360/5) * 4) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-            zrot((360/5) * 0) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-        }  
+                hull() {
+                    zrot((360/5) * 4) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 0) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                }
+            }
+
+            move([0,0,2.5]) cuboid([110,110,4]);
+        }
     }
 }
 
@@ -124,7 +129,7 @@ module shellTop()
             }
         }
 
-        move([0,0,106]) cuboid([140,140,2]);
+        move([0,0,105]) cuboid([140,140,2]);
     }
 }
 
