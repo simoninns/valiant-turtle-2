@@ -101,7 +101,7 @@ module pen_support()
             // Hole for toggle switch
             move([-23.5,37-29,0]) {
                 cyl(h=10,d=7);
-                move([6,0,0]) cyl(h=10,d=2);
+                move([6,0,0]) cyl(h=10,d=3);
             }
         }
     }
@@ -117,7 +117,7 @@ module switch_support()
 
             // Armature hole
             cyl(h=10,d=7);
-            move([6,0,0]) cyl(h=10,d=2);
+            move([6,0,-6.99]) cyl(h=10,d=3, chamfer2=1.5);
         }
     }
 }
