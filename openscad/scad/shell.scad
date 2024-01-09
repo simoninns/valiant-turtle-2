@@ -197,6 +197,10 @@ module front_panels()
                 union() {
                     irrPentagonBottom(2);
                     irrPentagonBottom(3);
+
+                    // Reenforce the lower edge
+                    zrot((360/5) * 3) move([-12.5,62,-8.25]) cuboid([66,2,1.5]);
+                    xflip() zrot((360/5) * 3) move([-12.5,62,-8.25]) cuboid([66,2,1.5]);
                 }
 
                 // Hole for threaded insert
@@ -209,6 +213,18 @@ module front_panels()
 
         // Slice the bottom of the shell to make it flush with the body
         move([0,0,-29]) cuboid([200,200,40]);
+    }
+
+    // Reenforce the lower edge
+    move([0,1.5,9]) {
+        difference() {
+            union() {
+                zrot((360/5) * 1) move([-39.75,62,-8.25]) cuboid([12,2,1.5]);
+                xflip() zrot((360/5) * 1) move([-39.75,62,-8.25]) cuboid([12,2,1.5]);
+            }
+
+            move([0,-13,-8]) cuboid([150,2,4]);
+        }
     }
     
     front_screw_mount();
@@ -459,7 +475,7 @@ module shellBottom()
         union() {
             // Back lower edge reenforcement
             hull() {
-                move([0,62.25,-7.5]) cuboid([95,2.5,4]);
+                move([0,62.25,-7.5]) cuboid([95,2.5,3]);
                 move([0,67.5,-2]) cuboid([98,0.5,1]);
             }   
         }
@@ -493,7 +509,7 @@ module render_shell(toPrint)
                 shellTop();
                 front_panels();
 
-                // // Bottom
+                // Bottom
                 shellBottom();
                 shellBottomArches();
             }

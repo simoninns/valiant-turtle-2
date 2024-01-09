@@ -44,7 +44,7 @@ module head_lip_profile(loc1, loc2)
 module head_profile(loc)
 {
     move(loc) {
-        move([0,0,-1.5]) cyl(h=3,d=1);
+        move([0,0,-1.5]) cyl(h=3,d=2, chamfer2=1);
     }
 }
 
@@ -63,9 +63,9 @@ module head_shape()
     pointD = [0,-143,0];
 
     pointE = [0,-54,18];
-    pointF = [10,-54,18];
-    pointG = [10,-122,18];
-    pointH = [0,-143 + 10.5,18];
+    pointF = [9.5,-54,18];
+    pointG = [9.5,-122,18];
+    pointH = [0,-143 + 11,18];
 
     // Base of head
     head_lip_profile(pointA, pointB);
