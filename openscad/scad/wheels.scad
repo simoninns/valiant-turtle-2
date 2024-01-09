@@ -49,23 +49,23 @@ module wheel_hub()
 {
     difference() {
         union() {
-            move([7,0,0]) yrot(-90) cyl(h=7.5,d=22, chamfer=0.5);
-            move([7.25,0,0]) cuboid([6,7,22], chamfer=0.5);
+            move([7,0,0]) yrot(-90) cyl(h=8,d=22, chamfer=0.5);
+            move([8,0,1]) cuboid([6,7,20], chamfer=0.5);
         }
 
         // Setting screw hole
-        move([7.25,0,6]) xrot(180) cyl(h=12,d=3.25);
+        move([8,0,6]) xrot(180) cyl(h=12,d=3.25);
 
         // Threaded insert slot
-        move([7.25,0,7.1]) xrot(180) cyl(h=8,d=5);
+        move([8,0,7.1]) xrot(180) cyl(h=8,d=5);
     }
 
     // Add in the screw insert
     difference() {
-        move([7.25,0,11]) insertM3x57();
+        move([8,0,11]) insertM3x57();
         
         // Setting screw hole
-        move([7.25,0,6]) xrot(180) cyl(h=12,d=3.25);
+        move([8,0,6]) xrot(180) cyl(h=12,d=3.25);
     }
 }
 
