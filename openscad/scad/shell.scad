@@ -32,31 +32,49 @@ module shell_lid_top()
 {
     difference() {
         union() {
-            move([0,1.5,104]) yrot(180) {
-                for ( i = [0:1:4]) {
-                    zrot((360/5) * i) {
-                        zrot(360/10) move([0,70,36.75]) xrot(55.5) irrPentagonTop();
+            difference() {
+                union() {
+                    // Copy of the top part of the shell
+                    move([0,1.5,104]) yrot(180) {
+                        for ( i = [0:1:4]) {
+                            zrot((360/5) * i) {
+                                zrot(360/10) move([0,70,36.75]) xrot(55.5) irrPentagonTop();
+                            }
+                        }
+                    }
+
+                    // Top pentagon
+                    move([0,1.5,104]) yrot(180) {
+                        hull() {
+                            zrot((360/5) * 0) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                            zrot((360/5) * 1) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                            zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                            zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                            zrot((360/5) * 4) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                        }
                     }
                 }
+
+                // Slice the bottom of the lid
+                move([0,0,34.01-2]) cuboid([220,220,143]);        
             }
 
+            // Add some thickness back in
             move([0,1.5,104]) yrot(180) {
                 hull() {
-                    zrot((360/5) * 0) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
-                    zrot((360/5) * 1) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
-                    zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
-                    zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
-                    zrot((360/5) * 4) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
+                    zrot((360/5) * 0) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=16);
+                    zrot((360/5) * 1) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=16);
+                    zrot((360/5) * 2) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=16);
+                    zrot((360/5) * 3) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=16);
+                    zrot((360/5) * 4) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=16);
                 }
             }
         }
 
-        move([0,0,34.01]) cuboid([220,220,140]);
-
-        // Gap for dot
+        // Add a gap for the lid dot
         move([0,-44 + 25,104]) {
             difference() {
-                cyl(h=3, d=8);
+                cyl(h=4, d=8);
                 move([0,-5,0]) cuboid([10,10,4]);
             }
         }
@@ -65,9 +83,9 @@ module shell_lid_top()
 
 module shell_lid_lip()
 {
-    width2 = 107.25;
+    width2 = 105;
 
-    move([0,1.5,102.75]) yrot(180) {
+    move([0,1.5,102.5]) yrot(180) {
         difference() {
             union() {
                 hull() {
@@ -117,11 +135,11 @@ module shell_lid()
 module irrPentagonTop()
 {
     hull() {
-        zrot((360/5) * 0) move([0,103/2,0]) staggered_sphere(d=1, $fn=16);
-        zrot((360/5) * 1) move([0,123/2,0]) staggered_sphere(d=1, $fn=16);
-        zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
-        zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=1, $fn=16);
-        zrot((360/5) * 4) move([0,123/2,0]) staggered_sphere(d=1, $fn=16);
+        zrot((360/5) * 0) move([0,103/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 1) move([0,123/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 4) move([0,123/2,0]) staggered_sphere(d=2, $fn=16);
     }
 }
 
@@ -129,14 +147,15 @@ module shellTop()
 {
     difference() {
         move([0,1.5,104]) yrot(180) {
-            for ( i = [0:1:4]) {
+            for ( i = [0:1:2]) {
                 zrot((360/5) * i) {
                     zrot(360/10) move([0,70,36.75]) xrot(55.5) irrPentagonTop();
                 }
             }
         }
 
-        move([0,0,105]) cuboid([140,140,2]);
+        // Slice the top to make space for the lid
+        move([0,0,104.5]) cuboid([140,140,2]);
     }
 }
 
@@ -214,18 +233,6 @@ module front_panels()
         // Slice the bottom of the shell to make it flush with the body
         move([0,0,-29]) cuboid([200,200,40]);
     }
-
-    // Reenforce the lower edge
-    move([0,1.5,9]) {
-        difference() {
-            union() {
-                zrot((360/5) * 1) move([-39.75,62,-8.25]) cuboid([12,2,1.5]);
-                xflip() zrot((360/5) * 1) move([-39.75,62,-8.25]) cuboid([12,2,1.5]);
-            }
-
-            move([0,-13,-8]) cuboid([150,2,4]);
-        }
-    }
     
     front_screw_mount();
 }
@@ -242,11 +249,11 @@ module irrPentagonBottom(pos)
     zrot((360/5) * pos) {
         move([0,69,0]) xrot(54) { // 36.25
             hull() {
-                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=1, $fn=16);
-                zrot((360/5) * 1) move([0,122/2,0]) staggered_sphere(d=1, $fn=16);
-                zrot((360/5) * 2) move([0,107/2,0]) staggered_sphere(d=1, $fn=16);
-                zrot((360/5) * 3) move([0,107/2,0]) staggered_sphere(d=1, $fn=16);
-                zrot((360/5) * 4) move([0,122/2,0]) staggered_sphere(d=1, $fn=16);
+                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 1) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 2) move([0,107/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 3) move([0,107/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 4) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
             }
         }
     }
@@ -257,13 +264,13 @@ module irrPentagonBottom_topedge(pos)
     zrot((360/5) * pos) {
         move([0,69,0]) xrot(54) { // 36.25
             hull() {
-                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=1, $fn=16);
-                zrot((360/5) * 1) move([0,122/2,0]) staggered_sphere(d=1, $fn=16);
+                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 1) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
             }
 
             hull() {
-                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=1, $fn=16);
-                zrot((360/5) * 4) move([0,122/2,0]) staggered_sphere(d=1, $fn=16);
+                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 4) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
             }
         }
     }
@@ -276,11 +283,11 @@ module irrPentagonBottom2(pos)
     zrot((360/5) * pos) {
         move([0,69,0]) xrot(54) { // 36.25
             hull() {
-                zrot((360/5) * 0) move([0,(104/2)+4,0]) staggered_sphere(d=1, $fn=16);
-                zrot((360/5) * 1) move([0,(122/2)+4,0]) staggered_sphere(d=1, $fn=16);
-                zrot((360/5) * 2) move([0,(107/2)+4,0]) staggered_sphere(d=1, $fn=16);
-                zrot((360/5) * 3) move([0,(107/2)+4,0]) staggered_sphere(d=1, $fn=16);
-                zrot((360/5) * 4) move([0,(122/2)+4,0]) staggered_sphere(d=1, $fn=16);
+                zrot((360/5) * 0) move([0,(104/2)+4,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 1) move([0,(122/2)+4,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 2) move([0,(107/2)+4,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 3) move([0,(107/2)+4,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 4) move([0,(122/2)+4,0]) staggered_sphere(d=2, $fn=16);
             }
         }
     }
@@ -317,6 +324,9 @@ module wheelArch()
 
                 // Cut space for the wheel arch
                 move([80-2,23.75,20]) cuboid([82,75.5,60]);
+
+                yrot(37.5) move([61,-13,62]) zrot(45) cuboid([4,3,48]);
+                xflip() yrot(37.5) move([61,-13,62]) zrot(45) cuboid([4,3,48]);
             }
             
             // Add the top edge of the pentagon back in
@@ -327,10 +337,14 @@ module wheelArch()
         }
 
         // Smooth the inside of the wheel arch
-        move([0.5,0,2]) irrPentagonBottom2(4);
-        move([-0.25,0,2.5]) irrPentagonBottom2(4);
+        move([-0.5,0,2.5]) irrPentagonBottom2(4);
+
+        yrot(37.5) move([61,-13,52]) zrot(45) cuboid([4,3,36]);
+        xflip() yrot(37.5) move([61,-13,52]) zrot(45) cuboid([4,3,36]);
     }
     
+    yrot(37.5) move([63,-16,54]) zrot(45) cuboid([2,1,36.5], chamfer=0.5, edges=EDGES_TOP);
+    xflip() yrot(37.5) move([63,-16,54]) zrot(45) cuboid([2,1,36.5], chamfer=0.5, edges=EDGES_TOP);
 }
 
 module wheelCover()
@@ -507,11 +521,11 @@ module render_shell(toPrint)
             move([0,0,0]) {
                 // Top
                 shellTop();
-                front_panels();
+                //front_panels();
 
                 // Bottom
-                shellBottom();
-                shellBottomArches();
+                //shellBottom();
+                //shellBottomArches();
             }
         }
     } else {  
@@ -530,7 +544,7 @@ module render_shell_lid(toPrint)
     if (!toPrint) {
         color([0,0.8,0,1]) shell_lid();
     } else {
-        move([0,0,106]) xrot(180) shell_lid();
+        move([0,0,105]) xrot(180) shell_lid();
     }
 }
 
