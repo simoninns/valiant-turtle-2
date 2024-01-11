@@ -83,9 +83,9 @@ module shell_lid_top()
 
 module shell_lid_lip()
 {
-    width2 = 105;
+    width2 = 106.5;
 
-    move([0,1.5,102.5]) yrot(180) {
+    move([0,1.5,102.25]) yrot(180) {
         difference() {
             union() {
                 hull() {
@@ -147,7 +147,7 @@ module shellTop()
 {
     difference() {
         move([0,1.5,104]) yrot(180) {
-            for ( i = [0:1:2]) {
+            for ( i = [0:1:4]) {
                 zrot((360/5) * i) {
                     zrot(360/10) move([0,70,36.75]) xrot(55.5) irrPentagonTop();
                 }
@@ -521,11 +521,11 @@ module render_shell(toPrint)
             move([0,0,0]) {
                 // Top
                 shellTop();
-                //front_panels();
+                front_panels();
 
                 // Bottom
-                //shellBottom();
-                //shellBottomArches();
+                shellBottom();
+                shellBottomArches();
             }
         }
     } else {  
@@ -542,7 +542,7 @@ module render_shell(toPrint)
 module render_shell_lid(toPrint)
 {
     if (!toPrint) {
-        color([0,0.8,0,1]) shell_lid();
+        color([0.0,0.8,0.0,1]) shell_lid();
     } else {
         move([0,0,105]) xrot(180) shell_lid();
     }
