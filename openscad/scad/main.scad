@@ -44,6 +44,7 @@ include <battery.scad>
 include <pen_holder_cap.scad>
 include <logotype.scad>
 include <toggle_switch.scad>
+include <display_mount.scad>
 
 // // Viewport translation
 // $vpt = [0, 0, 0];
@@ -80,6 +81,7 @@ display_logotype = "No"; // [Yes, No]
 display_battery_holder = "No"; // [Yes, No]
 display_battery_cover = "No"; // [Yes, No]
 display_led_holders = "No"; // [Yes, No]
+display_display_mount = "No"; // [Yes, No]
 
 /* [Print Supports] */
 display_shell_support = "No"; // [Yes, No]
@@ -137,6 +139,7 @@ module main() {
     d_battery_holder = (display_battery_holder == "Yes") ? true:false;
     d_battery_cover = (display_battery_cover == "Yes") ? true:false;
     d_led_holders = (display_led_holders == "Yes") ? true:false;
+    d_display_mount = (display_display_mount == "Yes") ? true:false;
 
     // Print supports
     d_shell_support = (display_shell_support == "Yes") ? true:false;
@@ -191,6 +194,7 @@ module main() {
     if (d_battery_holder) render_battery_holder(toPrint);
     if (d_battery_cover) render_battery_cover(toPrint);
     if (d_led_holders) render_led_holders(toPrint);
+    if (d_display_mount) render_display_mount(toPrint);
 
     // Render the print supports
     if (d_shell_support) render_shell_support(toPrint);
@@ -229,6 +233,6 @@ if (for_printing == "Printing") {
 } else {
     $fn=20;
     // Place the centre of the axis on the centre rotation point of the model
-    move([0,-29,6]) main();
-    //main();
+    //move([0,-29,6]) main();
+    main();
 }

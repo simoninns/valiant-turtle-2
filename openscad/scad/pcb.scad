@@ -91,27 +91,38 @@ module smPushButton()
 
 module pcb_buttons()
 {
-    move([3+3.5,53.5 - 102,0]) smPushButton();
-    move([-3-3.5,53.5 - 102,0]) smPushButton();
+    move([3+3.5,53 - 102,0]) smPushButton();
+    move([-3-3.5,53 - 102,0]) smPushButton();
 }
 
 module pcb_oledDisplay()
 {
-    move([0,-30,1 + 2.5]) {
+    move([0,-30,1 + 3]) {
         difference() {
             color([0,0.3,0.8]) cuboid([28,28,1]); // PCB
 
             // Screw holes
-            move([12.5,12.5,0]) cyl(h=4,d=2);
-            move([-12.5,12.5,0]) cyl(h=4,d=2);
-            move([12.5,-12.5,0]) cyl(h=4,d=2);
-            move([-12.5,-12.5,0]) cyl(h=4,d=2);
+            move([12,12,0]) cyl(h=4,d=2);
+            move([-12,12,0]) cyl(h=4,d=2);
+            move([12,-12.5,0]) cyl(h=4,d=2);
+            move([-12,-12.5,0]) cyl(h=4,d=2);
         }
 
         // Screen
-        move([0,1,1]) color([0.2,0.2,0.2]) cuboid([28,19,1]);
-        move([0,3,1.5+0.125]) color([0.4,0.4,0.4]) cuboid([28,15,0.25]);
-    } 
+        move([0,1,1.5]) color([0.2,0.2,0.2]) cuboid([28,19,2]);
+        move([0,3,2.75 - 0.125]) color([0.4,0.4,0.4]) cuboid([28,15,0.25]);
+    }
+
+    move([0,57 - 75,0]) {
+        color([0.8,0.8,0.8]) { 
+            move([-(2.54/2),0,0]) cyl(h=11,d=0.6, chamfer=0.2);
+            move([(2.54/2),0,0]) cyl(h=11,d=0.6, chamfer=0.2);
+            move([-(2.54) - (2.54/2) ,0,0]) cyl(h=11,d=0.6, chamfer=0.2);
+            move([(2.54) + (2.54/2),0,0]) cyl(h=11,d=0.6, chamfer=0.2);
+        }
+
+        move([0,0,1.75]) color([0.2,0.2,0.2]) cuboid([10,2.5,2.5], chamfer=0.25, edges=EDGES_ALL-EDGES_TOP);
+    }
 }
 
 module pcb_displayMount()
