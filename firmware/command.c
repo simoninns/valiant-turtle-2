@@ -140,9 +140,9 @@ void commandHelp(void)
         printf("  MLSxxxxx - Motor left step (number of steps)\r\n");
         printf("  MRSxxxxx - Motor right step (number of steps)\r\n");
         printf("\r\n");
-        printf("  LDRxx    - LED Red intensity (0-15)\r\n");
-        printf("  LDGxx    - LED Green intensity (0-15)\r\n");
-        printf("  LDBxx    - LED Blue intensity (0-15)\r\n");
+        printf("  LDRxxx   - LED Red intensity (0-255)\r\n");
+        printf("  LDGxxx   - LED Green intensity (0-255)\r\n");
+        printf("  LDBxxx   - LED Blue intensity (0-255)\r\n");
 }
 
 void commandI2cScan(uint16_t commandParameter)
