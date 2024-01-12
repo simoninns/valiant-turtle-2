@@ -81,13 +81,69 @@ module pcb_mounts_back()
     }
 }
 
+module smPushButton()
+{
+    move([0,0,2.5]) {
+        color([0.8,0.8,0.8]) cuboid([6.2, 6.2, 3.3], chamfer=0.5, edges=EDGES_ALL-EDGES_BOTTOM);
+        move([0,0,2]) color([0.2,0.2,0.2]) cyl(h=1, d=3.5);
+    }
+}
+
+module pcb_buttons()
+{
+    move([3+3.5,53.5 - 102,0]) smPushButton();
+    move([-3-3.5,53.5 - 102,0]) smPushButton();
+}
+
+module pcb_oledDisplay()
+{
+    move([0,-30,1 + 2.5]) {
+        difference() {
+            color([0,0.3,0.8]) cuboid([28,28,1]); // PCB
+
+            // Screw holes
+            move([12.5,12.5,0]) cyl(h=4,d=2);
+            move([-12.5,12.5,0]) cyl(h=4,d=2);
+            move([12.5,-12.5,0]) cyl(h=4,d=2);
+            move([-12.5,-12.5,0]) cyl(h=4,d=2);
+        }
+
+        // Screen
+        move([0,1,1]) color([0.2,0.2,0.2]) cuboid([28,19,1]);
+        move([0,3,1.5+0.125]) color([0.4,0.4,0.4]) cuboid([28,15,0.25]);
+    } 
+}
+
+module pcb_displayMount()
+{
+    move([0,37 - 71,0]) {
+        // Display M2.5 Screw holes
+        move([15,19.5,0]) cyl(h=4,d=2.5);
+        move([-15,19.5,0]) cyl(h=4,d=2.5);
+        move([15,-19.5,0]) cyl(h=4,d=2.5);
+        move([-15,-19.5,0]) cyl(h=4,d=2.5);
+    }
+
+    // PCB header
+    move([0,57 - 75,0]) {
+        move([-(2.54/2),0,0]) cyl(h=4,d=1);
+        move([(2.54/2),0,0]) cyl(h=4,d=1);
+        move([-(2.54) - (2.54/2) ,0,0]) cyl(h=4,d=1);
+        move([(2.54) + (2.54/2),0,0]) cyl(h=4,d=1);
+    }
+}
+
 module pcb_complete()
 {
-    difference() {
+    color([0,0.6,0,1]) difference() {
         pcb();
         pcb_penhole();
         pcb_screws();
+        pcb_displayMount();
     }
+
+    pcb_buttons();
+    pcb_oledDisplay();
 }
 
 module pcb()
@@ -115,7 +171,7 @@ module render_pcb(toPrint)
 {
     if (!toPrint) {
         difference() {
-            move([0,0,50.75]) color([0,0.6,0,1]) pcb_complete();
+            move([0,0,50.75]) pcb_complete();
         }
     } else {
         // This will allow you to render and export a DXF file that
