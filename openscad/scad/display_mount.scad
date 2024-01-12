@@ -152,9 +152,9 @@ module render_display_mount(toPrint)
 {
     if (!toPrint) {
         move([0,-33,52.5]) {
-            display_mount_base();
-            display_mount_top();
-            buttons();
+            color([0.9,0.9,0.6,1]) display_mount_base();
+            color([0.9,0.9,0.6,1]) display_mount_top();
+            color([0.9,0.9,0.6,1]) buttons();
         }
     } else {
         move([-20,0,1]) display_mount_base();

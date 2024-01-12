@@ -102,10 +102,10 @@ module pcb_oledDisplay()
             color([0,0.3,0.8]) cuboid([28,28,1]); // PCB
 
             // Screw holes
-            move([12,12,0]) cyl(h=4,d=2);
-            move([-12,12,0]) cyl(h=4,d=2);
-            move([12,-12.5,0]) cyl(h=4,d=2);
-            move([-12,-12.5,0]) cyl(h=4,d=2);
+            move([11.75,11.75,0]) cyl(h=4,d=2);
+            move([-11.75,11.75,0]) cyl(h=4,d=2);
+            move([11.75,-12.25,0]) cyl(h=4,d=2);
+            move([-11.75,-12.25,0]) cyl(h=4,d=2);
         }
 
         // Screen
