@@ -1917,7 +1917,7 @@
     (property "Value" "SS34" (at 109.855 81.5975 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder" (at 106.68 80.645 0)
+    (property "Footprint" "Diode_SMD:D_SMC_Handsoldering" (at 106.68 80.645 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 106.68 80.645 0)
