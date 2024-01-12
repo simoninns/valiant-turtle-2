@@ -59,18 +59,21 @@ module head_shape()
 {
     pointA = [0,-50,0];
     pointB = [20,-50,0];
-    pointC = [20,-122,0];
-    pointD = [0,-143,0];
+    pointC = [20,-121.5,0];
+    pointD = [0.5,-143,0];
+    pointJ = [0,-143,0];
 
     pointE = [0,-54,18];
     pointF = [9.5,-54,18];
     pointG = [9.5,-122,18];
-    pointH = [0,-143 + 11,18];
+    pointH = [0.5,-143 + 11,18];
+    pointI = [0,-143 + 11,18];
 
     // Base of head
     head_lip_profile(pointA, pointB);
     head_lip_profile(pointB, pointC);
     head_lip_profile(pointC, pointD);
+    head_lip_profile(pointD, pointJ);
 
     // Top of head
     hull() {
@@ -78,6 +81,7 @@ module head_shape()
         head_profile(pointF);
         head_profile(pointG);
         head_profile(pointH);
+        head_profile(pointI);
     }
 
     // Side of head
@@ -92,8 +96,10 @@ module head_shape()
     hull() {
         head_profile(pointG);
         head_profile(pointH);
+        head_profile(pointI);
         head_base_profile(pointC);
         head_base_profile(pointD);
+        head_base_profile(pointJ);
     }
 
     // Back of head
