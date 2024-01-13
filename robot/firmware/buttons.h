@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    buttons.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -24,41 +24,13 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
-#include "btstack.h"
-#include "pico/cyw43_arch.h"
-#include "pico/btstack_cyw43.h"
+#ifndef BUTTONS_H_
+#define BUTTONS_H_
 
-#include "cli.h"
-#include "leds.h"
-#include "penservo.h"
-#include "drivemotors.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "display.h"
-#include "buttons.h"
-#include "btcomms.h"
+#define BUTTON0_GPIO 12
+#define BUTTON1_GPIO 13
 
-int main()
-{
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    i2cInitialise();
-    ina260Initialise();
-    ledInitialise();
-    penServoInitialise();
-    driveMotorsInitialise();
-    displayInitialise();
-    buttonsInitialise();
-    btcommsInitialise();
+void buttonsInitialise(void);
+bool buttonsGetState(uint16_t buttonId);
 
-    // Turn on the system LED
-    ledSystem(true);
-
-    while (true) {
-        cliProcess();
-    }
-}
+#endif /* BUTTONS_H_ */

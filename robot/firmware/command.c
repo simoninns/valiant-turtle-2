@@ -36,6 +36,8 @@
 #include "i2cbus.h"
 #include "ina260.h"
 #include "leds.h"
+#include "display.h"
+#include "buttons.h"
 
 uint16_t commandProcess(char *command, uint16_t parameter)
 {
@@ -117,6 +119,11 @@ uint16_t commandProcess(char *command, uint16_t parameter)
         return 0;
     }
 
+    if (strcmp(command, "BUT") == 0) {
+        commandButton();
+        return 0;
+    }
+
     // Unknown command
     return 1;
 }
@@ -143,6 +150,8 @@ void commandHelp(void)
         printf("  LDRxxx   - LED Red intensity (0-255)\r\n");
         printf("  LDGxxx   - LED Green intensity (0-255)\r\n");
         printf("  LDBxxx   - LED Blue intensity (0-255)\r\n");
+        printf("\r\n");
+        printf("  BUT      - Show button states\r\n");
 }
 
 void commandI2cScan(uint16_t commandParameter)
@@ -162,6 +171,8 @@ void commandPowerMonitor(void)
     printf("      Current: %.2f mA\r\n", ina260ReadCurrent());
     printf("  Bus voltage: %.2f mV\r\n", ina260ReadBusVoltage());
     printf("        Power: %.2f mW\r\n", ina260ReadPower());
+
+    displayPowerInformation(ina260ReadCurrent(), ina260ReadBusVoltage(), ina260ReadPower());
 }
 
 void commandPen(uint16_t commandType)
@@ -243,4 +254,18 @@ void commandLed(uint16_t ledNumber, uint16_t commandParameter)
             printf("R00 - LED Blue intensity set to %d", commandParameter);
             break;
     }
+}
+
+void commandButton(void)
+{
+    bool button0;
+    bool button1;
+
+    button0 = buttonsGetState(0);
+    button1 = buttonsGetState(1);
+
+    if (button0) printf("Button 0: ON\r\n");
+    else printf("Button 0: OFF\r\n");
+    if (button1) printf("Button 1: ON\r\n");
+    else printf("Button 1: OFF\r\n");
 }

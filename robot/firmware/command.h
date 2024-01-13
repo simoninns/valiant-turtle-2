@@ -35,5 +35,6 @@ void commandPowerMonitor(void);
 void commandPen(uint16_t commandType);
 void commandMotor(uint16_t commandType, uint16_t commandParameter);
 void commandLed(uint16_t ledNumber, uint16_t commandParameter);
+void commandButton(void);
 
 #endif /* COMMAND_H_ */

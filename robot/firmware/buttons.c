@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    buttons.c
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -26,39 +26,35 @@
 
 #include <stdio.h>
 #include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
-#include "btstack.h"
-#include "pico/cyw43_arch.h"
-#include "pico/btstack_cyw43.h"
 
-#include "cli.h"
-#include "leds.h"
-#include "penservo.h"
-#include "drivemotors.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "display.h"
 #include "buttons.h"
-#include "btcomms.h"
 
-int main()
+void buttonsInitialise(void)
 {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    i2cInitialise();
-    ina260Initialise();
-    ledInitialise();
-    penServoInitialise();
-    driveMotorsInitialise();
-    displayInitialise();
-    buttonsInitialise();
-    btcommsInitialise();
+    // Initialise the drive motor control GPIOs
+    gpio_init(BUTTON0_GPIO);
+    gpio_init(BUTTON1_GPIO);
 
-    // Turn on the system LED
-    ledSystem(true);
+    gpio_set_dir(BUTTON0_GPIO, GPIO_IN);
+    gpio_set_dir(BUTTON1_GPIO, GPIO_IN);
 
-    while (true) {
-        cliProcess();
+    gpio_pull_up(BUTTON0_GPIO);
+    gpio_pull_up(BUTTON1_GPIO);
+}
+
+bool buttonsGetState(uint16_t buttonId)
+{
+    bool buttonState;
+
+    if (buttonId == 0) {
+        if(gpio_get(BUTTON0_GPIO)) buttonState = false;
+        else buttonState = true;
     }
+
+    if (buttonId == 1) {
+        if(gpio_get(BUTTON1_GPIO)) buttonState = false;
+        else buttonState = true;
+    }
+
+    return buttonState;
 }
