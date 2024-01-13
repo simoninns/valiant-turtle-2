@@ -1,5 +1,5 @@
-[submodule "openscad/scad/BOSL"]
+[submodule "robot/openscad/scad/BOSL"]
 
-path = openscad/scad/BOSL
+path = robot/openscad/scad/BOSL
 
 url = https://github.com/revarbat/BOSL.git
