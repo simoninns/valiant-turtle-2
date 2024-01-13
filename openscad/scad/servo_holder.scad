@@ -36,8 +36,8 @@ module servo_holder()
                 difference() {
                     union() {
                         // Servo attachement towers
-                        move([1,-14,0.5]) cuboid([7,7,16], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
-                        move([1,+14,0.5]) cuboid([7,7,16], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
+                        move([-8,-14,0.5]) cuboid([7,7,16], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
+                        move([-8,+14,0.5]) cuboid([7,7,16], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
                     }
 
                     // Servo clearance
@@ -45,31 +45,35 @@ module servo_holder()
                 }
 
                 // Right screw platform
-                move([5,-1.5 + 3,-7]) cuboid([16,42+6,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);    
+                move([0.25,-1.5 + 3,-7]) cuboid([25.5,42+6,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL); 
+
+                // Left screw platform
+                move([-61.25,-1.5 + 3,-7]) cuboid([25.5,42+6,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
             }
 
             // Servo mounting holes
-            move([0,14,1.5]) xcyl(h=10,d=2);
-            move([0,-14,1.5]) xcyl(h=10,d=2);
+            move([-8,14,1.5]) xcyl(h=10,d=1.75);
+            move([-8,-14,1.5]) xcyl(h=10,d=1.75);
 
-            // M3 screw holes
-            move([8,15,-7]) cyl(h=5,d=3);
-            move([8,-18,-7]) cyl(h=5,d=3);
+            // M3 screw holes right
+            move([8,15,-7]) cyl(h=5,d=3.5);
+            move([8,-18,-7]) cyl(h=5,d=3.5);
+
+            // M3 screw holes left
+            move([-61,0,0]) {
+                move([-8,15,-7]) cyl(h=5,d=3.5);
+                move([-8,-18,-7]) cyl(h=5,d=3.5);
+            }
+
+            // Hole for toggle switch
+            move([-54,2,-6]) {
+                cyl(h=12,d=7);
+                move([6,0,0]) cyl(h=10,d=3);
+            }
         }
 
         // Platform to make installing the servo easier
         move([4.5,0,-6]) cuboid([14,25,2], chamfer=0.5);
-    }
-
-    move([-30.5,34.5,8.5]) {
-        difference() {
-            // Left screw platform
-            move([-5,-1.5 + 3,-7]) cuboid([16,42+6,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
-
-            // M3 screw holes
-            move([-8,15,-7]) cyl(h=5,d=3);
-            move([-8,-18,-7]) cyl(h=5,d=3);
-        }
     }
 }
 
@@ -113,7 +117,7 @@ module switch_support()
         difference() {
             cuboid([17,10,8], chamfer=0.5, edges=EDGES_ALL-EDGES_BOTTOM);
 
-            move([0,0,2]) cuboid([14,7,8]); // 13,6.5,9
+            move([0,0,2]) cuboid([14,8,8]); // 13,6.5,9
 
             // Armature hole
             cyl(h=10,d=7);
