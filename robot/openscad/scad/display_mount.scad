@@ -106,8 +106,8 @@ module display_mount_top()
             cuboid([36,45,6], chamfer=0.5, edges=EDGES_ALL-EDGES_BOTTOM);
             move([0,0,-1.75]) cuboid([36-4,45-4,5], chamfer=0.5, edges=EDGES_Z_ALL);
 
-            move([6.5,-14.75,1]) cyl(h=6,d=6);
-            move([-6.5,-14.75,1]) cyl(h=6,d=6);
+            move([6.5,-14.75,1]) cyl(h=6,d=5.25);
+            move([-6.5,-14.75,1]) cyl(h=6,d=5.25);
 
             move([0,-14.75,0.5-1]) {
                 cuboid([22,8,4]);
