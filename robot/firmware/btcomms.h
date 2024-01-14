@@ -28,12 +28,48 @@
 #define BTCOMMS_H_
 
 #define RFCOMM_SERVER_CHANNEL 1
-#define HEARTBEAT_PERIOD_MS 1000
+#define BTCLIPROCESS_PERIOD_MS 10
 
-static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
-static void one_shot_timer_setup(void);
+// Enumerations
+typedef enum {
+    BTCLI_START,
+    BTCLI_PROMPT,
+	BTCLI_COLLECT,
+    BTCLI_INTERPRET,
+	BTCLI_ERROR,
+    BTCLI_PENCTRL,
+    BTCLI_MOTORCTRL
+} btCli_state_t;
+
+typedef enum {
+    BTERR_CMD_NONE,
+    BTERR_CMD_SHORT,
+    BTERR_CMD_UNKNOWN,
+    BTERR_CMD_PARAMISSING
+} btCli_error_t;
+
 static void spp_service_setup(void);
+static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
+
+static void one_shot_timer_setup(void);
+static void btCliProcess_handler(struct btstack_timer_source *ts);
 
 void btcommsInitialise(void);
+void btcommsProcess(void);
+
+// Prototypes
+void btCliResetCommandBuffers(void);
+void btCliInitialise(void);
+void btCliProcess(void);
+
+// States
+btCli_state_t btCliState_Start(void);
+btCli_state_t btCliState_Prompt(void);
+btCli_state_t btCliState_Collect(void);
+btCli_state_t btCliState_Interpret(void);
+btCli_state_t btCliState_Error(void);
+
+// Utilities
+void btConvUppercase(char *temp);
 
 #endif /* BTCOMMS_H_ */
