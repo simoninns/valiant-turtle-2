@@ -27,15 +27,14 @@
 #include <stdio.h>
 #include <pico/stdlib.h>
 #include "pico/cyw43_arch.h"
-#include "btstack.h"
 #include "pico/cyw43_arch.h"
 #include "pico/btstack_cyw43.h"
+#include "btstack.h"
 
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pico/stdlib.h>
 
 #include "btcomms.h"
 
@@ -77,7 +76,7 @@ static void spp_service_setup(void){
     // init SDP, create record for SPP and register with SDP
     sdp_init();
     memset(spp_service_buffer, 0, sizeof(spp_service_buffer));
-    spp_create_sdp_record(spp_service_buffer, sdp_create_service_record_handle(), RFCOMM_SERVER_CHANNEL, "SPP Counter");
+    spp_create_sdp_record(spp_service_buffer, sdp_create_service_record_handle(), RFCOMM_SERVER_CHANNEL, "Valiant Turtle SPP");
     btstack_assert(de_get_len( spp_service_buffer) <= sizeof(spp_service_buffer));
     sdp_register_service(spp_service_buffer);
 }
@@ -101,6 +100,9 @@ static void  heartbeat_handler(struct btstack_timer_source *ts){
 
         rfcomm_request_can_send_now_event(rfcomm_channel_id);
     }
+
+    // Provide some UART debug
+    // printf("Heartbeat occurred\r\n");
 
     btstack_run_loop_set_timer(ts, HEARTBEAT_PERIOD_MS);
     btstack_run_loop_add_timer(ts);
@@ -230,7 +232,7 @@ void btcommsInitialise(void)
 
     gap_discoverable_control(1);
     gap_ssp_set_io_capability(SSP_IO_CAPABILITY_DISPLAY_YES_NO);
-    gap_set_local_name("SPP Counter 00:00:00:00:00:00");
+    gap_set_local_name("Valiant Turtle 2");
 
     // turn on!
     hci_power_control(HCI_POWER_ON);

@@ -81,11 +81,11 @@ module nema17_mount()
             move([7,0,0]) rotate([0,-90,0]) cyl(h=10,d=25, chamfer2=2, $fn=60);
 
             // Motor mounting screws through the arms
-            move([-15.5 + 4,26,0]) xrot(180) cyl(h=30,d=3.25);
-            move([-15.5-10,26,0]) xrot(180) cyl(h=30,d=3.25);
+            move([-15.5 + 4,26,0]) xrot(180) cyl(h=30,d=3.5);
+            move([-15.5-10,26,0]) xrot(180) cyl(h=30,d=3.5);
 
-            move([-15.5 + 4,-26,0]) xrot(180) cyl(h=30,d=3.25);
-            move([-15.5-21 + 4,-26,0]) xrot(180) cyl(h=30,d=3.25);
+            move([-15.5 + 4,-26,0]) xrot(180) cyl(h=30,d=3.5);
+            move([-15.5-21 + 4,-26,0]) xrot(180) cyl(h=30,d=3.5);
 
             // Motor mounting screw heads
             move([-15.5 + 4,26,7]) xrot(180) cyl(h=20,d=7);

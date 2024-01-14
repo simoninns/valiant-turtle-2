@@ -265,8 +265,8 @@ module shell_mounts()
 module head_mounts()
 {
      // M3 screw holes
-    move([12,-58,-5]) zcyl(h=20, d=3.1);
-    move([-12,-58,-5]) zcyl(h=20, d=3.1);
+    move([12,-58,-5]) zcyl(h=20, d=3.5);
+    move([-12,-58,-5]) zcyl(h=20, d=3.5);
 }
 
 module pen_hole()

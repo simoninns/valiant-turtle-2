@@ -43,6 +43,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
     )
 
+# Set if we are a bluetooth client or server
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     RUNNING_AS_CLIENT=1
     )
