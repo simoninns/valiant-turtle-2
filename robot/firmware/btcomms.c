@@ -347,23 +347,23 @@ btCli_state_t btCliState_Error(void)
 {
     switch(btCliError) {
         case BTERR_CMD_NONE:
-            snprintf(lineBuffer, sizeof(lineBuffer), "E00 - OK\r\n");
+            snprintf(lineBuffer, sizeof(lineBuffer), "E00 - OK");
             break;
 
         case BTERR_CMD_SHORT:
-            snprintf(lineBuffer, sizeof(lineBuffer), "E01 - Command too short\r\n");
+            snprintf(lineBuffer, sizeof(lineBuffer), "E01 - Command too short");
             break;
 
         case BTERR_CMD_UNKNOWN:
-            snprintf(lineBuffer, sizeof(lineBuffer), "E02 - Unknown command\r\n");
+            snprintf(lineBuffer, sizeof(lineBuffer), "E02 - Unknown command");
             break;
 
         case BTERR_CMD_PARAMISSING:
-            snprintf(lineBuffer, sizeof(lineBuffer), "E03 - Parameter missing\r\n");
+            snprintf(lineBuffer, sizeof(lineBuffer), "E03 - Parameter missing");
             break;
 
         default:
-            snprintf(lineBuffer, sizeof(lineBuffer), "E04 - Unknown error\r\n");
+            snprintf(lineBuffer, sizeof(lineBuffer), "E04 - Unknown error");
             break;
     }
     btSendLineBuffer();
@@ -391,4 +391,10 @@ void btSendLineBuffer(void)
 {
     readyToSend = false;
     rfcomm_request_can_send_now_event(rfcomm_channel_id);
+}
+
+void btOutputString(const char* str) 
+{
+    snprintf(lineBuffer, sizeof(lineBuffer), str);
+    btSendLineBuffer();
 }

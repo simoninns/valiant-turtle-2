@@ -38,6 +38,7 @@
 #include "leds.h"
 #include "display.h"
 #include "buttons.h"
+#include "btcomms.h"
 
 uint16_t commandProcess(char *command, uint16_t parameter)
 {
@@ -153,6 +154,7 @@ void commandHelp(void)
 //     printf("\r\n");
 //     printf("  BUT      - Show button states\r\n");
 
+    btOutputString("Output from the HLP command goes here...\r\n");
     // snprintf(lineBuffer, sizeof(lineBuffer), "Output from the HLP command goes here...\r\n");
     // btSendLineBuffer();
 }
@@ -160,7 +162,7 @@ void commandHelp(void)
 void commandI2cScan(uint16_t commandParameter)
 {
     if (commandParameter > 1) {
-        printf("E04 - Parameter out of range\r\n");
+        btOutputString("E04 - Parameter out of range\r\n");
         return;
     }
 
@@ -170,11 +172,11 @@ void commandI2cScan(uint16_t commandParameter)
 
 void commandPowerMonitor(void)
 {
-    printf("INA260 Power information:\r\n");
-    printf("      Current: %.2f mA\r\n", ina260ReadCurrent());
-    printf("  Bus voltage: %.2f mV\r\n", ina260ReadBusVoltage());
-    printf("        Power: %.2f mW\r\n", ina260ReadPower());
+    char myStr[128];
+    sprintf(myStr, "INA260 Power information:\r\nCurrent: %.2f mA\r\nBus voltage: %.2f mV\r\nPower: %.2f mW", ina260ReadCurrent(), ina260ReadBusVoltage(), ina260ReadPower());
+    btOutputString(myStr);
 
+    // Send output to OLED as well...
     displayPowerInformation(ina260ReadCurrent(), ina260ReadBusVoltage(), ina260ReadPower());
 }
 
@@ -183,17 +185,17 @@ void commandPen(uint16_t commandType)
     switch(commandType) {
         case 0:
             penOff();
-            printf("R00 - Pen servo off");
+            btOutputString("R00 - Pen servo off");
             break;
         
         case 1:
             penUp();
-            printf("R00 - Pen servo up");
+            btOutputString("R00 - Pen servo up");
             break;
 
         case 2:
             penDown();
-            printf("R00 - Pen servo down");
+            btOutputString("R00 - Pen servo down");
             break;
     }
 }
@@ -203,40 +205,42 @@ void commandMotor(uint16_t commandType, uint16_t commandParameter)
     switch(commandType) {
         case 0: // Motors on
             driveMotorsEnable(true);
-            printf("R00 - Drive motors on");
+            btOutputString("R00 - Drive motors on");
             break;
         
         case 1: // Motors off
             driveMotorsEnable(false);
-            printf("R00 - Drive motors off");
+            btOutputString("R00 - Drive motors off");
             break;
 
         case 2: // Motor left set direction
             if (commandParameter == 1) driveMotorLeftDir(true);
             else driveMotorLeftDir(false);
-            printf("R00 - Motor left set direction");
+            btOutputString("R00 - Motor left set direction");
             break;
 
         case 3: // Motor right set direction
             if (commandParameter == 1) driveMotorRightDir(true);
             else driveMotorRightDir(false);
-            printf("R00 - Motor right set direction");
+            btOutputString("R00 - Motor right set direction");
             break;
 
         case 4: // Motor left step
             driveMotorLeftStep(commandParameter);
-            printf("R00 - Motor left step");
+            btOutputString("R00 - Motor left step");
             break;
 
         case 5: // Motor right step
             driveMotorRightStep(commandParameter);
-            printf("R00 - Motor right step");
+            btOutputString("R00 - Motor right step");
             break;
     }
 }
 
 void commandLed(uint16_t ledNumber, uint16_t commandParameter)
 {
+    char myStr[128];
+
     // Range check the requested brightness
     if (commandParameter < 0) commandParameter = 0;
     if (commandParameter > 255) commandParameter = 255;
@@ -244,17 +248,20 @@ void commandLed(uint16_t ledNumber, uint16_t commandParameter)
     switch(ledNumber) {
         case 0:
             ledRedSet(commandParameter);
-            printf("R00 - LED Red intensity set to %d", commandParameter);
+            sprintf(myStr, "R00 - LED Red intensity set to %d", commandParameter);
+            btOutputString(myStr);
             break;
         
         case 1:
             ledGreenSet(commandParameter);
-            printf("R00 - LED Green intensity set to %d", commandParameter);
+            sprintf(myStr, "R00 - LED Green intensity set to %d", commandParameter);
+            btOutputString(myStr);
             break;
 
         case 2:
             ledBlueSet(commandParameter);
-            printf("R00 - LED Blue intensity set to %d", commandParameter);
+            sprintf(myStr, "R00 - LED Blue intensity set to %d", commandParameter);
+            btOutputString(myStr);
             break;
     }
 }
@@ -267,8 +274,8 @@ void commandButton(void)
     button0 = buttonsGetState(0);
     button1 = buttonsGetState(1);
 
-    if (button0) printf("Button 0: ON\r\n");
-    else printf("Button 0: OFF\r\n");
-    if (button1) printf("Button 1: ON\r\n");
-    else printf("Button 1: OFF\r\n");
+    if (!button0 && !button1) btOutputString("Button 0: OFF - Button 1: OFF");
+    if (!button0 &&  button1) btOutputString("Button 0: OFF - Button 1:  ON");
+    if ( button0 && !button1) btOutputString("Button 0:  ON - Button 1: OFF");
+    if ( button0 &&  button1) btOutputString("Button 0:  ON - Button 1:  ON");
 }
