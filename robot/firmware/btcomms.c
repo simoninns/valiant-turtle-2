@@ -39,13 +39,14 @@
 
 #include "btcomms.h"
 #include "command.h"
+#include "fifo.h"
 
+static btstack_timer_source_t btCliProcessTimer;
+static char lineBuffer[128];
 static uint16_t rfcomm_channel_id;
 static uint8_t  spp_service_buffer[150];
 static btstack_packet_callback_registration_t hci_event_callback_registration;
-static char lineBuffer[128];
 static bool readyToSend;
-char btCliBuffer[10];
 
 // Set up Serial Port Profile (SPP)
 static void spp_service_setup(void)
@@ -127,11 +128,8 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
             break;
 
         case RFCOMM_DATA_PACKET:
-            printf("Bluetooth: RCV: '");
-            for (i=0;i<size;i++){
-                putchar(packet[i]);
-            }
-            printf("'\n");
+            // Place the incoming characters into our input buffer
+            for (i=0;i<size;i++) fifoWrite((char)packet[i]);
             break;
 
         default:
@@ -142,6 +140,9 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 // Initialise the Bluetooth stack and functionality
 void btcommsInitialise(void)
 {
+    // Set up the FIFO buffer for incoming characters
+    fifoInitialise();
+
     one_shot_timer_setup();
     spp_service_setup();
 
@@ -156,7 +157,6 @@ void btcommsInitialise(void)
     hci_power_control(HCI_POWER_ON);
 }
 
-static btstack_timer_source_t btCliProcessTimer;
 static void one_shot_timer_setup(void)
 {
     // Initialise the CLI
@@ -236,8 +236,7 @@ btCli_state_t btCliState_Start(void)
 {
     // Show a banner on the CLI
     snprintf(lineBuffer, sizeof(lineBuffer), "\r\nValiant Turtle 2\r\nCopyright (C)2024 Simon Inns\r\nUse HLP to show available commands\r\n");
-    readyToSend = false;
-    rfcomm_request_can_send_now_event(rfcomm_channel_id);
+    btSendLineBuffer();
 
     return BTCLI_PROMPT;
 }
@@ -246,8 +245,7 @@ btCli_state_t btCliState_Prompt(void)
 {
     // Show the prompt
     snprintf(lineBuffer, sizeof(lineBuffer), "\r\nVT2> ");
-    readyToSend = false;
-    rfcomm_request_can_send_now_event(rfcomm_channel_id);
+    btSendLineBuffer();
 
     return BTCLI_COLLECT;
 }
@@ -255,49 +253,48 @@ btCli_state_t btCliState_Prompt(void)
 btCli_state_t btCliState_Collect(void)
 {
     // Collect any input waiting
-    const int cint = getchar_timeout_us(0);
+    char cint = fifoRead();
+    if (cint != 0) {
 
-    // Was anything received?
-    if ((cint < 0) || (cint > 254)) {
-      // didn't get anything
-      return BTCLI_COLLECT;
-    }
+        // Was the character a <CR>?
+        if (cint == 13) {
+            // Has the buffer got contents?
+            if (btCliBufferPointer > 0) {
+                //printf("\r\n");
+                snprintf(lineBuffer, sizeof(lineBuffer), "\r\n");
+                btSendLineBuffer();
 
-    // Was the character a <CR>?
-    if (cint == 13) {
-        // Has the buffer got contents?
-        if (btCliBufferPointer > 0) {
-            printf("\r\n");
-            return BTCLI_INTERPRET;
-        } else {
-            return BTCLI_PROMPT;
+                return BTCLI_INTERPRET;
+            } else {
+                return BTCLI_PROMPT;
+            }
         }
-    }
 
-    // Was the character a <BS>?
-    if (cint == 8) {
-        // Backspace
-        if (btCliBufferPointer > 0) {
-            putchar(8);
-            putchar(32);
-            putchar(8);
-            btCliBufferPointer--;
+        // Was the character a <BS>?
+        if (cint == 8) {
+            // Backspace
+            if (btCliBufferPointer > 0) {
+                snprintf(lineBuffer, sizeof(lineBuffer), "%c%c%c", 8, 32, 8);
+                btSendLineBuffer();
+                btCliBufferPointer--;
+            }
+            return BTCLI_COLLECT;
         }
-        return BTCLI_COLLECT;
+
+        // Buffer overflow?
+        if (btCliBufferPointer == 8) {
+            // Ignore further input until it's a <CR> or <BS>
+            return BTCLI_COLLECT;
+        }
+
+        // Not a <CR>, so add the character to our buffer
+        btCliBuffer[btCliBufferPointer] = cint;
+        btCliBufferPointer++;
+
+        // Display the received character
+        snprintf(lineBuffer, sizeof(lineBuffer), "%c", cint);
+        btSendLineBuffer();
     }
-
-    // Buffer overflow?
-    if (btCliBufferPointer == 8) {
-        // Ignore further input until it's a <CR> or <BS>
-        return BTCLI_COLLECT;
-    }
-
-    // Not a <CR>, so add the character to our buffer
-    btCliBuffer[btCliBufferPointer] = cint;
-    btCliBufferPointer++;
-
-    // Display the received character
-    putchar((char)cint);
 
     // All good, keep collecting
     return BTCLI_COLLECT;
@@ -351,7 +348,6 @@ btCli_state_t btCliState_Error(void)
     switch(btCliError) {
         case BTERR_CMD_NONE:
             snprintf(lineBuffer, sizeof(lineBuffer), "E00 - OK\r\n");
-            
             break;
 
         case BTERR_CMD_SHORT:
@@ -365,8 +361,12 @@ btCli_state_t btCliState_Error(void)
         case BTERR_CMD_PARAMISSING:
             snprintf(lineBuffer, sizeof(lineBuffer), "E03 - Parameter missing\r\n");
             break;
+
+        default:
+            snprintf(lineBuffer, sizeof(lineBuffer), "E04 - Unknown error\r\n");
+            break;
     }
-    rfcomm_request_can_send_now_event(rfcomm_channel_id);
+    btSendLineBuffer();
 
     // Empty the buffer and return to the prompting state
     btCliResetCommandBuffers();
@@ -385,4 +385,10 @@ void btConvUppercase(char *temp)
         *s = toupper((unsigned char) *s);
         s++;
     }
+}
+
+void btSendLineBuffer(void)
+{
+    readyToSend = false;
+    rfcomm_request_can_send_now_event(rfcomm_channel_id);
 }

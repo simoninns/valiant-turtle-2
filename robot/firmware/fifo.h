@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    fifo.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -24,41 +24,14 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
-#include "btstack.h"
-#include "pico/cyw43_arch.h"
-#include "pico/btstack_cyw43.h"
+#ifndef FIFO_H_
+#define FIFO_H_
 
-#include "cli.h"
-#include "leds.h"
-#include "penservo.h"
-#include "drivemotors.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "display.h"
-#include "buttons.h"
-#include "btcomms.h"
+#define BUFFER_SIZE 32
 
-int main()
-{
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    i2cInitialise();
-    ina260Initialise();
-    ledInitialise();
-    penServoInitialise();
-    driveMotorsInitialise();
-    displayInitialise();
-    buttonsInitialise();
-    btcommsInitialise();
+void fifoInitialise(void);
+char fifoRead(void);
+char fifoWrite(char val);
+int16_t fifoSize(void);
 
-    // Turn on the system LED
-    ledSystem(true);
-
-    while (true) {
-        //cliProcess();
-    }
-}
+#endif /* FIFO_H_ */

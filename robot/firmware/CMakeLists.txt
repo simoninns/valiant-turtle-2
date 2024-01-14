@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
     display.c
     buttons.c
     btcomms.c
+    fifo.c
     )
 
 pico_add_extra_outputs(${PROJECT_NAME})

@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    fifo.c
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -26,39 +26,42 @@
 
 #include <stdio.h>
 #include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
-#include "btstack.h"
-#include "pico/cyw43_arch.h"
-#include "pico/btstack_cyw43.h"
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 
-#include "cli.h"
-#include "leds.h"
-#include "penservo.h"
-#include "drivemotors.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "display.h"
-#include "buttons.h"
-#include "btcomms.h"
+#include "fifo.h"
+ 
+char buffer[BUFFER_SIZE];
+int16_t head;
+int16_t tail;
+int16_t count; 
 
-int main()
+void fifoInitialise(void)
 {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-    i2cInitialise();
-    ina260Initialise();
-    ledInitialise();
-    penServoInitialise();
-    driveMotorsInitialise();
-    displayInitialise();
-    buttonsInitialise();
-    btcommsInitialise();
+    head = 0;
+    tail = 0;
+    count = 0; 
+}
+ 
+// Reads a byte from the buffer and return 0 if buffer empty
+char fifoRead(void)
+{
+   if (head == tail) return 0;
+   tail = (tail + 1) % BUFFER_SIZE;
+   return buffer[tail];
+}
+ 
+// Writes a byte to the buffer if not full
+char fifoWrite(char val)
+{
+   if (head + 1 == tail) return 0;
+   head = (head + 1) % BUFFER_SIZE;
+   return buffer[head] = val;
+}
 
-    // Turn on the system LED
-    ledSystem(true);
-
-    while (true) {
-        //cliProcess();
-    }
+// Return the current buffer size
+int16_t fifoSize(void)
+{
+    return head - tail;
 }

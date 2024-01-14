@@ -130,28 +130,31 @@ uint16_t commandProcess(char *command, uint16_t parameter)
 
 void commandHelp(void)
 {
-    printf("Help:\r\n");
-        printf("  HLP - Show this help text\r\n");
-        printf("\r\n");
-        printf("  IICx - Scan I2C bus (bus number)\r\n");
-        printf("  POW - Read power information from the INA260\r\n");
-        printf("\r\n");
-        printf("  PEU      - Pen servo up\r\n");
-        printf("  PED      - Pen servo down\r\n");
-        printf("  PEO      - Pen servo off\r\n");
-        printf("\r\n");
-        printf("  MON      - Drive motors on\r\n");
-        printf("  MOF      - Drive motors off\r\n");
-        printf("  MLDx     - Motor left direction (0=REV 1=FWD)\r\n");
-        printf("  MRDx     - Motor right direction (0=REV 1=FWD)\r\n");
-        printf("  MLSxxxxx - Motor left step (number of steps)\r\n");
-        printf("  MRSxxxxx - Motor right step (number of steps)\r\n");
-        printf("\r\n");
-        printf("  LDRxxx   - LED Red intensity (0-255)\r\n");
-        printf("  LDGxxx   - LED Green intensity (0-255)\r\n");
-        printf("  LDBxxx   - LED Blue intensity (0-255)\r\n");
-        printf("\r\n");
-        printf("  BUT      - Show button states\r\n");
+//    printf("Help:\r\n");
+//     printf("  HLP - Show this help text\r\n");
+//     printf("\r\n");
+//     printf("  IICx - Scan I2C bus (bus number)\r\n");
+//     printf("  POW - Read power information from the INA260\r\n");
+//     printf("\r\n");
+//     printf("  PEU      - Pen servo up\r\n");
+//     printf("  PED      - Pen servo down\r\n");
+//     printf("  PEO      - Pen servo off\r\n");
+//     printf("\r\n");
+//     printf("  MON      - Drive motors on\r\n");
+//     printf("  MOF      - Drive motors off\r\n");
+//     printf("  MLDx     - Motor left direction (0=REV 1=FWD)\r\n");
+//     printf("  MRDx     - Motor right direction (0=REV 1=FWD)\r\n");
+//     printf("  MLSxxxxx - Motor left step (number of steps)\r\n");
+//     printf("  MRSxxxxx - Motor right step (number of steps)\r\n");
+//     printf("\r\n");
+//     printf("  LDRxxx   - LED Red intensity (0-255)\r\n");
+//     printf("  LDGxxx   - LED Green intensity (0-255)\r\n");
+//     printf("  LDBxxx   - LED Blue intensity (0-255)\r\n");
+//     printf("\r\n");
+//     printf("  BUT      - Show button states\r\n");
+
+    // snprintf(lineBuffer, sizeof(lineBuffer), "Output from the HLP command goes here...\r\n");
+    // btSendLineBuffer();
 }
 
 void commandI2cScan(uint16_t commandParameter)
