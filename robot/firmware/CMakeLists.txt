@@ -43,9 +43,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
     )
 
-# Set if we are a bluetooth client or server
+# Run as a bluetooth server
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-    RUNNING_AS_CLIENT=1
+    RUNNING_AS_CLIENT=0
     )
 
 pico_enable_stdio_usb(${PROJECT_NAME} 0)
