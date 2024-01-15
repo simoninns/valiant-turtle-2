@@ -31,7 +31,6 @@
 #include "pico/cyw43_arch.h"
 #include "pico/btstack_cyw43.h"
 
-#include "cli.h"
 #include "leds.h"
 #include "penservo.h"
 #include "drivemotors.h"
@@ -57,10 +56,10 @@ int main()
     buttonsInitialise();
     btcommsInitialise();
 
-    // Turn on the system LED
+    // Turn on the PICO W system LED
     ledSystem(true);
 
     while (true) {
-        //cliProcess();
+        sleep_ms(100);
     }
 }

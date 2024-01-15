@@ -14,7 +14,6 @@ add_executable(${PROJECT_NAME}
     main.c
     leds.c
     penservo.c
-    cli.c
     command.c
     drivemotors.c
     i2cbus.c

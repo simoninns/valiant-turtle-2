@@ -181,7 +181,6 @@ void commandPowerMonitor(void)
     float power = ina260ReadPower();
 
     btPrintf("INA260 Power information:\r\nCurrent: %.2f mA\r\nBus voltage: %.2f mV\r\nPower: %.2f mW", current, voltage, power);
-    debugPrintf("INA260 Power information:\r\nCurrent: %.2f mA\r\nBus voltage: %.2f mV\r\nPower: %.2f mW", current, voltage, power);
 
     // Send output to OLED as well...
     displayPowerInformation(current, voltage, power);
