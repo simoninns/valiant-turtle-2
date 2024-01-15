@@ -38,7 +38,7 @@
 // Global
 ssd1306_t disp;
 bool displayTimerCallback(repeating_timer_t *rt);
-repeating_timer_t timer;
+repeating_timer_t displayTimer;
 int16_t startCounter;
 int16_t buttonPresses;
 
@@ -64,7 +64,7 @@ void displayInitialise(void)
     // Set up the repeating display update timer
     int16_t hz = 5;
 
-    if (!add_repeating_timer_us(1000000 / hz, displayTimerCallback, NULL, &timer)) {
+    if (!add_repeating_timer_us(1000000 / hz, displayTimerCallback, NULL, &displayTimer)) {
         debugPrintf("Display: Failed to add display update timer!\r\n");
     }
 }

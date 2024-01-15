@@ -214,27 +214,27 @@ void commandMotor(uint16_t commandType, uint16_t commandParameter)
             break;
 
         case 2: // Motor left set direction
-            if (commandParameter == 1) driveMotorLeftDir(true);
-            else driveMotorLeftDir(false);
+            if (commandParameter == 1) driveMotorSetDir(MOTOR_LEFT, MOTOR_FORWARDS);
+            else driveMotorSetDir(MOTOR_LEFT, MOTOR_BACKWARDS);
             debugPrintf("CLI: Got command MLD\r\n");
             btPrintf("R00 - Motor left set direction");
             break;
 
         case 3: // Motor right set direction
-            if (commandParameter == 1) driveMotorRightDir(true);
-            else driveMotorRightDir(false);
+            if (commandParameter == 1) driveMotorSetDir(MOTOR_RIGHT, MOTOR_FORWARDS);
+            else driveMotorSetDir(MOTOR_RIGHT, MOTOR_BACKWARDS);
             debugPrintf("CLI: Got command MRD\r\n");
             btPrintf("R00 - Motor right set direction");
             break;
 
         case 4: // Motor left step
-            driveMotorLeftStep(commandParameter);
+            driveMotorSetSteps(MOTOR_LEFT, commandParameter);
             debugPrintf("CLI: Got command MLS\r\n");
             btPrintf("R00 - Motor left step");
             break;
 
         case 5: // Motor right step
-            driveMotorRightStep(commandParameter);
+            driveMotorSetSteps(MOTOR_RIGHT, commandParameter);
             debugPrintf("CLI: Got command MRS\r\n");
             btPrintf("R00 - Motor right step");
             break;

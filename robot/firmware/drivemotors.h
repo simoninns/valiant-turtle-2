@@ -41,11 +41,21 @@
 #define DM_LDIR_GPIO 3
 #define DM_RDIR_GPIO 5
 
+// Enumerations
+typedef enum {
+    MOTOR_LEFT,
+    MOTOR_RIGHT
+} motor_side_t;
+
+typedef enum {
+    MOTOR_FORWARDS,
+    MOTOR_BACKWARDS
+} motor_direction_t;
+
 void driveMotorsInitialise(void);
+bool motorTimerCallback(repeating_timer_t *rt);
 void driveMotorsEnable(bool state);
-void driveMotorLeftDir(bool state);
-void driveMotorRightDir(bool state);
-void driveMotorLeftStep(uint16_t steps);
-void driveMotorRightStep(uint16_t steps);
+void driveMotorSetDir(motor_side_t side, motor_direction_t direction);
+void driveMotorSetSteps(motor_side_t side, uint16_t steps);
 
 #endif /* DRIVEMOTORS_H_ */
