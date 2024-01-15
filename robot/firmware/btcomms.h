@@ -48,6 +48,8 @@ typedef enum {
     BTERR_CMD_PARAMISSING
 } btCli_error_t;
 
+struct btstack_timer_source;
+
 static void spp_service_setup(void);
 static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
 

@@ -132,7 +132,7 @@ uint16_t commandProcess(char *command, uint16_t parameter)
 
 void commandHelp(void)
 {
-    debug("CLI: Got command HLP\r\n");
+    debugPrintf("CLI: Got command HLP\r\n");
 
     btOutputString("Help:\r\n");
     btOutputString("  HLP - Show this help text\r\n");
@@ -161,12 +161,12 @@ void commandHelp(void)
 void commandI2cScan(uint16_t commandParameter)
 {
     if (commandParameter > 1) {
-        debug("CLI: Got command IIC but parameter was out of range\r\n");
+        debugPrintf("CLI: Got command IIC but parameter was out of range\r\n");
         btOutputString("E04 - Parameter out of range\r\n");
         return;
     }
 
-    debug("CLI: Got command IIC\r\n");
+    debugPrintf("CLI: Got command IIC\r\n");
 
     // Scan the I2C bus
     i2cBusScan(commandParameter);
@@ -174,7 +174,7 @@ void commandI2cScan(uint16_t commandParameter)
 
 void commandPowerMonitor(void)
 {
-    debug("CLI: Got command POW\r\n");
+    debugPrintf("CLI: Got command POW\r\n");
 
     char myStr[128];
     sprintf(myStr, "INA260 Power information:\r\nCurrent: %.2f mA\r\nBus voltage: %.2f mV\r\nPower: %.2f mW", ina260ReadCurrent(), ina260ReadBusVoltage(), ina260ReadPower());
@@ -189,19 +189,19 @@ void commandPen(uint16_t commandType)
     switch(commandType) {
         case 0:
             penOff();
-            debug("CLI: Got command PEO\r\n");
+            debugPrintf("CLI: Got command PEO\r\n");
             btOutputString("R00 - Pen servo off");
             break;
         
         case 1:
             penUp();
-            debug("CLI: Got command PEU\r\n");
+            debugPrintf("CLI: Got command PEU\r\n");
             btOutputString("R00 - Pen servo up");
             break;
 
         case 2:
             penDown();
-            debug("CLI: Got command PED\r\n");
+            debugPrintf("CLI: Got command PED\r\n");
             btOutputString("R00 - Pen servo down");
             break;
     }
@@ -212,39 +212,39 @@ void commandMotor(uint16_t commandType, uint16_t commandParameter)
     switch(commandType) {
         case 0: // Motors on
             driveMotorsEnable(true);
-            debug("CLI: Got command MON\r\n");
+            debugPrintf("CLI: Got command MON\r\n");
             btOutputString("R00 - Drive motors on");
             break;
         
         case 1: // Motors off
             driveMotorsEnable(false);
-            debug("CLI: Got command MOF\r\n");
+            debugPrintf("CLI: Got command MOF\r\n");
             btOutputString("R00 - Drive motors off");
             break;
 
         case 2: // Motor left set direction
             if (commandParameter == 1) driveMotorLeftDir(true);
             else driveMotorLeftDir(false);
-            debug("CLI: Got command MLD\r\n");
+            debugPrintf("CLI: Got command MLD\r\n");
             btOutputString("R00 - Motor left set direction");
             break;
 
         case 3: // Motor right set direction
             if (commandParameter == 1) driveMotorRightDir(true);
             else driveMotorRightDir(false);
-            debug("CLI: Got command MRD\r\n");
+            debugPrintf("CLI: Got command MRD\r\n");
             btOutputString("R00 - Motor right set direction");
             break;
 
         case 4: // Motor left step
             driveMotorLeftStep(commandParameter);
-            debug("CLI: Got command MLS\r\n");
+            debugPrintf("CLI: Got command MLS\r\n");
             btOutputString("R00 - Motor left step");
             break;
 
         case 5: // Motor right step
             driveMotorRightStep(commandParameter);
-            debug("CLI: Got command MRS\r\n");
+            debugPrintf("CLI: Got command MRS\r\n");
             btOutputString("R00 - Motor right step");
             break;
     }
@@ -261,21 +261,21 @@ void commandLed(uint16_t ledNumber, uint16_t commandParameter)
     switch(ledNumber) {
         case 0:
             ledRedSet(commandParameter);
-            debug("CLI: Got command LDR with intensity %d\r\n", commandParameter);
+            debugPrintf("CLI: Got command LDR with intensity %d\r\n", commandParameter);
             sprintf(myStr, "R00 - LED Red intensity set to %d", commandParameter);
             btOutputString(myStr);
             break;
         
         case 1:
             ledGreenSet(commandParameter);
-            debug("CLI: Got command LDG with intensity %d\r\n", commandParameter);
+            debugPrintf("CLI: Got command LDG with intensity %d\r\n", commandParameter);
             sprintf(myStr, "R00 - LED Green intensity set to %d", commandParameter);
             btOutputString(myStr);
             break;
 
         case 2:
             ledBlueSet(commandParameter);
-            debug("CLI: Got command LDB with intensity %d\r\n", commandParameter);
+            debugPrintf("CLI: Got command LDB with intensity %d\r\n", commandParameter);
             sprintf(myStr, "R00 - LED Blue intensity set to %d", commandParameter);
             btOutputString(myStr);
             break;
@@ -290,7 +290,7 @@ void commandButton(void)
     button0 = buttonsGetState(0);
     button1 = buttonsGetState(1);
 
-    debug("CLI: Got command BUT\r\n");  
+    debugPrintf("CLI: Got command BUT\r\n");  
     if (!button0 && !button1) btOutputString("Button 0: OFF - Button 1: OFF");
     if (!button0 &&  button1) btOutputString("Button 0: OFF - Button 1:  ON");
     if ( button0 && !button1) btOutputString("Button 0:  ON - Button 1: OFF");

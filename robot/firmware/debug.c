@@ -35,10 +35,10 @@
 
 void debugInitialise(void)
 {
-    debug("\r\n\r\nValiant Turtle 2 Debug active.\r\n");
+    debugPrintf("\r\n\r\nValiant Turtle 2 Debug active.\r\n");
 }
 
-void debug(const char *fmt, ...)
+void debugPrintf(const char *fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
