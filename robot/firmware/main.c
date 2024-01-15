@@ -40,12 +40,14 @@
 #include "display.h"
 #include "buttons.h"
 #include "btcomms.h"
+#include "debug.h"
 
 int main()
 {
     // Initialise the hardware
     stdio_init_all();
     if (cyw43_arch_init()) return -1;
+    debugInitialise();
     i2cInitialise();
     ina260Initialise();
     ledInitialise();
@@ -57,7 +59,6 @@ int main()
 
     // Turn on the system LED
     ledSystem(true);
-    printf("\r\n\r\n\r\n\r\nWe are up!\r\n");
 
     while (true) {
         //cliProcess();

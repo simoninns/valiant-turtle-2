@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    fifo.h
+    debug.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -24,27 +24,10 @@
 
 ************************************************************************/
 
-#ifndef FIFO_H_
-#define FIFO_H_
+#ifndef DEBUG_H_
+#define DEBUG_H_
 
-#define IN_BUFFER_SIZE 64
-#define OUT_BUFFER_SIZE 1024
+void debugInitialise(void);
+void debug(const char *fmt, ...);
 
-typedef struct {
-    int16_t head;
-    int16_t tail;
-    char* data;
-} fifoBuffer_t;
-
-void fifoInitialise(void);
-
-char fifoInRead(void);
-char fifoInWrite(char val);
-
-char fifoOutRead(void);
-char fifoOutWrite(char val);
-
-bool fifoIsInEmpty(void);
-bool fifoIsOutEmpty(void);
-
-#endif /* FIFO_H_ */
+#endif /* DEBUG_H_ */
