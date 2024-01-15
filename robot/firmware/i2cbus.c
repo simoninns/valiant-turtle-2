@@ -29,6 +29,7 @@
 #include "hardware/i2c.h"
 
 #include "i2cbus.h"
+#include "btcomms.h"
 
 // Initialise the I2C buses
 void i2cInitialise(void)
@@ -62,12 +63,12 @@ void i2cBusScan(uint16_t busNumber)
     if (busNumber > 1) busNumber = 1;
 
     // Show header
-    printf("\nI2C Bus Scan of bus %d\n\n", busNumber);
-    printf("     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
+    btPrintf("\r\nI2C Bus Scan of bus %d\r\n\r\n", busNumber);
+    btPrintf("     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\r\n");
 
     for (int16_t addr = 0; addr < (1 << 7); ++addr) {
         if (addr % 16 == 0) {
-            printf("0x%02x ", addr);
+            btPrintf("0x%02x ", addr);
         }
 
         // Perform a 1-byte dummy read from the probe address. If a slave
@@ -84,8 +85,8 @@ void i2cBusScan(uint16_t busNumber)
             else ret = i2c_read_blocking(i2c1, addr, &rxdata, 1, false);
         }
 
-        printf(ret < 0 ? "." : "@");
-        printf(addr % 16 == 15 ? "\n" : "  ");
+        btPrintf(ret < 0 ? "." : "@");
+        btPrintf(addr % 16 == 15 ? "\r\n" : "  ");
     }
-    printf("\nScan complete\n");
+    btPrintf("\r\nScan complete\r\n");
 }

@@ -43,12 +43,10 @@
 #include "debug.h"
 
 static btstack_timer_source_t btCliProcessTimer;
-static char lineBuffer[128];
 static uint16_t rfcomm_channel_id;
 static uint8_t  spp_service_buffer[150];
 static btstack_packet_callback_registration_t hci_event_callback_registration;
 static bool channelOpen;
-struct btstack_timer_source *ts;
 
 // Set up Serial Port Profile (SPP)
 static void spp_service_setup(void)
@@ -116,19 +114,20 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                 case RFCOMM_EVENT_CAN_SEND_NOW:
                     // Output the contents of the output buffer
                     int16_t pos = 0;
+                    char outputLine[128];
                     bool finished = false;
                     while (!finished) {
-                        lineBuffer[pos] = fifoOutRead();
-                        if (lineBuffer[pos] == 0) finished = true;
+                        outputLine[pos] = fifoOutRead();
+                        if (outputLine[pos] == 0) finished = true;
                         if (pos == 126) {
-                            lineBuffer[pos+1] = 0;
+                            outputLine[pos+1] = 0;
                             finished = true;
                         }
                         pos++;
                     }
 
                     if (pos != 0) {
-                        rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) pos);
+                        rfcomm_send(rfcomm_channel_id, (uint8_t*) outputLine, (uint16_t) pos);
                     }
                     break;
 
@@ -261,9 +260,9 @@ void btCliProcess(void)
 btCli_state_t btCliState_Start(void)
 {
     // Show a banner on the CLI
-    btOutputString("\r\n\r\nValiant Turtle 2\r\n");
-    btOutputString("Copyright (C)2024 Simon Inns\r\n");
-    btOutputString("Use HLP to show available commands\r\n");
+    btPrintf("\r\n\r\nValiant Turtle 2\r\n");
+    btPrintf("Copyright (C)2024 Simon Inns\r\n");
+    btPrintf("Use HLP to show available commands\r\n");
 
     return BTCLI_PROMPT;
 }
@@ -271,7 +270,7 @@ btCli_state_t btCliState_Start(void)
 btCli_state_t btCliState_Prompt(void)
 {
     // Show the prompt
-    btOutputString("\r\nVT2> ");
+    btPrintf("\r\nVT2> ");
 
     return BTCLI_COLLECT;
 }
@@ -286,7 +285,7 @@ btCli_state_t btCliState_Collect(void)
         if (cint == 13) {
             // Has the buffer got contents?
             if (btCliBufferPointer > 0) {
-                btOutputString("\r\n");
+                btPrintf("\r\n");
 
                 return BTCLI_INTERPRET;
             } else {
@@ -298,9 +297,7 @@ btCli_state_t btCliState_Collect(void)
         if (cint == 8) {
             // Backspace
             if (btCliBufferPointer > 0) {
-                char myStr[5];
-                sprintf(myStr, "%c%c%c", 8, 32, 8);
-                btOutputString(myStr);
+                btPrintf("%c%c%c", 8, 32, 8);
                 btCliBufferPointer--;
             }
             return BTCLI_COLLECT;
@@ -317,9 +314,7 @@ btCli_state_t btCliState_Collect(void)
         btCliBufferPointer++;
 
         // Display the received character
-        char myStr[5];
-        sprintf(myStr, "%c", cint);
-        btOutputString(myStr);
+        btPrintf("%c", cint);
     }
 
     // All good, keep collecting
@@ -373,23 +368,23 @@ btCli_state_t btCliState_Error(void)
 {
     switch(btCliError) {
         case BTERR_CMD_NONE:
-            btOutputString("E00 - OK");
+            btPrintf("E00 - OK");
             break;
 
         case BTERR_CMD_SHORT:
-            btOutputString("E01 - Command too short");
+            btPrintf("E01 - Command too short");
             break;
 
         case BTERR_CMD_UNKNOWN:
-            btOutputString("E02 - Unknown command");
+            btPrintf("E02 - Unknown command");
             break;
 
         case BTERR_CMD_PARAMISSING:
-            btOutputString("E03 - Parameter missing");
+            btPrintf("E03 - Parameter missing");
             break;
 
         default:
-            btOutputString("E04 - Unknown error");
+            btPrintf("E04 - Unknown error");
             break;
     }
 
@@ -412,8 +407,16 @@ void btConvUppercase(char *temp)
     }
 }
 
-void btOutputString(const char* str) 
+// A printf like function but outputs via BT SPP
+void btPrintf(const char *fmt, ...)
 {
+    static char lineBuffer[256];
+
+    va_list args;
+    va_start(args, fmt);
+    vsprintf(lineBuffer, fmt, args);
+    va_end(args);
+
     // Copy the output string to the output buffer
-    for (uint16_t i = 0; i < strlen(str); i++) fifoOutWrite(str[i]);
+    for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifoOutWrite(lineBuffer[i]);
 }

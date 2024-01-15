@@ -134,35 +134,35 @@ void commandHelp(void)
 {
     debugPrintf("CLI: Got command HLP\r\n");
 
-    btOutputString("Help:\r\n");
-    btOutputString("  HLP - Show this help text\r\n");
-    btOutputString("\r\n");
-    btOutputString("  IICx - Scan I2C bus (bus number)\r\n");
-    btOutputString("  POW - Read power information from the INA260\r\n");
-    btOutputString("\r\n");
-    btOutputString("  PEU      - Pen servo up\r\n");
-    btOutputString("  PED      - Pen servo down\r\n");
-    btOutputString("  PEO      - Pen servo off\r\n");
-    btOutputString("\r\n");
-    btOutputString("  MON      - Drive motors on\r\n");
-    btOutputString("  MOF      - Drive motors off\r\n");
-    btOutputString("  MLDx     - Motor left direction (0=REV 1=FWD)\r\n");
-    btOutputString("  MRDx     - Motor right direction (0=REV 1=FWD)\r\n");
-    btOutputString("  MLSxxxxx - Motor left step (number of steps)\r\n");
-    btOutputString("  MRSxxxxx - Motor right step (number of steps)\r\n");
-    btOutputString("\r\n");
-    btOutputString("  LDRxxx   - LED Red intensity (0-255)\r\n");
-    btOutputString("  LDGxxx   - LED Green intensity (0-255)\r\n");
-    btOutputString("  LDBxxx   - LED Blue intensity (0-255)\r\n");
-    btOutputString("\r\n");
-    btOutputString("  BUT      - Show button states\r\n");
+    btPrintf("Help:\r\n");
+    btPrintf("  HLP - Show this help text\r\n");
+    btPrintf("\r\n");
+    btPrintf("  IICx - Scan I2C bus (bus number)\r\n");
+    btPrintf("  POW - Read power information from the INA260\r\n");
+    btPrintf("\r\n");
+    btPrintf("  PEU      - Pen servo up\r\n");
+    btPrintf("  PED      - Pen servo down\r\n");
+    btPrintf("  PEO      - Pen servo off\r\n");
+    btPrintf("\r\n");
+    btPrintf("  MON      - Drive motors on\r\n");
+    btPrintf("  MOF      - Drive motors off\r\n");
+    btPrintf("  MLDx     - Motor left direction (0=REV 1=FWD)\r\n");
+    btPrintf("  MRDx     - Motor right direction (0=REV 1=FWD)\r\n");
+    btPrintf("  MLSxxxxx - Motor left step (number of steps)\r\n");
+    btPrintf("  MRSxxxxx - Motor right step (number of steps)\r\n");
+    btPrintf("\r\n");
+    btPrintf("  LDRxxx   - LED Red intensity (0-255)\r\n");
+    btPrintf("  LDGxxx   - LED Green intensity (0-255)\r\n");
+    btPrintf("  LDBxxx   - LED Blue intensity (0-255)\r\n");
+    btPrintf("\r\n");
+    btPrintf("  BUT      - Show button states\r\n");
 }
 
 void commandI2cScan(uint16_t commandParameter)
 {
     if (commandParameter > 1) {
         debugPrintf("CLI: Got command IIC but parameter was out of range\r\n");
-        btOutputString("E04 - Parameter out of range\r\n");
+        btPrintf("E04 - Parameter out of range\r\n");
         return;
     }
 
@@ -176,12 +176,15 @@ void commandPowerMonitor(void)
 {
     debugPrintf("CLI: Got command POW\r\n");
 
-    char myStr[128];
-    sprintf(myStr, "INA260 Power information:\r\nCurrent: %.2f mA\r\nBus voltage: %.2f mV\r\nPower: %.2f mW", ina260ReadCurrent(), ina260ReadBusVoltage(), ina260ReadPower());
-    btOutputString(myStr);
+    float current = ina260ReadCurrent();
+    float voltage = ina260ReadBusVoltage();
+    float power = ina260ReadPower();
+
+    btPrintf("INA260 Power information:\r\nCurrent: %.2f mA\r\nBus voltage: %.2f mV\r\nPower: %.2f mW", current, voltage, power);
+    debugPrintf("INA260 Power information:\r\nCurrent: %.2f mA\r\nBus voltage: %.2f mV\r\nPower: %.2f mW", current, voltage, power);
 
     // Send output to OLED as well...
-    displayPowerInformation(ina260ReadCurrent(), ina260ReadBusVoltage(), ina260ReadPower());
+    displayPowerInformation(current, voltage, power);
 }
 
 void commandPen(uint16_t commandType)
@@ -190,19 +193,19 @@ void commandPen(uint16_t commandType)
         case 0:
             penOff();
             debugPrintf("CLI: Got command PEO\r\n");
-            btOutputString("R00 - Pen servo off");
+            btPrintf("R00 - Pen servo off");
             break;
         
         case 1:
             penUp();
             debugPrintf("CLI: Got command PEU\r\n");
-            btOutputString("R00 - Pen servo up");
+            btPrintf("R00 - Pen servo up");
             break;
 
         case 2:
             penDown();
             debugPrintf("CLI: Got command PED\r\n");
-            btOutputString("R00 - Pen servo down");
+            btPrintf("R00 - Pen servo down");
             break;
     }
 }
@@ -213,47 +216,45 @@ void commandMotor(uint16_t commandType, uint16_t commandParameter)
         case 0: // Motors on
             driveMotorsEnable(true);
             debugPrintf("CLI: Got command MON\r\n");
-            btOutputString("R00 - Drive motors on");
+            btPrintf("R00 - Drive motors on");
             break;
         
         case 1: // Motors off
             driveMotorsEnable(false);
             debugPrintf("CLI: Got command MOF\r\n");
-            btOutputString("R00 - Drive motors off");
+            btPrintf("R00 - Drive motors off");
             break;
 
         case 2: // Motor left set direction
             if (commandParameter == 1) driveMotorLeftDir(true);
             else driveMotorLeftDir(false);
             debugPrintf("CLI: Got command MLD\r\n");
-            btOutputString("R00 - Motor left set direction");
+            btPrintf("R00 - Motor left set direction");
             break;
 
         case 3: // Motor right set direction
             if (commandParameter == 1) driveMotorRightDir(true);
             else driveMotorRightDir(false);
             debugPrintf("CLI: Got command MRD\r\n");
-            btOutputString("R00 - Motor right set direction");
+            btPrintf("R00 - Motor right set direction");
             break;
 
         case 4: // Motor left step
             driveMotorLeftStep(commandParameter);
             debugPrintf("CLI: Got command MLS\r\n");
-            btOutputString("R00 - Motor left step");
+            btPrintf("R00 - Motor left step");
             break;
 
         case 5: // Motor right step
             driveMotorRightStep(commandParameter);
             debugPrintf("CLI: Got command MRS\r\n");
-            btOutputString("R00 - Motor right step");
+            btPrintf("R00 - Motor right step");
             break;
     }
 }
 
 void commandLed(uint16_t ledNumber, uint16_t commandParameter)
 {
-    char myStr[128];
-
     // Range check the requested brightness
     if (commandParameter < 0) commandParameter = 0;
     if (commandParameter > 255) commandParameter = 255;
@@ -262,22 +263,19 @@ void commandLed(uint16_t ledNumber, uint16_t commandParameter)
         case 0:
             ledRedSet(commandParameter);
             debugPrintf("CLI: Got command LDR with intensity %d\r\n", commandParameter);
-            sprintf(myStr, "R00 - LED Red intensity set to %d", commandParameter);
-            btOutputString(myStr);
+            btPrintf("R00 - LED Red intensity set to %d", commandParameter);
             break;
         
         case 1:
             ledGreenSet(commandParameter);
             debugPrintf("CLI: Got command LDG with intensity %d\r\n", commandParameter);
-            sprintf(myStr, "R00 - LED Green intensity set to %d", commandParameter);
-            btOutputString(myStr);
+            btPrintf("R00 - LED Green intensity set to %d", commandParameter);
             break;
 
         case 2:
             ledBlueSet(commandParameter);
             debugPrintf("CLI: Got command LDB with intensity %d\r\n", commandParameter);
-            sprintf(myStr, "R00 - LED Blue intensity set to %d", commandParameter);
-            btOutputString(myStr);
+            btPrintf("R00 - LED Blue intensity set to %d", commandParameter);
             break;
     }
 }
@@ -291,8 +289,8 @@ void commandButton(void)
     button1 = buttonsGetState(1);
 
     debugPrintf("CLI: Got command BUT\r\n");  
-    if (!button0 && !button1) btOutputString("Button 0: OFF - Button 1: OFF");
-    if (!button0 &&  button1) btOutputString("Button 0: OFF - Button 1:  ON");
-    if ( button0 && !button1) btOutputString("Button 0:  ON - Button 1: OFF");
-    if ( button0 &&  button1) btOutputString("Button 0:  ON - Button 1:  ON");
+    if (!button0 && !button1) btPrintf("Button 0: OFF - Button 1: OFF");
+    if (!button0 &&  button1) btPrintf("Button 0: OFF - Button 1:  ON");
+    if ( button0 && !button1) btPrintf("Button 0:  ON - Button 1: OFF");
+    if ( button0 &&  button1) btPrintf("Button 0:  ON - Button 1:  ON");
 }

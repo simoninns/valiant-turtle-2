@@ -73,6 +73,6 @@ btCli_state_t btCliState_Error(void);
 
 // Utilities
 void btConvUppercase(char *temp);
-void btOutputString(const char* str);
+void btPrintf(const char *fmt, ...);
 
 #endif /* BTCOMMS_H_ */
