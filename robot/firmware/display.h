@@ -27,7 +27,23 @@
 #ifndef DISPLAY_H_
 #define DISPLAY_H_
 
+// Enumerations
+typedef enum {
+    DISPLAY_START,
+    DISPLAY_POWER,
+	DISPLAY_BT,
+    DISPLAY_FWINFO
+} display_state_t;
+
+// Prototypes
 void displayInitialise(void);
-void displayPowerInformation(float mAmps, float mVolts, float mWatts);
+bool displayTimerCallback(repeating_timer_t *rt);
+
+// Display state machine
+void displayProcess(void);
+display_state_t displayState_Start(void);
+display_state_t displayState_Power(void);
+display_state_t displayState_Bt(void);
+display_state_t displayState_FwInfo(void);
 
 #endif /* DISPLAY_H_ */
