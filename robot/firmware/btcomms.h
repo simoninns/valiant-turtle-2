@@ -48,6 +48,13 @@ typedef enum {
     BTERR_CMD_PARAMISSING
 } btCli_error_t;
 
+typedef enum {
+    BTCOMMS_OFF,
+    BTCOMMS_DISCONNECTED,
+    BTCOMMS_CONNECTED,
+    BTCOMMS_PAIRING
+} btComms_state_t;
+
 struct btstack_timer_source;
 
 static void spp_service_setup(void);
@@ -58,6 +65,7 @@ static void btCliProcess_handler(struct btstack_timer_source *ts);
 
 void btcommsInitialise(void);
 void btcommsProcess(void);
+btComms_state_t btcommsGetStatus(void);
 
 // Prototypes
 void btCliResetCommandBuffers(void);

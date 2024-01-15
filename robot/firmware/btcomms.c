@@ -42,11 +42,13 @@
 #include "fifo.h"
 #include "debug.h"
 
+// Globals
 static btstack_timer_source_t btCliProcessTimer;
 static uint16_t rfcomm_channel_id;
 static uint8_t  spp_service_buffer[150];
 static btstack_packet_callback_registration_t hci_event_callback_registration;
 static bool channelOpen;
+btComms_state_t currentBtState;
 
 // Set up Serial Port Profile (SPP)
 static void spp_service_setup(void)
@@ -83,6 +85,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                 case HCI_EVENT_PIN_CODE_REQUEST:
                     // inform about pin code request
                     debugPrintf("Bluetooth Pin code request - using '0000'\n");
+                    currentBtState = BTCOMMS_PAIRING;
                     hci_event_pin_code_request_get_bd_addr(packet, event_addr);
                     gap_pin_code_response(event_addr, "0000");
                     break;
@@ -91,6 +94,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                     // ssp: inform about user confirmation request
                     debugPrintf("Bluetooth SSP User Confirmation Request with numeric value '%06"PRIu32"'\n", little_endian_read_32(packet, 8));
                     debugPrintf("Bluetooth SSP User Confirmation Auto accept\n");
+                    currentBtState = BTCOMMS_PAIRING;
                     break;
 
                 case RFCOMM_EVENT_INCOMING_CONNECTION:
@@ -108,6 +112,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                         rfcomm_channel_id = rfcomm_event_channel_opened_get_rfcomm_cid(packet);
                         mtu = rfcomm_event_channel_opened_get_max_frame_size(packet);
                         debugPrintf("Bluetooth RFCOMM channel open succeeded. New RFCOMM Channel ID %u, max frame size %u\n", rfcomm_channel_id, mtu);
+                        currentBtState = BTCOMMS_CONNECTED;
                         channelOpen = true;
                     }
                     break;
@@ -134,6 +139,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                 case RFCOMM_EVENT_CHANNEL_CLOSED:
                     debugPrintf("Bluetooth RFCOMM channel is closed\n");
                     rfcomm_channel_id = 0;
+                    currentBtState = BTCOMMS_DISCONNECTED;
                     channelOpen = false;
                     break;
                 
@@ -156,6 +162,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 void btcommsInitialise(void)
 {
     channelOpen = false;
+    currentBtState = BTCOMMS_OFF;
 
     // Set up the FIFO buffer for incoming characters
     fifoInitialise();
@@ -172,6 +179,7 @@ void btcommsInitialise(void)
 
     // Power on the Bluetooth device
     hci_power_control(HCI_POWER_ON);
+    currentBtState = BTCOMMS_DISCONNECTED;
 
     debugPrintf("Bluetooth HCI is powered on\r\n");
 }
@@ -209,6 +217,12 @@ static void btCliProcess_handler(struct btstack_timer_source *ts)
     btstack_run_loop_set_timer(ts, BTCLIPROCESS_PERIOD_MS);
     btstack_run_loop_add_timer(ts);
 } 
+
+// Get the current bluetooth state
+btComms_state_t btcommsGetStatus(void)
+{
+    return currentBtState;
+}
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------
 

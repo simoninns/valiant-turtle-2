@@ -27,6 +27,12 @@
 #ifndef DISPLAY_H_
 #define DISPLAY_H_
 
+#include "button.h"
+
+// Define the two display button GPIOs
+#define BACK_BUTTON 12  // Button on GPIO 16
+#define FORWARD_BUTTON 13  // Button on GPIO 17
+
 // Enumerations
 typedef enum {
     DISPLAY_START,
@@ -38,6 +44,7 @@ typedef enum {
 // Prototypes
 void displayInitialise(void);
 bool displayTimerCallback(repeating_timer_t *rt);
+void buttonChangedCallback(button_t *button_p);
 
 // Display state machine
 void displayProcess(void);

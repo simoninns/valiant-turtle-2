@@ -37,7 +37,6 @@
 #include "ina260.h"
 #include "leds.h"
 #include "display.h"
-#include "buttons.h"
 #include "btcomms.h"
 #include "debug.h"
 
@@ -121,11 +120,6 @@ uint16_t commandProcess(char *command, uint16_t parameter)
         return 0;
     }
 
-    if (strcmp(command, "BUT") == 0) {
-        commandButton();
-        return 0;
-    }
-
     // Unknown command
     return 1;
 }
@@ -154,8 +148,6 @@ void commandHelp(void)
     btPrintf("  LDRxxx   - LED Red intensity (0-255)\r\n");
     btPrintf("  LDGxxx   - LED Green intensity (0-255)\r\n");
     btPrintf("  LDBxxx   - LED Blue intensity (0-255)\r\n");
-    btPrintf("\r\n");
-    btPrintf("  BUT      - Show button states\r\n");
 }
 
 void commandI2cScan(uint16_t commandParameter)
@@ -274,19 +266,4 @@ void commandLed(uint16_t ledNumber, uint16_t commandParameter)
             btPrintf("R00 - LED Blue intensity set to %d", commandParameter);
             break;
     }
-}
-
-void commandButton(void)
-{
-    bool button0;
-    bool button1;
-
-    button0 = buttonsGetState(0);
-    button1 = buttonsGetState(1);
-
-    debugPrintf("CLI: Got command BUT\r\n");  
-    if (!button0 && !button1) btPrintf("Button 0: OFF - Button 1: OFF");
-    if (!button0 &&  button1) btPrintf("Button 0: OFF - Button 1:  ON");
-    if ( button0 && !button1) btPrintf("Button 0:  ON - Button 1: OFF");
-    if ( button0 &&  button1) btPrintf("Button 0:  ON - Button 1:  ON");
 }

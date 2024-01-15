@@ -37,7 +37,6 @@
 #include "i2cbus.h"
 #include "ina260.h"
 #include "display.h"
-#include "buttons.h"
 #include "btcomms.h"
 #include "debug.h"
 
@@ -53,7 +52,6 @@ int main()
     penServoInitialise();
     driveMotorsInitialise();
     displayInitialise();
-    buttonsInitialise();
     btcommsInitialise();
 
     // Turn on the PICO W system LED
