@@ -32,36 +32,62 @@
 
 #include "fifo.h"
  
-char buffer[BUFFER_SIZE];
-int16_t head;
-int16_t tail;
-int16_t count; 
+fifoBuffer_t inputBuffer;
+fifoBuffer_t outputBuffer;
 
 void fifoInitialise(void)
 {
-    head = 0;
-    tail = 0;
-    count = 0; 
+    // Initialise the input buffer
+    inputBuffer.head = 0;
+    inputBuffer.tail = 0;
+    inputBuffer.data = malloc(sizeof(char*) * IN_BUFFER_SIZE);
+
+    // Initialise the output buffer
+    outputBuffer.head = 0;
+    outputBuffer.tail = 0;
+    outputBuffer.data = malloc(sizeof(char*) * OUT_BUFFER_SIZE);
 }
  
 // Reads a byte from the buffer and return 0 if buffer empty
-char fifoRead(void)
+char fifoInRead(void)
 {
-   if (head == tail) return 0;
-   tail = (tail + 1) % BUFFER_SIZE;
-   return buffer[tail];
+   if (inputBuffer.head == inputBuffer.tail) return 0;
+   inputBuffer.tail = (inputBuffer.tail + 1) % IN_BUFFER_SIZE;
+   return inputBuffer.data[inputBuffer.tail];
 }
  
 // Writes a byte to the buffer if not full
-char fifoWrite(char val)
+char fifoInWrite(char val)
 {
-   if (head + 1 == tail) return 0;
-   head = (head + 1) % BUFFER_SIZE;
-   return buffer[head] = val;
+   if (inputBuffer.head + 1 == inputBuffer.tail) return 0;
+   inputBuffer.head = (inputBuffer.head + 1) % IN_BUFFER_SIZE;
+   return inputBuffer.data[inputBuffer.head] = val;
 }
 
-// Return the current buffer size
-int16_t fifoSize(void)
+// Reads a byte from the buffer and return 0 if buffer empty
+char fifoOutRead(void)
 {
-    return head - tail;
+   if (outputBuffer.head == outputBuffer.tail) return 0;
+   outputBuffer.tail = (outputBuffer.tail + 1) % OUT_BUFFER_SIZE;
+   return outputBuffer.data[outputBuffer.tail];
+}
+ 
+// Writes a byte to the buffer if not full
+char fifoOutWrite(char val)
+{
+   if (outputBuffer.head + 1 == outputBuffer.tail) return 0;
+   outputBuffer.head = (outputBuffer.head + 1) % OUT_BUFFER_SIZE;
+   return outputBuffer.data[outputBuffer.head] = val;
+}
+
+bool fifoIsInEmpty(void)
+{
+    if (inputBuffer.head == inputBuffer.tail) return true;
+    return false;
+}
+
+bool fifoIsOutEmpty(void)
+{
+    if (outputBuffer.head == outputBuffer.tail) return true;
+    return false;
 }

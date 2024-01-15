@@ -57,6 +57,7 @@ int main()
 
     // Turn on the system LED
     ledSystem(true);
+    printf("\r\n\r\n\r\n\r\nWe are up!\r\n");
 
     while (true) {
         //cliProcess();

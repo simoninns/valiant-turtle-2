@@ -27,11 +27,24 @@
 #ifndef FIFO_H_
 #define FIFO_H_
 
-#define BUFFER_SIZE 32
+#define IN_BUFFER_SIZE 32
+#define OUT_BUFFER_SIZE 512
+
+typedef struct {
+    int16_t head;
+    int16_t tail;
+    char* data;
+} fifoBuffer_t;
 
 void fifoInitialise(void);
-char fifoRead(void);
-char fifoWrite(char val);
-int16_t fifoSize(void);
+
+char fifoInRead(void);
+char fifoInWrite(char val);
+
+char fifoOutRead(void);
+char fifoOutWrite(char val);
+
+bool fifoIsInEmpty(void);
+bool fifoIsOutEmpty(void);
 
 #endif /* FIFO_H_ */

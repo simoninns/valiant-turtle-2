@@ -46,13 +46,11 @@ static char lineBuffer[128];
 static uint16_t rfcomm_channel_id;
 static uint8_t  spp_service_buffer[150];
 static btstack_packet_callback_registration_t hci_event_callback_registration;
-static bool readyToSend;
+static bool channelOpen;
 
 // Set up Serial Port Profile (SPP)
 static void spp_service_setup(void)
 {
-    readyToSend = false;
-
     // register for HCI events
     hci_event_callback_registration.callback = &packet_handler;
     hci_add_event_handler(&hci_event_callback_registration);
@@ -110,16 +108,32 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                         rfcomm_channel_id = rfcomm_event_channel_opened_get_rfcomm_cid(packet);
                         mtu = rfcomm_event_channel_opened_get_max_frame_size(packet);
                         printf("Bluetooth: RFCOMM channel open succeeded. New RFCOMM Channel ID %u, max frame size %u\n", rfcomm_channel_id, mtu);
+                        channelOpen = true;
                     }
                     break;
                 case RFCOMM_EVENT_CAN_SEND_NOW:
-                    rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer));
-                    readyToSend = true;
+                    // Output the contents of the output buffer
+                    int16_t pos = 0;
+                    bool finished = false;
+                    while (!finished) {
+                        lineBuffer[pos] = fifoOutRead();
+                        if (lineBuffer[pos] == 0) finished = true;
+                        if (pos == 127) {
+                            lineBuffer[pos] = 0;
+                            finished = true;
+                        }
+                        pos++;
+                    }
+
+                    if (pos != 0) {
+                        rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) pos);
+                    }
                     break;
 
                 case RFCOMM_EVENT_CHANNEL_CLOSED:
                     printf("Bluetooth: RFCOMM channel closed\n");
                     rfcomm_channel_id = 0;
+                    channelOpen = false;
                     break;
                 
                 default:
@@ -129,7 +143,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 
         case RFCOMM_DATA_PACKET:
             // Place the incoming characters into our input buffer
-            for (i=0;i<size;i++) fifoWrite((char)packet[i]);
+            for (i=0;i<size;i++) fifoInWrite((char)packet[i]);
             break;
 
         default:
@@ -140,6 +154,8 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 // Initialise the Bluetooth stack and functionality
 void btcommsInitialise(void)
 {
+    channelOpen = false;
+
     // Set up the FIFO buffer for incoming characters
     fifoInitialise();
 
@@ -172,9 +188,15 @@ static void one_shot_timer_setup(void)
 static void btCliProcess_handler(struct btstack_timer_source *ts)
 {
     // Ensure the RFCOMM channel is valid
-    if (rfcomm_channel_id) {
+    if (channelOpen) {
         // Process the CLI state-machine
-        if (readyToSend) btCliProcess();
+        btCliProcess();
+
+        // Check the output buffer
+        if (!fifoIsOutEmpty()) {
+            // Ask for a send event
+            rfcomm_request_can_send_now_event(rfcomm_channel_id);
+        }
     } else {
         // If the channel is lost; hold the CLI in reset
         btCliInitialise();
@@ -235,8 +257,9 @@ void btCliProcess(void)
 btCli_state_t btCliState_Start(void)
 {
     // Show a banner on the CLI
-    snprintf(lineBuffer, sizeof(lineBuffer), "\r\nValiant Turtle 2\r\nCopyright (C)2024 Simon Inns\r\nUse HLP to show available commands\r\n");
-    btSendLineBuffer();
+    btOutputString("\r\n\r\nValiant Turtle 2\r\n");
+    btOutputString("Copyright (C)2024 Simon Inns\r\n");
+    btOutputString("Use HLP to show available commands\r\n");
 
     return BTCLI_PROMPT;
 }
@@ -244,8 +267,7 @@ btCli_state_t btCliState_Start(void)
 btCli_state_t btCliState_Prompt(void)
 {
     // Show the prompt
-    snprintf(lineBuffer, sizeof(lineBuffer), "\r\nVT2> ");
-    btSendLineBuffer();
+    btOutputString("\r\nVT2> ");
 
     return BTCLI_COLLECT;
 }
@@ -253,16 +275,14 @@ btCli_state_t btCliState_Prompt(void)
 btCli_state_t btCliState_Collect(void)
 {
     // Collect any input waiting
-    char cint = fifoRead();
+    char cint = fifoInRead();
     if (cint != 0) {
 
         // Was the character a <CR>?
         if (cint == 13) {
             // Has the buffer got contents?
             if (btCliBufferPointer > 0) {
-                //printf("\r\n");
-                snprintf(lineBuffer, sizeof(lineBuffer), "\r\n");
-                btSendLineBuffer();
+                btOutputString("\r\n");
 
                 return BTCLI_INTERPRET;
             } else {
@@ -274,8 +294,9 @@ btCli_state_t btCliState_Collect(void)
         if (cint == 8) {
             // Backspace
             if (btCliBufferPointer > 0) {
-                snprintf(lineBuffer, sizeof(lineBuffer), "%c%c%c", 8, 32, 8);
-                btSendLineBuffer();
+                char myStr[5];
+                sprintf(myStr, "%c%c%c", 8, 32, 8);
+                btOutputString(myStr);
                 btCliBufferPointer--;
             }
             return BTCLI_COLLECT;
@@ -292,8 +313,9 @@ btCli_state_t btCliState_Collect(void)
         btCliBufferPointer++;
 
         // Display the received character
-        snprintf(lineBuffer, sizeof(lineBuffer), "%c", cint);
-        btSendLineBuffer();
+        char myStr[5];
+        sprintf(myStr, "%c", cint);
+        btOutputString(myStr);
     }
 
     // All good, keep collecting
@@ -347,26 +369,25 @@ btCli_state_t btCliState_Error(void)
 {
     switch(btCliError) {
         case BTERR_CMD_NONE:
-            snprintf(lineBuffer, sizeof(lineBuffer), "E00 - OK");
+            btOutputString("E00 - OK");
             break;
 
         case BTERR_CMD_SHORT:
-            snprintf(lineBuffer, sizeof(lineBuffer), "E01 - Command too short");
+            btOutputString("E01 - Command too short");
             break;
 
         case BTERR_CMD_UNKNOWN:
-            snprintf(lineBuffer, sizeof(lineBuffer), "E02 - Unknown command");
+            btOutputString("E02 - Unknown command");
             break;
 
         case BTERR_CMD_PARAMISSING:
-            snprintf(lineBuffer, sizeof(lineBuffer), "E03 - Parameter missing");
+            btOutputString("E03 - Parameter missing");
             break;
 
         default:
-            snprintf(lineBuffer, sizeof(lineBuffer), "E04 - Unknown error");
+            btOutputString("E04 - Unknown error");
             break;
     }
-    btSendLineBuffer();
 
     // Empty the buffer and return to the prompting state
     btCliResetCommandBuffers();
@@ -387,14 +408,8 @@ void btConvUppercase(char *temp)
     }
 }
 
-void btSendLineBuffer(void)
-{
-    readyToSend = false;
-    rfcomm_request_can_send_now_event(rfcomm_channel_id);
-}
-
 void btOutputString(const char* str) 
 {
-    snprintf(lineBuffer, sizeof(lineBuffer), str);
-    btSendLineBuffer();
+    // Copy the output string to the output buffer
+    for (uint16_t i = 0; i < strlen(str); i++) fifoOutWrite(str[i]);
 }

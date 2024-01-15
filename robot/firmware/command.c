@@ -131,32 +131,28 @@ uint16_t commandProcess(char *command, uint16_t parameter)
 
 void commandHelp(void)
 {
-//    printf("Help:\r\n");
-//     printf("  HLP - Show this help text\r\n");
-//     printf("\r\n");
-//     printf("  IICx - Scan I2C bus (bus number)\r\n");
-//     printf("  POW - Read power information from the INA260\r\n");
-//     printf("\r\n");
-//     printf("  PEU      - Pen servo up\r\n");
-//     printf("  PED      - Pen servo down\r\n");
-//     printf("  PEO      - Pen servo off\r\n");
-//     printf("\r\n");
-//     printf("  MON      - Drive motors on\r\n");
-//     printf("  MOF      - Drive motors off\r\n");
-//     printf("  MLDx     - Motor left direction (0=REV 1=FWD)\r\n");
-//     printf("  MRDx     - Motor right direction (0=REV 1=FWD)\r\n");
-//     printf("  MLSxxxxx - Motor left step (number of steps)\r\n");
-//     printf("  MRSxxxxx - Motor right step (number of steps)\r\n");
-//     printf("\r\n");
-//     printf("  LDRxxx   - LED Red intensity (0-255)\r\n");
-//     printf("  LDGxxx   - LED Green intensity (0-255)\r\n");
-//     printf("  LDBxxx   - LED Blue intensity (0-255)\r\n");
-//     printf("\r\n");
-//     printf("  BUT      - Show button states\r\n");
-
-    btOutputString("Output from the HLP command goes here...\r\n");
-    // snprintf(lineBuffer, sizeof(lineBuffer), "Output from the HLP command goes here...\r\n");
-    // btSendLineBuffer();
+    btOutputString("Help:\r\n");
+    btOutputString("  HLP - Show this help text\r\n");
+    btOutputString("\r\n");
+    btOutputString("  IICx - Scan I2C bus (bus number)\r\n");
+    btOutputString("  POW - Read power information from the INA260\r\n");
+    btOutputString("\r\n");
+    btOutputString("  PEU      - Pen servo up\r\n");
+    btOutputString("  PED      - Pen servo down\r\n");
+    btOutputString("  PEO      - Pen servo off\r\n");
+    btOutputString("\r\n");
+    btOutputString("  MON      - Drive motors on\r\n");
+    btOutputString("  MOF      - Drive motors off\r\n");
+    btOutputString("  MLDx     - Motor left direction (0=REV 1=FWD)\r\n");
+    btOutputString("  MRDx     - Motor right direction (0=REV 1=FWD)\r\n");
+    btOutputString("  MLSxxxxx - Motor left step (number of steps)\r\n");
+    btOutputString("  MRSxxxxx - Motor right step (number of steps)\r\n");
+    btOutputString("\r\n");
+    btOutputString("  LDRxxx   - LED Red intensity (0-255)\r\n");
+    btOutputString("  LDGxxx   - LED Green intensity (0-255)\r\n");
+    btOutputString("  LDBxxx   - LED Blue intensity (0-255)\r\n");
+    btOutputString("\r\n");
+    btOutputString("  BUT      - Show button states\r\n");
 }
 
 void commandI2cScan(uint16_t commandParameter)
