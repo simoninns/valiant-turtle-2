@@ -104,6 +104,16 @@ uint16_t commandProcess(char *command, uint16_t parameter)
         return 0;
     }
 
+    if (strcmp(command, "MLV") == 0) {
+        commandMotor(6, parameter);
+        return 0;
+    }
+
+    if (strcmp(command, "MRV") == 0) {
+        commandMotor(7, parameter);
+        return 0;
+    }
+
     // LED Commands
     if (strcmp(command, "LDR") == 0) {
         commandLed(0, parameter);
@@ -144,6 +154,8 @@ void commandHelp(void)
     btPrintf("  MRDx     - Motor right direction (0=REV 1=FWD)\r\n");
     btPrintf("  MLSxxxxx - Motor left step (number of steps)\r\n");
     btPrintf("  MRSxxxxx - Motor right step (number of steps)\r\n");
+    btPrintf("  MLVx     - Motor left speed (0=Fast 9=Slow)\r\n");
+    btPrintf("  MRVx     - Motor right speed (0=Fast 9=Slow)\r\n");
     btPrintf("\r\n");
     btPrintf("  LDRxxx   - LED Red intensity (0-255)\r\n");
     btPrintf("  LDGxxx   - LED Green intensity (0-255)\r\n");
@@ -228,15 +240,27 @@ void commandMotor(uint16_t commandType, uint16_t commandParameter)
             break;
 
         case 4: // Motor left step
-            driveMotorSetSteps(MOTOR_LEFT, commandParameter);
+            driveMotorSetSteps(commandParameter, 0);
             debugPrintf("CLI: Got command MLS\r\n");
             btPrintf("R00 - Motor left step");
             break;
 
         case 5: // Motor right step
-            driveMotorSetSteps(MOTOR_RIGHT, commandParameter);
+            driveMotorSetSteps(0, commandParameter);
             debugPrintf("CLI: Got command MRS\r\n");
             btPrintf("R00 - Motor right step");
+            break;
+
+        case 6: // Motor left speed
+            driveMotorSetSpeed(MOTOR_LEFT, commandParameter);
+            debugPrintf("CLI: Got command MLV\r\n");
+            btPrintf("R00 - Motor left speed");
+            break;
+
+        case 7: // Motor right speed
+            driveMotorSetSpeed(MOTOR_RIGHT, commandParameter);
+            debugPrintf("CLI: Got command MRV\r\n");
+            btPrintf("R00 - Motor right speed");
             break;
     }
 }

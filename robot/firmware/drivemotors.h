@@ -56,6 +56,7 @@ void driveMotorsInitialise(void);
 bool motorTimerCallback(repeating_timer_t *rt);
 void driveMotorsEnable(bool state);
 void driveMotorSetDir(motor_side_t side, motor_direction_t direction);
-void driveMotorSetSteps(motor_side_t side, uint16_t steps);
+void driveMotorSetSteps(int16_t lSteps, int16_t rSteps);
+void driveMotorSetSpeed(motor_side_t side, int16_t speed);
 
 #endif /* DRIVEMOTORS_H_ */

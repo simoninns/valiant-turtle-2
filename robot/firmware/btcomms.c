@@ -84,7 +84,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
             switch (hci_event_packet_get_type(packet)) {
                 case HCI_EVENT_PIN_CODE_REQUEST:
                     // inform about pin code request
-                    debugPrintf("Bluetooth Pin code request - using '0000'\n");
+                    debugPrintf("Bluetooth: Pin code request - using '0000'\n");
                     currentBtState = BTCOMMS_PAIRING;
                     hci_event_pin_code_request_get_bd_addr(packet, event_addr);
                     gap_pin_code_response(event_addr, "0000");
@@ -92,8 +92,8 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 
                 case HCI_EVENT_USER_CONFIRMATION_REQUEST:
                     // ssp: inform about user confirmation request
-                    debugPrintf("Bluetooth SSP User Confirmation Request with numeric value '%06"PRIu32"'\n", little_endian_read_32(packet, 8));
-                    debugPrintf("Bluetooth SSP User Confirmation Auto accept\n");
+                    debugPrintf("Bluetooth: SSP User Confirmation Request with numeric value '%06"PRIu32"'\n", little_endian_read_32(packet, 8));
+                    debugPrintf("Bluetooth: SSP User Confirmation Auto accept\n");
                     currentBtState = BTCOMMS_PAIRING;
                     break;
 
@@ -101,17 +101,17 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                     rfcomm_event_incoming_connection_get_bd_addr(packet, event_addr);
                     rfcomm_channel_nr = rfcomm_event_incoming_connection_get_server_channel(packet);
                     rfcomm_channel_id = rfcomm_event_incoming_connection_get_rfcomm_cid(packet);
-                    debugPrintf("Bluetooth RFCOMM channel %u requested for client %s\n", rfcomm_channel_nr, bd_addr_to_str(event_addr));
+                    debugPrintf("Bluetooth: RFCOMM channel %u requested for client %s\n", rfcomm_channel_nr, bd_addr_to_str(event_addr));
                     rfcomm_accept_connection(rfcomm_channel_id);
                     break;
                
                 case RFCOMM_EVENT_CHANNEL_OPENED:
                     if (rfcomm_event_channel_opened_get_status(packet)) {
-                        debugPrintf("Bluetooth RFCOMM channel open failed, status 0x%02x\n", rfcomm_event_channel_opened_get_status(packet));
+                        debugPrintf("Bluetooth: RFCOMM channel open failed, status 0x%02x\n", rfcomm_event_channel_opened_get_status(packet));
                     } else {
                         rfcomm_channel_id = rfcomm_event_channel_opened_get_rfcomm_cid(packet);
                         mtu = rfcomm_event_channel_opened_get_max_frame_size(packet);
-                        debugPrintf("Bluetooth RFCOMM channel open succeeded. New RFCOMM Channel ID %u, max frame size %u\n", rfcomm_channel_id, mtu);
+                        debugPrintf("Bluetooth: RFCOMM channel open succeeded. New RFCOMM Channel ID %u, max frame size %u\n", rfcomm_channel_id, mtu);
                         currentBtState = BTCOMMS_CONNECTED;
                         channelOpen = true;
                     }
@@ -137,7 +137,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                     break;
 
                 case RFCOMM_EVENT_CHANNEL_CLOSED:
-                    debugPrintf("Bluetooth RFCOMM channel is closed\n");
+                    debugPrintf("Bluetooth: RFCOMM channel is closed\n");
                     rfcomm_channel_id = 0;
                     currentBtState = BTCOMMS_DISCONNECTED;
                     channelOpen = false;
@@ -181,7 +181,7 @@ void btcommsInitialise(void)
     hci_power_control(HCI_POWER_ON);
     currentBtState = BTCOMMS_DISCONNECTED;
 
-    debugPrintf("Bluetooth HCI is powered on\r\n");
+    debugPrintf("Bluetooth: HCI is powered on\r\n");
 }
 
 static void one_shot_timer_setup(void)
