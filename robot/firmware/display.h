@@ -43,7 +43,6 @@ typedef enum {
 
 // Prototypes
 void displayInitialise(void);
-bool displayTimerCallback(repeating_timer_t *rt);
 void buttonChangedCallback(button_t *button_p);
 
 // Display state machine

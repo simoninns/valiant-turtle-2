@@ -58,6 +58,8 @@ int main()
     ledSystem(true);
 
     while (true) {
-        sleep_ms(100);
+        // Update the OLED display
+        displayProcess();
+        sleep_ms(250);
     }
 }

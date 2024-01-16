@@ -37,8 +37,8 @@
 
 // Global
 ssd1306_t disp;
-bool displayTimerCallback(repeating_timer_t *rt);
-repeating_timer_t displayTimer;
+// bool displayTimerCallback(repeating_timer_t *rt);
+// repeating_timer_t displayTimer;
 int16_t startCounter;
 int16_t buttonPresses;
 
@@ -60,19 +60,6 @@ void displayInitialise(void)
     // Initialise the display buttons
     button_t *play_button = create_button(BACK_BUTTON, buttonChangedCallback);
     button_t *pause_button = create_button(FORWARD_BUTTON, buttonChangedCallback);
-
-    // Set up the repeating display update timer
-    int16_t hz = 5;
-
-    if (!add_repeating_timer_us(1000000 / hz, displayTimerCallback, NULL, &displayTimer)) {
-        debugPrintf("Display: Failed to add display update timer!\r\n");
-    }
-}
-
-bool displayTimerCallback(repeating_timer_t *rt)
-{
-    displayProcess();
-    return true;
 }
 
 void buttonChangedCallback(button_t *button_p)

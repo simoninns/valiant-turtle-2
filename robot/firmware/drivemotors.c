@@ -69,9 +69,9 @@ void driveMotorsInitialise(void)
     rightState = false;
 
     // Set up the repeating display update timer
-    int16_t hz = 5;
-
-    if (!add_repeating_timer_us(-1900, motorTimerCallback, NULL, &motorTimer)) {
+    // Maximum DRV8825 frequency is 1.9us, so we need to callback every
+    // 850us with a pulse at 50% duty
+    if (!add_repeating_timer_us(-1900/2, motorTimerCallback, NULL, &motorTimer)) {
         debugPrintf("Drive motors: Failed to add motor update timer!\r\n");
     }
 }
@@ -81,28 +81,34 @@ bool motorTimerCallback(repeating_timer_t *rt)
 {
     // Step the left motor
     if (leftSteps > 0) {
-        if (leftState) {
-            gpio_put(DM_LSTEP_GPIO, 0);
-            leftState = false;
-        } else {
+        if (!leftState) {
             gpio_put(DM_LSTEP_GPIO, 1);
             leftState = true;
+        } else {
+            gpio_put(DM_LSTEP_GPIO, 0);
+            leftState = false;
+            leftSteps--;
         }
-
-        leftSteps--;
+    } else {
+        // Not in motion, remain at zero
+        gpio_put(DM_LSTEP_GPIO, 0);
+        leftState = false;
     }
 
     // Step the right motor
     if (rightSteps > 0) {
-        if (rightState) {
-            gpio_put(DM_RSTEP_GPIO, 0);
-            rightState = false;
-        } else {
+        if (!rightState) {
             gpio_put(DM_RSTEP_GPIO, 1);
             rightState = true;
+        } else {
+            gpio_put(DM_RSTEP_GPIO, 0);
+            rightState = false;
+            rightSteps--;
         }
-
-        rightSteps--;
+    } else {
+        // Not in motion, remain at zero
+        gpio_put(DM_RSTEP_GPIO, 0);
+        rightState = false;
     }
 
     return true;
@@ -129,28 +135,6 @@ void driveMotorSetDir(motor_side_t side, motor_direction_t direction)
 
 void driveMotorSetSteps(motor_side_t side, uint16_t steps)
 {
-    // if (steps > 0) {
-    //     if (side == MOTOR_LEFT) {
-    //         printf("I00 - Left stepping %d\r\n", steps);
-    //         for (uint16_t cnt = 0; cnt < steps; cnt++) {
-    //             gpio_put(DM_LSTEP_GPIO, 1);
-    //             sleep_ms(1.9);
-    //             gpio_put(DM_LSTEP_GPIO, 0);
-    //             sleep_ms(1.9);
-    //         }
-    //     }
-
-    //     if (side == MOTOR_RIGHT) {
-    //         printf("I00 - Right stepping %d\r\n", steps);
-    //         for (uint16_t cnt = 0; cnt < steps; cnt++) {
-    //             gpio_put(DM_RSTEP_GPIO, 1);
-    //             sleep_ms(1.9);
-    //             gpio_put(DM_RSTEP_GPIO, 0);
-    //             sleep_ms(1.9);
-    //         }
-    //     }
-    // }
-
     // Add the required number of steps to the remaining steps for the motor...
     if (steps > 0) {
         if (side == MOTOR_LEFT) leftSteps += steps;
