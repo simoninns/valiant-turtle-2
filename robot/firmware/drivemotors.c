@@ -32,13 +32,9 @@
 #include "debug.h"
 
 // Globals
-int16_t leftSteps;
-int16_t rightSteps;
-int16_t leftSpeed;
-int16_t rightSpeed;
+stepperMotor_t leftMotor;
+stepperMotor_t rightMotor;
 
-int16_t leftState;
-int16_t rightState;
 bool motorTimerCallback(repeating_timer_t *rt);
 repeating_timer_t motorTimer;
 
@@ -66,16 +62,18 @@ void driveMotorsInitialise(void)
     driveMotorSetSpeed(MOTOR_RIGHT, 0);
 
     // Set remaining steps to zero
-    leftSteps = 0;
-    rightSteps = 0;
+    leftMotor.steps = 0;
+    rightMotor.steps = 0;
     
     // Set the initial step states to off
-    leftState = 0;
-    rightState = 0;
+    leftMotor.state = 0;
+    rightMotor.state = 0;
 
     // Set the initial speeds
-    leftSpeed = 4;
-    rightSpeed = 4;
+    leftMotor.currentSpeed = 0;
+    rightMotor.currentSpeed = 0;
+    leftMotor.targetSpeed = 0;
+    rightMotor.targetSpeed = 0;
 
     // Set up the repeating motor update timer
     // Maximum DRV8825 frequency is 1.9us, so we need to callback every
@@ -89,45 +87,45 @@ void driveMotorsInitialise(void)
 bool motorTimerCallback(repeating_timer_t *rt)
 {
     // Step the left motor
-    if (leftSteps > 0) {
-        if (leftState == 0) {
+    if (leftMotor.steps > 0) {
+        if (leftMotor.state == 0) {
             gpio_put(DM_LSTEP_GPIO, 1);
-            leftState++;
+            leftMotor.state++;
         } else {
             gpio_put(DM_LSTEP_GPIO, 0);
-            leftState++;
+            leftMotor.state++;
         }
 
         // Reset the steps according to speed
-        if (leftState > leftSpeed) {
-            leftState = 0;
-            leftSteps--; 
+        if (leftMotor.state > leftMotor.currentSpeed) {
+            leftMotor.state = 0;
+            leftMotor.steps--; 
         }
     } else {
         // No left steps remaining - hold at zero
         gpio_put(DM_LSTEP_GPIO, 0);
-        leftState = 0;
+        leftMotor.state = 0;
     }
 
     // Step the right motor
-    if (rightSteps > 0) {
-        if (rightState == 0) {
+    if (rightMotor.steps > 0) {
+        if (rightMotor.state == 0) {
             gpio_put(DM_RSTEP_GPIO, 1);
-            rightState++;
+            rightMotor.state++;
         } else {
             gpio_put(DM_RSTEP_GPIO, 0);
-            rightState++;
+            rightMotor.state++;
         }
 
         // Reset the steps according to speed
-        if (rightState > rightSpeed) {
-            rightState = 0;
-            rightSteps--; 
+        if (rightMotor.state > rightMotor.currentSpeed) {
+            rightMotor.state = 0;
+            rightMotor.steps--; 
         }
     } else {
         // No right steps remaining - hold at zero
         gpio_put(DM_RSTEP_GPIO, 0);
-        rightState = 0;
+        rightMotor.state = 0;
     }
 
     return true;
@@ -171,8 +169,8 @@ void driveMotorSetDir(motor_side_t side, motor_direction_t direction)
 void driveMotorSetSteps(int16_t lSteps, int16_t rSteps)
 {
     // Add the required number of steps to the remaining steps for the motor...
-    leftSteps += lSteps;
-    rightSteps += rSteps;
+    leftMotor.steps += lSteps;
+    rightMotor.steps += rSteps;
     debugPrintf("Drive motors: Added motor steps Left %d - Right %d\r\n", lSteps, rSteps);
 }
 
@@ -194,12 +192,12 @@ void driveMotorSetSpeed(motor_side_t side, int16_t speed)
     if (speed == 9) stepNums = 10; // Slowest
 
     if (side == MOTOR_LEFT) {
-        leftSpeed = stepNums;
+        leftMotor.currentSpeed = stepNums;
         debugPrintf("Drive motors: Set left motor speed to %d\r\n", speed);
     }
 
     if (side == MOTOR_RIGHT) {
-        rightSpeed = stepNums;
+        rightMotor.currentSpeed = stepNums;
         debugPrintf("Drive motors: Set right motor speed to %d\r\n", speed);
     }
 }

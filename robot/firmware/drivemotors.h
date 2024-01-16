@@ -52,6 +52,13 @@ typedef enum {
     MOTOR_BACKWARDS
 } motor_direction_t;
 
+typedef struct stepperMotor_t {
+    int16_t steps;
+    int16_t currentSpeed;
+    int16_t targetSpeed;
+    int16_t state;
+} stepperMotor_t;
+
 void driveMotorsInitialise(void);
 bool motorTimerCallback(repeating_timer_t *rt);
 void driveMotorsEnable(bool state);
