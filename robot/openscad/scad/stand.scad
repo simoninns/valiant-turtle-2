@@ -28,14 +28,26 @@ use <BOSL/shapes.scad>
 
 module sideStand()
 {
-    difference() {
-        hull() {
-            move([0,0,0]) cuboid([4,100,10], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
-            move([0,0,0]) xrot(-45) move([0,0,-94]) cuboid([4,100,4], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
-        }
+    move([-47,0,0]) {
+        difference() {
+            union() {
+                hull() {
+                    move([0,20,0]) cuboid([4,60,10], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+                    move([30,20,20]) xrot(-45) move([0,0,-94]) cuboid([4,40,4], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+                }   
 
-        move([0,-24,2]) cuboid([100,5,10], chamfer=1);
-        move([0,-4,6]) cuboid([100,8,10], chamfer=1);
+                hull() {
+                    move([26,-30,0]) cuboid([4,40,10], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+                    move([32,0,0]) xrot(-45) move([0,0,-94]) cuboid([4,100,4], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+                }
+            }
+
+            move([0,-24,2]) cuboid([100,5,10], chamfer=1);
+            move([26,-15,6]) cuboid([10,15,4], chamfer=1);
+            
+            move([0,-4,6]) cuboid([100,8,10], chamfer=1);
+            move([8.5,31.5,1]) cyl(h=10,d=12);
+        }
     }
 }
 
@@ -44,15 +56,31 @@ module stand()
     difference() {
         union() {
             move([0,-15,-8]) {
-                move([-47,0,0]) sideStand();
-                move([+47,0,0]) sideStand();
+                move([0,0,0]) sideStand();
+                move([0,0,0]) xflip() sideStand();
             }
 
-            move([0,0,-152]) xrot(-45) move([0,-70,15]) cuboid([98,4,40], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
-            move([0,0,-152]) xrot(-45) move([0,-150,15]) cuboid([98,4,40], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+            // Back stay
+            move([0,0,-152]) xrot(-45) move([0,-70,0.5]) cuboid([98,4,14], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+
+
+            hull() {
+                move([0,0,-152]) xrot(-45) move([17,-90,0.5]) cuboid([4,4,14], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+                move([0,0,-152]) xrot(-45) move([47,-72,0.5]) cuboid([4,4,14], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+            }
+
+            hull() {
+                move([0,0,-152]) xrot(-45) move([-17,-90,0.5]) cuboid([4,4,14], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+                move([0,0,-152]) xrot(-45) move([-47,-72,0.5]) cuboid([4,4,14], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
+            }
+
+            // Front stay
+            move([0,0,-152]) xrot(-45) move([0,-150,13]) cuboid([34,4,38], chamfer=1, edges=EDGES_ALL-EDGES_BOTTOM);
         }
 
         move([0,0,0]) xrot(-45) move([0,0,-117]) cuboid([100,140,10]);
+        move([0,-50,-5]) cuboid([37,100,10]);
+        move([0,10,-152]) xrot(45) move([0,0,70.1]) cuboid([150,30,10]);
     }
 }
 
