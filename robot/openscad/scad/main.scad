@@ -45,6 +45,7 @@ include <pen_holder_cap.scad>
 include <logotype.scad>
 include <toggle_switch.scad>
 include <display_mount.scad>
+include <stand.scad>
 
 // // Viewport translation
 // $vpt = [0, 0, 0];
@@ -82,6 +83,7 @@ display_battery_holder = "No"; // [Yes, No]
 display_battery_cover = "No"; // [Yes, No]
 display_led_holders = "No"; // [Yes, No]
 display_display_mount = "No"; // [Yes, No]
+display_stand = "No"; // [Yes, No]
 
 /* [Print Supports] */
 display_shell_support = "No"; // [Yes, No]
@@ -140,6 +142,7 @@ module main() {
     d_battery_cover = (display_battery_cover == "Yes") ? true:false;
     d_led_holders = (display_led_holders == "Yes") ? true:false;
     d_display_mount = (display_display_mount == "Yes") ? true:false;
+    d_stand = (display_stand == "Yes") ? true:false;
 
     // Print supports
     d_shell_support = (display_shell_support == "Yes") ? true:false;
@@ -195,6 +198,7 @@ module main() {
     if (d_battery_cover) render_battery_cover(toPrint);
     if (d_led_holders) render_led_holders(toPrint);
     if (d_display_mount) render_display_mount(toPrint);
+    if (d_stand) render_stand(toPrint);
 
     // Render the print supports
     if (d_shell_support) render_shell_support(toPrint);
