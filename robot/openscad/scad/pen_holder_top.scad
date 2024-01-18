@@ -34,8 +34,8 @@ module holder_insert_base()
     move([0,0,-0.5]) cyl(h=1, d=16, chamfer1=0.5); // Top lip
 
     // Knurled top outer
-    for(rota=[0: 360/32: 360]) { // for(variable = [start : increment : end])
-        rotate([0,0,rota]) move([7.25,0,-7]) cyl(h=14, d=1, chamfer=0.25); // Top
+    for(rota=[0: 360/4: 360]) { // for(variable = [start : increment : end])
+        rotate([0,0,rota]) move([7.25,0,-9]) cuboid([18,4,15], chamfer=1); //cyl(h=14, d=1, chamfer=0.25); // Top
     }
 }
 
@@ -70,7 +70,7 @@ module holder_insert_small()
         }
 
     // Cut a 20 degree angle from the base
-    move([0,0,-15]) rotate([0,15,0]) cyl(h=10,d=25);
+    move([0,0,-16]) rotate([0,15,0]) cyl(h=12,d=38);
     }
 }
 
@@ -102,7 +102,7 @@ module holder_insert_medium()
         }
 
     // Cut a 20 degree angle from the base
-    move([0,0,-15]) rotate([0,15,0]) cyl(h=10,d=25);
+    move([0,0,-16]) rotate([0,15,0]) cyl(h=12,d=38);
     }
 }
 
@@ -129,7 +129,7 @@ module holder_insert_large()
         }
 
     // Cut a 20 degree angle from the base
-    move([0,0,-15]) rotate([0,15,0]) cyl(h=10,d=25);
+    move([0,0,-16]) rotate([0,15,0]) cyl(h=12,d=38);
     }
 }
 
