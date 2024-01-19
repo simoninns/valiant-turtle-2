@@ -41,6 +41,12 @@
 #define DM_LDIR_GPIO 3
 #define DM_RDIR_GPIO 5
 
+// Drive motor microstep control
+#define DM_LM0_GPIO 21
+#define DM_LM1_GPIO 20
+#define DM_RM0_GPIO 19
+#define DM_RM1_GPIO 18
+
 // Enumerations
 typedef enum {
     MOTOR_LEFT,
@@ -52,18 +58,29 @@ typedef enum {
     MOTOR_BACKWARDS
 } motor_direction_t;
 
+typedef enum {
+    MOTOR_1,    // Full step
+    MOTOR_1_2,  // 1/2 step
+    MOTOR_1_4,  // 1/4 step
+    MOTOR_1_8   // 1/8 step
+} motor_speed_t;
+
 typedef struct stepperMotor_t {
+    bool enabled;
+    bool running;
+    motor_speed_t speed;
+    motor_direction_t direction;
     int16_t steps;
-    int16_t currentSpeed;
-    int16_t targetSpeed;
     int16_t state;
 } stepperMotor_t;
 
 void driveMotorsInitialise(void);
 bool motorTimerCallback(repeating_timer_t *rt);
 void driveMotorsEnable(bool state);
+void driveMotorsRunning(bool state);
 void driveMotorSetDir(motor_side_t side, motor_direction_t direction);
 void driveMotorSetSteps(int16_t lSteps, int16_t rSteps);
-void driveMotorSetSpeed(motor_side_t side, int16_t speed);
+void driveMotorSetSpeed(motor_side_t side, motor_speed_t speed);
+void driveMotorStatus(void);
 
 #endif /* DRIVEMOTORS_H_ */

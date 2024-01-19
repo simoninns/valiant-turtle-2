@@ -114,6 +114,21 @@ uint16_t commandProcess(char *command, uint16_t parameter)
         return 0;
     }
 
+    if (strcmp(command, "MAR") == 0) {
+        commandMotor(8, parameter);
+        return 0;
+    }
+
+    if (strcmp(command, "MAS") == 0) {
+        commandMotor(9, parameter);
+        return 0;
+    }
+
+    if (strcmp(command, "MSS") == 0) {
+        commandMotor(10, parameter);
+        return 0;
+    }
+
     // LED Commands
     if (strcmp(command, "LDR") == 0) {
         commandLed(0, parameter);
@@ -148,14 +163,17 @@ void commandHelp(void)
     btPrintf("  PED      - Pen servo down\r\n");
     btPrintf("  PEO      - Pen servo off\r\n");
     btPrintf("\r\n");
-    btPrintf("  MON      - Drive motors on\r\n");
-    btPrintf("  MOF      - Drive motors off\r\n");
+    btPrintf("  MON      - Drive motors enabled\r\n");
+    btPrintf("  MOF      - Drive motors disabled\r\n");
     btPrintf("  MLDx     - Motor left direction (0=REV 1=FWD)\r\n");
     btPrintf("  MRDx     - Motor right direction (0=REV 1=FWD)\r\n");
     btPrintf("  MLSxxxxx - Motor left step (number of steps)\r\n");
     btPrintf("  MRSxxxxx - Motor right step (number of steps)\r\n");
-    btPrintf("  MLVx     - Motor left speed (0=Fast 9=Slow)\r\n");
-    btPrintf("  MRVx     - Motor right speed (0=Fast 9=Slow)\r\n");
+    btPrintf("  MLVx     - Motor left speed (0=Fast 3=Slow)\r\n");
+    btPrintf("  MRVx     - Motor right speed (0=Fast 3=Slow)\r\n");
+    btPrintf("  MAR      - Motors all run\r\n");
+    btPrintf("  MAS      - Motors all stop\r\n");
+    btPrintf("  MSS      - Motors show status\r\n");
     btPrintf("\r\n");
     btPrintf("  LDRxxx   - LED Red intensity (0-255)\r\n");
     btPrintf("  LDGxxx   - LED Green intensity (0-255)\r\n");
@@ -212,6 +230,8 @@ void commandPen(uint16_t commandType)
 
 void commandMotor(uint16_t commandType, uint16_t commandParameter)
 {
+    motor_speed_t requiredSpeed;
+
     switch(commandType) {
         case 0: // Motors on
             driveMotorsEnable(true);
@@ -252,15 +272,66 @@ void commandMotor(uint16_t commandType, uint16_t commandParameter)
             break;
 
         case 6: // Motor left speed
-            driveMotorSetSpeed(MOTOR_LEFT, commandParameter);
+            switch(commandParameter) {
+                case 0: requiredSpeed = MOTOR_1;
+                    break;
+
+                case 1: requiredSpeed = MOTOR_1_2;
+                    break;
+
+                case 2: requiredSpeed = MOTOR_1_4;
+                    break;
+
+                case 3: requiredSpeed = MOTOR_1_8;
+                    break;
+
+                default:
+                    requiredSpeed = MOTOR_1;
+            }
+
+            driveMotorSetSpeed(MOTOR_LEFT, requiredSpeed);
             debugPrintf("CLI: Got command MLV\r\n");
             btPrintf("R00 - Motor left speed");
             break;
 
         case 7: // Motor right speed
-            driveMotorSetSpeed(MOTOR_RIGHT, commandParameter);
+            switch(commandParameter) {
+                case 0: requiredSpeed = MOTOR_1;
+                    break;
+
+                case 1: requiredSpeed = MOTOR_1_2;
+                    break;
+
+                case 2: requiredSpeed = MOTOR_1_4;
+                    break;
+
+                case 3: requiredSpeed = MOTOR_1_8;
+                    break;
+
+                default:
+                    requiredSpeed = MOTOR_1;
+            }
+
+            driveMotorSetSpeed(MOTOR_RIGHT, requiredSpeed);
             debugPrintf("CLI: Got command MRV\r\n");
             btPrintf("R00 - Motor right speed");
+            break;
+
+        case 8: // Motors all run
+            driveMotorsRunning(true);
+            debugPrintf("CLI: Got command MAR\r\n");
+            btPrintf("R00 - Both motors running");
+            break;
+
+        case 9: // Motors all stop
+            driveMotorsRunning(false);
+            debugPrintf("CLI: Got command MAS\r\n");
+            btPrintf("R00 - Both motors stopped");
+            break;
+
+        case 10: // Motors show status
+            driveMotorStatus();
+            debugPrintf("CLI: Got command MSS\r\n");
             break;
     }
 }
