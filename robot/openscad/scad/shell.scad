@@ -45,11 +45,11 @@ module shell_lid_top()
                     // Top pentagon
                     move([0,1.5,104]) yrot(180) {
                         hull() {
-                            zrot((360/5) * 0) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
-                            zrot((360/5) * 1) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
-                            zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
-                            zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
-                            zrot((360/5) * 4) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
+                            zrot((360/5) * 0) move([0,110/2,0]) staggered_sphere(d=2, $fn=6);
+                            zrot((360/5) * 1) move([0,110/2,0]) staggered_sphere(d=2, $fn=6);
+                            zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=6);
+                            zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=6);
+                            zrot((360/5) * 4) move([0,110/2,0]) staggered_sphere(d=2, $fn=6);
                         }
                     }
                 }
@@ -61,11 +61,11 @@ module shell_lid_top()
             // Add some thickness back in
             move([0,1.5,104]) yrot(180) {
                 hull() {
-                    zrot((360/5) * 0) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=16);
-                    zrot((360/5) * 1) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=16);
-                    zrot((360/5) * 2) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=16);
-                    zrot((360/5) * 3) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=16);
-                    zrot((360/5) * 4) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=16);
+                    zrot((360/5) * 0) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=6);
+                    zrot((360/5) * 1) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=6);
+                    zrot((360/5) * 2) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=6);
+                    zrot((360/5) * 3) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=6);
+                    zrot((360/5) * 4) move([0,(110/2)-2,0]) staggered_sphere(d=2, $fn=6);
                 }
             }
         }
@@ -88,33 +88,33 @@ module shell_lid_lip()
         difference() {
             union() {
                 hull() {
-                    zrot((360/5) * 0) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-                    zrot((360/5) * 1) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 0) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
+                    zrot((360/5) * 1) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
                 }
 
                 hull() {
-                    zrot((360/5) * 1) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 1) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
+                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
                 }
 
                 hull() {
-                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
+                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
                 }
 
                 hull() {
-                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-                    zrot((360/5) * 3) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 2) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
+                    zrot((360/5) * 3) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
                 }
 
                 hull() {
-                    zrot((360/5) * 3) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-                    zrot((360/5) * 4) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 3) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
+                    zrot((360/5) * 4) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
                 }
 
                 hull() {
-                    zrot((360/5) * 4) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
-                    zrot((360/5) * 0) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=16);
+                    zrot((360/5) * 4) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
+                    zrot((360/5) * 0) move([0,width2/2,0]) xrot(45) cuboid([2,2,2]); // cyl(d=2, h=2, $fn=6);
                 }
             }
 
@@ -134,11 +134,11 @@ module shell_lid()
 module irrPentagonTop()
 {
     hull() {
-        zrot((360/5) * 0) move([0,103/2,0]) staggered_sphere(d=2, $fn=16);
-        zrot((360/5) * 1) move([0,123/2,0]) staggered_sphere(d=2, $fn=16);
-        zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
-        zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=16);
-        zrot((360/5) * 4) move([0,123/2,0]) staggered_sphere(d=2, $fn=16);
+        zrot((360/5) * 0) move([0,103/2,0]) staggered_sphere(d=2, $fn=6);
+        zrot((360/5) * 1) move([0,123/2,0]) staggered_sphere(d=2, $fn=6);
+        zrot((360/5) * 2) move([0,110/2,0]) staggered_sphere(d=2, $fn=6);
+        zrot((360/5) * 3) move([0,110/2,0]) staggered_sphere(d=2, $fn=6);
+        zrot((360/5) * 4) move([0,123/2,0]) staggered_sphere(d=2, $fn=6);
     }
 }
 
@@ -217,8 +217,12 @@ module front_panels()
                     irrPentagonBottom(3);
 
                     // Reenforce the lower edge
-                    zrot((360/5) * 3) move([-12.5,62,-8.25]) cuboid([66,2,1.5]);
-                    xflip() zrot((360/5) * 3) move([-12.5,62,-8.25]) cuboid([66,2,1.5]);
+                    zrot((360/5) * 3) move([-12.5,62,-8.25]) cuboid([66,2,1.5], chamfer=0.5);
+                    xflip() zrot((360/5) * 3) move([-12.5,62,-8.25]) cuboid([66,2,1.5], chamfer=0.5);
+
+                    // Reenforce the head cutout
+                    move([15.75,-73 - 1.5,12 - 9]) yrot(-30) xrot(48.5) cuboid([2,1.75,39], chamfer=0.5);
+                    xflip() move([15.75,-73 - 1.5,12 - 9]) yrot(-30) xrot(48.5) cuboid([2,1.75,39], chamfer=0.5);
                 }
 
                 // Hole for threaded insert
@@ -232,6 +236,8 @@ module front_panels()
         // Slice the bottom of the shell to make it flush with the body
         move([0,0,-29]) cuboid([200,200,40]);
     }
+
+    
     
     front_screw_mount();
 }
@@ -248,11 +254,11 @@ module irrPentagonBottom(pos)
     zrot((360/5) * pos) {
         move([0,69,0]) xrot(54) { // 36.25
             hull() {
-                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=16);
-                zrot((360/5) * 1) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
-                zrot((360/5) * 2) move([0,107/2,0]) staggered_sphere(d=2, $fn=16);
-                zrot((360/5) * 3) move([0,107/2,0]) staggered_sphere(d=2, $fn=16);
-                zrot((360/5) * 4) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=6);
+                zrot((360/5) * 1) move([0,122/2,0]) staggered_sphere(d=2, $fn=6);
+                zrot((360/5) * 2) move([0,107/2,0]) staggered_sphere(d=2, $fn=6);
+                zrot((360/5) * 3) move([0,107/2,0]) staggered_sphere(d=2, $fn=6);
+                zrot((360/5) * 4) move([0,122/2,0]) staggered_sphere(d=2, $fn=6);
             }
         }
     }
@@ -263,13 +269,13 @@ module irrPentagonBottom_topedge(pos)
     zrot((360/5) * pos) {
         move([0,69,0]) xrot(54) { // 36.25
             hull() {
-                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=16);
-                zrot((360/5) * 1) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=6);
+                zrot((360/5) * 1) move([0,122/2,0]) staggered_sphere(d=2, $fn=6);
             }
 
             hull() {
-                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=16);
-                zrot((360/5) * 4) move([0,122/2,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 0) move([0,104/2,0]) staggered_sphere(d=2, $fn=6);
+                zrot((360/5) * 4) move([0,122/2,0]) staggered_sphere(d=2, $fn=6);
             }
         }
     }
@@ -282,11 +288,11 @@ module irrPentagonBottom2(pos)
     zrot((360/5) * pos) {
         move([0,69,0]) xrot(54) { // 36.25
             hull() {
-                zrot((360/5) * 0) move([0,(104/2)+4,0]) staggered_sphere(d=2, $fn=16);
-                zrot((360/5) * 1) move([0,(122/2)+4,0]) staggered_sphere(d=2, $fn=16);
-                zrot((360/5) * 2) move([0,(107/2)+4,0]) staggered_sphere(d=2, $fn=16);
-                zrot((360/5) * 3) move([0,(107/2)+4,0]) staggered_sphere(d=2, $fn=16);
-                zrot((360/5) * 4) move([0,(122/2)+4,0]) staggered_sphere(d=2, $fn=16);
+                zrot((360/5) * 0) move([0,(104/2)+4,0]) staggered_sphere(d=2, $fn=6);
+                zrot((360/5) * 1) move([0,(122/2)+4,0]) staggered_sphere(d=2, $fn=6);
+                zrot((360/5) * 2) move([0,(107/2)+4,0]) staggered_sphere(d=2, $fn=6);
+                zrot((360/5) * 3) move([0,(107/2)+4,0]) staggered_sphere(d=2, $fn=6);
+                zrot((360/5) * 4) move([0,(122/2)+4,0]) staggered_sphere(d=2, $fn=6);
             }
         }
     }
@@ -295,18 +301,18 @@ module irrPentagonBottom2(pos)
 module wheelArchBase()
 {
     hull() {
-        move([71,-15,-7.5]) zcyl(h=3,d=2,$fn=16);
-        move([120.5,-15,-7.5]) zcyl(h=3,d=2,$fn=16);
+        move([71,-15,-7.5]) zcyl(h=3,d=2,$fn=6);
+        move([120.5,-15,-7.5]) zcyl(h=3,d=2,$fn=6);
     }
 
     hull() {
-        move([46.5,62.5,-7.5]) zcyl(h=3,d=2,$fn=16);
-        move([120.5,62.5,-7.5]) zcyl(h=3,d=2,$fn=16);
+        move([46.5,62.5,-7.5]) zcyl(h=3,d=2,$fn=6);
+        move([120.5,62.5,-7.5]) zcyl(h=3,d=2,$fn=6);
     }
 
     hull() {
-        move([120.5,-15,-7.5]) zcyl(h=3,d=2,$fn=16);
-        move([120.5,62.5,-7.5]) zcyl(h=3,d=2,$fn=16);
+        move([120.5,-15,-7.5]) zcyl(h=3,d=2,$fn=6);
+        move([120.5,62.5,-7.5]) zcyl(h=3,d=2,$fn=6);
     }
 }
 
@@ -365,71 +371,71 @@ module wheelCover()
 
         // ADBF
         hull() {
-            move(pointA) staggered_sphere(d=2, $fn=16);
-            move(pointB) staggered_sphere(d=2, $fn=16);
-            move(pointD) staggered_sphere(d=2, $fn=16);
-            move(pointF) staggered_sphere(d=2, $fn=16);
+            move(pointA) staggered_sphere(d=2, $fn=6);
+            move(pointB) staggered_sphere(d=2, $fn=6);
+            move(pointD) staggered_sphere(d=2, $fn=6);
+            move(pointF) staggered_sphere(d=2, $fn=6);
         }
 
         // AFH (note: same plane as ABF)
         hull() {
-            move(pointA) staggered_sphere(d=2, $fn=16);
-            move(pointF) staggered_sphere(d=2, $fn=16);
-            move(pointH) staggered_sphere(d=2, $fn=16);
+            move(pointA) staggered_sphere(d=2, $fn=6);
+            move(pointF) staggered_sphere(d=2, $fn=6);
+            move(pointH) staggered_sphere(d=2, $fn=6);
         }
 
         // BCDE
         hull() {
-            move(pointC) staggered_sphere(d=2, $fn=16);
-            move(pointB) staggered_sphere(d=2, $fn=16);
-            move(pointD) staggered_sphere(d=2, $fn=16);
-            move(pointE) staggered_sphere(d=2, $fn=16);
+            move(pointC) staggered_sphere(d=2, $fn=6);
+            move(pointB) staggered_sphere(d=2, $fn=6);
+            move(pointD) staggered_sphere(d=2, $fn=6);
+            move(pointE) staggered_sphere(d=2, $fn=6);
         }
 
         // CLK (note: same plane as KLJ)
         hull() {
-            move(pointC) staggered_sphere(d=2, $fn=16);
-            move(pointL) staggered_sphere(d=2, $fn=16);
-            move(pointK) staggered_sphere(d=2, $fn=16);
+            move(pointC) staggered_sphere(d=2, $fn=6);
+            move(pointL) staggered_sphere(d=2, $fn=6);
+            move(pointK) staggered_sphere(d=2, $fn=6);
         }
 
         // KLJ (note: same plane as CLK)
         hull() {
-            move(pointL) staggered_sphere(d=2, $fn=16);
-            move(pointK) staggered_sphere(d=2, $fn=16);
-            move(pointJ) staggered_sphere(d=2, $fn=16);
+            move(pointL) staggered_sphere(d=2, $fn=6);
+            move(pointK) staggered_sphere(d=2, $fn=6);
+            move(pointJ) staggered_sphere(d=2, $fn=6);
         }
 
         // FHIG
         hull() {
-            move(pointF) staggered_sphere(d=2, $fn=16);
-            move(pointH) staggered_sphere(d=2, $fn=16);
-            move(pointI) staggered_sphere(d=2, $fn=16);
-            move(pointG) staggered_sphere(d=2, $fn=16);
+            move(pointF) staggered_sphere(d=2, $fn=6);
+            move(pointH) staggered_sphere(d=2, $fn=6);
+            move(pointI) staggered_sphere(d=2, $fn=6);
+            move(pointG) staggered_sphere(d=2, $fn=6);
         }
 
         // IJKG
         hull() {
-            move(pointI) staggered_sphere(d=2, $fn=16);
-            move(pointJ) staggered_sphere(d=2, $fn=16);
-            move(pointK) staggered_sphere(d=2, $fn=16);
-            move(pointG) staggered_sphere(d=2, $fn=16);
+            move(pointI) staggered_sphere(d=2, $fn=6);
+            move(pointJ) staggered_sphere(d=2, $fn=6);
+            move(pointK) staggered_sphere(d=2, $fn=6);
+            move(pointG) staggered_sphere(d=2, $fn=6);
         }
 
         // CEGK
         hull() {
-            move(pointC) staggered_sphere(d=2, $fn=16);
-            move(pointE) staggered_sphere(d=2, $fn=16);
-            move(pointG) staggered_sphere(d=2, $fn=16);
-            move(pointK) staggered_sphere(d=2, $fn=16);
+            move(pointC) staggered_sphere(d=2, $fn=6);
+            move(pointE) staggered_sphere(d=2, $fn=6);
+            move(pointG) staggered_sphere(d=2, $fn=6);
+            move(pointK) staggered_sphere(d=2, $fn=6);
         }
 
         // FGEB
         hull() {
-            move(pointF) staggered_sphere(d=2, $fn=16);
-            move(pointG) staggered_sphere(d=2, $fn=16);
-            move(pointE) staggered_sphere(d=2, $fn=16);
-            move(pointB) staggered_sphere(d=2, $fn=16);
+            move(pointF) staggered_sphere(d=2, $fn=6);
+            move(pointG) staggered_sphere(d=2, $fn=6);
+            move(pointE) staggered_sphere(d=2, $fn=6);
+            move(pointB) staggered_sphere(d=2, $fn=6);
         }
     }
 }
