@@ -59,16 +59,17 @@ typedef enum {
 } motor_direction_t;
 
 typedef enum {
-    MOTOR_1,    // Full step
-    MOTOR_1_2,  // 1/2 step
-    MOTOR_1_4,  // 1/4 step
-    MOTOR_1_8   // 1/8 step
+    MOTOR_200,  //  200 steps/revolution = x8
+    MOTOR_400,  //  400 steps/revolution = x4
+    MOTOR_800,  //  800 steps/revolution = x2
+    MOTOR_1600  // 1600 steps/revolution = x1
 } motor_speed_t;
 
 typedef struct stepperMotor_t {
     bool enabled;
     bool running;
-    motor_speed_t speed;
+    motor_speed_t maximumSpeed;
+    motor_speed_t currentSpeed;
     motor_direction_t direction;
     int16_t steps;
     int16_t state;
@@ -79,8 +80,8 @@ bool motorTimerCallback(repeating_timer_t *rt);
 void driveMotorsEnable(bool state);
 void driveMotorsRunning(bool state);
 void driveMotorSetDir(motor_side_t side, motor_direction_t direction);
-void driveMotorSetSteps(int16_t lSteps, int16_t rSteps);
-void driveMotorSetSpeed(motor_side_t side, motor_speed_t speed);
+void driveMotorSetSteps(motor_side_t side, int16_t steps);
+void driveMotorSetMaximumSpeed(motor_side_t side, motor_speed_t speed);
 void driveMotorStatus(void);
 
 #endif /* DRIVEMOTORS_H_ */

@@ -68,8 +68,8 @@ void driveMotorsInitialise(void)
     driveMotorsRunning(false);
     driveMotorSetDir(MOTOR_LEFT, MOTOR_FORWARDS);
     driveMotorSetDir(MOTOR_RIGHT, MOTOR_FORWARDS);
-    driveMotorSetSpeed(MOTOR_LEFT, MOTOR_1_8);
-    driveMotorSetSpeed(MOTOR_RIGHT, MOTOR_1_8);
+    driveMotorSetMaximumSpeed(MOTOR_LEFT, MOTOR_1600);
+    driveMotorSetMaximumSpeed(MOTOR_RIGHT, MOTOR_1600);
 
     // Set remaining steps to zero
     leftMotor.steps = 0;
@@ -101,20 +101,34 @@ bool motorTimerCallback(repeating_timer_t *rt)
                 leftMotor.state++;
             }
 
-            // Reset the state as required
+            // Reset state and decrement steps according to speed
             if (leftMotor.state > 1) {
                 leftMotor.state = 0;
-                leftMotor.steps--; 
+                switch (leftMotor.currentSpeed) {
+                     case MOTOR_200: leftMotor.steps -= 8;
+                        break;
+
+                    case MOTOR_400: leftMotor.steps -= 4;
+                        break;
+                        
+                    case MOTOR_800: leftMotor.steps -= 2;
+                        break;
+                        
+                    case MOTOR_1600: leftMotor.steps -= 1;
+                        break;                        
+                }
             }
         } else {
             // No left steps remaining - hold at zero
             gpio_put(DM_LSTEP_GPIO, 0);
             leftMotor.state = 0;
+            if (leftMotor.steps < 0) leftMotor.steps = 0;
         }
     } else {
         // Left motor is inactive, hold at 0
         gpio_put(DM_LSTEP_GPIO, 0);
         leftMotor.state = 0;
+        if (leftMotor.steps < 0) leftMotor.steps = 0;
     }
 
     if (rightMotor.enabled && rightMotor.running) {
@@ -128,20 +142,34 @@ bool motorTimerCallback(repeating_timer_t *rt)
                 rightMotor.state++;
             }
 
-            // Reset the state as required
+            // Reset state and decrement steps according to speed
             if (rightMotor.state > 1) {
                 rightMotor.state = 0;
-                rightMotor.steps--; 
+                switch (rightMotor.currentSpeed) {
+                     case MOTOR_200: rightMotor.steps -= 8;
+                        break;
+
+                    case MOTOR_400: rightMotor.steps -= 4;
+                        break;
+                        
+                    case MOTOR_800: rightMotor.steps -= 2;
+                        break;
+                        
+                    case MOTOR_1600: rightMotor.steps -= 1;
+                        break;                        
+                }
             }
         } else {
             // No right steps remaining - hold at zero
             gpio_put(DM_RSTEP_GPIO, 0);
             rightMotor.state = 0;
+            if (rightMotor.steps < 0) rightMotor.steps = 0;
         }
     } else {
         // Right motor is inactive, hold at 0
         gpio_put(DM_LSTEP_GPIO, 0);
-        leftMotor.state = 0;
+        rightMotor.state = 0;
+        if (rightMotor.steps < 0) rightMotor.steps = 0;
     }
 
     return true;
@@ -203,88 +231,96 @@ void driveMotorSetDir(motor_side_t side, motor_direction_t direction)
     }
 }
 
-void driveMotorSetSteps(int16_t lSteps, int16_t rSteps)
+void driveMotorSetSteps(motor_side_t side, int16_t steps)
 {
-    // Add the required number of steps to the remaining steps for the motor...
-    leftMotor.steps += lSteps;
-    rightMotor.steps += rSteps;
+    if (side == MOTOR_LEFT) {
+        leftMotor.steps += steps;
+        debugPrintf("Drive motors: Added %d steps to left motor - total steps are %d\r\n", steps, leftMotor.steps);
+    }
 
-    debugPrintf("Drive motors: Added motor steps Left %d - Right %d\r\n", lSteps, rSteps);
+    if (side == MOTOR_RIGHT) {
+        rightMotor.steps += steps;
+        debugPrintf("Drive motors: Added %d steps to right motor - total steps are %d\r\n", steps, rightMotor.steps);
+    }
 }
 
 // DRV8825 Microstep control table
 //
 // M0 M1 M2 - Resolution
-//  0  0  0   Full step
-//  1  0  0   Half step
-//  0  1  0   1/4 step
-//  1  1  0   1/8 step
-//  0  0  1   1/16 step
-//  1  0  1   1/32 step
-//  0  1  1   1/32 step
-//  1  1  1   1/32 step
+//  0  0  0   Full step  (200 steps/rev)    1 pulse per 8 steps
+//  1  0  0   Half step  (400 steps/rev)    1 pulse per 4 steps
+//  0  1  0   1/4 step   (800 steps/rev)    1 pulse per 2 steps
+//  1  1  0   1/8 step   (1600 steps/rev)   1 pulse per 1 steps
+//  0  0  1   1/16 step  (3200 steps/rev)   Not supported
+//  1  0  1   1/32 step  (6400 steps/rev)   Not supported
+//  0  1  1   1/32 step  N/A
+//  1  1  1   1/32 step  N/A
 
-void driveMotorSetSpeed(motor_side_t side, motor_speed_t speed)
+void driveMotorSetMaximumSpeed(motor_side_t side, motor_speed_t speed)
 {
     if (side == MOTOR_LEFT) {
         // Left motor
-        leftMotor.speed = speed;
+        leftMotor.maximumSpeed = speed;
 
         switch(speed) {
-            case MOTOR_1:
+            case MOTOR_200:
                 gpio_put(DM_LM0_GPIO, 0);
                 gpio_put(DM_LM1_GPIO, 0);
-                debugPrintf("Drive motors: Set left motor speed to 1\r\n", speed);
+                debugPrintf("Drive motors: Set left motor speed to x8\r\n", speed);
                 break;
 
-            case MOTOR_1_2:
+            case MOTOR_400:
                 gpio_put(DM_LM0_GPIO, 1);
                 gpio_put(DM_LM1_GPIO, 0);
-                debugPrintf("Drive motors: Set left motor speed to 1/2\r\n", speed);
+                debugPrintf("Drive motors: Set left motor speed to x4\r\n", speed);
                 break;
 
-            case MOTOR_1_4:
+            case MOTOR_800:
                 gpio_put(DM_LM0_GPIO, 0);
                 gpio_put(DM_LM1_GPIO, 1);
-                debugPrintf("Drive motors: Set left motor speed to 1/4\r\n", speed);
+                debugPrintf("Drive motors: Set left motor speed to x2\r\n", speed);
                 break;
 
-            case MOTOR_1_8:
+            case MOTOR_1600:
                 gpio_put(DM_LM0_GPIO, 1);
                 gpio_put(DM_LM1_GPIO, 1);
-                debugPrintf("Drive motors: Set left motor speed to 1/8\r\n", speed);
+                debugPrintf("Drive motors: Set left motor speed to x1\r\n", speed);
                 break;
         }
     } else {
         // Right motor
-        rightMotor.speed = speed;
+        rightMotor.maximumSpeed = speed;
 
         switch(speed) {
-            case MOTOR_1:
+            case MOTOR_200:
                 gpio_put(DM_RM0_GPIO, 0);
                 gpio_put(DM_RM1_GPIO, 0);
-                debugPrintf("Drive motors: Set right motor speed to 1\r\n", speed);
+                debugPrintf("Drive motors: Set right motor speed to x8\r\n", speed);
                 break;
 
-            case MOTOR_1_2:
+            case MOTOR_400:
                 gpio_put(DM_RM0_GPIO, 1);
                 gpio_put(DM_RM1_GPIO, 0);
-                debugPrintf("Drive motors: Set right motor speed to 1/2\r\n", speed);
+                debugPrintf("Drive motors: Set right motor speed to x4\r\n", speed);
                 break;
 
-            case MOTOR_1_4:
+            case MOTOR_800:
                 gpio_put(DM_RM0_GPIO, 0);
                 gpio_put(DM_RM1_GPIO, 1);
-                debugPrintf("Drive motors: Set right motor speed to 1/4\r\n", speed);
+                debugPrintf("Drive motors: Set right motor speed to x2\r\n", speed);
                 break;
 
-            case MOTOR_1_8:
+            case MOTOR_1600:
                 gpio_put(DM_RM0_GPIO, 1);
                 gpio_put(DM_RM1_GPIO, 1);
-                debugPrintf("Drive motors: Set right motor speed to 1/8\r\n", speed);
+                debugPrintf("Drive motors: Set right motor speed to x1\r\n", speed);
                 break;
         }
     }
+
+    // Temporary (waiting for accelleration code)
+    leftMotor.currentSpeed = leftMotor.maximumSpeed;
+    rightMotor.currentSpeed = rightMotor.maximumSpeed;
 }
 
 void driveMotorStatus(void)
@@ -296,21 +332,21 @@ void driveMotorStatus(void)
     if (leftMotor.running) btPrintf("  Running\r\n");
     else btPrintf("  Stopped\r\n");
 
-    switch(leftMotor.speed) {
-        case MOTOR_1:
-            btPrintf("  Speed is 1 (200 steps per revolution)\r\n");
+    switch(leftMotor.maximumSpeed) {
+        case MOTOR_200:
+            btPrintf("  Speed is x8\r\n");
             break;
 
-        case MOTOR_1_2:
-            btPrintf("  Speed is 1/2 (400 steps per revolution)\r\n");
+        case MOTOR_400:
+            btPrintf("  Speed is x4\r\n");
             break;
 
-        case MOTOR_1_4:
-            btPrintf("  Speed is 1/4 (800 steps per revolution)\r\n");
+        case MOTOR_800:
+            btPrintf("  Speed is x2\r\n");
             break;
 
-        case MOTOR_1_8:
-            btPrintf("  Speed is 1/8 (1600 steps per revolution)\r\n");
+        case MOTOR_1600:
+            btPrintf("  Speed is x1\r\n");
             break;
     }
 
@@ -326,21 +362,21 @@ void driveMotorStatus(void)
     if (rightMotor.running) btPrintf("  Running\r\n");
     else btPrintf("  Stopped\r\n");
 
-    switch(rightMotor.speed) {
-        case MOTOR_1:
-            btPrintf("  Speed is 1 (200 steps per revolution)\r\n");
+    switch(rightMotor.maximumSpeed) {
+        case MOTOR_200:
+            btPrintf("  Speed is x8\r\n");
             break;
 
-        case MOTOR_1_2:
-            btPrintf("  Speed is 1/2 (400 steps per revolution)\r\n");
+        case MOTOR_400:
+            btPrintf("  Speed is x4\r\n");
             break;
 
-        case MOTOR_1_4:
-            btPrintf("  Speed is 1/4 (800 steps per revolution)\r\n");
+        case MOTOR_800:
+            btPrintf("  Speed is x2\r\n");
             break;
 
-        case MOTOR_1_8:
-            btPrintf("  Speed is 1/8 (1600 steps per revolution)\r\n");
+        case MOTOR_1600:
+            btPrintf("  Speed is x1\r\n");
             break;
     }
 

@@ -167,8 +167,8 @@ void commandHelp(void)
     btPrintf("  MOF      - Drive motors disabled\r\n");
     btPrintf("  MLDx     - Motor left direction (0=REV 1=FWD)\r\n");
     btPrintf("  MRDx     - Motor right direction (0=REV 1=FWD)\r\n");
-    btPrintf("  MLSxxxxx - Motor left step (number of steps)\r\n");
-    btPrintf("  MRSxxxxx - Motor right step (number of steps)\r\n");
+    btPrintf("  MLSxxxxx - Motor left add steps (1600 steps/revolution)\r\n");
+    btPrintf("  MRSxxxxx - Motor right add steps (1600 steps/revolution)\r\n");
     btPrintf("  MLVx     - Motor left speed (0=Fast 3=Slow)\r\n");
     btPrintf("  MRVx     - Motor right speed (0=Fast 3=Slow)\r\n");
     btPrintf("  MAR      - Motors all run\r\n");
@@ -260,61 +260,71 @@ void commandMotor(uint16_t commandType, uint16_t commandParameter)
             break;
 
         case 4: // Motor left step
-            driveMotorSetSteps(commandParameter, 0);
+            driveMotorSetSteps(MOTOR_LEFT, commandParameter);
             debugPrintf("CLI: Got command MLS\r\n");
             btPrintf("R00 - Motor left step");
             break;
 
         case 5: // Motor right step
-            driveMotorSetSteps(0, commandParameter);
+            driveMotorSetSteps(MOTOR_RIGHT, commandParameter);
             debugPrintf("CLI: Got command MRS\r\n");
             btPrintf("R00 - Motor right step");
             break;
 
         case 6: // Motor left speed
-            switch(commandParameter) {
-                case 0: requiredSpeed = MOTOR_1;
-                    break;
+            if (commandParameter > 3) {
+                debugPrintf("CLI: Got command MLV but parameter was out of range\r\n");
+                btPrintf("E04 - Parameter out of range\r\n");
+            } else {
+                switch(commandParameter) {
+                    case 0: requiredSpeed = MOTOR_200;
+                        break;
 
-                case 1: requiredSpeed = MOTOR_1_2;
-                    break;
+                    case 1: requiredSpeed = MOTOR_400;
+                        break;
 
-                case 2: requiredSpeed = MOTOR_1_4;
-                    break;
+                    case 2: requiredSpeed = MOTOR_800;
+                        break;
 
-                case 3: requiredSpeed = MOTOR_1_8;
-                    break;
+                    case 3: requiredSpeed = MOTOR_1600;
+                        break;
 
-                default:
-                    requiredSpeed = MOTOR_1;
+                    default:
+                        requiredSpeed = MOTOR_1600;
+                }
+
+                driveMotorSetMaximumSpeed(MOTOR_LEFT, requiredSpeed);
+                debugPrintf("CLI: Got command MLV\r\n");
+                btPrintf("R00 - Motor left speed");
             }
-
-            driveMotorSetSpeed(MOTOR_LEFT, requiredSpeed);
-            debugPrintf("CLI: Got command MLV\r\n");
-            btPrintf("R00 - Motor left speed");
             break;
 
         case 7: // Motor right speed
-            switch(commandParameter) {
-                case 0: requiredSpeed = MOTOR_1;
-                    break;
+            if (commandParameter > 3) {
+                debugPrintf("CLI: Got command MLV but parameter was out of range\r\n");
+                btPrintf("E04 - Parameter out of range\r\n");
+            } else {
+                switch(commandParameter) {
+                    case 0: requiredSpeed = MOTOR_200;
+                        break;
 
-                case 1: requiredSpeed = MOTOR_1_2;
-                    break;
+                    case 1: requiredSpeed = MOTOR_400;
+                        break;
 
-                case 2: requiredSpeed = MOTOR_1_4;
-                    break;
+                    case 2: requiredSpeed = MOTOR_800;
+                        break;
 
-                case 3: requiredSpeed = MOTOR_1_8;
-                    break;
+                    case 3: requiredSpeed = MOTOR_1600;
+                        break;
 
-                default:
-                    requiredSpeed = MOTOR_1;
+                    default:
+                        requiredSpeed = MOTOR_1600;
+                }
+
+                driveMotorSetMaximumSpeed(MOTOR_RIGHT, requiredSpeed);
+                debugPrintf("CLI: Got command MRV\r\n");
+                btPrintf("R00 - Motor right speed");
             }
-
-            driveMotorSetSpeed(MOTOR_RIGHT, requiredSpeed);
-            debugPrintf("CLI: Got command MRV\r\n");
-            btPrintf("R00 - Motor right speed");
             break;
 
         case 8: // Motors all run
