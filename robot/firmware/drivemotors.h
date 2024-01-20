@@ -78,8 +78,8 @@ typedef struct stepperMotor_t {
 void driveMotorsInitialise(void);
 bool motorTimerCallback(repeating_timer_t *rt);
 void driveMotorsEnable(bool state);
-void driveMotorsRunning(bool state);
-void driveMotorSetDir(motor_side_t side, motor_direction_t direction);
+bool driveMotorsRunning(bool state);
+bool driveMotorSetDir(motor_side_t side, motor_direction_t direction);
 void driveMotorSetSteps(motor_side_t side, int16_t steps);
 void driveMotorSetMaximumSpeed(motor_side_t side, motor_speed_t speed);
 void driveMotorStatus(void);

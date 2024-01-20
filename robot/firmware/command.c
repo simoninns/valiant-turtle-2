@@ -246,17 +246,43 @@ void commandMotor(uint16_t commandType, uint16_t commandParameter)
             break;
 
         case 2: // Motor left set direction
-            if (commandParameter == 1) driveMotorSetDir(MOTOR_LEFT, MOTOR_FORWARDS);
-            else driveMotorSetDir(MOTOR_LEFT, MOTOR_BACKWARDS);
-            debugPrintf("CLI: Got command MLD\r\n");
-            btPrintf("R00 - Motor left set direction");
+            if (commandParameter == 1) {
+                if (!driveMotorSetDir(MOTOR_LEFT, MOTOR_FORWARDS)) {
+                    debugPrintf("CLI: Got command MLD - but motor is running\r\n");
+                    btPrintf("E05 - Not allowed!");
+                } else {
+                    debugPrintf("CLI: Got command MLD\r\n");
+                    btPrintf("R00 - Motor left set direction");
+                }
+            } else {
+                if (!driveMotorSetDir(MOTOR_LEFT, MOTOR_BACKWARDS)) {
+                    debugPrintf("CLI: Got command MLD - but motor is running\r\n");
+                    btPrintf("E05 - Not allowed!");
+                } else {
+                    debugPrintf("CLI: Got command MLD\r\n");
+                    btPrintf("R00 - Motor left set direction");
+                }
+            }
             break;
 
         case 3: // Motor right set direction
-            if (commandParameter == 1) driveMotorSetDir(MOTOR_RIGHT, MOTOR_FORWARDS);
-            else driveMotorSetDir(MOTOR_RIGHT, MOTOR_BACKWARDS);
-            debugPrintf("CLI: Got command MRD\r\n");
-            btPrintf("R00 - Motor right set direction");
+            if (commandParameter == 1) {
+                if (!driveMotorSetDir(MOTOR_RIGHT, MOTOR_FORWARDS)) {
+                    debugPrintf("CLI: Got command MRD - but motor is running\r\n");
+                    btPrintf("E05 - Not allowed!");
+                } else {
+                    debugPrintf("CLI: Got command MRD\r\n");
+                    btPrintf("R00 - Motor right set direction");
+                }
+            } else {
+                if (!driveMotorSetDir(MOTOR_RIGHT, MOTOR_BACKWARDS)) {
+                    debugPrintf("CLI: Got command MRD - but motor is running\r\n");
+                    btPrintf("E05 - Not allowed!");
+                } else {
+                    debugPrintf("CLI: Got command MRD\r\n");
+                    btPrintf("R00 - Motor right set direction");
+                }
+            }
             break;
 
         case 4: // Motor left step
@@ -328,9 +354,13 @@ void commandMotor(uint16_t commandType, uint16_t commandParameter)
             break;
 
         case 8: // Motors all run
-            driveMotorsRunning(true);
-            debugPrintf("CLI: Got command MAR\r\n");
-            btPrintf("R00 - Both motors running");
+            if (driveMotorsRunning(true)) {
+                debugPrintf("CLI: Got command MAR\r\n");
+                btPrintf("R00 - Both motors running");
+            } else {
+                debugPrintf("CLI: Got command MAR - but motors are not enabled!\r\n");
+                btPrintf("E05 - Not allowed!");
+            }
             break;
 
         case 9: // Motors all stop

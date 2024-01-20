@@ -185,27 +185,42 @@ void driveMotorsEnable(bool state)
     } else {
         leftMotor.enabled = false;
         rightMotor.enabled = false;
+        leftMotor.running = false;
+        rightMotor.running = false;
         gpio_put(DM_ENABLE_GPIO, 0);
         debugPrintf("Drive motors: Motors powered off\r\n");
     }
 }
 
-void driveMotorsRunning(bool state)
+bool driveMotorsRunning(bool state)
 {
     if (state) {
-        leftMotor.running = true;
-        rightMotor.running = true;
-        debugPrintf("Drive motors: Motors running\r\n");
+        if (leftMotor.enabled && rightMotor.enabled) {
+            leftMotor.running = true;
+            rightMotor.running = true;
+            debugPrintf("Drive motors: Motors running\r\n");
+        } else {
+            debugPrintf("Drive motors: Cannot run motors if motors are not enabled!\r\n");
+            return false;
+        }
     } else {
         leftMotor.running = false;
         rightMotor.running = false;
         debugPrintf("Drive motors: Motors stopped\r\n");
     }
+
+    return true;
 }
 
-void driveMotorSetDir(motor_side_t side, motor_direction_t direction)
+bool driveMotorSetDir(motor_side_t side, motor_direction_t direction)
 {
     if (side == MOTOR_LEFT) {
+        // Do not change direction when running
+        if (direction != leftMotor.direction && leftMotor.running) {
+            debugPrintf("Drive motors: Cannot change direction when running!\r\n");
+            return false;
+        }
+
         if (direction == MOTOR_FORWARDS) {
             leftMotor.direction = MOTOR_FORWARDS;
             gpio_put(DM_LDIR_GPIO, 1);
@@ -219,6 +234,12 @@ void driveMotorSetDir(motor_side_t side, motor_direction_t direction)
     }
     
     if (side == MOTOR_RIGHT) {
+        // Do not change direction when running
+        if (direction != rightMotor.direction && rightMotor.running) {
+            debugPrintf("Drive motors: Cannot change direction when running!\r\n");
+            return false;
+        }
+
         if (direction == MOTOR_FORWARDS) {
             rightMotor.direction = MOTOR_FORWARDS;
             gpio_put(DM_RDIR_GPIO, 0);
@@ -229,6 +250,8 @@ void driveMotorSetDir(motor_side_t side, motor_direction_t direction)
             debugPrintf("Drive motors: Right motor direction reverse\r\n");
         }
     }
+
+    return true;
 }
 
 void driveMotorSetSteps(motor_side_t side, int16_t steps)
