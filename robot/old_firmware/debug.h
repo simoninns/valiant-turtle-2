@@ -1,9 +1,9 @@
 /************************************************************************ 
 
-    main.c
+    debug.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
-    Copyright (C) 2024 Simon Inns
+    Copyright (C) 2023 Simon Inns
 
     This file is part of Valiant Turtle 2
 
@@ -24,26 +24,10 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef DEBUG_H_
+#define DEBUG_H_
 
-#include "debug.h"
+void debugInitialise(void);
+void debugPrintf(const char *fmt, ...);
 
-int main() {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-
-    // Initialise modules
-    debugInitialise();
-
-    // Turn on the PICO W system LED
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-
-    // Do nothing
-    while (true) {
-
-        sleep_ms(250);
-    }
-}
+#endif /* DEBUG_H_ */

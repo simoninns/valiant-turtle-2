@@ -12,14 +12,31 @@ pico_sdk_init()
 
 add_executable(${PROJECT_NAME}
     main.c
+    leds.c
+    penservo.c
+    command.c
+    drivemotors.c
+    i2cbus.c
+    ina260.c
+    ssd1306.c
+    display.c
+    btcomms.c
+    fifo.c
     debug.c
+    button.c
     )
 
 pico_add_extra_outputs(${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} 
     pico_stdlib
+    hardware_pwm
+    hardware_clocks
     pico_cyw43_arch_none
+    hardware_i2c
+    pico_btstack_classic
+    pico_btstack_ble
+    pico_btstack_cyw43
     )
 
 # Required for btstack_config.h

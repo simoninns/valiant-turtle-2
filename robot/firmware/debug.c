@@ -3,7 +3,7 @@
     debug.c
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
 
     This file is part of Valiant Turtle 2
 
@@ -26,20 +26,16 @@
 
 #include <stdio.h>
 #include <pico/stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <stdarg.h>
 
 #include "debug.h"
 
-void debugInitialise(void)
-{
-    debugPrintf("\r\n\r\nValiant Turtle 2 Debug active.\r\n");
+void debugInitialise() {
+    debugPrintf("\n\n");
+    debugPrintf("Valiant Turtle 2 - Debug console\n");
+    debugPrintf("\n");
 }
 
-void debugPrintf(const char *fmt, ...)
-{
+void debugPrintf(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     vfprintf(stderr, fmt, args);

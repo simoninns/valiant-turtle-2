@@ -3,7 +3,7 @@
     debug.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
 
     This file is part of Valiant Turtle 2
 

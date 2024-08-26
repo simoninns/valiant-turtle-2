@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    penservo.c
+    main.c
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2023 Simon Inns
@@ -26,47 +26,40 @@
 
 #include <stdio.h>
 #include <pico/stdlib.h>
-#include "hardware/pwm.h"
-#include "hardware/clocks.h"
+#include "pico/cyw43_arch.h"
+#include "btstack.h"
+#include "pico/cyw43_arch.h"
+#include "pico/btstack_cyw43.h"
 
+#include "leds.h"
 #include "penservo.h"
+#include "drivemotors.h"
+#include "i2cbus.h"
+#include "ina260.h"
+#include "display.h"
+#include "btcomms.h"
+#include "debug.h"
 
-float clockDiv = 64;
-float wrap = 39062;
-
-void penServoInitialise(void)
+int main()
 {
-    gpio_set_function(PENSERVO_GPIO, GPIO_FUNC_PWM);
-    uint slice_num = pwm_gpio_to_slice_num(PENSERVO_GPIO);
-    pwm_config config = pwm_get_default_config();
-    
-    // Calculate required clock speed
-    uint64_t clockspeed = clock_get_hz(5);
-    clockDiv = 64;
-    wrap = 39062;
+    // Initialise the hardware
+    stdio_init_all();
+    if (cyw43_arch_init()) return -1;
+    debugInitialise();
+    i2cInitialise();
+    ina260Initialise();
+    ledInitialise();
+    penServoInitialise();
+    driveMotorsInitialise();
+    displayInitialise();
+    btcommsInitialise();
 
-    while (clockspeed/clockDiv/50 > 65535 && clockDiv < 256) clockDiv += 64; 
-    wrap = clockspeed/clockDiv/50;
+    // Turn on the PICO W system LED
+    ledSystem(true);
 
-    pwm_config_set_clkdiv(&config, clockDiv);
-    pwm_config_set_wrap(&config, wrap);
-
-    pwm_init(slice_num, &config, true);
-}
-
-void penDown(void)
-{
-    float ms = 1000;
-    pwm_set_gpio_level(PENSERVO_GPIO, (ms/20000.f)*wrap);
-}
-
-void penUp(void)
-{
-    float ms = 2000;
-    pwm_set_gpio_level(PENSERVO_GPIO, (ms/20000.f)*wrap);
-}
-
-void penOff(void)
-{
-    pwm_set_gpio_level(PENSERVO_GPIO, 0);
+    while (true) {
+        // Update the OLED display
+        displayProcess();
+        sleep_ms(250);
+    }
 }
