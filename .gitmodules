@@ -1,5 +1,8 @@
 [submodule "robot/openscad/scad/BOSL"]
-
 path = robot/openscad/scad/BOSL
-
 url = https://github.com/revarbat/BOSL.git
+
+[submodule "robot/firmware/embedded-cli"]
+path = robot/firmware/embedded-cli
+url = https://github.com/funbiscuit/embedded-cli.git
+
