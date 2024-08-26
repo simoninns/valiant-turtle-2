@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    cli.h
+    ina260.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,18 +24,30 @@
 
 ************************************************************************/
 
-#ifndef CLI_H_
-#define CLI_H_
+#ifndef INA260_H_
+#define INA260_H_
 
-#include "embedded_cli.h"
+// INA260 I2C address
+#define INA260_ADDR _u(0x40)
 
-static void onCommand(const char* name, char *tokens);
-static void onAbout(EmbeddedCli *cli, char *args, void *context);
-static void onPower(EmbeddedCli *cli, char *args, void *context);
+// hardware registers
+#define INA260_REG_CONFIG _u(0x00)
 
-static void writeCharFn(EmbeddedCli *embeddedCli, char c);
-static void onCommandFn(EmbeddedCli *embeddedCli, CliCommand *command);
-void cli_initialise();
-void cli_process();
+#define INA260_REG_CURRENT _u(0x01)
+#define INA260_REG_VOLTAGE _u(0x02)
+#define INA260_REG_POWER _u(0x03)
 
-#endif /* CLI_H_ */
+#define INA260_REG_MASK _u(0x06)
+#define INA260_REG_ALERT _u(0x07)
+#define INA260_REG_MANU _u(0xfe)
+#define INA260_REG_DIE _u(0xff)
+
+// Prototypes
+void ina260_initialise(void);
+float ina260_read_current(void);
+float ina260_read_bus_voltage(void);
+float ina260_read_power(void);
+uint16_t ina260_read_manu_id(void);
+uint16_t ina260_read_die_id(void);
+
+#endif /* INA260_H_ */

@@ -30,6 +30,8 @@
 
 #include "debug.h"
 #include "cli.h"
+#include "i2cbus.h"
+#include "ina260.h"
 
 int main() {
     // Initialise the hardware
@@ -38,6 +40,8 @@ int main() {
 
     // Initialise modules
     debug_initialise();
+    i2c_initialise();
+    ina260_initialise();
     cli_initialise();
 
     // Turn on the PICO W system LED

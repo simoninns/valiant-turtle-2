@@ -32,12 +32,15 @@
 #define EMBEDDED_CLI_IMPL
 #include "embedded_cli.h"
 
+#include "ina260.h"
+
 #include "cli.h"
 
 EmbeddedCli *cli;
 
 // ------------------------------------------------------------------------
 
+// This function is called for unknown commands
 static void onCommand(const char* name, char *tokens) {
     printf("Received command: %s\r\n",name);
 
@@ -46,14 +49,26 @@ static void onCommand(const char* name, char *tokens) {
     }
 }
 
-static void onHello(EmbeddedCli *cli, char *args, void *context) {
+static void onAbout(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
-    printf("Hello, ");
-    if (embeddedCliGetTokenCount(args) == 0)
-        printf("%s", (const char *) context);
-    else
-        printf("%s", embeddedCliGetToken(args, 1));
+    printf("About:\n");
+    printf("  Valiant Turtle 2\n");
+    printf("  (c) 2024 Simon Inns - GPL Open-Source\n");
     printf("\n");
+    printf("  CLI library: https://github.com/funbiscuit/embedded-cli\n");
+}
+
+static void onPower(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+    
+    float current = ina260_read_current();
+    float voltage = ina260_read_bus_voltage();
+    float power = ina260_read_power();
+
+    printf("INA260 Power information:\n");
+    printf("  Current: %.2f mA\n", current);
+    printf("  Bus voltage: %.2f mV\n", voltage);
+    printf("  Power: %.2f mW\n", power);
 }
 
 // ------------------------------------------------------------------------
@@ -78,14 +93,23 @@ void cli_initialise() {
     cli->writeChar = writeCharFn;
 
     // Bind our CLI commands to functions
-    CliCommandBinding helloBinding = {
-            "hello",
-            "Print hello message",
+    CliCommandBinding aboutBinding = {
+            "about",
+            "Show information about this application",
             true,
-            (void *) "World",
-            onHello
+            NULL,
+            onAbout
     };
-    embeddedCliAddBinding(cli, helloBinding);
+    embeddedCliAddBinding(cli, aboutBinding);
+
+    CliCommandBinding powerBinding = {
+            "power",
+            "Show power consumption information from the INA260",
+            true,
+            NULL,
+            onPower
+    };
+    embeddedCliAddBinding(cli, powerBinding);
 
     printf("Cli is running\n");
     printf("Type \"help\" for a list of commands\n");

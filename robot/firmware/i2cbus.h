@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    cli.h
+    i2cbus.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,18 +24,17 @@
 
 ************************************************************************/
 
-#ifndef CLI_H_
-#define CLI_H_
+#ifndef I2CBUS_H_
+#define I2CBUS_H_
 
-#include "embedded_cli.h"
+#define SDA0_GPIO 8
+#define SCL0_GPIO 9
+#define SDA1_GPIO 10
+#define SCL1_GPIO 11
 
-static void onCommand(const char* name, char *tokens);
-static void onAbout(EmbeddedCli *cli, char *args, void *context);
-static void onPower(EmbeddedCli *cli, char *args, void *context);
+// Function prototypes
+void i2c_initialise(void);
+bool i2c_reserved_addr(uint8_t addr);
+void i2c_bus_scan(uint16_t busNumber);
 
-static void writeCharFn(EmbeddedCli *embeddedCli, char c);
-static void onCommandFn(EmbeddedCli *embeddedCli, CliCommand *command);
-void cli_initialise();
-void cli_process();
-
-#endif /* CLI_H_ */
+#endif /* I2CBUS_H_ */
