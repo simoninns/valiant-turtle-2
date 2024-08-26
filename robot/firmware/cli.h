@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    debug.h
+    cli.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,10 +24,16 @@
 
 ************************************************************************/
 
-#ifndef DEBUG_H_
-#define DEBUG_H_
+#ifndef CLI_H_
+#define CLI_H_
 
-void debug_initialise(void);
-void debug_printf(const char *fmt, ...);
+#include "embedded_cli.h"
 
-#endif /* DEBUG_H_ */
+static void onCommand(const char* name, char *tokens);
+static void onHello(EmbeddedCli *cli, char *args, void *context);
+static void writeCharFn(EmbeddedCli *embeddedCli, char c);
+static void onCommandFn(EmbeddedCli *embeddedCli, CliCommand *command);
+void cli_initialise();
+void cli_process();
+
+#endif /* CLI_H_ */

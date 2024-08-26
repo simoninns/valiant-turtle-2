@@ -13,6 +13,8 @@ pico_sdk_init()
 add_executable(${PROJECT_NAME}
     main.c
     debug.c
+    cli.c
+    ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/src/embedded_cli.c
     )
 
 pico_add_extra_outputs(${PROJECT_NAME})
@@ -25,6 +27,7 @@ target_link_libraries(${PROJECT_NAME}
 # Required for btstack_config.h
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/include
     )
 
 # Run as a bluetooth server

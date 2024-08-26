@@ -29,13 +29,13 @@
 
 #include "debug.h"
 
-void debugInitialise() {
-    debugPrintf("\n\n");
-    debugPrintf("Valiant Turtle 2 - Debug console\n");
-    debugPrintf("\n");
+void debug_initialise() {
+    debug_printf("\n\n");
+    debug_printf("Valiant Turtle 2 - Debug console\n");
+    debug_printf("\n");
 }
 
-void debugPrintf(const char *fmt, ...) {
+void debug_printf(const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     vfprintf(stderr, fmt, args);

@@ -29,6 +29,7 @@
 #include "pico/cyw43_arch.h"
 
 #include "debug.h"
+#include "cli.h"
 
 int main() {
     // Initialise the hardware
@@ -36,14 +37,14 @@ int main() {
     if (cyw43_arch_init()) return -1;
 
     // Initialise modules
-    debugInitialise();
+    debug_initialise();
+    cli_initialise();
 
     // Turn on the PICO W system LED
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
     // Do nothing
     while (true) {
-
-        sleep_ms(250);
+        cli_process();
     }
 }
