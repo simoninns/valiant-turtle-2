@@ -17,7 +17,9 @@ add_executable(${PROJECT_NAME}
     i2cbus.c
     ina260.c
     penservo.c
+    oleddisplay.c
     ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/src/embedded_cli.c
+    ${CMAKE_CURRENT_LIST_DIR}/pico-ssd1306/ssd1306.c
     )
 
 pico_add_extra_outputs(${PROJECT_NAME})
@@ -34,6 +36,7 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/include
+    ${CMAKE_CURRENT_LIST_DIR}/pico-ssd1306
     )
 
 # Run as a bluetooth server

@@ -6,3 +6,7 @@ url = https://github.com/revarbat/BOSL.git
 path = robot/firmware/embedded-cli
 url = https://github.com/funbiscuit/embedded-cli.git
 
+[submodule "robot/firmware/pico-ssd1306"]
+path = robot/firmware/pico-ssd1306
+url = https://github.com/daschr/pico-ssd1306.git
+

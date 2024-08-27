@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    oleddisplay.c
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -26,34 +26,26 @@
 
 #include <stdio.h>
 #include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#include <string.h>
 
+#include "oleddisplay.h"
+#include "ssd1306.h"
 #include "debug.h"
-#include "cli.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "penservo.h"
 
-int main() {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
+// Global
+ssd1306_t disp;
 
-    // Initialise modules
-    debug_initialise();
-    i2c_initialise();
-    ina260_initialise();
-    pen_servo_initialise();
-    oled_initialise();
+void oled_initialise(void)
+{
+    // Initialise the SSD1306 OLED library
+    disp.external_vcc=false;
+    ssd1306_init(&disp, 128, 64, 0x3C, i2c0);
+    ssd1306_clear(&disp);
 
-    // Initialise CLI
-    cli_initialise();
-
-    // Turn on the PICO W system LED
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-
-    // Do nothing
-    while (true) {
-        cli_process();
-    }
+    // Update the display
+    ssd1306_clear(&disp);
+    ssd1306_draw_string(&disp, 15, 0, 1, "Valiant Turtle 2");
+    ssd1306_draw_string(&disp, 25, 22, 2, "Turtle");
+    ssd1306_draw_string(&disp, 25, 40, 2, "Power!");
+    ssd1306_show(&disp);
 }

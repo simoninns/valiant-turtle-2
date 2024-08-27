@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    oleddisplay.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,36 +24,10 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef OLEDDISPLAY_H_
+#define OLEDDISPLAY_H_
 
-#include "debug.h"
-#include "cli.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "penservo.h"
+// Prototypes
+void oled_initialise(void);
 
-int main() {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
-
-    // Initialise modules
-    debug_initialise();
-    i2c_initialise();
-    ina260_initialise();
-    pen_servo_initialise();
-    oled_initialise();
-
-    // Initialise CLI
-    cli_initialise();
-
-    // Turn on the PICO W system LED
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-
-    // Do nothing
-    while (true) {
-        cli_process();
-    }
-}
+#endif /* OLEDDISPLAY_H_ */

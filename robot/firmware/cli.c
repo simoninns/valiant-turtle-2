@@ -56,7 +56,6 @@ static void on_about(EmbeddedCli *cli, char *args, void *context) {
     cli_printf("  Valiant Turtle 2\n");
     cli_printf("  (c) 2024 Simon Inns - GPL Open-Source\n");
     cli_printf("\n");
-    cli_printf("  CLI library: https://github.com/funbiscuit/embedded-cli\n");
 }
 
 void on_clear_cli(EmbeddedCli *cli, char *args, void *context) {
