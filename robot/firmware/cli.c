@@ -122,25 +122,59 @@ void on_acccalc(EmbeddedCli *cli, char *args, void *context) {
     int32_t updatesPerSecond = atoi(embeddedCliGetToken(args, 5));
 }
 
-void on_stepper_enable(EmbeddedCli *cli, char *args, void *context) {
-    (void)cli;
-    stepconf_set_enable(true);
-}
-
-void on_stepper_disable(EmbeddedCli *cli, char *args, void *context) {
-    (void)cli;
-    stepconf_set_enable(false);
-}
-
-void on_stepper_set_left(EmbeddedCli *cli, char *args, void *context) {
+void on_stepper(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
 
-    // Ensure we have 4 arguments...
-    if (embeddedCliGetTokenCount(args) != 4) {
+    // Ensure we have 1 arguments...
+    if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
-        cli_printf("stepper-set-left command missing argument(s)\n");
-        cli_printf("  Usage: stepper-set-left [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]\n");
+        cli_printf("stepper command missing argument(s)\n");
+        cli_printf("  Usage: stepper [enable/disable]\n");
         return;
+    }
+
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "enable")) {
+            stepconf_set_enable(true);
+            cli_printf("Stepper motors enabled\n");
+        } else if (!strcmp(arg1, "disable")) {
+            stepconf_set_enable(false);
+            cli_printf("Stepper motors disabled\n");
+        } else {
+            // Invalid argument
+            cli_printf("stepper command invalid argument - You must specify enable or disable\n");
+        }
+    }
+}
+
+void on_stepper_set(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 5 arguments...
+    if (embeddedCliGetTokenCount(args) != 5) {
+        // Missing argument
+        cli_printf("stepper-set command missing argument(s)\n");
+        cli_printf("  Usage: stepper-set [left/right/both] [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]\n");
+        return;
+    }
+
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    int32_t which_stepper = 0;
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "left")) {
+            which_stepper = 0;
+        } else if (!strcmp(arg1, "right")) {
+            which_stepper = 1;
+        } else if (!strcmp(arg1, "both")) {
+            which_stepper = 2;
+        } else {
+            // Invalid argument
+            cli_printf("stepper-set command invalid argument - You must specify left, right or both\n");
+            return;
+        }
     }
 
     // Get the arguments and store as integers
@@ -149,68 +183,67 @@ void on_stepper_set_left(EmbeddedCli *cli, char *args, void *context) {
     int32_t maximumSps = atoi(embeddedCliGetToken(args, 4));
     int32_t updatesPerSecond = atoi(embeddedCliGetToken(args, 5));
 
-    stepconf_set_parameters(STEPPER_LEFT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
+    if (which_stepper == 0) {
+        stepconf_set_parameters(STEPPER_LEFT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
+        cli_printf("Stepper left parameters set\n");
+    } else if (which_stepper == 1) {
+        stepconf_set_parameters(STEPPER_RIGHT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
+        cli_printf("Stepper right parameters set\n");
+    } else {
+        stepconf_set_parameters(STEPPER_LEFT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
+        stepconf_set_parameters(STEPPER_RIGHT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
+        cli_printf("Stepper left and right parameters set\n");
+    }
 }
 
-void on_stepper_set_right(EmbeddedCli *cli, char *args, void *context) {
+void on_stepper_show(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
 
-    // Ensure we have 4 arguments...
-    if (embeddedCliGetTokenCount(args) != 4) {
+    // Ensure we have 1 argument...
+    if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
-        cli_printf("stepper-set-right command requires 4 argument(s)\n");
-        cli_printf("  Usage: stepper-set-right [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]\n");
+        cli_printf("stepper-show command missing argument(s)\n");
+        cli_printf("  Usage: stepper-show [left/right/both]\n");
         return;
     }
 
-    // Get the arguments and store as integers
-    int32_t accSpsps = atoi(embeddedCliGetToken(args, 1));
-    int32_t minimumSps = atoi(embeddedCliGetToken(args, 2));
-    int32_t maximumSps = atoi(embeddedCliGetToken(args, 3));
-    int32_t updatesPerSecond = atoi(embeddedCliGetToken(args, 4));
-
-    stepconf_set_parameters(STEPPER_RIGHT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
-}
-
-void on_stepper_set_both(EmbeddedCli *cli, char *args, void *context) {
-    (void)cli;
-
-    // Ensure we have 4 arguments...
-    if (embeddedCliGetTokenCount(args) != 4) {
-        // Missing argument
-        cli_printf("stepper-set-both command requires 4 argument(s)\n");
-        cli_printf("  Usage: stepper-set-both [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]\n");
-        return;
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    stepconf_t stepconf;
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "left")) {
+            stepconf = stepconf_get_parameters(STEPPER_LEFT);
+            cli_printf("Left stepper parameters:\n");
+            cli_printf("  Acceleration in Steps per Second per Second = %d\n", stepconf.accSpsps);
+            cli_printf("  Minimum Steps per Second = %d\n", stepconf.minimumSps);
+            cli_printf("  Maximum Steps per Second = %d\n", stepconf.maximumSps);
+            cli_printf("  Updates per second = %d\n", stepconf.updatesPerSecond);
+        } else if (!strcmp(arg1, "right")) {
+            stepconf = stepconf_get_parameters(STEPPER_RIGHT);
+            cli_printf("Right stepper parameters:\n");
+            cli_printf("  Acceleration in Steps per Second per Second = %d\n", stepconf.accSpsps);
+            cli_printf("  Minimum Steps per Second = %d\n", stepconf.minimumSps);
+            cli_printf("  Maximum Steps per Second = %d\n", stepconf.maximumSps);
+            cli_printf("  Updates per second = %d\n", stepconf.updatesPerSecond);
+        } else if (!strcmp(arg1, "both")) {
+            stepconf = stepconf_get_parameters(STEPPER_LEFT);
+            cli_printf("Left stepper parameters:\n");
+            cli_printf("  Acceleration in Steps per Second per Second = %d\n", stepconf.accSpsps);
+            cli_printf("  Minimum Steps per Second = %d\n", stepconf.minimumSps);
+            cli_printf("  Maximum Steps per Second = %d\n", stepconf.maximumSps);
+            cli_printf("  Updates per second = %d\n", stepconf.updatesPerSecond);
+            stepconf = stepconf_get_parameters(STEPPER_RIGHT);
+            cli_printf("Right stepper parameters:\n");
+            cli_printf("  Acceleration in Steps per Second per Second = %d\n", stepconf.accSpsps);
+            cli_printf("  Minimum Steps per Second = %d\n", stepconf.minimumSps);
+            cli_printf("  Maximum Steps per Second = %d\n", stepconf.maximumSps);
+            cli_printf("  Updates per second = %d\n", stepconf.updatesPerSecond);
+        } else {
+            // Invalid argument
+            cli_printf("stepper-set command invalid argument - You must specify left, right or both\n");
+            return;
+        }
     }
-
-    // Get the arguments and store as integers
-    int32_t accSpsps = atoi(embeddedCliGetToken(args, 1));
-    int32_t minimumSps = atoi(embeddedCliGetToken(args, 2));
-    int32_t maximumSps = atoi(embeddedCliGetToken(args, 3));
-    int32_t updatesPerSecond = atoi(embeddedCliGetToken(args, 4));
-
-    stepconf_set_parameters(STEPPER_LEFT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
-    stepconf_set_parameters(STEPPER_RIGHT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
-}
-
-void on_stepper_show_left(EmbeddedCli *cli, char *args, void *context) {
-    (void)cli;
-    stepconf_t stepconf = stepconf_get_parameters(STEPPER_LEFT);
-    cli_printf("Left stepper parameters:\n");
-    cli_printf(" Acceleration in Steps per Second per Second = %d\n", stepconf.accSpsps);
-    cli_printf(" Minimum Steps per Second = %d\n", stepconf.minimumSps);
-    cli_printf(" Maximum Steps per Second = %d\n", stepconf.maximumSps);
-    cli_printf(" Updates per second = %d\n", stepconf.updatesPerSecond);
-}
-
-void on_stepper_show_right(EmbeddedCli *cli, char *args, void *context) {
-    (void)cli;
-    stepconf_t stepconf = stepconf_get_parameters(STEPPER_LEFT);
-    cli_printf("Right stepper parameters:\n");
-    cli_printf(" Acceleration in Steps per Second per Second = %d\n", stepconf.accSpsps);
-    cli_printf(" Minimum Steps per Second = %d\n", stepconf.minimumSps);
-    cli_printf(" Maximum Steps per Second = %d\n", stepconf.maximumSps);
-    cli_printf(" Updates per second = %d\n", stepconf.updatesPerSecond);
 }
 
 // ------------------------------------------------------------------------
@@ -295,70 +328,34 @@ void cli_initialise() {
     };
     embeddedCliAddBinding(cli, acccalc_binding);
 
-    CliCommandBinding stepper_enable = {
-            "stepper-enable",
-            "Enable the stepper motors",
+    CliCommandBinding stepper = {
+            "stepper",
+            "Enable or disable the stepper motors\n\tstepper [enable/disable]",
             true,
             NULL,
-            on_stepper_enable
+            on_stepper
     };
-    embeddedCliAddBinding(cli, stepper_enable);
+    embeddedCliAddBinding(cli, stepper);
 
-    CliCommandBinding stepper_disable = {
-            "stepper-disable",
-            "Disable the stepper motors",
+    CliCommandBinding stepper_set_binding = {
+            "stepper-set",
+            "Set the acc/dec parameters for the stepper motors\n\tstepper-set [left/right/both] [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]",
             true,
             NULL,
-            on_stepper_disable
+            on_stepper_set
     };
-    embeddedCliAddBinding(cli, stepper_disable);
+    embeddedCliAddBinding(cli, stepper_set_binding);
 
-    CliCommandBinding stepper_set_left_binding = {
-            "stepper-set-left",
-            "Set the acc/dec parameters for the left stepper motor\n\tstepper-set-left [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]",
+    CliCommandBinding stepper_show_binding = {
+            "stepper-show",
+            "Show the acc/dec parameters for the stepper motors\n\tstepper-show [left/right/both]",
             true,
             NULL,
-            on_stepper_set_left
+            on_stepper_show
     };
-    embeddedCliAddBinding(cli, stepper_set_left_binding);
+    embeddedCliAddBinding(cli, stepper_show_binding);
 
-    CliCommandBinding stepper_set_right_binding = {
-            "stepper-set-right",
-            "Set the acc/dec parameters for the left stepper motor\n\tstepper-set-right [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]",
-            true,
-            NULL,
-            on_stepper_set_right
-    };
-    embeddedCliAddBinding(cli, stepper_set_right_binding);
-
-    CliCommandBinding stepper_show_left_binding = {
-            "stepper-show-left",
-            "Show the acc/dec parameters for the left stepper motor",
-            true,
-            NULL,
-            on_stepper_show_left
-    };
-    embeddedCliAddBinding(cli, stepper_show_left_binding);
-
-    CliCommandBinding stepper_show_right_binding = {
-            "stepper-show-right",
-            "Show the acc/dec parameters for the right stepper motor",
-            true,
-            NULL,
-            on_stepper_show_right
-    };
-    embeddedCliAddBinding(cli, stepper_show_right_binding);
-
-    CliCommandBinding stepper_set_both_binding = {
-            "stepper-set-both",
-            "Set the acc/dec parameters for the both stepper motors\n\tstepper-set-both [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]",
-            true,
-            NULL,
-            on_stepper_set_both
-    };
-    embeddedCliAddBinding(cli, stepper_set_both_binding);
-
-    cli_printf("CLI is running\n");
+    cli_printf("\n\nCLI is running\n");
     cli_printf("Type \"help\" for a list of commands\n");
     cli_printf("Use backspace and tab to remove chars and autocomplete\n");
     cli_printf("Use up and down arrows to recall previous commands\n");
