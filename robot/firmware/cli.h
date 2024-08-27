@@ -39,6 +39,8 @@ static void on_acccalc(EmbeddedCli *cli, char *args, void *context);
 void on_stepper(EmbeddedCli *cli, char *args, void *context);
 void on_stepper_set(EmbeddedCli *cli, char *args, void *context);
 void on_stepper_show(EmbeddedCli *cli, char *args, void *context);
+void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context);
+void on_stepper_run(EmbeddedCli *cli, char *args, void *context);
 
 static void write_char_fn(EmbeddedCli *embeddedCli, char c);
 void cli_printf(const char *fmt, ...);

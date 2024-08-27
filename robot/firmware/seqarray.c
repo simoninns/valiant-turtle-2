@@ -164,7 +164,9 @@ int32_t seqarray_get_size(sequence_array_t* container)
 
 // Free the dynamic array
 void seqarray_free(sequence_array_t* container) { 
-    free(container->steps);
-    free(container->sps); 
-    free(container); 
+    if (container != NULL) {
+        free(container->steps);
+        free(container->sps); 
+        free(container);
+    }
 }

@@ -246,6 +246,117 @@ void on_stepper_show(EmbeddedCli *cli, char *args, void *context) {
     }
 }
 
+void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 2 arguments...
+    if (embeddedCliGetTokenCount(args) != 2) {
+        // Missing argument
+        cli_printf("stepper-dryrun command missing argument(s)\n");
+        cli_printf("  Usage: stepper-dryrun [left/right] [required number of steps]\n");
+        return;
+    }
+
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    int32_t which_stepper = 0;
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "left")) {
+            which_stepper = 0;
+        } else if (!strcmp(arg1, "right")) {
+            which_stepper = 1;
+        } else {
+            // Invalid argument
+            cli_printf("stepper-dryrun command invalid argument - You must specify left or right\n");
+            return;
+        }
+    }
+
+    // Get the arguments and store as integers
+    int32_t requiredSteps = atoi(embeddedCliGetToken(args, 2));
+    if (requiredSteps < 1) {
+        // Invalid argument
+        cli_printf("stepper-dryrun command invalid argument - You must specify 1 or more steps\n");
+        return;
+    }
+
+    if (which_stepper == 0) {
+        stepconf_dryrun(STEPPER_LEFT, requiredSteps);
+    } else if (which_stepper == 1) {
+        stepconf_dryrun(STEPPER_RIGHT, requiredSteps);
+    }
+}
+
+void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    int32_t which_stepper = 0;
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "left")) {
+            which_stepper = 0;
+        } else if (!strcmp(arg1, "right")) {
+            which_stepper = 1;
+        } else if (!strcmp(arg1, "both")) {
+            which_stepper = 2;
+        } else {
+            // Invalid argument
+            cli_printf("stepper-run command invalid argument - You must specify left, right or both\n");
+            return;
+        }
+    }
+
+    if (which_stepper == 0 || which_stepper == 1) {
+        // Ensure we have 2 arguments...
+        if (embeddedCliGetTokenCount(args) != 2) {
+            // Missing argument
+            cli_printf("stepper-run command missing argument(s)\n");
+            cli_printf("  Usage: stepper-run [left/right/both] [required number of steps]([required number of steps])\n");
+            return;
+        }
+    } else {
+        // Ensure we have 3 arguments...
+        if (embeddedCliGetTokenCount(args) != 3) {
+            // Missing argument
+            cli_printf("stepper-run command missing argument(s)\n");
+            cli_printf("  Usage: stepper-run [left/right/both] [required number of steps]([required number of steps])\n");
+            return;
+        }
+    }
+
+    // Get the arguments and store as integers
+    int32_t requiredSteps1 = atoi(embeddedCliGetToken(args, 2));
+    if (requiredSteps1 < 1) {
+        // Invalid argument
+        cli_printf("stepper-run command invalid argument - You must specify 1 or more steps\n");
+        return;
+    }
+
+    int32_t requiredSteps2;
+    if (which_stepper == 2) {
+        requiredSteps2 = atoi(embeddedCliGetToken(args, 3));
+        if (requiredSteps2 < 1) {
+            // Invalid argument
+            cli_printf("stepper-run command invalid argument - You must specify 1 or more steps\n");
+            return;
+        }
+    }
+
+    if (which_stepper == 0) {
+        cli_printf("Running left stepper for %d steps\n", requiredSteps1);
+        stepconf_run(STEPPER_LEFT, requiredSteps1);
+    } else if (which_stepper == 1) {
+        cli_printf("Running right stepper for %d steps\n", requiredSteps1);
+        stepconf_run(STEPPER_RIGHT, requiredSteps1);
+    } else if (which_stepper == 2) {
+        cli_printf("Running left stepper for %d steps\n", requiredSteps1);
+        cli_printf("Running right stepper for %d steps\n", requiredSteps2);
+        stepconf_run(STEPPER_LEFT, requiredSteps1);
+        stepconf_run(STEPPER_RIGHT, requiredSteps2);
+    }
+}
+
 // ------------------------------------------------------------------------
 
 // Embedded CLI library requires a write char function
@@ -354,6 +465,24 @@ void cli_initialise() {
             on_stepper_show
     };
     embeddedCliAddBinding(cli, stepper_show_binding);
+
+    CliCommandBinding stepper_dryrun_binding = {
+            "stepper-dryrun",
+            "Dry run the stepper (shows the calculated sequence)\n\tstepper-dryrun [left/right] [required number of steps]",
+            true,
+            NULL,
+            on_stepper_dryrun
+    };
+    embeddedCliAddBinding(cli, stepper_dryrun_binding);
+
+    CliCommandBinding stepper_run_binding = {
+            "stepper-run",
+            "Run the stepper\n\tstepper-run [left/right/both] [required number of steps]([required number of steps])",
+            true,
+            NULL,
+            on_stepper_run
+    };
+    embeddedCliAddBinding(cli, stepper_run_binding);
 
     cli_printf("\n\nCLI is running\n");
     cli_printf("Type \"help\" for a list of commands\n");

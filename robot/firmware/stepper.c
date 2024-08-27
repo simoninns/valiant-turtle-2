@@ -90,6 +90,9 @@ void stepper_init()
     // Flag the stepper motors as idle
     sm_left_busy = false;
     sm_right_busy = false;
+
+    // Start the PIOs running
+    stepper_pio_start();
 }
 
 // Set the stepper directions
