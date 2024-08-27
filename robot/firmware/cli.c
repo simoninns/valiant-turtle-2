@@ -33,6 +33,7 @@
 #include "embedded_cli.h"
 
 #include "ina260.h"
+#include "penservo.h"
 
 #include "cli.h"
 
@@ -41,80 +42,136 @@ EmbeddedCli *cli;
 // ------------------------------------------------------------------------
 
 // This function is called for unknown commands
-static void onCommand(const char* name, char *tokens) {
-    printf("Received command: %s\r\n",name);
+static void on_command(const char* name, char *tokens) {
+    cli_printf("Received unknown command: %s\r\n",name);
 
     for (int i = 0; i < embeddedCliGetTokenCount(tokens); ++i) {
-        printf("Arg %d : %s\r\n", i, embeddedCliGetToken(tokens, i + 1));
+        cli_printf("Arg %d : %s\r\n", i, embeddedCliGetToken(tokens, i + 1));
     }
 }
 
-static void onAbout(EmbeddedCli *cli, char *args, void *context) {
+static void on_about(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
-    printf("About:\n");
-    printf("  Valiant Turtle 2\n");
-    printf("  (c) 2024 Simon Inns - GPL Open-Source\n");
-    printf("\n");
-    printf("  CLI library: https://github.com/funbiscuit/embedded-cli\n");
+    cli_printf("About:\n");
+    cli_printf("  Valiant Turtle 2\n");
+    cli_printf("  (c) 2024 Simon Inns - GPL Open-Source\n");
+    cli_printf("\n");
+    cli_printf("  CLI library: https://github.com/funbiscuit/embedded-cli\n");
 }
 
-static void onPower(EmbeddedCli *cli, char *args, void *context) {
+void on_clear_cli(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+    cli_printf("\33[2J\n");
+}
+
+static void on_power(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
     
     float current = ina260_read_current();
     float voltage = ina260_read_bus_voltage();
     float power = ina260_read_power();
 
-    printf("INA260 Power information:\n");
-    printf("  Current: %.2f mA\n", current);
-    printf("  Bus voltage: %.2f mV\n", voltage);
-    printf("  Power: %.2f mW\n", power);
+    cli_printf("INA260 Power information:\n");
+    cli_printf("  Current: %.2f mA\n", current);
+    cli_printf("  Bus voltage: %.2f mV\n", voltage);
+    cli_printf("  Power: %.2f mW\n", power);
+}
+
+void on_pen(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+    embeddedCliTokenizeArgs(args);
+
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "up")) {
+            cli_printf("Moving the pen servo to the up position\n");
+            pen_up();
+        } else if (!strcmp(arg1, "down")) {
+            cli_printf("Moving the pen servo to the down position\n");
+            pen_down();
+        } else if (!strcmp(arg1, "off")) {
+            cli_printf("Turning the pen servo off\n");
+            pen_off();
+        } else {
+            // Invalid argument
+            cli_printf("Pen command invalid argument - Usage: pen [up/down/off]\n");
+        }
+    } else {
+        // Missing argument
+        cli_printf("Pen command missing argument - Usage: pen [up/down/off]\n");
+    }
 }
 
 // ------------------------------------------------------------------------
 
 // Embedded CLI library requires a write char function
-static void writeCharFn(EmbeddedCli *embeddedCli, char c) {
+static void write_char_fn(EmbeddedCli *embeddedCli, char c) {
     (void)embeddedCli;
     putchar(c);
 }
 
-// Function is called everytime a CLI command is received
-static void onCommandFn(EmbeddedCli *embeddedCli, CliCommand *command) {
+void cli_printf(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(stdout, fmt, args);
+    va_end(args);
+}
+
+// Function is called every time a CLI command is received
+static void on_command_fn(EmbeddedCli *embeddedCli, CliCommand *command) {
     (void)embeddedCli;
     embeddedCliTokenizeArgs(command->args);
-    onCommand(command->name == NULL ? "" : command->name, command->args);
+    on_command(command->name == NULL ? "" : command->name, command->args);
 }
 
 // Initialise the embedded CLI
 void cli_initialise() {
     cli = embeddedCliNewDefault();
-    cli->onCommand = onCommandFn;
-    cli->writeChar = writeCharFn;
+    cli->onCommand = on_command_fn;
+    cli->writeChar = write_char_fn;
 
     // Bind our CLI commands to functions
-    CliCommandBinding aboutBinding = {
+    CliCommandBinding about_binding = {
             "about",
             "Show information about this application",
             true,
             NULL,
-            onAbout
+            on_about
     };
-    embeddedCliAddBinding(cli, aboutBinding);
+    embeddedCliAddBinding(cli, about_binding);
 
-    CliCommandBinding powerBinding = {
+    CliCommandBinding clear_binding = {
+            "clear",
+            "Clears the console",
+            true,
+            NULL,
+            on_clear_cli
+    };
+    embeddedCliAddBinding(cli, clear_binding);
+
+    CliCommandBinding power_binding = {
             "power",
             "Show power consumption information from the INA260",
             true,
             NULL,
-            onPower
+            on_power
     };
-    embeddedCliAddBinding(cli, powerBinding);
+    embeddedCliAddBinding(cli, power_binding);
 
-    printf("Cli is running\n");
-    printf("Type \"help\" for a list of commands\n");
-    printf("Use backspace and tab to remove chars and autocomplete\n");
-    printf("Use up and down arrows to recall previous commands\n");
+    CliCommandBinding pen_binding = {
+            "pen",
+            "Control the pen servo (up/down/off)",
+            true,
+            NULL,
+            on_pen
+    };
+    embeddedCliAddBinding(cli, pen_binding);
+
+    cli_printf("CLI is running\n");
+    cli_printf("Type \"help\" for a list of commands\n");
+    cli_printf("Use backspace and tab to remove chars and autocomplete\n");
+    cli_printf("Use up and down arrows to recall previous commands\n");
 }
 
 // Process any waiting characters into the CLI

@@ -29,12 +29,16 @@
 
 #include "embedded_cli.h"
 
-static void onCommand(const char* name, char *tokens);
-static void onAbout(EmbeddedCli *cli, char *args, void *context);
-static void onPower(EmbeddedCli *cli, char *args, void *context);
+static void on_command(const char* name, char *tokens);
 
-static void writeCharFn(EmbeddedCli *embeddedCli, char c);
-static void onCommandFn(EmbeddedCli *embeddedCli, CliCommand *command);
+static void on_about(EmbeddedCli *cli, char *args, void *context);
+static void on_clear_cli(EmbeddedCli *cli, char *args, void *context);
+static void on_power(EmbeddedCli *cli, char *args, void *context);
+static void on_pen(EmbeddedCli *cli, char *args, void *context);
+
+static void write_char_fn(EmbeddedCli *embeddedCli, char c);
+void cli_printf(const char *fmt, ...);
+static void on_command_fn(EmbeddedCli *embeddedCli, CliCommand *command);
 void cli_initialise();
 void cli_process();
 

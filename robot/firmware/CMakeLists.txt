@@ -16,6 +16,7 @@ add_executable(${PROJECT_NAME}
     cli.c
     i2cbus.c
     ina260.c
+    penservo.c
     ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/src/embedded_cli.c
     )
 
@@ -25,6 +26,8 @@ target_link_libraries(${PROJECT_NAME}
     pico_stdlib
     pico_cyw43_arch_none
     hardware_i2c
+    hardware_pwm
+    hardware_clocks
     )
 
 # Required for btstack_config.h
