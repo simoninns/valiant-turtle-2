@@ -1,0 +1,85 @@
+;************************************************************************
+;
+;   stepper.pio
+;
+;   Valiant Turtle 2 - Raspberry Pi Pico W Firmware
+;   Copyright (C) 2024 Simon Inns
+;
+;   This file is part of Valiant Turtle 2
+;
+;   This is free software: you can redistribute it and/or
+;   modify it under the terms of the GNU General Public License as
+;   published by the Free Software Foundation, either version 3 of the
+;   License, or (at your option) any later version.
+;
+;   This program is distributed in the hope that it will be useful,
+;   but WITHOUT ANY WARRANTY; without even the implied warranty of
+;   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;   GNU General Public License for more details.
+;
+;   You should have received a copy of the GNU General Public License
+;   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;
+;   Email: simon.inns@gmail.com
+;
+;************************************************************************
+
+.pio_version 0
+
+.program stepper
+
+.wrap_target
+    pull block              ; Pull (with blocking) FIFO into OSR (first, number of steps)
+    mov x, osr              ; Store the OSR in X
+
+    pull block              ; Pull (with blocking) FIFO into OSR (second, number of delay cycles)
+    mov y, osr              ; Store the OSR in Y
+
+    irq nowait 0            ; Signal parameters read to CPU
+
+step:
+    jmp !x finished         ; If X == 0 then jump to "finished"
+    set pins, 1             ; Turn pin on
+ondelay:
+    jmp y-- ondelay
+    mov y, osr              ; Restore the Y register (number of delay cycles)
+
+    set pins, 0             ; Turn pin off
+offdelay:
+    jmp y-- offdelay
+    mov y, osr              ; Restore the Y register (number of delay cycles)
+
+    jmp x-- step            ; X-- then jump to "step"
+
+finished:
+    set pins, 0             ; Ensure output pin is 0 (not really needed)
+.wrap
+
+% c-sdk {
+// this is a raw helper function for use by the user which sets up the GPIO output, and configures the SM to output on a particular pin
+
+void stepper_program_init(PIO pio, uint sm, uint offset, uint pin) {
+    pio_sm_config c = stepper_program_get_default_config(offset);
+
+    // This is used if the PIO is using the "out" command to output to the pin
+    //sm_config_set_out_pins(&c, pin, 1);
+
+    // This is used if the PIO is using the "set" command to output to the pin
+    sm_config_set_set_pins(&c, pin, 1);
+
+    // Set the clock divider to /50
+    sm_config_set_clkdiv(&c, 50);
+
+    // Set this pin's GPIO function (connect PIO to the pad)
+    pio_gpio_init(pio, pin);
+
+    // Set the pin direction to output at the PIO
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, true);
+
+    // Load our configuration, and jump to the start of the program
+    pio_sm_init(pio, sm, offset, &c);
+
+    // Set the state machine running
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}

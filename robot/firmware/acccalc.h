@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    acccalc.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,39 +24,11 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef ACCCALC_H_
+#define ACCCALC_H_
 
-#include "debug.h"
-#include "cli.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "penservo.h"
-#include "oleddisplay.h"
-#include "stepconf.h"
+typedef struct sequence_array sequence_array_t; // Forward declaration
 
-int main() {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
+bool acccalc_calculate(sequence_array_t* container, int32_t requiredSteps, int32_t accSpsps, int32_t minimumSps, int32_t maximumSps, int32_t updatesPerSecond);
 
-    // Initialise modules
-    debug_initialise();
-    i2c_initialise();
-    ina260_initialise();
-    pen_servo_initialise();
-    oled_initialise();
-    stepconf_initialise();
-
-    // Initialise CLI
-    cli_initialise();
-
-    // Turn on the PICO W system LED
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-
-    // Do nothing
-    while (true) {
-        cli_process();
-    }
-}
+#endif /* ACCCALC_H_ */

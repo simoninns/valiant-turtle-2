@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    seqarray.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,39 +24,19 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef SEQARRAY_H_
+#define SEQARRAY_H_
 
-#include "debug.h"
-#include "cli.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "penservo.h"
-#include "oleddisplay.h"
-#include "stepconf.h"
+#define INITIAL_SEQUENCE_SIZE 8
 
-int main() {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
+typedef struct sequence_array sequence_array_t; // Forward declaration
 
-    // Initialise modules
-    debug_initialise();
-    i2c_initialise();
-    ina260_initialise();
-    pen_servo_initialise();
-    oled_initialise();
-    stepconf_initialise();
+void seqarray_init(sequence_array_t** sequence);
+void seqarray_insert(sequence_array_t* container, int32_t steps, int32_t sps);
+int32_t seqarray_get_steps(sequence_array_t* container, int32_t index);
+int32_t seqarray_get_sps(sequence_array_t* container, int32_t index);
+void seqarray_display(sequence_array_t* container);
+int32_t seqarray_get_size(sequence_array_t* container);
+void seqarray_free(sequence_array_t* container);
 
-    // Initialise CLI
-    cli_initialise();
-
-    // Turn on the PICO W system LED
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-
-    // Do nothing
-    while (true) {
-        cli_process();
-    }
-}
+#endif /* SEQARRAY_H_ */

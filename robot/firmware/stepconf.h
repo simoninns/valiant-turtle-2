@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    stepconfig.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,39 +24,34 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
+#ifndef STEPCONF_H_
+#define STEPCONF_H_
 
-#include "debug.h"
-#include "cli.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "penservo.h"
-#include "oleddisplay.h"
-#include "stepconf.h"
+// Enumerations
+typedef enum {
+    STEPPER_LEFT,
+    STEPPER_RIGHT
+} stepconf_side_t;
 
-int main() {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
+typedef enum {
+    STEPPER_FORWARDS,
+    STEPPER_BACKWARDS
+} stepconf_direction_t;
 
-    // Initialise modules
-    debug_initialise();
-    i2c_initialise();
-    ina260_initialise();
-    pen_servo_initialise();
-    oled_initialise();
-    stepconf_initialise();
+typedef struct stepconf_t {
+    stepconf_direction_t direction;
+    int32_t accSpsps;
+    int32_t minimumSps;
+    int32_t maximumSps;
+    int32_t updatesPerSecond;
+} stepconf_t;
 
-    // Initialise CLI
-    cli_initialise();
+void stepconf_initialise(void);
+void stepconf_set_enable(bool status);
+void stepconf_set_direction(stepconf_side_t side, stepconf_direction_t direction);
+void stepconf_set_parameters(stepconf_side_t side, int32_t accSpsps, int32_t minimumSps,
+    int32_t maximumSps, int32_t updatesPerSecond);
+stepconf_t stepconf_get_parameters(stepconf_side_t side);
+void stepconf_dryrun(stepconf_side_t side, int32_t requiredSteps);
 
-    // Turn on the PICO W system LED
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-
-    // Do nothing
-    while (true) {
-        cli_process();
-    }
-}
+#endif /* STEPCONF_H_ */

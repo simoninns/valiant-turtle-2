@@ -35,6 +35,14 @@ static void on_about(EmbeddedCli *cli, char *args, void *context);
 static void on_clear_cli(EmbeddedCli *cli, char *args, void *context);
 static void on_power(EmbeddedCli *cli, char *args, void *context);
 static void on_pen(EmbeddedCli *cli, char *args, void *context);
+static void on_acccalc(EmbeddedCli *cli, char *args, void *context);
+void on_stepper_enable(EmbeddedCli *cli, char *args, void *context);
+void on_stepper_disable(EmbeddedCli *cli, char *args, void *context);
+void on_stepper_set_left(EmbeddedCli *cli, char *args, void *context);
+void on_stepper_set_right(EmbeddedCli *cli, char *args, void *context);
+void on_stepper_set_both(EmbeddedCli *cli, char *args, void *context);
+void on_stepper_show_left(EmbeddedCli *cli, char *args, void *context);
+void on_stepper_show_right(EmbeddedCli *cli, char *args, void *context);
 
 static void write_char_fn(EmbeddedCli *embeddedCli, char c);
 void cli_printf(const char *fmt, ...);
