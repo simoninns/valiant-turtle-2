@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    fifo.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,43 +24,27 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
-#include "btstack.h"
-#include "pico/btstack_cyw43.h"
+#ifndef FIFO_H_
+#define FIFO_H_
 
-#include "debug.h"
-#include "cli.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "penservo.h"
-#include "oleddisplay.h"
-#include "stepconf.h"
-#include "btcomms.h"
+#define IN_BUFFER_SIZE 64
+#define OUT_BUFFER_SIZE 1024
 
-int main() {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
+typedef struct {
+    int16_t head;
+    int16_t tail;
+    char* data;
+} fifoBuffer_t;
 
-    // Initialise modules
-    debug_initialise();
-    i2c_initialise();
-    ina260_initialise();
-    pen_servo_initialise();
-    oled_initialise();
-    stepconf_initialise();
-    btcommsInitialise();
+void fifoInitialise(void);
 
-    // Initialise CLI
-    cli_initialise();
+char fifoInRead(void);
+char fifoInWrite(char val);
 
-    // Turn on the PICO W system LED
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+char fifoOutRead(void);
+char fifoOutWrite(char val);
 
-    // Loop and process any non-interrupt driven activities
-    while (true) {
-        cli_process();
-    }
-}
+bool fifoIsInEmpty(void);
+bool fifoIsOutEmpty(void);
+
+#endif /* FIFO_H_ */

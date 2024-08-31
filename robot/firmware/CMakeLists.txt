@@ -22,6 +22,8 @@ add_executable(${PROJECT_NAME}
     acccalc.c
     stepper.c
     stepconf.c
+    btcomms.c
+    fifo.c
     ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/src/embedded_cli.c
     ${CMAKE_CURRENT_LIST_DIR}/pico-ssd1306/ssd1306.c
     )
@@ -37,9 +39,12 @@ target_link_libraries(${PROJECT_NAME}
     hardware_i2c
     hardware_pwm
     hardware_clocks
+    pico_btstack_classic
+    pico_btstack_ble
+    pico_btstack_cyw43
     )
 
-# Required for btstack_config.h
+# Include external libraries
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/include
