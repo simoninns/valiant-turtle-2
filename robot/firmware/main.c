@@ -51,7 +51,7 @@ int main() {
     pen_servo_initialise();
     oled_initialise();
     stepconf_initialise();
-    btcommsInitialise();
+    btcomms_initialise();
 
     // Initialise CLI
     cli_initialise();

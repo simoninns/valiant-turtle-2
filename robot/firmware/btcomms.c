@@ -42,12 +42,12 @@
 #include "debug.h"
 
 // Globals
-static btstack_timer_source_t btCliProcessTimer;
+static btstack_timer_source_t btcomms_cli_process_timer;
 static uint16_t rfcomm_channel_id;
 static uint8_t  spp_service_buffer[150];
 static btstack_packet_callback_registration_t hci_event_callback_registration;
-static bool channelOpen;
-btComms_state_t currentBtState;
+static bool channel_open;
+btComms_state_t current_bt_state;
 
 // Set up Serial Port Profile (SPP)
 static void spp_service_setup(void)
@@ -84,7 +84,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                 case HCI_EVENT_PIN_CODE_REQUEST:
                     // inform about pin code request
                     debug_printf("Bluetooth: Pin code request - using '0000'\n");
-                    currentBtState = BTCOMMS_PAIRING;
+                    current_bt_state = BTCOMMS_PAIRING;
                     hci_event_pin_code_request_get_bd_addr(packet, event_addr);
                     gap_pin_code_response(event_addr, "0000");
                     break;
@@ -93,7 +93,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                     // ssp: inform about user confirmation request
                     debug_printf("Bluetooth: SSP User Confirmation Request with numeric value '%06"PRIu32"'\n", little_endian_read_32(packet, 8));
                     debug_printf("Bluetooth: SSP User Confirmation Auto accept\n");
-                    currentBtState = BTCOMMS_PAIRING;
+                    current_bt_state = BTCOMMS_PAIRING;
                     break;
 
                 case RFCOMM_EVENT_INCOMING_CONNECTION:
@@ -111,8 +111,8 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                         rfcomm_channel_id = rfcomm_event_channel_opened_get_rfcomm_cid(packet);
                         mtu = rfcomm_event_channel_opened_get_max_frame_size(packet);
                         debug_printf("Bluetooth: RFCOMM channel open succeeded. New RFCOMM Channel ID %u, max frame size %u\n", rfcomm_channel_id, mtu);
-                        currentBtState = BTCOMMS_CONNECTED;
-                        channelOpen = true;
+                        current_bt_state = BTCOMMS_CONNECTED;
+                        channel_open = true;
                     }
                     break;
                 case RFCOMM_EVENT_CAN_SEND_NOW:
@@ -138,8 +138,8 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                 case RFCOMM_EVENT_CHANNEL_CLOSED:
                     debug_printf("Bluetooth: RFCOMM channel is closed\n");
                     rfcomm_channel_id = 0;
-                    currentBtState = BTCOMMS_DISCONNECTED;
-                    channelOpen = false;
+                    current_bt_state = BTCOMMS_DISCONNECTED;
+                    channel_open = false;
                     break;
                 
                 default:
@@ -158,10 +158,10 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 }
 
 // Initialise the Bluetooth stack and functionality
-void btcommsInitialise(void)
+void btcomms_initialise(void)
 {
-    channelOpen = false;
-    currentBtState = BTCOMMS_OFF;
+    channel_open = false;
+    current_bt_state = BTCOMMS_OFF;
 
     // Set up the FIFO buffer for incoming characters
     fifoInitialise();
@@ -178,7 +178,7 @@ void btcommsInitialise(void)
 
     // Power on the Bluetooth device
     hci_power_control(HCI_POWER_ON);
-    currentBtState = BTCOMMS_DISCONNECTED;
+    current_bt_state = BTCOMMS_DISCONNECTED;
 
     debug_printf("Bluetooth: HCI is powered on\r\n");
 }
@@ -186,21 +186,21 @@ void btcommsInitialise(void)
 static void one_shot_timer_setup(void)
 {
     // Initialise the CLI
-    btCliInitialise();
+    btcomms_cli_initialise();
 
     // Set one-shot timer
-    btCliProcessTimer.process = &btCliProcess_handler;
-    btstack_run_loop_set_timer(&btCliProcessTimer, BTCLIPROCESS_PERIOD_MS);
-    btstack_run_loop_add_timer(&btCliProcessTimer);
+    btcomms_cli_process_timer.process = &btcomms_cli_process_handler;
+    btstack_run_loop_set_timer(&btcomms_cli_process_timer, BTCLIPROCESS_PERIOD_MS);
+    btstack_run_loop_add_timer(&btcomms_cli_process_timer);
 }
 
 // Handler for the Bluetooth CLI Process timer
-static void btCliProcess_handler(struct btstack_timer_source *ts)
+static void btcomms_cli_process_handler(struct btstack_timer_source *ts)
 {
     // Ensure the RFCOMM channel is valid
-    if (channelOpen) {
+    if (channel_open) {
         // Process the CLI state-machine
-        btCliProcess();
+        btcomms_cli_process();
 
         // Check the output buffer
         if (!fifoIsOutEmpty()) {
@@ -209,7 +209,7 @@ static void btCliProcess_handler(struct btstack_timer_source *ts)
         }
     } else {
         // If the channel is lost; hold the CLI in reset
-        btCliInitialise();
+        btcomms_cli_initialise();
     }
 
     // Set up the next timer shot
@@ -218,9 +218,9 @@ static void btCliProcess_handler(struct btstack_timer_source *ts)
 } 
 
 // Get the current bluetooth state
-btComms_state_t btcommsGetStatus(void)
+btComms_state_t btcomms_get_status(void)
 {
-    return currentBtState;
+    return current_bt_state;
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -233,62 +233,62 @@ char btCliBuffer[10];
 uint16_t btCliBufferPointer;
 uint16_t btCliError;
 
-void btCliResetCommandBuffers(void)
+void btcomms_cli_reset_command_buffers(void)
 {
     btCliBufferPointer = 0;
     btCliError = BTERR_CMD_NONE;
 }
 
-void btCliInitialise(void)
+void btcomms_cli_initialise(void)
 {
     btCliState = BTCLI_START;
-    btCliResetCommandBuffers();
+    btcomms_cli_reset_command_buffers();
 }
 
-void btCliProcess(void)
+void btcomms_cli_process(void)
 {
     switch(btCliState) {
         case BTCLI_START:
-            btCliState = btCliState_Start();
+            btCliState = btcomms_cli_state_start();
             break;
 
         case BTCLI_PROMPT:
-            btCliState = btCliState_Prompt();
+            btCliState = btcomms_cli_state_prompt();
             break;
 
         case BTCLI_COLLECT:
-            btCliState = btCliState_Collect();
+            btCliState = btcomms_cli_state_collect();
             break; 
 
         case BTCLI_INTERPRET:
-            btCliState = btCliState_Interpret();
+            btCliState = btcomms_cli_state_interpret();
             break; 
 
         case BTCLI_ERROR:
-            btCliState = btCliState_Error();
+            btCliState = btcomms_cli_state_error();
             break; 
     }
 }
 
-btCli_state_t btCliState_Start(void)
+btCli_state_t btcomms_cli_state_start(void)
 {
     // Show a banner on the CLI
-    btPrintf("\r\n\r\nValiant Turtle 2\r\n");
-    btPrintf("Copyright (C)2024 Simon Inns\r\n");
-    btPrintf("Use HLP to show available commands\r\n");
+    btcomms_printf("\r\n\r\nValiant Turtle 2\r\n");
+    btcomms_printf("Copyright (C)2024 Simon Inns\r\n");
+    btcomms_printf("Use HLP to show available commands\r\n");
 
     return BTCLI_PROMPT;
 }
 
-btCli_state_t btCliState_Prompt(void)
+btCli_state_t btcomms_cli_state_prompt(void)
 {
     // Show the prompt
-    btPrintf("\r\nVT2> ");
+    btcomms_printf("\r\nVT2> ");
 
     return BTCLI_COLLECT;
 }
 
-btCli_state_t btCliState_Collect(void)
+btCli_state_t btcomms_cli_state_collect(void)
 {
     // Collect any input waiting
     char cint = fifoInRead();
@@ -298,7 +298,7 @@ btCli_state_t btCliState_Collect(void)
         if (cint == 13) {
             // Has the buffer got contents?
             if (btCliBufferPointer > 0) {
-                btPrintf("\r\n");
+                btcomms_printf("\r\n");
 
                 return BTCLI_INTERPRET;
             } else {
@@ -310,7 +310,7 @@ btCli_state_t btCliState_Collect(void)
         if (cint == 8) {
             // Backspace
             if (btCliBufferPointer > 0) {
-                btPrintf("%c%c%c", 8, 32, 8);
+                btcomms_printf("%c%c%c", 8, 32, 8);
                 btCliBufferPointer--;
             }
             return BTCLI_COLLECT;
@@ -327,14 +327,14 @@ btCli_state_t btCliState_Collect(void)
         btCliBufferPointer++;
 
         // Display the received character
-        btPrintf("%c", cint);
+        btcomms_printf("%c", cint);
     }
 
     // All good, keep collecting
     return BTCLI_COLLECT;
 }
 
-btCli_state_t btCliState_Interpret(void)
+btCli_state_t btcomms_cli_state_interpret(void)
 {
     // Note: All commands are cccppppp where ccc is the command and ppppp is a numerical parameter
 
@@ -361,7 +361,7 @@ btCli_state_t btCliState_Interpret(void)
     parameter[pointer] = '\0'; // Terminate
 
     // Convert command to uppercase
-    btConvUppercase(command);
+    btcomms_conv_uppercase(command);
 
     // Convert parameter to integer
     uint16_t nparam = atoi(parameter);
@@ -373,41 +373,41 @@ btCli_state_t btCliState_Interpret(void)
     // }
 
     // Empty the buffer and return to the prompting state
-    btCliResetCommandBuffers();
+    btcomms_cli_reset_command_buffers();
     return BTCLI_PROMPT;
 }
 
-btCli_state_t btCliState_Error(void)
+btCli_state_t btcomms_cli_state_error(void)
 {
     switch(btCliError) {
         case BTERR_CMD_NONE:
-            btPrintf("E00 - OK");
+            btcomms_printf("E00 - OK");
             break;
 
         case BTERR_CMD_SHORT:
-            btPrintf("E01 - Command too short");
+            btcomms_printf("E01 - Command too short");
             break;
 
         case BTERR_CMD_UNKNOWN:
-            btPrintf("E02 - Unknown command");
+            btcomms_printf("E02 - Unknown command");
             break;
 
         case BTERR_CMD_PARAMISSING:
-            btPrintf("E03 - Parameter missing");
+            btcomms_printf("E03 - Parameter missing");
             break;
 
         default:
-            btPrintf("E04 - Unknown error");
+            btcomms_printf("E04 - Unknown error");
             break;
     }
 
     // Empty the buffer and return to the prompting state
-    btCliResetCommandBuffers();
+    btcomms_cli_reset_command_buffers();
     return BTCLI_PROMPT;
 }
 
 // Convert a string to uppercase
-void btConvUppercase(char *temp)
+void btcomms_conv_uppercase(char *temp)
 {
     char * name;
     name = strtok(temp,":");
@@ -421,7 +421,7 @@ void btConvUppercase(char *temp)
 }
 
 // A printf like function but outputs via BT SPP
-void btPrintf(const char *fmt, ...)
+void btcomms_printf(const char *fmt, ...)
 {
     static char lineBuffer[256];
 

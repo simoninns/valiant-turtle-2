@@ -382,12 +382,15 @@ static void on_command_fn(EmbeddedCli *embeddedCli, CliCommand *command) {
 // Initialise the embedded CLI
 void cli_initialise() {
     EmbeddedCliConfig *config = embeddedCliDefaultConfig();
-    // config->cliBuffer = cliBuffer;
-    // config->cliBufferSize = CLI_BUFFER_SIZE;
-    // config->rxBufferSize = CLI_RX_BUFFER_SIZE;
-    // config->cmdBufferSize = CLI_CMD_BUFFER_SIZE;
-    // config->historyBufferSize = CLI_HISTORY_SIZE;
+    // config->rxBufferSize = 64;
+    // config->cmdBufferSize = 64;
+    // config->historyBufferSize = 128;
+    // config->cliBuffer = NULL;
+    // config->cliBufferSize = 0;
+    // config->maxBindingCount = 8;
+    // config->enableAutoComplete = true;
     config->maxBindingCount = 16;
+    config->invitation = "VT2> ";
 
     cli = embeddedCliNew(config);
     cli->onCommand = on_command_fn;

@@ -61,26 +61,26 @@ static void spp_service_setup(void);
 static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
 
 static void one_shot_timer_setup(void);
-static void btCliProcess_handler(struct btstack_timer_source *ts);
+static void btcomms_cli_process_handler(struct btstack_timer_source *ts);
 
-void btcommsInitialise(void);
-void btcommsProcess(void);
-btComms_state_t btcommsGetStatus(void);
+void btcomms_initialise(void);
+void btcomms_process(void);
+btComms_state_t btcomms_get_status(void);
 
 // Prototypes
-void btCliResetCommandBuffers(void);
-void btCliInitialise(void);
-void btCliProcess(void);
+void btcomms_cli_reset_command_buffers(void);
+void btcomms_cli_initialise(void);
+void btcomms_cli_process(void);
 
 // States
-btCli_state_t btCliState_Start(void);
-btCli_state_t btCliState_Prompt(void);
-btCli_state_t btCliState_Collect(void);
-btCli_state_t btCliState_Interpret(void);
-btCli_state_t btCliState_Error(void);
+btCli_state_t btcomms_cli_state_start(void);
+btCli_state_t btcomms_cli_state_prompt(void);
+btCli_state_t btcomms_cli_state_collect(void);
+btCli_state_t btcomms_cli_state_interpret(void);
+btCli_state_t btcomms_cli_state_error(void);
 
 // Utilities
-void btConvUppercase(char *temp);
-void btPrintf(const char *fmt, ...);
+void btcomms_conv_uppercase(char *temp);
+void btcomms_printf(const char *fmt, ...);
 
 #endif /* BTCOMMS_H_ */
