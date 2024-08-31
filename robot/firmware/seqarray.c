@@ -62,7 +62,7 @@ void seqarray_init(sequence_array_t** sequence) {
     }
 
     // Initialise memory for spp
-    container->sps = (int32_t *)malloc(INITIAL_SEQUENCE_SIZE * sizeof(int32_t)); // 1 is the initial array size
+    container->sps = (int32_t *)malloc(INITIAL_SEQUENCE_SIZE * sizeof(int32_t));
     if (!container->sps){ 
         debug_printf("seqarray_init(): Memory Allocation Failed\n"); 
         exit(0); 

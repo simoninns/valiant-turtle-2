@@ -56,15 +56,15 @@ static void on_command(const char* name, char *tokens) {
 
 static void on_about(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
-    btcomms_printf("About:\n");
-    btcomms_printf("  Valiant Turtle 2\n");
-    btcomms_printf("  (c) 2024 Simon Inns - GPL Open-Source\n");
-    btcomms_printf("\n");
+    btcomms_printf("About:\r\n");
+    btcomms_printf("  Valiant Turtle 2\r\n");
+    btcomms_printf("  (c) 2024 Simon Inns - GPL Open-Source\r\n");
+    btcomms_printf("\r\n");
 }
 
 void on_clear_cli(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
-    btcomms_printf("\33[2J\n");
+    btcomms_printf("\33[2J\r\n");
 }
 
 static void on_power(EmbeddedCli *cli, char *args, void *context) {
@@ -74,10 +74,10 @@ static void on_power(EmbeddedCli *cli, char *args, void *context) {
     float voltage = ina260_read_bus_voltage();
     float power = ina260_read_power();
 
-    btcomms_printf("INA260 Power information:\n");
-    btcomms_printf("  Current: %.2f mA\n", current);
-    btcomms_printf("  Bus voltage: %.2f mV\n", voltage);
-    btcomms_printf("  Power: %.2f mW\n", power);
+    btcomms_printf("INA260 Power information:\r\n");
+    btcomms_printf("  Current: %.2f mA\r\n", current);
+    btcomms_printf("  Bus voltage: %.2f mV\r\n", voltage);
+    btcomms_printf("  Power: %.2f mW\r\n", power);
 }
 
 void on_pen(EmbeddedCli *cli, char *args, void *context) {
@@ -87,21 +87,21 @@ void on_pen(EmbeddedCli *cli, char *args, void *context) {
     if (arg1 != NULL) {
         // Argument received
         if (!strcmp(arg1, "up")) {
-            btcomms_printf("Moving the pen servo to the up position\n");
+            btcomms_printf("Moving the pen servo to the up position\r\n");
             pen_up();
         } else if (!strcmp(arg1, "down")) {
-            btcomms_printf("Moving the pen servo to the down position\n");
+            btcomms_printf("Moving the pen servo to the down position\r\n");
             pen_down();
         } else if (!strcmp(arg1, "off")) {
-            btcomms_printf("Turning the pen servo off\n");
+            btcomms_printf("Turning the pen servo off\r\n");
             pen_off();
         } else {
             // Invalid argument
-            btcomms_printf("Pen command invalid argument - Usage: pen [up/down/off]\n");
+            btcomms_printf("Pen command invalid argument - Usage: pen [up/down/off]\r\n");
         }
     } else {
         // Missing argument
-        btcomms_printf("Pen command missing argument - Usage: pen [up/down/off]\n");
+        btcomms_printf("Pen command missing argument - Usage: pen [up/down/off]\r\n");
     }
 }
 
@@ -111,8 +111,8 @@ void on_stepper(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 1 arguments...
     if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
-        btcomms_printf("stepper command missing argument(s)\n");
-        btcomms_printf("  Usage: stepper [enable/disable]\n");
+        btcomms_printf("stepper command missing argument(s)\r\n");
+        btcomms_printf("  Usage: stepper [enable/disable]\r\n");
         return;
     }
 
@@ -121,13 +121,13 @@ void on_stepper(EmbeddedCli *cli, char *args, void *context) {
         // Argument received
         if (!strcmp(arg1, "enable")) {
             stepconf_set_enable(true);
-            btcomms_printf("Stepper motors enabled\n");
+            btcomms_printf("Stepper motors enabled\r\n");
         } else if (!strcmp(arg1, "disable")) {
             stepconf_set_enable(false);
-            btcomms_printf("Stepper motors disabled\n");
+            btcomms_printf("Stepper motors disabled\r\n");
         } else {
             // Invalid argument
-            btcomms_printf("stepper command invalid argument - You must specify enable or disable\n");
+            btcomms_printf("stepper command invalid argument - You must specify enable or disable\r\n");
         }
     }
 }
@@ -138,8 +138,8 @@ void on_stepper_set(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 5 arguments...
     if (embeddedCliGetTokenCount(args) != 5) {
         // Missing argument
-        btcomms_printf("stepper-set command missing argument(s)\n");
-        btcomms_printf("  Usage: stepper-set [left/right/both] [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]\n");
+        btcomms_printf("stepper-set command missing argument(s)\r\n");
+        btcomms_printf("  Usage: stepper-set [left/right/both] [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]\r\n");
         return;
     }
 
@@ -155,7 +155,7 @@ void on_stepper_set(EmbeddedCli *cli, char *args, void *context) {
             which_stepper = 2;
         } else {
             // Invalid argument
-            btcomms_printf("stepper-set command invalid argument - You must specify left, right or both\n");
+            btcomms_printf("stepper-set command invalid argument - You must specify left, right or both\r\n");
             return;
         }
     }
@@ -168,14 +168,14 @@ void on_stepper_set(EmbeddedCli *cli, char *args, void *context) {
 
     if (which_stepper == 0) {
         stepconf_set_parameters(STEPPER_LEFT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
-        btcomms_printf("Stepper left parameters set\n");
+        btcomms_printf("Stepper left parameters set\r\n");
     } else if (which_stepper == 1) {
         stepconf_set_parameters(STEPPER_RIGHT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
-        btcomms_printf("Stepper right parameters set\n");
+        btcomms_printf("Stepper right parameters set\r\n");
     } else {
         stepconf_set_parameters(STEPPER_LEFT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
         stepconf_set_parameters(STEPPER_RIGHT, accSpsps, minimumSps, maximumSps, updatesPerSecond);
-        btcomms_printf("Stepper left and right parameters set\n");
+        btcomms_printf("Stepper left and right parameters set\r\n");
     }
 }
 
@@ -185,8 +185,8 @@ void on_stepper_show(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 1 argument...
     if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
-        btcomms_printf("stepper-show command missing argument(s)\n");
-        btcomms_printf("  Usage: stepper-show [left/right/both]\n");
+        btcomms_printf("stepper-show command missing argument(s)\r\n");
+        btcomms_printf("  Usage: stepper-show [left/right/both]\r\n");
         return;
     }
 
@@ -196,34 +196,34 @@ void on_stepper_show(EmbeddedCli *cli, char *args, void *context) {
         // Argument received
         if (!strcmp(arg1, "left")) {
             stepconf = stepconf_get_parameters(STEPPER_LEFT);
-            btcomms_printf("Left stepper parameters:\n");
-            btcomms_printf("  Acceleration in Steps per Second per Second = %d\n", stepconf.accSpsps);
-            btcomms_printf("  Minimum Steps per Second = %d\n", stepconf.minimumSps);
-            btcomms_printf("  Maximum Steps per Second = %d\n", stepconf.maximumSps);
-            btcomms_printf("  Updates per second = %d\n", stepconf.updatesPerSecond);
+            btcomms_printf("Left stepper parameters:\r\n");
+            btcomms_printf("  Acceleration in Steps per Second per Second = %d\r\n", stepconf.accSpsps);
+            btcomms_printf("  Minimum Steps per Second = %d\r\n", stepconf.minimumSps);
+            btcomms_printf("  Maximum Steps per Second = %d\r\n", stepconf.maximumSps);
+            btcomms_printf("  Updates per second = %d\r\n", stepconf.updatesPerSecond);
         } else if (!strcmp(arg1, "right")) {
             stepconf = stepconf_get_parameters(STEPPER_RIGHT);
-            btcomms_printf("Right stepper parameters:\n");
-            btcomms_printf("  Acceleration in Steps per Second per Second = %d\n", stepconf.accSpsps);
-            btcomms_printf("  Minimum Steps per Second = %d\n", stepconf.minimumSps);
-            btcomms_printf("  Maximum Steps per Second = %d\n", stepconf.maximumSps);
-            btcomms_printf("  Updates per second = %d\n", stepconf.updatesPerSecond);
+            btcomms_printf("Right stepper parameters:\r\n");
+            btcomms_printf("  Acceleration in Steps per Second per Second = %d\r\n", stepconf.accSpsps);
+            btcomms_printf("  Minimum Steps per Second = %d\r\n", stepconf.minimumSps);
+            btcomms_printf("  Maximum Steps per Second = %d\r\n", stepconf.maximumSps);
+            btcomms_printf("  Updates per second = %d\r\n", stepconf.updatesPerSecond);
         } else if (!strcmp(arg1, "both")) {
             stepconf = stepconf_get_parameters(STEPPER_LEFT);
-            btcomms_printf("Left stepper parameters:\n");
-            btcomms_printf("  Acceleration in Steps per Second per Second = %d\n", stepconf.accSpsps);
-            btcomms_printf("  Minimum Steps per Second = %d\n", stepconf.minimumSps);
-            btcomms_printf("  Maximum Steps per Second = %d\n", stepconf.maximumSps);
-            btcomms_printf("  Updates per second = %d\n", stepconf.updatesPerSecond);
+            btcomms_printf("Left stepper parameters:\r\n");
+            btcomms_printf("  Acceleration in Steps per Second per Second = %d\r\n", stepconf.accSpsps);
+            btcomms_printf("  Minimum Steps per Second = %d\r\n", stepconf.minimumSps);
+            btcomms_printf("  Maximum Steps per Second = %d\r\n", stepconf.maximumSps);
+            btcomms_printf("  Updates per second = %d\r\n", stepconf.updatesPerSecond);
             stepconf = stepconf_get_parameters(STEPPER_RIGHT);
-            btcomms_printf("Right stepper parameters:\n");
-            btcomms_printf("  Acceleration in Steps per Second per Second = %d\n", stepconf.accSpsps);
-            btcomms_printf("  Minimum Steps per Second = %d\n", stepconf.minimumSps);
-            btcomms_printf("  Maximum Steps per Second = %d\n", stepconf.maximumSps);
-            btcomms_printf("  Updates per second = %d\n", stepconf.updatesPerSecond);
+            btcomms_printf("Right stepper parameters:\r\n");
+            btcomms_printf("  Acceleration in Steps per Second per Second = %d\r\n", stepconf.accSpsps);
+            btcomms_printf("  Minimum Steps per Second = %d\r\n", stepconf.minimumSps);
+            btcomms_printf("  Maximum Steps per Second = %d\r\n", stepconf.maximumSps);
+            btcomms_printf("  Updates per second = %d\r\n", stepconf.updatesPerSecond);
         } else {
             // Invalid argument
-            btcomms_printf("stepper-set command invalid argument - You must specify left, right or both\n");
+            btcomms_printf("stepper-set command invalid argument - You must specify left, right or both\r\n");
             return;
         }
     }
@@ -235,8 +235,8 @@ void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 2 arguments...
     if (embeddedCliGetTokenCount(args) != 2) {
         // Missing argument
-        btcomms_printf("stepper-dryrun command missing argument(s)\n");
-        btcomms_printf("  Usage: stepper-dryrun [left/right] [required number of steps]\n");
+        btcomms_printf("stepper-dryrun command missing argument(s)\r\n");
+        btcomms_printf("  Usage: stepper-dryrun [left/right] [required number of steps]\r\n");
         return;
     }
 
@@ -250,7 +250,7 @@ void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context) {
             which_stepper = 1;
         } else {
             // Invalid argument
-            btcomms_printf("stepper-dryrun command invalid argument - You must specify left or right\n");
+            btcomms_printf("stepper-dryrun command invalid argument - You must specify left or right\r\n");
             return;
         }
     }
@@ -259,7 +259,7 @@ void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context) {
     int32_t requiredSteps = atoi(embeddedCliGetToken(args, 2));
     if (requiredSteps < 1) {
         // Invalid argument
-        btcomms_printf("stepper-dryrun command invalid argument - You must specify 1 or more steps\n");
+        btcomms_printf("stepper-dryrun command invalid argument - You must specify 1 or more steps\r\n");
         return;
     }
 
@@ -285,7 +285,7 @@ void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
             which_stepper = 2;
         } else {
             // Invalid argument
-            btcomms_printf("stepper-run command invalid argument - You must specify left, right or both\n");
+            btcomms_printf("stepper-run command invalid argument - You must specify left, right or both\r\n");
             return;
         }
     }
@@ -294,16 +294,16 @@ void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
         // Ensure we have 2 arguments...
         if (embeddedCliGetTokenCount(args) != 2) {
             // Missing argument
-            btcomms_printf("stepper-run command missing argument(s)\n");
-            btcomms_printf("  Usage: stepper-run [left/right/both] [required number of steps]([required number of steps])\n");
+            btcomms_printf("stepper-run command missing argument(s)\r\n");
+            btcomms_printf("  Usage: stepper-run [left/right/both] [required number of steps]([required number of steps])\r\n");
             return;
         }
     } else {
         // Ensure we have 3 arguments...
         if (embeddedCliGetTokenCount(args) != 3) {
             // Missing argument
-            btcomms_printf("stepper-run command missing argument(s)\n");
-            btcomms_printf("  Usage: stepper-run [left/right/both] [required number of steps]([required number of steps])\n");
+            btcomms_printf("stepper-run command missing argument(s)\r\n");
+            btcomms_printf("  Usage: stepper-run [left/right/both] [required number of steps]([required number of steps])\r\n");
             return;
         }
     }
@@ -312,7 +312,7 @@ void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
     int32_t requiredSteps1 = atoi(embeddedCliGetToken(args, 2));
     if (requiredSteps1 < 1) {
         // Invalid argument
-        btcomms_printf("stepper-run command invalid argument - You must specify 1 or more steps\n");
+        btcomms_printf("stepper-run command invalid argument - You must specify 1 or more steps\r\n");
         return;
     }
 
@@ -321,20 +321,20 @@ void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
         requiredSteps2 = atoi(embeddedCliGetToken(args, 3));
         if (requiredSteps2 < 1) {
             // Invalid argument
-            btcomms_printf("stepper-run command invalid argument - You must specify 1 or more steps\n");
+            btcomms_printf("stepper-run command invalid argument - You must specify 1 or more steps\r\n");
             return;
         }
     }
 
     if (which_stepper == 0) {
-        btcomms_printf("Running left stepper for %d steps\n", requiredSteps1);
+        btcomms_printf("Running left stepper for %d steps\r\n", requiredSteps1);
         stepconf_run(STEPPER_LEFT, requiredSteps1);
     } else if (which_stepper == 1) {
-        btcomms_printf("Running right stepper for %d steps\n", requiredSteps1);
+        btcomms_printf("Running right stepper for %d steps\r\n", requiredSteps1);
         stepconf_run(STEPPER_RIGHT, requiredSteps1);
     } else if (which_stepper == 2) {
-        btcomms_printf("Running left stepper for %d steps\n", requiredSteps1);
-        btcomms_printf("Running right stepper for %d steps\n", requiredSteps2);
+        btcomms_printf("Running left stepper for %d steps\r\n", requiredSteps1);
+        btcomms_printf("Running right stepper for %d steps\r\n", requiredSteps2);
         stepconf_run(STEPPER_LEFT, requiredSteps1);
         stepconf_run(STEPPER_RIGHT, requiredSteps2);
     }
@@ -403,7 +403,7 @@ void cli_initialise() {
 
     CliCommandBinding pen_binding = {
             "pen",
-            "Control the pen servo\n\tpen [up/down/off]",
+            "Control the pen servo\r\n\tpen [up/down/off]",
             true,
             NULL,
             on_pen
@@ -412,7 +412,7 @@ void cli_initialise() {
 
     CliCommandBinding stepper = {
             "stepper",
-            "Enable or disable the stepper motors\n\tstepper [enable/disable]",
+            "Enable or disable the stepper motors\r\n\tstepper [enable/disable]",
             true,
             NULL,
             on_stepper
@@ -421,7 +421,7 @@ void cli_initialise() {
 
     CliCommandBinding stepper_set_binding = {
             "stepper-set",
-            "Set the acc/dec parameters for the stepper motors\n\tstepper-set [left/right/both] [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]",
+            "Set the acc/dec parameters for the stepper motors\r\n\tstepper-set [left/right/both] [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]",
             true,
             NULL,
             on_stepper_set
@@ -430,7 +430,7 @@ void cli_initialise() {
 
     CliCommandBinding stepper_show_binding = {
             "stepper-show",
-            "Show the acc/dec parameters for the stepper motors\n\tstepper-show [left/right/both]",
+            "Show the acc/dec parameters for the stepper motors\r\n\tstepper-show [left/right/both]",
             true,
             NULL,
             on_stepper_show
@@ -439,7 +439,7 @@ void cli_initialise() {
 
     CliCommandBinding stepper_dryrun_binding = {
             "stepper-dryrun",
-            "Dry run the stepper (shows the calculated sequence)\n\tstepper-dryrun [left/right] [required number of steps]",
+            "Dry run the stepper (shows the calculated sequence)\r\n\tstepper-dryrun [left/right] [required number of steps]",
             true,
             NULL,
             on_stepper_dryrun
@@ -448,17 +448,18 @@ void cli_initialise() {
 
     CliCommandBinding stepper_run_binding = {
             "stepper-run",
-            "Run the stepper\n\tstepper-run [left/right/both] [required number of steps]([required number of steps])",
+            "Run the stepper\r\n\tstepper-run [left/right/both] [required number of steps]([required number of steps])",
             true,
             NULL,
             on_stepper_run
     };
     embeddedCliAddBinding(cli, stepper_run_binding);
 
-    btcomms_printf("\n\nCLI is running\n");
-    btcomms_printf("Type \"help\" for a list of commands\n");
-    btcomms_printf("Use backspace and tab to remove chars and autocomplete\n");
-    btcomms_printf("Use up and down arrows to recall previous commands\n");
+    btcomms_printf("\r\n\r\nWelcome to the Valiant Turtle 2 CLI\r\n");
+    btcomms_printf("  Type \"help\" for a list of commands\r\n");
+    btcomms_printf("  Use <Backspace> to remove characters and <TAB> to autocomplete a command\r\n");
+    btcomms_printf("  Use the up and down arrow keys to recall and scroll through previous commands\r\n");
+    btcomms_printf("\r\n");
 }
 
 // Process any waiting characters into the CLI

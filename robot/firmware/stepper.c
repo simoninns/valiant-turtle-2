@@ -102,21 +102,21 @@ void stepper_set_direction(sm_side_t side, sm_direction_t direction)
     if (side == SM_LEFT) {
         if (direction == SM_FORWARDS) {
             gpio_put(SM_LDIR_GPIO, 1);
-            printf("Drive stepper_set_direction(): Left motor direction forwards\r\n");
+            printf("stepper_set_direction(): Left motor direction forwards\r\n");
         }
         else {
             gpio_put(SM_LDIR_GPIO, 0);
-            printf("Drive stepper_set_direction(): Left motor direction reverse\r\n");
+            printf("stepper_set_direction(): Left motor direction reverse\r\n");
         }
     }
     
     if (side == SM_RIGHT) {
         if (direction == SM_FORWARDS) {
             gpio_put(SM_RDIR_GPIO, 0);
-            printf("Drive stepper_set_direction(): Right motor direction forwards\r\n");
+            printf("stepper_set_direction(): Right motor direction forwards\r\n");
         } else {
             gpio_put(SM_RDIR_GPIO, 1);
-            printf("Drive stepper_set_direction(): Right motor direction reverse\r\n");
+            printf("stepper_set_direction(): Right motor direction reverse\r\n");
         }
     }
 }
@@ -126,10 +126,10 @@ void stepper_enable(bool state)
 {
     if (state) {
         gpio_put(SM_ENABLE_GPIO, 1);
-        printf("Drive steppers_enable(): Stepper motors enabled\r\n");
+        printf("steppers_enable(): Stepper motors enabled\r\n");
     } else {
         gpio_put(SM_ENABLE_GPIO, 0);
-        printf("Drive steppers_enable(): Stepper motors disabled\r\n");
+        printf("steppers_enable(): Stepper motors disabled\r\n");
     }
 }
 
@@ -152,25 +152,25 @@ void stepper_set_microstep_mode(sm_side_t sm_side, sm_microstep_mode_t microstep
             case SM_MODE_200:
                 gpio_put(SM_LM0_GPIO, 0);
                 gpio_put(SM_LM1_GPIO, 0);
-                printf("Drive stepper_set_microstep_mode(): Set left microstep to 200 steps/revolution\r\n");
+                printf("stepper_set_microstep_mode(): Set left microstep to 200 steps/revolution\r\n");
                 break;
 
             case SM_MODE_400:
                 gpio_put(SM_LM0_GPIO, 1);
                 gpio_put(SM_LM1_GPIO, 0);
-                printf("Drive stepper_set_microstep_mode(): Set left microstep to 400 steps/revolution\r\n");
+                printf("stepper_set_microstep_mode(): Set left microstep to 400 steps/revolution\r\n");
                 break;
 
             case SM_MODE_800:
                 gpio_put(SM_LM0_GPIO, 0);
                 gpio_put(SM_LM1_GPIO, 1);
-                printf("Drive stepper_set_microstep_mode(): Set left microstep to 800 steps/revolution\r\n");
+                printf("stepper_set_microstep_mode(): Set left microstep to 800 steps/revolution\r\n");
                 break;
 
             case SM_MODE_1600:
                 gpio_put(SM_LM0_GPIO, 1);
                 gpio_put(SM_LM1_GPIO, 1);
-                printf("Drive stepper_set_microstep_mode(): Set left microstep to 1600 steps/revolution\r\n");
+                printf("stepper_set_microstep_mode(): Set left microstep to 1600 steps/revolution\r\n");
                 break;
         }
     } else {
@@ -179,25 +179,25 @@ void stepper_set_microstep_mode(sm_side_t sm_side, sm_microstep_mode_t microstep
             case SM_MODE_200:
                 gpio_put(SM_RM0_GPIO, 0);
                 gpio_put(SM_RM1_GPIO, 0);
-                printf("Drive stepper_set_microstep_mode(): Set right microstep to 200 steps/revolution\r\n");
+                printf("stepper_set_microstep_mode(): Set right microstep to 200 steps/revolution\r\n");
                 break;
 
             case SM_MODE_400:
                 gpio_put(SM_RM0_GPIO, 1);
                 gpio_put(SM_RM1_GPIO, 0);
-                printf("Drive stepper_set_microstep_mode(): Set right microstep to 400 steps/revolution\r\n");
+                printf("stepper_set_microstep_mode(): Set right microstep to 400 steps/revolution\r\n");
                 break;
 
             case SM_MODE_800:
                 gpio_put(SM_RM0_GPIO, 0);
                 gpio_put(SM_RM1_GPIO, 1);
-                printf("Drive stepper_set_microstep_mode(): Set right microstep to 800 steps/revolution\r\n");
+                printf("stepper_set_microstep_mode(): Set right microstep to 800 steps/revolution\r\n");
                 break;
 
             case SM_MODE_1600:
                 gpio_put(SM_RM0_GPIO, 1);
                 gpio_put(SM_RM1_GPIO, 1);
-                printf("Drive stepper_set_microstep_mode(): Set right microstep to 1600 steps/revolution\r\n");
+                printf("stepper_set_microstep_mode(): Set right microstep to 1600 steps/revolution\r\n");
                 break;
         }
     }

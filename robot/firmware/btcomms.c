@@ -209,8 +209,8 @@ static void btcomms_cli_process_handler(struct btstack_timer_source *ts)
             rfcomm_request_can_send_now_event(rfcomm_channel_id);
         }
     } else {
-        // If the channel is lost; hold the CLI in reset
-        cli_initialise();
+        // Channel is lost
+        // We could do something here if we wanted to
     }
 
     // Set up the next timer shot
