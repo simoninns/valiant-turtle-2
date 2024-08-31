@@ -53,14 +53,11 @@ int main() {
     stepconf_initialise();
     btcomms_initialise();
 
-    // Initialise CLI
-    cli_initialise();
-
     // Turn on the PICO W system LED
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
     // Loop and process any non-interrupt driven activities
     while (true) {
-        cli_process();
+        sleep_ms(250);
     }
 }

@@ -36,15 +36,15 @@ typedef struct {
     char* data;
 } fifoBuffer_t;
 
-void fifoInitialise(void);
+void fifo_initialise(void);
 
-char fifoInRead(void);
-char fifoInWrite(char val);
+char fifo_in_read(void);
+char fifo_in_write(char val);
 
-char fifoOutRead(void);
-char fifoOutWrite(char val);
+char fifo_out_read(void);
+char fifo_out_write(char val);
 
-bool fifoIsInEmpty(void);
-bool fifoIsOutEmpty(void);
+bool fifo_is_in_empty(void);
+bool fifo_is_out_empty(void);
 
 #endif /* FIFO_H_ */

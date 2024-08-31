@@ -39,6 +39,7 @@
 
 #include "btcomms.h"
 #include "fifo.h"
+#include "cli.h"
 #include "debug.h"
 
 // Globals
@@ -121,7 +122,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                     char outputLine[128];
                     bool finished = false;
                     while (!finished) {
-                        outputLine[pos] = fifoOutRead();
+                        outputLine[pos] = fifo_out_read();
                         if (outputLine[pos] == 0) finished = true;
                         if (pos == 126) {
                             outputLine[pos+1] = 0;
@@ -149,7 +150,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
 
         case RFCOMM_DATA_PACKET:
             // Place the incoming characters into our input buffer
-            for (i=0;i<size;i++) fifoInWrite((char)packet[i]);
+            for (i=0;i<size;i++) fifo_in_write((char)packet[i]);
             break;
 
         default:
@@ -164,7 +165,7 @@ void btcomms_initialise(void)
     current_bt_state = BTCOMMS_OFF;
 
     // Set up the FIFO buffer for incoming characters
-    fifoInitialise();
+    fifo_initialise();
 
     one_shot_timer_setup();
     spp_service_setup();
@@ -186,7 +187,7 @@ void btcomms_initialise(void)
 static void one_shot_timer_setup(void)
 {
     // Initialise the CLI
-    btcomms_cli_initialise();
+    cli_initialise();
 
     // Set one-shot timer
     btcomms_cli_process_timer.process = &btcomms_cli_process_handler;
@@ -199,17 +200,17 @@ static void btcomms_cli_process_handler(struct btstack_timer_source *ts)
 {
     // Ensure the RFCOMM channel is valid
     if (channel_open) {
-        // Process the CLI state-machine
-        btcomms_cli_process();
+        // Process the CLI
+        cli_process();
 
         // Check the output buffer
-        if (!fifoIsOutEmpty()) {
+        if (!fifo_is_out_empty()) {
             // Ask for a send event
             rfcomm_request_can_send_now_event(rfcomm_channel_id);
         }
     } else {
         // If the channel is lost; hold the CLI in reset
-        btcomms_cli_initialise();
+        cli_initialise();
     }
 
     // Set up the next timer shot
@@ -223,203 +224,6 @@ btComms_state_t btcomms_get_status(void)
     return current_bt_state;
 }
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-// State Globals
-btCli_state_t btCliState;
-
-// CLI Buffer
-char btCliBuffer[10];
-uint16_t btCliBufferPointer;
-uint16_t btCliError;
-
-void btcomms_cli_reset_command_buffers(void)
-{
-    btCliBufferPointer = 0;
-    btCliError = BTERR_CMD_NONE;
-}
-
-void btcomms_cli_initialise(void)
-{
-    btCliState = BTCLI_START;
-    btcomms_cli_reset_command_buffers();
-}
-
-void btcomms_cli_process(void)
-{
-    switch(btCliState) {
-        case BTCLI_START:
-            btCliState = btcomms_cli_state_start();
-            break;
-
-        case BTCLI_PROMPT:
-            btCliState = btcomms_cli_state_prompt();
-            break;
-
-        case BTCLI_COLLECT:
-            btCliState = btcomms_cli_state_collect();
-            break; 
-
-        case BTCLI_INTERPRET:
-            btCliState = btcomms_cli_state_interpret();
-            break; 
-
-        case BTCLI_ERROR:
-            btCliState = btcomms_cli_state_error();
-            break; 
-    }
-}
-
-btCli_state_t btcomms_cli_state_start(void)
-{
-    // Show a banner on the CLI
-    btcomms_printf("\r\n\r\nValiant Turtle 2\r\n");
-    btcomms_printf("Copyright (C)2024 Simon Inns\r\n");
-    btcomms_printf("Use HLP to show available commands\r\n");
-
-    return BTCLI_PROMPT;
-}
-
-btCli_state_t btcomms_cli_state_prompt(void)
-{
-    // Show the prompt
-    btcomms_printf("\r\nVT2> ");
-
-    return BTCLI_COLLECT;
-}
-
-btCli_state_t btcomms_cli_state_collect(void)
-{
-    // Collect any input waiting
-    char cint = fifoInRead();
-    if (cint != 0) {
-
-        // Was the character a <CR>?
-        if (cint == 13) {
-            // Has the buffer got contents?
-            if (btCliBufferPointer > 0) {
-                btcomms_printf("\r\n");
-
-                return BTCLI_INTERPRET;
-            } else {
-                return BTCLI_PROMPT;
-            }
-        }
-
-        // Was the character a <BS>?
-        if (cint == 8) {
-            // Backspace
-            if (btCliBufferPointer > 0) {
-                btcomms_printf("%c%c%c", 8, 32, 8);
-                btCliBufferPointer--;
-            }
-            return BTCLI_COLLECT;
-        }
-
-        // Buffer overflow?
-        if (btCliBufferPointer == 8) {
-            // Ignore further input until it's a <CR> or <BS>
-            return BTCLI_COLLECT;
-        }
-
-        // Not a <CR>, so add the character to our buffer
-        btCliBuffer[btCliBufferPointer] = cint;
-        btCliBufferPointer++;
-
-        // Display the received character
-        btcomms_printf("%c", cint);
-    }
-
-    // All good, keep collecting
-    return BTCLI_COLLECT;
-}
-
-btCli_state_t btcomms_cli_state_interpret(void)
-{
-    // Note: All commands are cccppppp where ccc is the command and ppppp is a numerical parameter
-
-    // Check minimum length
-    if (btCliBufferPointer < 3) {
-        btCliError = BTERR_CMD_SHORT;
-        return BTCLI_ERROR;
-    }
-
-    // Get the command (3 characters)
-    char command[4];
-    char parameter[6];
-    uint16_t pointer = 0;
-
-    for (pointer = 0; pointer < 3; pointer++) {
-        command[pointer] = btCliBuffer[pointer];
-    }
-    command[pointer] = '\0'; // Terminate
-
-    // Get the parameter (5 characters)
-    for (pointer = 0; pointer < btCliBufferPointer-3; pointer++) {
-        parameter[pointer] = btCliBuffer[pointer+3];
-    }
-    parameter[pointer] = '\0'; // Terminate
-
-    // Convert command to uppercase
-    btcomms_conv_uppercase(command);
-
-    // Convert parameter to integer
-    uint16_t nparam = atoi(parameter);
-
-    // Process the command
-    // if (commandProcess(command, nparam) != 0) {
-    //     btCliError = BTERR_CMD_UNKNOWN;
-    //     return BTCLI_ERROR;
-    // }
-
-    // Empty the buffer and return to the prompting state
-    btcomms_cli_reset_command_buffers();
-    return BTCLI_PROMPT;
-}
-
-btCli_state_t btcomms_cli_state_error(void)
-{
-    switch(btCliError) {
-        case BTERR_CMD_NONE:
-            btcomms_printf("E00 - OK");
-            break;
-
-        case BTERR_CMD_SHORT:
-            btcomms_printf("E01 - Command too short");
-            break;
-
-        case BTERR_CMD_UNKNOWN:
-            btcomms_printf("E02 - Unknown command");
-            break;
-
-        case BTERR_CMD_PARAMISSING:
-            btcomms_printf("E03 - Parameter missing");
-            break;
-
-        default:
-            btcomms_printf("E04 - Unknown error");
-            break;
-    }
-
-    // Empty the buffer and return to the prompting state
-    btcomms_cli_reset_command_buffers();
-    return BTCLI_PROMPT;
-}
-
-// Convert a string to uppercase
-void btcomms_conv_uppercase(char *temp)
-{
-    char * name;
-    name = strtok(temp,":");
-
-    // Convert to upper case
-    char *s = name;
-    while (*s) {
-        *s = toupper((unsigned char) *s);
-        s++;
-    }
-}
-
 // A printf like function but outputs via BT SPP
 void btcomms_printf(const char *fmt, ...)
 {
@@ -431,5 +235,5 @@ void btcomms_printf(const char *fmt, ...)
     va_end(args);
 
     // Copy the output string to the output buffer
-    for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifoOutWrite(lineBuffer[i]);
+    for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifo_out_write(lineBuffer[i]);
 }

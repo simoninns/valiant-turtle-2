@@ -32,23 +32,6 @@
 
 // Enumerations
 typedef enum {
-    BTCLI_START,
-    BTCLI_PROMPT,
-	BTCLI_COLLECT,
-    BTCLI_INTERPRET,
-	BTCLI_ERROR,
-    BTCLI_PENCTRL,
-    BTCLI_MOTORCTRL
-} btCli_state_t;
-
-typedef enum {
-    BTERR_CMD_NONE,
-    BTERR_CMD_SHORT,
-    BTERR_CMD_UNKNOWN,
-    BTERR_CMD_PARAMISSING
-} btCli_error_t;
-
-typedef enum {
     BTCOMMS_OFF,
     BTCOMMS_DISCONNECTED,
     BTCOMMS_CONNECTED,
@@ -66,21 +49,6 @@ static void btcomms_cli_process_handler(struct btstack_timer_source *ts);
 void btcomms_initialise(void);
 void btcomms_process(void);
 btComms_state_t btcomms_get_status(void);
-
-// Prototypes
-void btcomms_cli_reset_command_buffers(void);
-void btcomms_cli_initialise(void);
-void btcomms_cli_process(void);
-
-// States
-btCli_state_t btcomms_cli_state_start(void);
-btCli_state_t btcomms_cli_state_prompt(void);
-btCli_state_t btcomms_cli_state_collect(void);
-btCli_state_t btcomms_cli_state_interpret(void);
-btCli_state_t btcomms_cli_state_error(void);
-
-// Utilities
-void btcomms_conv_uppercase(char *temp);
 void btcomms_printf(const char *fmt, ...);
 
 #endif /* BTCOMMS_H_ */

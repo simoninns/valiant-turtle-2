@@ -32,62 +32,55 @@
 
 #include "fifo.h"
  
-fifoBuffer_t inputBuffer;
-fifoBuffer_t outputBuffer;
+fifoBuffer_t input_buffer;
+fifoBuffer_t output_buffer;
 
-void fifoInitialise(void)
-{
+void fifo_initialise(void) {
     // Initialise the input buffer
-    inputBuffer.head = 0;
-    inputBuffer.tail = 0;
-    inputBuffer.data = malloc(sizeof(char*) * IN_BUFFER_SIZE);
+    input_buffer.head = 0;
+    input_buffer.tail = 0;
+    input_buffer.data = malloc(sizeof(char*) * IN_BUFFER_SIZE);
 
     // Initialise the output buffer
-    outputBuffer.head = 0;
-    outputBuffer.tail = 0;
-    outputBuffer.data = malloc(sizeof(char*) * OUT_BUFFER_SIZE);
+    output_buffer.head = 0;
+    output_buffer.tail = 0;
+    output_buffer.data = malloc(sizeof(char*) * OUT_BUFFER_SIZE);
 }
  
 // Reads a byte from the buffer and return 0 if buffer empty
-char fifoInRead(void)
-{
-   if (inputBuffer.head == inputBuffer.tail) return 0;
-   inputBuffer.tail = (inputBuffer.tail + 1) % IN_BUFFER_SIZE;
-   return inputBuffer.data[inputBuffer.tail];
+char fifo_in_read(void) {
+   if (input_buffer.head == input_buffer.tail) return 0;
+   input_buffer.tail = (input_buffer.tail + 1) % IN_BUFFER_SIZE;
+   return input_buffer.data[input_buffer.tail];
 }
  
 // Writes a byte to the buffer if not full
-char fifoInWrite(char val)
-{
-   if (inputBuffer.head + 1 == inputBuffer.tail) return 0;
-   inputBuffer.head = (inputBuffer.head + 1) % IN_BUFFER_SIZE;
-   return inputBuffer.data[inputBuffer.head] = val;
+char fifo_in_write(char val) {
+   if (input_buffer.head + 1 == input_buffer.tail) return 0;
+   input_buffer.head = (input_buffer.head + 1) % IN_BUFFER_SIZE;
+   return input_buffer.data[input_buffer.head] = val;
 }
 
 // Reads a byte from the buffer and return 0 if buffer empty
-char fifoOutRead(void)
-{
-   if (outputBuffer.head == outputBuffer.tail) return 0;
-   outputBuffer.tail = (outputBuffer.tail + 1) % OUT_BUFFER_SIZE;
-   return outputBuffer.data[outputBuffer.tail];
+char fifo_out_read(void) {
+   if (output_buffer.head == output_buffer.tail) return 0;
+   output_buffer.tail = (output_buffer.tail + 1) % OUT_BUFFER_SIZE;
+   return output_buffer.data[output_buffer.tail];
 }
  
 // Writes a byte to the buffer if not full
-char fifoOutWrite(char val)
-{
-   if (outputBuffer.head + 1 == outputBuffer.tail) return 0;
-   outputBuffer.head = (outputBuffer.head + 1) % OUT_BUFFER_SIZE;
-   return outputBuffer.data[outputBuffer.head] = val;
+char fifo_out_write(char val) {
+   if (output_buffer.head + 1 == output_buffer.tail) return 0;
+   output_buffer.head = (output_buffer.head + 1) % OUT_BUFFER_SIZE;
+   return output_buffer.data[output_buffer.head] = val;
 }
 
-bool fifoIsInEmpty(void)
-{
-    if (inputBuffer.head == inputBuffer.tail) return true;
+bool fifo_is_in_empty(void) {
+    if (input_buffer.head == input_buffer.tail) return true;
     return false;
 }
 
-bool fifoIsOutEmpty(void)
-{
-    if (outputBuffer.head == outputBuffer.tail) return true;
+bool fifo_is_out_empty(void) {
+    if (output_buffer.head == output_buffer.tail) return true;
     return false;
 }
