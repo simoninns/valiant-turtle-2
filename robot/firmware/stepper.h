@@ -59,10 +59,10 @@ typedef enum {
 } sm_direction_t;
 
 typedef enum {
-    SM_MODE_200,  //  200 steps/revolution
-    SM_MODE_400,  //  400 steps/revolution
-    SM_MODE_800,  //  800 steps/revolution
-    SM_MODE_1600  // 1600 steps/revolution
+    SM_MODE_200,  //  200 steps/revolution (70% torque)
+    SM_MODE_400,  //  400 steps/revolution (38% torque)
+    SM_MODE_800,  //  800 steps/revolution (19% torque)
+    SM_MODE_1600  // 1600 steps/revolution (10% torque)
 } sm_microstep_mode_t;
 
 typedef struct sequence_array sequence_array_t; // Forward declaration
