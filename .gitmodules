@@ -10,3 +10,7 @@ url = https://github.com/funbiscuit/embedded-cli.git
 path = robot/firmware/pico-ssd1306
 url = https://github.com/daschr/pico-ssd1306.git
 
+[submodule "communicator/openscad/scad/BOSL"]
+path = communicator/openscad/scad/BOSL
+url = https://github.com/revarbat/BOSL.git
+
