@@ -77,8 +77,8 @@ void stepper_init()
     gpio_set_dir(SM_RM1_GPIO, GPIO_OUT);
 
     // Initialise microstep mode (800 steps/revolution)
-    stepper_set_microstep_mode(SM_LEFT, SM_MODE_800);
-    stepper_set_microstep_mode(SM_RIGHT, SM_MODE_800);
+    stepper_set_microstep_mode(SM_LEFT, SM_MODE_400);
+    stepper_set_microstep_mode(SM_RIGHT, SM_MODE_400);
 
     // Set the stepper direction to forwards
     stepper_set_direction(SM_LEFT, SM_FORWARDS);

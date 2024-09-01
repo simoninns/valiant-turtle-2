@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    fifo.h
+    metricmotion.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,27 +24,15 @@
 
 ************************************************************************/
 
-#ifndef FIFO_H_
-#define FIFO_H_
+#ifndef METRICMOTION_H_
+#define METRICMOTION_H_
 
-#define IN_BUFFER_SIZE 256
-#define OUT_BUFFER_SIZE 2048
+#define WHEEL_DIAMETER_MM 55.0
+#define STEPS_PER_REV 400.0
 
-typedef struct {
-    int16_t head;
-    int16_t tail;
-    char* data;
-} fifoBuffer_t;
+void metricmotion_forwards(int32_t millimeters);
+void metricmotion_backwards(int32_t millimeters);
+void metricmotion_left(int32_t degrees);
+void metricmotion_right(int32_t degrees);
 
-void fifo_initialise(void);
-
-char fifo_in_read(void);
-char fifo_in_write(char val);
-
-char fifo_out_read(void);
-char fifo_out_write(char val);
-
-bool fifo_is_in_empty(void);
-bool fifo_is_out_empty(void);
-
-#endif /* FIFO_H_ */
+#endif /* METRICMOTION_H_ */

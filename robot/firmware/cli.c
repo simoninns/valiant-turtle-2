@@ -38,6 +38,7 @@
 #include "stepconf.h"
 #include "btcomms.h"
 #include "fifo.h"
+#include "metricmotion.h"
 
 #include "cli.h"
 
@@ -340,6 +341,99 @@ void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
     }
 }
 
+// Metric motion commands
+void on_forwards(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 1 arguments...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        btcomms_printf("forward command missing argument\r\n");
+        btcomms_printf("  Usage: forwards [number of millimeters]\r\n");
+        return;
+    }
+
+    int32_t millimeters = atoi(embeddedCliGetToken(args, 1));
+    if (millimeters < 1) {
+        // Invalid argument
+        btcomms_printf("forwards command invalid argument - You must specify 1 or more millimeters\r\n");
+        return;
+    }
+
+    // Perform command
+    btcomms_printf("Moving forwards %d millimeters\r\n", millimeters);
+    metricmotion_forwards(millimeters);
+}
+
+void on_backwards(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 1 arguments...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        btcomms_printf("backward command missing argument\r\n");
+        btcomms_printf("  Usage: backwards [number of millimeters]\r\n");
+        return;
+    }
+
+    int32_t millimeters = atoi(embeddedCliGetToken(args, 1));
+    if (millimeters < 1) {
+        // Invalid argument
+        btcomms_printf("backwards command invalid argument - You must specify 1 or more millimeters\r\n");
+        return;
+    }
+
+    // Perform command
+    btcomms_printf("Moving backwards %d millimeters\r\n", millimeters);
+    metricmotion_backwards(millimeters);
+}
+
+void on_left(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 1 arguments...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        btcomms_printf("left command missing argument\r\n");
+        btcomms_printf("  Usage: left [number of degrees]\r\n");
+        return;
+    }
+
+    int32_t degrees = atoi(embeddedCliGetToken(args, 1));
+    if (degrees < 1) {
+        // Invalid argument
+        btcomms_printf("left command invalid argument - You must specify 1 or more degrees\r\n");
+        return;
+    }
+
+    // Perform command
+    btcomms_printf("Turning left %d degrees\r\n", degrees);
+    metricmotion_left(degrees);
+}
+
+void on_right(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 1 arguments...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        btcomms_printf("right command missing argument\r\n");
+        btcomms_printf("  Usage: right [number of degrees]\r\n");
+        return;
+    }
+
+    int32_t degrees = atoi(embeddedCliGetToken(args, 1));
+    if (degrees < 1) {
+        // Invalid argument
+        btcomms_printf("right command invalid argument - You must specify 1 or more degrees\r\n");
+        return;
+    }
+
+    // Perform command
+    btcomms_printf("Turning right %d degrees\r\n", degrees);
+    metricmotion_right(degrees);
+}
+
 // ------------------------------------------------------------------------
 
 // Embedded CLI library requires a write char function
@@ -455,6 +549,44 @@ void cli_initialise() {
     };
     embeddedCliAddBinding(cli, stepper_run_binding);
 
+    // Metric motion commands
+    CliCommandBinding forwards_binding = {
+            "forwards",
+            "Move forwards the specified number of millimeters\r\n\tforwards [number of millimeters]",
+            true,
+            NULL,
+            on_forwards
+    };
+    embeddedCliAddBinding(cli, forwards_binding);
+
+    CliCommandBinding backwards_binding = {
+            "backwards",
+            "Move backwards the specified number of millimeters\r\n\tbackwards [number of millimeters]",
+            true,
+            NULL,
+            on_backwards
+    };
+    embeddedCliAddBinding(cli, backwards_binding);
+
+    CliCommandBinding left_binding = {
+            "left",
+            "Turn left the specified number of degrees\r\n\tleft [number of degrees]",
+            true,
+            NULL,
+            on_left
+    };
+    embeddedCliAddBinding(cli, left_binding);
+
+    CliCommandBinding right_binding = {
+            "right",
+            "Turn right the specified number of degrees\r\n\tright [number of degrees]",
+            true,
+            NULL,
+            on_right
+    };
+    embeddedCliAddBinding(cli, right_binding);
+
+    // Show initial CLI instructions to user
     btcomms_printf("\r\n\r\nWelcome to the Valiant Turtle 2 CLI\r\n");
     btcomms_printf("  Type \"help\" for a list of commands\r\n");
     btcomms_printf("  Use <Backspace> to remove characters and <TAB> to autocomplete a command\r\n");

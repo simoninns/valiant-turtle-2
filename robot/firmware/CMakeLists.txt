@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME}
     stepconf.c
     btcomms.c
     fifo.c
+    metricmotion.c
     ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/src/embedded_cli.c
     ${CMAKE_CURRENT_LIST_DIR}/pico-ssd1306/ssd1306.c
     )

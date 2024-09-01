@@ -41,6 +41,11 @@ void on_stepper_show(EmbeddedCli *cli, char *args, void *context);
 void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context);
 void on_stepper_run(EmbeddedCli *cli, char *args, void *context);
 
+void on_forwards(EmbeddedCli *cli, char *args, void *context);
+void on_backwards(EmbeddedCli *cli, char *args, void *context);
+void on_left(EmbeddedCli *cli, char *args, void *context);
+void on_right(EmbeddedCli *cli, char *args, void *context);
+
 static void write_char_fn(EmbeddedCli *embeddedCli, char c);
 //void cli_printf(const char *fmt, ...);
 static void on_command_fn(EmbeddedCli *embeddedCli, CliCommand *command);

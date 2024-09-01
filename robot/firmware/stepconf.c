@@ -51,11 +51,11 @@ void stepconf_initialise(void) {
 
     // Default left stepper configuration
     stepconf_set_direction(STEPPER_LEFT, STEPPER_FORWARDS);
-    stepconf_set_parameters(STEPPER_LEFT, 64, 16, 8000, 8);
+    stepconf_set_parameters(STEPPER_LEFT, 32, 16, 4000, 8);
 
     // Default right stepper configuration
     stepconf_set_direction(STEPPER_RIGHT, STEPPER_FORWARDS);
-    stepconf_set_parameters(STEPPER_RIGHT, 64, 16, 8000, 8);
+    stepconf_set_parameters(STEPPER_RIGHT, 32, 16, 4000, 8);
 }
 
 // Enable or disable the steppers (this turns on/off the torque holding)
@@ -112,6 +112,15 @@ void stepconf_dryrun(stepconf_side_t side, int32_t requiredSteps) {
 
 // Run one of the steppers
 void stepconf_run(stepconf_side_t side, int32_t requiredSteps) {
+    // Set direction
+    if (side == STEPPER_LEFT) {
+        if (left_stepper.direction == STEPPER_FORWARDS) stepper_set_direction(SM_LEFT, SM_FORWARDS);
+        else stepper_set_direction(SM_LEFT, SM_BACKWARDS);
+    } else {
+        if (right_stepper.direction == STEPPER_FORWARDS) stepper_set_direction(SM_RIGHT, SM_FORWARDS);
+        else stepper_set_direction(SM_RIGHT, SM_BACKWARDS);
+    }
+
     // Calculate the sequence and then display it
     if (side == STEPPER_LEFT) {
         seqarray_free(sequence_left);
