@@ -51,11 +51,11 @@ void stepconf_initialise(void) {
 
     // Default left stepper configuration
     stepconf_set_direction(STEPPER_LEFT, STEPPER_FORWARDS);
-    stepconf_set_parameters(STEPPER_LEFT, 32, 16, 4000, 8);
+    stepconf_set_parameters(STEPPER_LEFT, 16, 8, 4000, 8);
 
     // Default right stepper configuration
     stepconf_set_direction(STEPPER_RIGHT, STEPPER_FORWARDS);
-    stepconf_set_parameters(STEPPER_RIGHT, 32, 16, 4000, 8);
+    stepconf_set_parameters(STEPPER_RIGHT, 16, 8, 4000, 8);
 }
 
 // Enable or disable the steppers (this turns on/off the torque holding)
@@ -135,4 +135,29 @@ void stepconf_run(stepconf_side_t side, int32_t requiredSteps) {
             right_stepper.minimumSps, right_stepper.maximumSps, right_stepper.updatesPerSecond);
         stepper_set(SM_RIGHT, sequence_right);
     }
+}
+
+// Run both the steppers
+void stepconf_run_both(int32_t requiredLeftSteps, int32_t requiredRightSteps) {
+    // Set directions
+    if (left_stepper.direction == STEPPER_FORWARDS) stepper_set_direction(SM_LEFT, SM_FORWARDS);
+    else stepper_set_direction(SM_LEFT, SM_BACKWARDS);
+    if (right_stepper.direction == STEPPER_FORWARDS) stepper_set_direction(SM_RIGHT, SM_FORWARDS);
+    else stepper_set_direction(SM_RIGHT, SM_BACKWARDS);
+
+    // Calculate the sequences
+    bool success;
+    seqarray_free(sequence_left);
+    seqarray_init(&sequence_left);
+    success = acccalc_calculate(sequence_left, requiredLeftSteps, left_stepper.accSpsps,
+        left_stepper.minimumSps, left_stepper.maximumSps, left_stepper.updatesPerSecond);
+
+    seqarray_free(sequence_right);
+    seqarray_init(&sequence_right);
+    success = acccalc_calculate(sequence_right, requiredRightSteps, right_stepper.accSpsps,
+        right_stepper.minimumSps, right_stepper.maximumSps, right_stepper.updatesPerSecond);
+
+    // Run the sequences
+    stepper_set(SM_LEFT, sequence_left);
+    stepper_set(SM_RIGHT, sequence_right);
 }

@@ -54,5 +54,6 @@ void stepconf_set_parameters(stepconf_side_t side, int32_t accSpsps, int32_t min
 stepconf_t stepconf_get_parameters(stepconf_side_t side);
 void stepconf_dryrun(stepconf_side_t side, int32_t requiredSteps);
 void stepconf_run(stepconf_side_t side, int32_t requiredSteps);
+void stepconf_run_both(int32_t requiredLeftSteps, int32_t requiredRightSteps);
 
 #endif /* STEPCONF_H_ */
