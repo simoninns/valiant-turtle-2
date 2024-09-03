@@ -51,11 +51,11 @@ void stepconf_initialise(void) {
 
     // Default left stepper configuration
     stepconf_set_direction(STEPPER_LEFT, STEPPER_FORWARDS);
-    stepconf_set_parameters(STEPPER_LEFT, 16, 8, 4000, 8);
+    stepconf_set_parameters(STEPPER_LEFT, 2, 2, 800, 8); // Acceleration SPSPS, minimum SPS, maximumSPS, updates per second
 
     // Default right stepper configuration
     stepconf_set_direction(STEPPER_RIGHT, STEPPER_FORWARDS);
-    stepconf_set_parameters(STEPPER_RIGHT, 16, 8, 4000, 8);
+    stepconf_set_parameters(STEPPER_RIGHT, 2, 2, 800, 8);
 }
 
 // Enable or disable the steppers (this turns on/off the torque holding)

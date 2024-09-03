@@ -28,7 +28,7 @@
 #define METRICMOTION_H_
 
 #define WHEEL_DIAMETER_MM 55.0
-#define STEPS_PER_REV 400.0
+#define STEPS_PER_REV 800.0
 
 void metricmotion_forwards(int32_t millimeters);
 void metricmotion_backwards(int32_t millimeters);
