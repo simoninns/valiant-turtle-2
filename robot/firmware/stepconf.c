@@ -33,12 +33,8 @@
 #include "seqarray.h"
 
 // Globals
-sequence_array_t* sequence_left;
-sequence_array_t* sequence_right;
-
-stepconf_t left_stepper;
-stepconf_t right_stepper;
-
+sequence_array_t* sequence;
+stepconf_t stepper;
 bool steppers_enabled;
 
 // Initialise the stepper configuration
@@ -50,12 +46,8 @@ void stepconf_initialise(void) {
     stepconf_set_enable(false);
 
     // Default left stepper configuration
-    stepconf_set_direction(STEPPER_LEFT, STEPPER_FORWARDS);
-    stepconf_set_parameters(STEPPER_LEFT, 2, 2, 800, 8); // Acceleration SPSPS, minimum SPS, maximumSPS, updates per second
-
-    // Default right stepper configuration
-    stepconf_set_direction(STEPPER_RIGHT, STEPPER_FORWARDS);
-    stepconf_set_parameters(STEPPER_RIGHT, 2, 2, 800, 8);
+    stepconf_set_direction(STEPPER_FORWARDS);
+    stepconf_set_parameters(2, 2, 800, 8); // Acceleration SPSPS, minimum SPS, maximumSPS, updates per second
 }
 
 // Enable or disable the steppers (this turns on/off the torque holding)
@@ -64,100 +56,48 @@ void stepconf_set_enable(bool status) {
     steppers_enabled = status;
 }
 
-// Set the stepper to spin forwards or backwards
-void stepconf_set_direction(stepconf_side_t side, stepconf_direction_t direction) {
-    if (side == STEPPER_LEFT) left_stepper.direction = direction;
-    else right_stepper.direction = direction;
+// Set the stepper direction
+void stepconf_set_direction(stepconf_direction_t direction) {
+    stepper.direction = direction;
 }
 
 // Set the acceleration/run/deceleration parameters
-void stepconf_set_parameters(stepconf_side_t side, int32_t accSpsps, int32_t minimumSps,
+void stepconf_set_parameters(int32_t accSpsps, int32_t minimumSps,
     int32_t maximumSps, int32_t updatesPerSecond) {
-    if (side == STEPPER_LEFT) {
-        left_stepper.accSpsps = accSpsps;
-        left_stepper.minimumSps = minimumSps;
-        left_stepper.maximumSps = maximumSps;
-        left_stepper.updatesPerSecond = updatesPerSecond;
-    } else {
-        right_stepper.accSpsps = accSpsps;
-        right_stepper.minimumSps = minimumSps;
-        right_stepper.maximumSps = maximumSps;
-        right_stepper.updatesPerSecond = updatesPerSecond;
-    }
+
+    stepper.accSpsps = accSpsps;
+    stepper.minimumSps = minimumSps;
+    stepper.maximumSps = maximumSps;
+    stepper.updatesPerSecond = updatesPerSecond;
 }
 
 // Return the current parameters for a stepper
-stepconf_t stepconf_get_parameters(stepconf_side_t side) {
-    if (side == STEPPER_LEFT) return left_stepper;
-    return right_stepper;
+stepconf_t stepconf_get_parameters(void) {
+    return stepper;
 }
 
-// Dry run one of the steppers (outputs the acc/run/dec calculation to debug)
-void stepconf_dryrun(stepconf_side_t side, int32_t requiredSteps) {
+// Dry run the steppers (outputs the acc/run/dec calculation to debug)
+void stepconf_dryrun(int32_t requiredSteps) {
     // Calculate the sequence and then display it
-    if (side == STEPPER_LEFT) {
-        seqarray_init(&sequence_left);
-        bool success = acccalc_calculate(sequence_left, requiredSteps, left_stepper.accSpsps,
-            left_stepper.minimumSps, left_stepper.maximumSps, left_stepper.updatesPerSecond);
-        seqarray_display(sequence_left);
-        seqarray_free(sequence_left);
-    } else {
-        seqarray_init(&sequence_right);
-        bool success = acccalc_calculate(sequence_right, requiredSteps, right_stepper.accSpsps,
-            right_stepper.minimumSps, right_stepper.maximumSps, right_stepper.updatesPerSecond);
-        seqarray_display(sequence_right);
-        seqarray_free(sequence_right);
-    }
+    seqarray_init(&sequence);
+    bool success = acccalc_calculate(sequence, requiredSteps, stepper.accSpsps,
+        stepper.minimumSps, stepper.maximumSps, stepper.updatesPerSecond);
+    seqarray_display(sequence);
+    seqarray_free(sequence);
 }
 
-// Run one of the steppers
-void stepconf_run(stepconf_side_t side, int32_t requiredSteps) {
+// Run the steppers
+void stepconf_run(int32_t requiredSteps) {
     // Set direction
-    if (side == STEPPER_LEFT) {
-        if (left_stepper.direction == STEPPER_FORWARDS) stepper_set_direction(SM_LEFT, SM_FORWARDS);
-        else stepper_set_direction(SM_LEFT, SM_BACKWARDS);
-    } else {
-        if (right_stepper.direction == STEPPER_FORWARDS) stepper_set_direction(SM_RIGHT, SM_FORWARDS);
-        else stepper_set_direction(SM_RIGHT, SM_BACKWARDS);
-    }
+    if (stepper.direction == STEPPER_FORWARDS) stepper_set_direction(SM_FORWARDS);
+    if (stepper.direction == STEPPER_BACKWARDS) stepper_set_direction(SM_BACKWARDS);
+    if (stepper.direction == STEPPER_LEFT) stepper_set_direction(SM_LEFT);
+    if (stepper.direction == STEPPER_RIGHT) stepper_set_direction(SM_RIGHT);
 
     // Calculate the sequence and then display it
-    if (side == STEPPER_LEFT) {
-        seqarray_free(sequence_left);
-        seqarray_init(&sequence_left);
-        bool success = acccalc_calculate(sequence_left, requiredSteps, left_stepper.accSpsps,
-            left_stepper.minimumSps, left_stepper.maximumSps, left_stepper.updatesPerSecond);
-        stepper_set(SM_LEFT, sequence_left);
-    } else {
-        seqarray_free(sequence_right);
-        seqarray_init(&sequence_right);
-        bool success = acccalc_calculate(sequence_right, requiredSteps, right_stepper.accSpsps,
-            right_stepper.minimumSps, right_stepper.maximumSps, right_stepper.updatesPerSecond);
-        stepper_set(SM_RIGHT, sequence_right);
-    }
-}
-
-// Run both the steppers
-void stepconf_run_both(int32_t requiredLeftSteps, int32_t requiredRightSteps) {
-    // Set directions
-    if (left_stepper.direction == STEPPER_FORWARDS) stepper_set_direction(SM_LEFT, SM_FORWARDS);
-    else stepper_set_direction(SM_LEFT, SM_BACKWARDS);
-    if (right_stepper.direction == STEPPER_FORWARDS) stepper_set_direction(SM_RIGHT, SM_FORWARDS);
-    else stepper_set_direction(SM_RIGHT, SM_BACKWARDS);
-
-    // Calculate the sequences
-    bool success;
-    seqarray_free(sequence_left);
-    seqarray_init(&sequence_left);
-    success = acccalc_calculate(sequence_left, requiredLeftSteps, left_stepper.accSpsps,
-        left_stepper.minimumSps, left_stepper.maximumSps, left_stepper.updatesPerSecond);
-
-    seqarray_free(sequence_right);
-    seqarray_init(&sequence_right);
-    success = acccalc_calculate(sequence_right, requiredRightSteps, right_stepper.accSpsps,
-        right_stepper.minimumSps, right_stepper.maximumSps, right_stepper.updatesPerSecond);
-
-    // Run the sequences
-    stepper_set(SM_LEFT, sequence_left);
-    stepper_set(SM_RIGHT, sequence_right);
+    seqarray_free(sequence);
+    seqarray_init(&sequence);
+    bool success = acccalc_calculate(sequence, requiredSteps, stepper.accSpsps,
+        stepper.minimumSps, stepper.maximumSps, stepper.updatesPerSecond);
+    stepper_set(sequence);
 }

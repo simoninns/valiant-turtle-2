@@ -28,11 +28,15 @@
 #define METRICMOTION_H_
 
 #define WHEEL_DIAMETER_MM 55.0
+#define AXEL_WIDTH 230.0
 #define STEPS_PER_REV 800.0
 
 void metricmotion_forwards(int32_t millimeters);
 void metricmotion_backwards(int32_t millimeters);
 void metricmotion_left(int32_t degrees);
 void metricmotion_right(int32_t degrees);
+
+int32_t metricmotion_mm_to_steps(int32_t millimeters);
+int32_t metricmotion_deg_to_steps(int32_t degrees);
 
 #endif /* METRICMOTION_H_ */

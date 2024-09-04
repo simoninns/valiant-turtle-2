@@ -35,11 +35,11 @@ module wheel_body()
     owd = 52;
     iwd = 47;
 
-    move([0.5,0,0]) {
-        move([-1.25 - 3.5,0,0]) yrot(-90) cyl(h=1, d=owd);
-        move([-3.5,0,0]) yrot(-90) cyl(h=1.5, d2=owd, d1=iwd);
+    move([-3,0,0]) {
+        move([-1.25,0,0]) yrot(-90) cyl(h=1, d=owd);
+        move([0,0,0]) yrot(-90) cyl(h=1.5, d2=owd, d1=iwd);
 
-        move([1-(3.5/2),0,0]) xcyl(h=3.5*2, d=owd - 4);
+        move([1,0,0]) xcyl(h=3.5, d=owd - 4);
         move([2,0,0]) yrot(-90) cyl(h=1.5, d1=owd, d2=iwd);
         move([3.25,0,0]) xcyl(h=1, d=owd);
     }
@@ -49,7 +49,7 @@ module wheel_hub()
 {
     difference() {
         union() {
-            move([7,0,0]) yrot(-90) cyl(h=8,d=22, chamfer=0.5);
+            move([6,0,0]) yrot(-90) cyl(h=12,d=22, chamfer=0.5);
             move([8,0,1]) cuboid([6,7,20], chamfer=0.5);
         }
 
@@ -88,8 +88,7 @@ module wheel_hub_decoration()
 module tire()
 {
     // O-ring Tire - R31 - AS 568 225 - ID=47.22, OD=54.28, section=3.53
-    move([3.5,0,0]) yrot(90) torus(id=47.22, od=54.28);
-    move([3.5*2,0,0]) yrot(90) torus(id=47.22, od=54.28);
+    move([8.5,0,0]) yrot(90) torus(id=47.22, od=54.28);
 }
 
 module wheel()
@@ -102,10 +101,6 @@ module wheel()
             }
 
             // Hub for D-shaped NEMA 17 5mm shaft (with 1mm D)
-            // difference() {
-            //     move([5,0,0]) yrot(-90) cyl(h=20,d=5);
-            //     move([5,0,3.25 - 0.75]) yrot(-90) cuboid([1,6,20]);
-            // }
             difference() {
                 move([5,0,0]) yrot(-90) cyl(h=20,d=5.25);
                 move([5,0,3.25 - 0.5]) yrot(-90) cuboid([1,6,20]);
@@ -120,8 +115,8 @@ module render_wheels(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) {
-            move([106.5,64-35,-6]) xrot(90) wheel();
-            xflip() move([106.5,64-35,-6]) xrot(90) wheel();
+            move([106.5 + 1.5,64-35,-6]) xrot(90) wheel();
+            xflip() move([106.5 + 1.5,64-35,-6]) xrot(90) wheel();
         }
     } else {
         move([0,0,9.75]) yrot(90) wheel();
@@ -131,9 +126,22 @@ module render_wheels(toPrint)
 module render_turning_circle(toPrint)
 {
     if (!toPrint) {
-        // Render the turning circle
-        move([0,64-35,-34]) tube(h=1,od=223.5, id=221.5-5, $fn=100);
-        move([0,64-35,-34]) tube(h=1,od=280, id=280-3);
+        // The wheels are 230mm apart (centre to centre):
+        axel_length = 230;
+        move([0,64-35,-34]) {
+            difference() {
+                cyl(h=1, r=(axel_length/2) + 0.5, $fn=200);
+                cyl(h=2, r=(axel_length/2) - 0.5, $fn=200);
+            }
+        }
+
+        move([0,0,0]) {
+            move([axel_length/2,64-35,-34]) cuboid([1,300,1]);
+            move([-(axel_length/2),64-35,-34]) cuboid([1,300,1]);
+        }
+        
+        // Ball bearing caster
+        move([0,64-35,-34]) tube(h=1,od=280, id=280-3, $fn=200);
 
         // Show the rotational axis across the pen
         move([0,64-35,-33]) cuboid([300,1,0.25]);

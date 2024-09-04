@@ -29,13 +29,10 @@
 
 // Enumerations
 typedef enum {
+    STEPPER_FORWARDS,
+    STEPPER_BACKWARDS,
     STEPPER_LEFT,
     STEPPER_RIGHT
-} stepconf_side_t;
-
-typedef enum {
-    STEPPER_FORWARDS,
-    STEPPER_BACKWARDS
 } stepconf_direction_t;
 
 typedef struct stepconf_t {
@@ -48,12 +45,11 @@ typedef struct stepconf_t {
 
 void stepconf_initialise(void);
 void stepconf_set_enable(bool status);
-void stepconf_set_direction(stepconf_side_t side, stepconf_direction_t direction);
-void stepconf_set_parameters(stepconf_side_t side, int32_t accSpsps, int32_t minimumSps,
+void stepconf_set_direction(stepconf_direction_t direction);
+void stepconf_set_parameters(int32_t accSpsps, int32_t minimumSps,
     int32_t maximumSps, int32_t updatesPerSecond);
-stepconf_t stepconf_get_parameters(stepconf_side_t side);
-void stepconf_dryrun(stepconf_side_t side, int32_t requiredSteps);
-void stepconf_run(stepconf_side_t side, int32_t requiredSteps);
-void stepconf_run_both(int32_t requiredLeftSteps, int32_t requiredRightSteps);
+stepconf_t stepconf_get_parameters(void);
+void stepconf_dryrun(int32_t requiredSteps);
+void stepconf_run(int32_t requiredSteps);
 
 #endif /* STEPCONF_H_ */
