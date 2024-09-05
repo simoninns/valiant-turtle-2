@@ -52,16 +52,21 @@ module motor_bay_side_panels()
     pos = -13;
 
     // Outer side panel
-    move([120.5,pos,-1.5]) {
-        hull() {
-            mount_profile_right(pointA);
-            mount_profile_right(pointB);
-            mount_profile_right(pointC);
-            mount_profile_right(pointD);
-            mount_profile_right(pointE);
-            mount_profile_right(pointF);
-            mount_profile_right(pointG);
+    difference() {
+        move([120.5,pos,-1.5]) {
+            hull() {
+                mount_profile_right(pointA);
+                mount_profile_right(pointB);
+                mount_profile_right(pointC);
+                mount_profile_right(pointD);
+                mount_profile_right(pointE);
+                mount_profile_right(pointF);
+                mount_profile_right(pointG);
+            }
         }
+
+        // Add marker to assist with calibration
+        move([123,29,-29]) cuboid([3,1,3]);
     }
 
     // Inner side panel
@@ -76,6 +81,8 @@ module motor_bay_side_panels()
             mount_profile_left(pointG);
         }
     }
+
+    
 }
 
 module motor_bay_shape()

@@ -60,6 +60,9 @@ module bearing_mount()
             move([0,0,2]) cyl(h=18,d=24);
             move([0,0,-4.5]) ball_bearing(20.5);
             move([0,0,0]) cyl(h=40, d=2.5); // Hole to release bearing through
+
+            // Marker to assist with calibration
+            move([0,-12.5,-6.25]) cuboid([1,3,3]);
         }
     }
 }
