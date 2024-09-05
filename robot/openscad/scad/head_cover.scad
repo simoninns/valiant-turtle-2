@@ -96,8 +96,9 @@ module ball_bearing(diameter)
 
 module display_ball_bearing()
 {
-    move([0,-144 + 35,3.5 - 22]) {
-        move([0,0,-4.5]) color([0.7,0.7,0.7,1]) ball_bearing(20);
+    // Bearing centre to fulcrum = 138mm
+    move([0,29,-6]) {
+        move([0,-138,-17]) color([0.7,0.7,0.7,1]) ball_bearing(20);
     }
 }
 

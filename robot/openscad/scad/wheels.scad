@@ -141,7 +141,7 @@ module render_turning_circle(toPrint)
         }
         
         // Ball bearing caster
-        move([0,64-35,-34]) tube(h=1,od=280, id=280-3, $fn=200);
+        move([0,64-35,-34]) tube(h=1,od=(138*2)+1, id=(138*2)-1, $fn=200);
 
         // Show the rotational axis across the pen
         move([0,64-35,-33]) cuboid([300,1,0.25]);
