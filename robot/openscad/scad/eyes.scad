@@ -141,6 +141,14 @@ module eye_surround()
     }
 }
 
+module eye_pcb()
+{
+    difference() {
+        move([0,-106,9]) cuboid([20,20,1.6]);
+        move([0,-107,9]) xrot(180) cyl(h=6,d=3);
+    }
+}
+
 module render_eye_surround(toPrint)
 {
     if(!toPrint) {
@@ -186,5 +194,12 @@ module render_leds(toPrint)
     if(!toPrint) {
         move([5,-116,5.5]) xrot(90) led_5mm();
         xflip() move([5,-116,5.5]) xrot(90)  led_5mm();
+    }
+}
+
+module render_eye_pcb(toPrint)
+{
+    if(!toPrint) {
+        color([0,0.6,0,1]) eye_pcb();
     }
 }

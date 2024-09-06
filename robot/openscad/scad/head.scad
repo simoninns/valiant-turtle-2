@@ -140,11 +140,15 @@ module half_head()
 
                 // Space for LED holder
                 move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=7,d=11);
+
             }
 
             // Standoff tab
             move([0,-121.25,15]) cuboid([2,4,2], chamfer=0.5, edges=EDGES_X_BOT);
         }
+
+        // Slot for shell screw guide
+        move([0,-89,7 +4.5]) cyl(h=10, d=11);
 
         // Eye socket (7mm for LED with grommet)
         move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=7);
@@ -165,20 +169,27 @@ module half_head()
         // Shell mounting screw hole
         move([0,-89,20]) cyl(h=20, d=3.5);
     }
-
     
+    // Eye PCB mounting threaded insert
+    difference() {
+        move([0,-107,12.75]) xrot(180) cyl(h=6,d=8);
+        move([0,-107,12.75 - 1]) xrot(180) cyl(h=8,d=4);
+    }
+}
+
+module head_shell_screw_guide()
+{
+    // Screw guide for shell mounting hole
+    difference() {
+        move([0,-89,6.75]) cyl(h=19.5, d=11);
+        move([0,-89,7]) cyl(h=26, d=8);
+    }
 }
 
 module head()
 {
     half_head();
     xflip() half_head();
-    
-    // Screw guide for shell mounting hole
-    difference() {
-        move([0,-89,7]) cyl(h=20, d=11);
-        move([0,-89,7]) cyl(h=26, d=8);
-    }
 }
 
 module render_head(toPrint)
@@ -190,6 +201,19 @@ module render_head(toPrint)
     } else {
         xrot(180) move([0,90,-18]) {
             head();
+        }
+    }
+}
+
+module render_head_shell_screw_guide(toPrint)
+{
+    if (!toPrint) {
+        color([0.9,0.9,0.6,1]) {
+            head_shell_screw_guide();
+        }
+    } else {
+        xrot(180) move([0,90,-16.5]) {
+            head_shell_screw_guide();
         }
     }
 }

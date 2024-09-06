@@ -62,6 +62,7 @@ pen_up = "Pen Up"; // [False, True]
 display_body_left = "Yes"; // [Yes, No]
 display_body_right = "Yes"; // [Yes, No]
 display_head = "Yes"; // [Yes, No]
+display_head_shell_screw_guide = "Yes"; // [Yes, No]
 display_head_cover = "No"; // [Yes, No]
 display_shell_lid = "No"; // [Yes, No]
 display_shell = "No"; // [Yes, No]
@@ -97,6 +98,7 @@ display_rotational_axis = "No"; // [Yes, No]
 display_turning_circle = "No"; // [Yes, No]
 display_tires = "No"; // [Yes, No]
 display_main_pcb = "No"; // [Yes, No]
+display_eye_pcb = "No"; // [Yes, No]
 display_leds = "No"; // [Yes, No]
 display_ball_bearing = "No"; // [Yes, No]
 display_pen = "No"; // [Yes, No]
@@ -123,6 +125,7 @@ module main() {
     d_body_left = (display_body_left == "Yes") ? true:false;
     d_body_right = (display_body_right == "Yes") ? true:false;
     d_head = (display_head == "Yes") ? true:false;
+    d_head_shell_screw_guide = (display_head_shell_screw_guide == "Yes") ? true:false;
     d_shell_lid = (display_shell_lid == "Yes") ? true:false;
     d_shell = (display_shell == "Yes") ? true:false;
     d_shell_dot = (display_shell_dot == "Yes") ? true:false;
@@ -158,6 +161,7 @@ module main() {
     d_turning_circle = (display_turning_circle == "Yes") ? true:false;
     d_tires = (display_tires == "Yes") ? true:false;
     d_main_pcb = (display_main_pcb == "Yes") ? true:false;
+    d_eye_pcb = (display_eye_pcb == "Yes") ? true:false;
     d_leds = (display_leds == "Yes") ? true:false;
     d_ball_bearing = (display_ball_bearing == "Yes") ? true:false;
     d_pen = (display_pen == "Yes") ? true:false;
@@ -181,6 +185,7 @@ module main() {
     if (d_body_left) render_body_left(toPrint);
     if (d_body_right) render_body_right(toPrint);
     if (d_head) render_head(toPrint);
+    if (d_head_shell_screw_guide) render_head_shell_screw_guide(toPrint);
     if (d_shell_lid) render_shell_lid(toPrint);
     if (d_shell) render_shell(toPrint);
     if (d_shell_dot) render_shell_dot(toPrint);
@@ -216,6 +221,7 @@ module main() {
     if (d_turning_circle) render_turning_circle(toPrint);
     if (d_tires) render_tires(toPrint);
     if (d_main_pcb) render_main_pcb(toPrint);
+    if (d_eye_pcb) render_eye_pcb(toPrint);
     if (d_leds) render_leds(toPrint);
     if (d_ball_bearing) render_ball_bearing(toPrint);
     if (d_pen) render_pen(toPrint, penUp);
