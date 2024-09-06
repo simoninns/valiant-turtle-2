@@ -34,7 +34,7 @@ include <motor_bay.scad>
 include <motor_mounts.scad>
 include <wheels.scad>
 include <pcb.scad>
-include <leds.scad>
+include <eyes.scad>
 include <head_cover.scad>
 include <pen_holder_base.scad>
 include <pen_holder_top.scad>
@@ -81,7 +81,9 @@ display_servo_horn = "No"; // [Yes, No]
 display_logotype = "No"; // [Yes, No]
 display_battery_holder = "No"; // [Yes, No]
 display_battery_cover = "No"; // [Yes, No]
-display_led_holders = "No"; // [Yes, No]
+display_eye_surround = "No"; // [Yes, No]
+display_eye_light_pipe = "No"; // [Yes, No]
+display_eye_light_pipe_surround = "No"; // [Yes, No]
 display_display_mount = "No"; // [Yes, No]
 display_stand = "No"; // [Yes, No]
 
@@ -140,7 +142,9 @@ module main() {
     d_logotype = (display_logotype == "Yes") ? true:false;
     d_battery_holder = (display_battery_holder == "Yes") ? true:false;
     d_battery_cover = (display_battery_cover == "Yes") ? true:false;
-    d_led_holders = (display_led_holders == "Yes") ? true:false;
+    d_eye_surround = (display_eye_surround == "Yes") ? true:false;
+    d_eye_light_pipe = (display_eye_light_pipe == "Yes") ? true:false;
+    d_eye_light_pipe_surround = (display_eye_light_pipe_surround == "Yes") ? true:false;
     d_display_mount = (display_display_mount == "Yes") ? true:false;
     d_stand = (display_stand == "Yes") ? true:false;
 
@@ -196,7 +200,9 @@ module main() {
     if (d_logotype) render_logotype(toPrint);
     if (d_battery_holder) render_battery_holder(toPrint);
     if (d_battery_cover) render_battery_cover(toPrint);
-    if (d_led_holders) render_led_holders(toPrint);
+    if (d_eye_surround) render_eye_surround(toPrint);
+    if (d_eye_light_pipe) render_eye_light_pipe(toPrint);
+    if (d_eye_light_pipe_surround) render_eye_light_pipe_surround(toPrint);
     if (d_display_mount) render_display_mount(toPrint);
     if (d_stand) render_stand(toPrint);
 
