@@ -33,7 +33,7 @@ include <shell.scad>
 include <motor_bay.scad>
 include <motor_mounts.scad>
 include <wheels.scad>
-include <pcb.scad>
+include <main_pcb.scad>
 include <eyes.scad>
 include <head_cover.scad>
 include <pen_holder_base.scad>
@@ -69,8 +69,8 @@ display_shell_dot = "No"; // [Yes, No]
 display_motor_bay = "Yes"; // [Yes, No]
 display_motor_mounts = "No"; // [Yes, No]
 display_wheels = "No"; // [Yes, No]
-display_pcb_mounts_front = "No"; // [Yes, No]
-display_pcb_mounts_back = "No"; // [Yes, No]
+display_main_pcb_mounts_front = "No"; // [Yes, No]
+display_main_pcb_mounts_back = "No"; // [Yes, No]
 display_pen_holder_base = "No"; // [Yes, No]
 display_pen_holder_top_small = "No"; // [Yes, No]
 display_pen_holder_top_medium = "No"; // [Yes, No]
@@ -96,7 +96,7 @@ display_motor_large = "No"; // [Yes, No]
 display_rotational_axis = "No"; // [Yes, No]
 display_turning_circle = "No"; // [Yes, No]
 display_tires = "No"; // [Yes, No]
-display_pcb = "No"; // [Yes, No]
+display_main_pcb = "No"; // [Yes, No]
 display_leds = "No"; // [Yes, No]
 display_ball_bearing = "No"; // [Yes, No]
 display_pen = "No"; // [Yes, No]
@@ -111,8 +111,8 @@ display_body_right_screws = "No"; // [Yes, No]
 display_motor_bay_screws = "No"; // [Yes, No]
 display_head_screws = "No"; // [Yes, No]
 display_servo_holder_screws = "No"; // [Yes, No]
-display_pcb_mounts_front_screws = "No"; // [Yes, No]
-display_pcb_mounts_back_screws = "No"; // [Yes, No]
+display_main_pcb_mounts_front_screws = "No"; // [Yes, No]
+display_main_pcb_mounts_back_screws = "No"; // [Yes, No]
 display_shell_screws = "No"; // [Yes, No]
 display_battery_screws = "No"; // [Yes, No]
 
@@ -129,8 +129,8 @@ module main() {
     d_motor_bay = (display_motor_bay == "Yes") ? true:false;
     d_motor_mounts = (display_motor_mounts == "Yes") ? true:false;
     d_wheels = (display_wheels == "Yes") ? true:false;
-    d_pcb_mounts_front = (display_pcb_mounts_front == "Yes") ? true:false;
-    d_pcb_mounts_back = (display_pcb_mounts_back == "Yes") ? true:false;
+    d_main_pcb_mounts_front = (display_main_pcb_mounts_front == "Yes") ? true:false;
+    d_main_pcb_mounts_back = (display_main_pcb_mounts_back == "Yes") ? true:false;
     d_head_cover = (display_head_cover == "Yes") ? true:false;
     d_pen_holder_base = (display_pen_holder_base == "Yes") ? true:false;
     d_pen_holder_top_small = (display_pen_holder_top_small == "Yes") ? true:false;
@@ -157,7 +157,7 @@ module main() {
     d_rotational_axis = (display_rotational_axis == "Yes") ? true:false;
     d_turning_circle = (display_turning_circle == "Yes") ? true:false;
     d_tires = (display_tires == "Yes") ? true:false;
-    d_pcb = (display_pcb == "Yes") ? true:false;
+    d_main_pcb = (display_main_pcb == "Yes") ? true:false;
     d_leds = (display_leds == "Yes") ? true:false;
     d_ball_bearing = (display_ball_bearing == "Yes") ? true:false;
     d_pen = (display_pen == "Yes") ? true:false;
@@ -172,8 +172,8 @@ module main() {
     d_motor_bay_screws = (display_motor_bay_screws == "Yes") ? true:false;
     d_head_screws = (display_head_screws == "Yes") ? true:false;
     d_servo_holder_screws = (display_servo_holder_screws == "Yes") ? true:false;
-    d_pcb_mounts_front_screws = (display_pcb_mounts_front_screws == "Yes") ? true:false;
-    d_pcb_mounts_back_screws = (display_pcb_mounts_back_screws == "Yes") ? true:false;
+    d_main_pcb_mounts_front_screws = (display_main_pcb_mounts_front_screws == "Yes") ? true:false;
+    d_main_pcb_mounts_back_screws = (display_main_pcb_mounts_back_screws == "Yes") ? true:false;
     d_shell_screws = (display_shell_screws == "Yes") ? true:false;
     d_battery_screws = (display_battery_screws == "Yes") ? true:false;
 
@@ -187,8 +187,8 @@ module main() {
     if (d_motor_bay) render_motor_bay(toPrint);
     if (d_motor_mounts) render_motor_mounts(toPrint);
     if (d_wheels) render_wheels(toPrint);
-    if (d_pcb_mounts_front) render_pcb_mounts_front(toPrint);
-    if (d_pcb_mounts_back) render_pcb_mounts_back(toPrint);
+    if (d_main_pcb_mounts_front) render_main_pcb_mounts_front(toPrint);
+    if (d_main_pcb_mounts_back) render_main_pcb_mounts_back(toPrint);
     if (d_head_cover) render_head_cover(toPrint);
     if (d_pen_holder_base) render_pen_holder_base(toPrint, penUp);
     if (d_pen_holder_top_small) render_pen_holder_top_small(toPrint, penUp);
@@ -215,7 +215,7 @@ module main() {
     if (d_rotational_axis) render_rotational_axis(toPrint);
     if (d_turning_circle) render_turning_circle(toPrint);
     if (d_tires) render_tires(toPrint);
-    if (d_pcb) render_pcb(toPrint);
+    if (d_main_pcb) render_main_pcb(toPrint);
     if (d_leds) render_leds(toPrint);
     if (d_ball_bearing) render_ball_bearing(toPrint);
     if (d_pen) render_pen(toPrint, penUp);
@@ -230,8 +230,8 @@ module main() {
     if (d_motor_bay_screws) render_motor_bay_screws(toPrint);
     if (d_head_screws) render_head_screws(toPrint);
     if (d_servo_holder_screws) render_servo_holder_screws(toPrint);
-    if (d_pcb_mounts_front_screws) render_pcb_mounts_front_screws(toPrint);
-    if (d_pcb_mounts_back_screws) render_pcb_mounts_back_screws(toPrint);
+    if (d_main_pcb_mounts_front_screws) render_main_pcb_mounts_front_screws(toPrint);
+    if (d_main_pcb_mounts_back_screws) render_main_pcb_mounts_back_screws(toPrint);
     if (d_shell_screws) render_shell_screws(toPrint);
     if (d_battery_screws) render_battery_screws(toPrint);
 }

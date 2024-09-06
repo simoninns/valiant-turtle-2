@@ -132,14 +132,18 @@ module half_head()
                 }
 
                 // Threaded insert slot
-                move([0,-133,0]) xrot(180) cyl(h=10,d=5);
+                move([0,-133,-7 +6]) xrot(180) cyl(h=8,d=4);
+                move([0,-133,-7 +6]) xrot(180) cyl(h=10,d=3);
 
                 // Slice half
                 move([-5.5,-133,5]) cuboid([10,17,20]);
 
                 // Space for LED holder
                 move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=7,d=11);
-            }     
+            }
+
+            // Standoff tab
+            move([0,-121.25,15]) cuboid([2,4,2], chamfer=0.5, edges=EDGES_X_BOT);
         }
 
         // Eye socket (7mm for LED with grommet)
@@ -155,23 +159,20 @@ module half_head()
         move([0,-67.5,-12]) xrot(45) cuboid([50,10,10]);
 
         // Threaded insert slot
-        move([12,-58,3.9]) xrot(180) cyl(h=8,d=5);
+        move([12,-58,-4 + 6]) xrot(180) cyl(h=8,d=4);
+        move([12,-58,-4 + 6]) xrot(180) cyl(h=10,d=3);
 
         // Shell mounting screw hole
         move([0,-89,20]) cyl(h=20, d=3.5);
     }
 
-    // Threaded insert
-    move([12,-58,0]) xrot(180) insertM3x57(); 
+    
 }
 
 module head()
 {
     half_head();
     xflip() half_head();
-
-    // Front threaded insert
-    move([0,-133,-3]) xrot(180) insertM3x57(); 
     
     // Screw guide for shell mounting hole
     difference() {

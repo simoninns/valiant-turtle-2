@@ -1,6 +1,6 @@
 /************************************************************************
 
-    pcb.scad
+    main_pcb.scad
     
     Valiant Turtle 2
     Copyright (C) 2024 Simon Inns
@@ -26,23 +26,20 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-include <threaded_inserts.scad>
-
-module pcb_mount_front()
+module main_pcb_mount_front()
 {
     difference() {
         cyl(h=50, d=8, $fn=6);
 
         // Threaded insert slots
-        move([0,0,19.1]) xrot(180) cyl(h=12,d=5);
-        move([0,0,-19.1]) xrot(180) cyl(h=12,d=5);
+        move([0,0,29 - 6]) xrot(180) cyl(h=8,d=4);
+        move([0,0,29 - 6]) xrot(180) cyl(h=10,d=3);
+        move([0,0,-29 + 6]) xrot(180) cyl(h=8,d=4);
+        move([0,0,-29 + 6]) xrot(180) cyl(h=10,d=3);
     }
-
-    move([0,0,25]) insertM3x57_th();
-    move([0,0,-25]) xrot(180) insertM3x57_th();
 }
 
-module pcb_mount_back()
+module main_pcb_mount_back()
 {
     difference() {
         union() {
@@ -56,28 +53,28 @@ module pcb_mount_back()
         }
 
         // Threaded insert slots
-        move([0,0,19.1]) xrot(180) cyl(h=12,d=5);
-        move([7,0,-19.1]) xrot(180) cyl(h=12,d=5);
-        move([-7,0,-19.1]) xrot(180) cyl(h=12,d=5);
-    }
+        move([0,0,29 - 6]) xrot(180) cyl(h=8,d=4);
+        move([7,0,-29 + 6]) xrot(180) cyl(h=8,d=4);
+        move([-7,0,-29 + 6]) xrot(180) cyl(h=8,d=4);
 
-    move([0,0,25]) insertM3x57_th();
-    move([7,0,-25]) xrot(180) insertM3x57_th();
-    move([-7,0,-25]) xrot(180) insertM3x57_th();
-}
-
-module pcb_mounts_front()
-{
-    move([0,0,25]) {
-        move([60,-20,0]) pcb_mount_front();
-        move([-60,-20,0]) pcb_mount_front();
+        move([0,0,29 - 6]) xrot(180) cyl(h=10,d=3);
+        move([7,0,-29 + 6]) xrot(180) cyl(h=10,d=3);
+        move([-7,0,-29 + 6]) xrot(180) cyl(h=10,d=3);
     }
 }
 
-module pcb_mounts_back()
+module main_pcb_mounts_front()
 {
     move([0,0,25]) {
-        move([0,52,0]) pcb_mount_back();
+        move([60,-20,0]) main_pcb_mount_front();
+        move([-60,-20,0]) main_pcb_mount_front();
+    }
+}
+
+module main_pcb_mounts_back()
+{
+    move([0,0,25]) {
+        move([0,52,0]) main_pcb_mount_back();
     }
 }
 
@@ -89,13 +86,13 @@ module smPushButton()
     }
 }
 
-module pcb_buttons()
+module main_pcb_buttons()
 {
     move([3+3.5,53 - 102,0]) smPushButton();
     move([-3-3.5,53 - 102,0]) smPushButton();
 }
 
-module pcb_oledDisplay()
+module main_pcb_oledDisplay()
 {
     move([0,-30,1 + 3]) {
         difference() {
@@ -125,7 +122,7 @@ module pcb_oledDisplay()
     }
 }
 
-module pcb_displayMount()
+module main_pcb_displayMount()
 {
     move([0,37 - 71,0]) {
         // Display M2.5 Screw holes
@@ -144,31 +141,31 @@ module pcb_displayMount()
     }
 }
 
-module pcb_complete()
+module main_pcb_complete()
 {
     color([0,0.6,0,1]) difference() {
-        pcb();
-        pcb_penhole();
-        pcb_screws();
-        pcb_displayMount();
+        main_pcb();
+        main_pcb_penhole();
+        main_pcb_screws();
+        main_pcb_displayMount();
     }
 
-    pcb_buttons();
-    pcb_oledDisplay();
+    main_pcb_buttons();
+    main_pcb_oledDisplay();
 }
 
-module pcb()
+module main_pcb()
 {
     zrot(-90) cyl(h=1.5, d=140, $fn=5);
 }
 
-module pcb_penhole()
+module main_pcb_penhole()
 {
     // Hole for pen
     move([0,29,20]) zcyl(h=80, d=14);
 }
 
-module pcb_screws()
+module main_pcb_screws()
 {
      // M3 screw holes
     move([0,0,0]) {
@@ -178,44 +175,44 @@ module pcb_screws()
     }
 }
 
-module render_pcb(toPrint)
+module render_main_pcb(toPrint)
 {
     if (!toPrint) {
         difference() {
-            move([0,0,50.75]) pcb_complete();
+            move([0,0,50.75]) main_pcb_complete();
         }
     } else {
         // This will allow you to render and export a DXF file that
         // can be used as a KiCAD PCB outline...
         projection() {
             difference() {
-                pcb();
-                pcb_penhole();
-                pcb_screws();
+                main_pcb();
+                main_pcb_penhole();
+                main_pcb_screws();
             }
         }
     }
 }
 
-module render_pcb_mounts_front(toPrint)
+module render_main_pcb_mounts_front(toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1]) pcb_mounts_front();
+        color([0.2,0.2,0.2,1]) main_pcb_mounts_front();
     } else {
-        xrot(90) move([0,3.5,0]) pcb_mount_front();
+        xrot(90) move([0,3.5,0]) main_pcb_mount_front();
     }
 }
 
-module render_pcb_mounts_back(toPrint)
+module render_main_pcb_mounts_back(toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1]) pcb_mounts_back();
+        color([0.2,0.2,0.2,1]) main_pcb_mounts_back();
     } else {
-        xrot(90) move([0,3.5,0]) pcb_mount_back();
+        xrot(90) move([0,3.5,0]) main_pcb_mount_back();
     }
 }
 
-module render_pcb_mounts_front_screws(toPrint)
+module render_main_pcb_mounts_front_screws(toPrint)
 {
     if (!toPrint) {
         move([60,-20,-3]) xrot(180) m3x10_screw();
@@ -223,7 +220,7 @@ module render_pcb_mounts_front_screws(toPrint)
     }
 }
 
-module render_pcb_mounts_back_screws(toPrint)
+module render_main_pcb_mounts_back_screws(toPrint)
 {
     if (!toPrint) {
         move([7,52,-3]) xrot(180) m3x10_screw();
