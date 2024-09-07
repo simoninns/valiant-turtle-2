@@ -33,22 +33,18 @@ module servo_holder()
     move([30.5,34.5,8.5]) {
         difference() {
             union() {
-                difference() {
-                    union() {
-                        // Servo attachement towers
-                        move([-8,-14,0.5]) cuboid([7,7,16], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
-                        move([-8,+14,0.5]) cuboid([7,7,16], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
-                    }
-
-                    // Servo clearance
-                    move([0,0,0]) cuboid([30,24,18]);
-                }
+                // Servo attachement towers
+                move([-8,-14,0.5]) cuboid([7,4,16], chamfer=0.5, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
+                move([-8,+14,0.5]) cuboid([7,4,16], chamfer=0.5, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
 
                 // Right screw platform
-                move([0.25,-1.5 + 3,-7]) cuboid([25.5,42+6,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL); 
+                move([0.25,-1,-7]) cuboid([25.5,36,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL); 
 
                 // Left screw platform
-                move([-61.25,-1.5 + 3,-7]) cuboid([25.5,42+6,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
+                move([-61.25,-1,-7]) cuboid([25.5,36,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
+
+                // Platform to make installing the servo easier
+                move([4.5,0,-6]) cuboid([14,25,2], chamfer=0.5);
             }
 
             // Servo mounting holes
@@ -56,13 +52,22 @@ module servo_holder()
             move([-8,-14,1.5]) xcyl(h=10,d=1.75);
 
             // M3 screw holes right
-            move([8,15,-7]) cyl(h=5,d=3.5);
-            move([8,-18,-7]) cyl(h=5,d=3.5);
+            move([8,12,-7]) cyl(h=5,d=3.5);
+            move([8,-8,-7]) cyl(h=5,d=3.5);
 
             // M3 screw holes left
             move([-61,0,0]) {
-                move([-8,15,-7]) cyl(h=5,d=3.5);
-                move([-8,-18,-7]) cyl(h=5,d=3.5);
+                move([-8,12,-7]) cyl(h=5,d=3.5);
+                move([-8,-8,-7]) cyl(h=5,d=3.5);
+            }
+
+            // M3 Recess
+            move([8,12,-3.5 - 2]) cyl(h=3,d=6);
+            move([8,-8,-3.5 - 2]) cyl(h=3,d=6);
+
+            move([-61,0,0]) {
+                move([-8,12,-3.5 - 2]) cyl(h=3,d=6);
+                move([-8,-8,-3.5 - 2]) cyl(h=3,d=6);
             }
 
             // Hole for toggle switch
@@ -72,8 +77,7 @@ module servo_holder()
             }
         }
 
-        // Platform to make installing the servo easier
-        move([4.5,0,-6]) cuboid([14,25,2], chamfer=0.5);
+        
     }
 }
 
@@ -83,7 +87,7 @@ module pen_support()
         difference() {
             union() {
                 cyl(h=24, d=25, center=false, chamfer2=0.5, $fn=8);
-                move([0,0.5,1.5]) cuboid([60,35,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL); 
+                move([0,0.5+1,1.5]) cuboid([60,30,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL); 
             }
             
             // Shaft center
@@ -147,13 +151,13 @@ module render_servo_holder_screws(toPrint)
 {
     if (!toPrint) {
         move([30.5,34.5,8.5]) {
-            move([8,15,-5.5]) m3x10_screw();
-            move([8,-18,-5.5]) m3x10_screw();
+            move([8,12,-5.5 - 1.5]) m3x10_screw();
+            move([8,-8,-5.5 - 1.5]) m3x10_screw();
         }
 
         move([-30.5,34.5,8.5]) {
-            move([-8,15,-5.5]) m3x10_screw();
-            move([-8,-18,-5.5]) m3x10_screw();
+            move([-8,12,-5.5 - 1.5]) m3x10_screw();
+            move([-8,-8,-5.5 - 1.5]) m3x10_screw();
         }
     }
 }

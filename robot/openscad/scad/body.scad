@@ -307,20 +307,17 @@ module pcb_mount_holes()
 module pen_servo_mount_holes()
 {
     // M3 screw holes
-    move([38.5,49.5,-3.75]) cyl(h=8,d=5);
-    move([38.5,16.5,-3.75]) cyl(h=8,d=5);
+    move([38.5,46.5,4-6]) cyl(h=8,d=4);
+    move([38.5,26.5,4-6]) cyl(h=8,d=4);
+
+    move([38.5,46.5,4-7]) cyl(h=12,d=3);
+    move([38.5,26.5,4-7]) cyl(h=12,d=3);
 }
 
 module pen_servo_mount_material()
 {
-    move([38.5,49.5,-5]) cyl(h=10,d=8, $fn=8);
-    move([38.5,16.5,-5]) cyl(h=10,d=8, $fn=8);
-}
-
-module pen_servo_mount_inserts()
-{
-    move([38.5,49.5,0]) insertM3x57_th();
-    move([38.5,16.5,0]) insertM3x57_th();
+    move([38.5,46.5,-6 + -1]) cyl(h=10,d=8, $fn=8);
+    move([38.5,26.5,-6]) cyl(h=10,d=8, $fn=8);
 }
 
 module battery_access_hole()
@@ -339,15 +336,15 @@ module battery_access_hole()
 
 module control_panel_hole()
 {
-    move([-23.5,29,-2]) cuboid([21,30,12], chamfer=1, edges=EDGES_Z_ALL);
+    move([-23.5,30.5,-2]) cuboid([21,27,12], chamfer=1, edges=EDGES_Z_ALL);
 }
 
 module control_panel_surround()
 {
-    move([-23.5,29,-4]) {
+    move([-23.5,30.5,-4]) {
         difference() {
-            cuboid([21+2,30+2,2], chamfer=1, edges=EDGES_Z_ALL);
-            cuboid([21,30,14], chamfer=1, edges=EDGES_Z_ALL);
+            cuboid([21+2,27+2,2], chamfer=1, edges=EDGES_Z_ALL);
+            cuboid([21,27,14], chamfer=1, edges=EDGES_Z_ALL);
         }
     }
 }
@@ -378,7 +375,6 @@ module body_right()
     }
 
     body_joiners_right_inserts();
-    pen_servo_mount_inserts();
     pen_hole_key();
 }
 
@@ -410,7 +406,6 @@ module body_left()
         control_panel_hole();
     }
     body_joiners_left_inserts();
-    xflip() pen_servo_mount_inserts();
     xflip() pen_hole_key();
     control_panel_surround();
 }
