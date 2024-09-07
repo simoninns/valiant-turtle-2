@@ -27,8 +27,6 @@ use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
 include <motor_bay.scad>
-include <threaded_inserts.scad>
-
 include <logotype.scad>
 
 module body_profile(loc)
@@ -154,54 +152,43 @@ module body_platform()
 module body_joiners_left()
 {
     difference() {
-        move([6, 44,-6]) cuboid([10,8,8]);
-        move([4, 44,-6]) xcyl(h=9,d=5);
+        move([6, 42,-6]) cuboid([10,8,8]);
+        move([4, 42,-6]) xcyl(h=9,d=4);
     }
 }
 
 module body_joiners_left_clearance()
 {
-    move([0, 44,-6]) xcyl(h=9,d=5);
+    move([0, 42,-6]) xcyl(h=9,d=4); // Far back joiner
 
     // Holes for right screws
-    move([0,-44,-6]) xcyl(h=9,d=3.5);
-    move([0,13,-6]) xcyl(h=9,d=3.5);
+    move([0,-44,-6]) xcyl(h=9,d=3.5); // Front joiner
+    move([0,16,-6]) xcyl(h=9,d=3.5); // middle joiner
 
-    // Make a channel for the screwdriver
+    // Make a channel for the screwdriver to front joiner
     move([-16,-44,-10]) xcyl(h=26,d=5);
-}
-
-module body_joiners_left_inserts()
-{
-    move([0, 44,-6]) yrot(90) insertM3x57();
 }
 
 module body_joiners_right()
 {
     difference() {
         move([6,-44,-6]) cuboid([10,8,8]);
-        move([4,-44,-6]) xcyl(h=8,d=5);
+        move([4,-44,-6]) xcyl(h=8,d=4);
     }
 
     difference() {
-        move([6,13,-6]) cuboid([10,8,8]);
-        move([4,13,-6]) xcyl(h=8,d=5);
+        move([6,16,-6]) cuboid([10,8,8]);
+        move([4,16,-6]) xcyl(h=8,d=4);
     }
 }
 
 module body_joiners_right_clearance()
 {
-    move([4,-44,-6]) xcyl(h=9,d=5);
-    move([4,13,-6]) xcyl(h=9,d=5);
+    move([4,-44,-6]) xcyl(h=9,d=4);
+    move([4,16,-6]) xcyl(h=9,d=4);
 
     // Hole for left screw
-    move([4, 44,-6]) xcyl(h=9,d=3.5);
-}
-
-module body_joiners_right_inserts()
-{
-    move([0,-44,-6]) yrot(-90) insertM3x57();
-    move([0,13,-6]) yrot(-90) insertM3x57();
+    move([4, 42,-6]) xcyl(h=9,d=3.5);
 }
 
 module head_clearance()
@@ -373,8 +360,6 @@ module body_right()
         body_joiners_right_clearance();
         battery_access_hole();
     }
-
-    body_joiners_right_inserts();
     pen_hole_key();
 }
 
@@ -405,7 +390,6 @@ module body_left()
         battery_access_hole();
         control_panel_hole();
     }
-    body_joiners_left_inserts();
     xflip() pen_hole_key();
     control_panel_surround();
 }
@@ -435,7 +419,7 @@ module render_body_left(toPrint)
 module body_left_screws()
 {
     move([-3,-44,-6]) yrot(-90) m3x10_screw();
-    move([-3,13,-6]) yrot(-90) m3x10_screw();
+    move([-3,16,-6]) yrot(-90) m3x10_screw();
 }
 
 module render_body_left_screws(toPrint)
@@ -447,7 +431,7 @@ module render_body_left_screws(toPrint)
 
 module body_right_screws()
 {
-    move([3,44,-6]) yrot(90) m3x10_screw();
+    move([3,42,-6]) yrot(90) m3x10_screw();
 }
 
 module render_body_right_screws(toPrint)
