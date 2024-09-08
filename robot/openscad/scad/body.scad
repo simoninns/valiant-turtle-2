@@ -309,16 +309,8 @@ module pen_servo_mount_material()
 
 module battery_access_hole()
 {
-    move([0,-19,0]) cuboid([79+2,36,22], chamfer=1, edges=EDGES_Z_ALL);
-    move([0,-1,0]) cuboid([30,20,22], chamfer=1, edges=EDGES_Z_ALL);
-
-    // M3 Mounting screw holes
-    move([44.5,-19,-2]) cyl(h=8,d=3.5);
-    move([-44.5,-19,-2]) cyl(h=8,d=3.5);
-
-    // Battery cover lip
-    move([0,-37,-2]) xrot(45) cuboid([60+1,2,2]);
-    move([0,-37.5,-0.75]) cuboid([60+1,2,2.5]);
+    move([0,-12.5,0]) cuboid([86,49,22], chamfer=1, edges=EDGES_Z_ALL);
+    move([0,-12.5,0]) cuboid([100,25,22]);
 }
 
 module control_panel_hole()
@@ -392,6 +384,23 @@ module body_left()
     }
     xflip() pen_hole_key();
     control_panel_surround();
+}
+
+module body_test()
+{
+    difference() {
+        move([0,-12.5,-1.5]) cuboid([112,60,3], chamfer=1, edges=EDGES_TOP+EDGES_Z_ALL);
+        battery_access_hole();
+    }
+}
+
+module render_body_test(toPrint)
+{
+    if (!toPrint) {
+        body_test();
+    } else {
+        body_test();
+    }
 }
 
 module render_body_right(toPrint)

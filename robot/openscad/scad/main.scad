@@ -61,6 +61,7 @@ pen_up = "Pen Up"; // [False, True]
 /* [Printable Parts] */
 display_body_left = "Yes"; // [Yes, No]
 display_body_right = "Yes"; // [Yes, No]
+display_body_test = "Yes"; // [Yes, No]
 display_head = "Yes"; // [Yes, No]
 display_head_shell_screw_guide = "Yes"; // [Yes, No]
 display_head_cover = "No"; // [Yes, No]
@@ -80,8 +81,7 @@ display_pen_holder_cap = "No"; // [Yes, No]
 display_servo_holder = "No"; // [Yes, No]
 display_servo_horn = "No"; // [Yes, No]
 display_logotype = "No"; // [Yes, No]
-display_battery_holder = "No"; // [Yes, No]
-display_battery_cover = "No"; // [Yes, No]
+display_battery_pack = "No"; // [Yes, No]
 display_eye_surround = "No"; // [Yes, No]
 display_eye_light_pipe = "No"; // [Yes, No]
 display_eye_light_pipe_surround = "No"; // [Yes, No]
@@ -103,7 +103,7 @@ display_leds = "No"; // [Yes, No]
 display_ball_bearing = "No"; // [Yes, No]
 display_pen = "No"; // [Yes, No]
 display_servo = "No"; // [Yes, No]
-display_battery = "No"; // [Yes, No]
+display_batteries = "No"; // [Yes, No]
 display_toggle_switch = "No"; // [Yes, No]
 
 /* [Screws] */
@@ -124,6 +124,7 @@ module main() {
 
     d_body_left = (display_body_left == "Yes") ? true:false;
     d_body_right = (display_body_right == "Yes") ? true:false;
+    d_body_test = (display_body_test == "Yes") ? true:false;
     d_head = (display_head == "Yes") ? true:false;
     d_head_shell_screw_guide = (display_head_shell_screw_guide == "Yes") ? true:false;
     d_shell_lid = (display_shell_lid == "Yes") ? true:false;
@@ -143,8 +144,7 @@ module main() {
     d_servo_holder = (display_servo_holder == "Yes") ? true:false;
     d_servo_horn = (display_servo_horn == "Yes") ? true:false;
     d_logotype = (display_logotype == "Yes") ? true:false;
-    d_battery_holder = (display_battery_holder == "Yes") ? true:false;
-    d_battery_cover = (display_battery_cover == "Yes") ? true:false;
+    d_battery_pack = (display_battery_pack == "Yes") ? true:false;
     d_eye_surround = (display_eye_surround == "Yes") ? true:false;
     d_eye_light_pipe = (display_eye_light_pipe == "Yes") ? true:false;
     d_eye_light_pipe_surround = (display_eye_light_pipe_surround == "Yes") ? true:false;
@@ -166,7 +166,7 @@ module main() {
     d_ball_bearing = (display_ball_bearing == "Yes") ? true:false;
     d_pen = (display_pen == "Yes") ? true:false;
     d_servo = (display_servo == "Yes") ? true:false;
-    d_battery = (display_battery == "Yes") ? true:false;
+    d_batteries = (display_batteries == "Yes") ? true:false;
     d_toggle_switch = (display_toggle_switch == "Yes") ? true:false;
 
     // Screws
@@ -184,6 +184,7 @@ module main() {
     // Render the printable parts
     if (d_body_left) render_body_left(toPrint);
     if (d_body_right) render_body_right(toPrint);
+    if (d_body_test) render_body_test(toPrint);
     if (d_head) render_head(toPrint);
     if (d_head_shell_screw_guide) render_head_shell_screw_guide(toPrint);
     if (d_shell_lid) render_shell_lid(toPrint);
@@ -203,8 +204,7 @@ module main() {
     if (d_servo_holder) render_servo_holder(toPrint);
     if (d_servo_horn) render_micro_servo_horn(toPrint, penUp);
     if (d_logotype) render_logotype(toPrint);
-    if (d_battery_holder) render_battery_holder(toPrint);
-    if (d_battery_cover) render_battery_cover(toPrint);
+    if (d_battery_pack) render_battery_pack(toPrint);
     if (d_eye_surround) render_eye_surround(toPrint);
     if (d_eye_light_pipe) render_eye_light_pipe(toPrint);
     if (d_eye_light_pipe_surround) render_eye_light_pipe_surround(toPrint);
@@ -226,7 +226,7 @@ module main() {
     if (d_ball_bearing) render_ball_bearing(toPrint);
     if (d_pen) render_pen(toPrint, penUp);
     if (d_servo) render_micro_servo(toPrint);
-    if (d_battery) render_battery(toPrint);
+    if (d_batteries) render_batteries(toPrint);
     if (d_toggle_switch) render_toggle_switch(toPrint);
 
     // Render screws
