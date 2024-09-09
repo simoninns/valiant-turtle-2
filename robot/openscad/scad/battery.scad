@@ -152,6 +152,66 @@ module bullet_connector_female_mask()
     move([0,0,2.25]) cyl(h=5,d=5.5);
 }
 
+module battery_pack_screw_columns()
+{
+    // Screw columns
+    move([45.5,18,0]) {
+        difference() {
+            hull() {
+                cyl(h=60,d=8);
+                move([-4,0,0]) cuboid([1,8,60]); 
+            }
+
+            // Threaded insert
+            cyl(h=64,d=3);
+            move([0,0,+(34 - 6)]) cyl(h=8,d=4);
+            move([0,0,-(34 - 6)]) cyl(h=8,d=4);
+        }
+    }
+
+    move([45.5,-18,0]) {
+        difference() {
+            hull() {
+                cyl(h=60,d=8);
+                move([-4,0,0]) cuboid([1,8,60]); 
+            }
+
+            // Threaded insert
+            cyl(h=64,d=3);
+            move([0,0,+(34 - 6)]) cyl(h=8,d=4);
+            move([0,0,-(34 - 6)]) cyl(h=8,d=4);
+        }
+    }
+
+    move([-45.5,18,0]) {
+        difference() {
+            hull() {
+                cyl(h=60,d=8);
+                move([+4,0,0]) cuboid([1,8,60]); 
+            }
+
+            // Threaded insert
+            cyl(h=64,d=3);
+            move([0,0,+(34 - 6)]) cyl(h=8,d=4);
+            move([0,0,-(34 - 6)]) cyl(h=8,d=4);
+        }
+    }
+
+    move([-45.5,-18,0]) {
+        difference() {
+            hull() {
+                cyl(h=60,d=8);
+                move([+4,0,0]) cuboid([1,8,60]); 
+            }
+
+            // Threaded insert
+            cyl(h=64,d=3);
+            move([0,0,+(34 - 6)]) cyl(h=8,d=4);
+            move([0,0,-(34 - 6)]) cyl(h=8,d=4);
+        }
+    }
+}
+
 module battery_pack()
 {
     move([0,-12.5,10]) {
@@ -192,13 +252,11 @@ module battery_pack()
                 move([20.5,22,0]) cuboid([2,2,21.5]);
             }
 
-            // Temp for test
-            //move([25,0,-14]) cuboid([60,60,40]);
-            //move([-15,-20,-14]) cuboid([60,60,40]);
-        }
-
-        move([-33.5,0,-17.25]) { 
-            
+            // Lower screw clearance
+            move([45.5,18,-(34 - 6)]) cyl(h=8,d=4);
+            move([-45.5,18,-(34 - 6)]) cyl(h=8,d=4);
+            move([45.5,-18,-(34 - 6)]) cyl(h=8,d=4);
+            move([-45.5,-18,-(34 - 6)]) cyl(h=8,d=4);
         }
 
         // Clip base
@@ -209,6 +267,8 @@ module battery_pack()
 
         battery_pack_clip();
         xflip() battery_pack_clip();
+
+        battery_pack_screw_columns();
     }
 }
 
@@ -247,18 +307,80 @@ module battery_pack_connector_cover()
     }
 }
 
-module battery_pack_cover()
+module battery_pack_lower_cover()
 {
     move([0,-12.5,-21.5]) {
-        cuboid([88,49-0.5,3], chamfer=1, edges=EDGES_Z_ALL+EDGES_BOTTOM);
-
         difference() {
-            move([0,0,2]) cuboid([81,44,2], chamfer=1, edges=EDGES_Z_ALL);
-            move([0,0,2]) cuboid([81-4,44-4,4], chamfer=1, edges=EDGES_Z_ALL);
+            union() {
+                cuboid([88,49-0.5,3], chamfer=1, edges=EDGES_Z_ALL+EDGES_BOTTOM);
 
-            // Cable gap
-            move([-23.5 - 3,24,1]) cuboid([4,10,6]);
-            move([-23.5 + 3,24,1]) cuboid([4,10,6]);
+                difference() {
+                    move([0,0,2]) cuboid([81-0.25,44-0.25,2], chamfer=1, edges=EDGES_Z_ALL);
+                    move([0,0,2]) cuboid([81-4,44-4,4], chamfer=1, edges=EDGES_Z_ALL);
+                }
+                
+                union() {
+                    hull() {
+                        move([+45.5,18,0]) cyl(h=3,d=8);
+                        move([-45.5,18,0]) cyl(h=3,d=8);
+                    }
+                    hull() {
+                        move([+45.5,-18,0]) cyl(h=3,d=8);
+                        move([-45.5,-18,0]) cyl(h=3,d=8);
+                    }
+                }
+            }
+
+            move([+45.5,18,0]) cyl(h=6,d=3);
+            move([+45.5,18,0 - 1]) cyl(h=3,d=6.5);
+
+            move([+45.5,-18,0]) cyl(h=6,d=3);
+            move([+45.5,-18,0 - 1]) cyl(h=3,d=6.5);
+
+            move([-45.5,18,0]) cyl(h=6,d=3);
+            move([-45.5,18,0 - 1]) cyl(h=3,d=6.5);
+
+            move([-45.5,-18,0]) cyl(h=6,d=3);
+            move([-45.5,-18,0 - 1]) cyl(h=3,d=6.5);
+        }
+    }
+}
+
+module battery_pack_upper_cover()
+{
+    move([0,-12.5,41.5]) {
+        difference() {
+            union() {
+                cuboid([85.5,49-0.5,3], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+
+                difference() {
+                    move([0,0,-2]) cuboid([81-0.25,44-0.25,2], chamfer=1, edges=EDGES_Z_ALL);
+                    move([0,0,-2]) cuboid([81-4,44-4,4], chamfer=1, edges=EDGES_Z_ALL);
+                }
+                
+                union() {
+                    hull() {
+                        move([+45.5,18,0]) cyl(h=3,d=8);
+                        move([-45.5,18,0]) cyl(h=3,d=8);
+                    }
+                    hull() {
+                        move([+45.5,-18,0]) cyl(h=3,d=8);
+                        move([-45.5,-18,0]) cyl(h=3,d=8);
+                    }
+                }
+            }
+
+            move([+45.5,18,0]) cyl(h=6,d=3);
+            move([+45.5,18,0 + 1]) cyl(h=3,d=6.5);
+
+            move([+45.5,-18,0]) cyl(h=6,d=3);
+            move([+45.5,-18,0 + 1]) cyl(h=3,d=6.5);
+
+            move([-45.5,18,0]) cyl(h=6,d=3);
+            move([-45.5,18,0 + 1]) cyl(h=3,d=6.5);
+
+            move([-45.5,-18,0]) cyl(h=6,d=3);
+            move([-45.5,-18,0 + 1]) cyl(h=3,d=6.5);
         }
     }
 }
@@ -266,35 +388,41 @@ module battery_pack_cover()
 module render_battery_pack(toPrint)
 {
     if (!toPrint) {
-        //color([0.2,0.2,0.2,1]);
-        battery_pack();
+        color([0.2,0.2,0.2,1]) battery_pack();
 
-        // color([0.8,0.8,0.0,1]) move([-23.5,14.5,-12+3]) {
-        //     move([-3,0,0]) bullet_4mm_female();
-        //     move([+3,0,0]) bullet_4mm_female();
-        // }
+        color([0.8,0.8,0.0,1]) move([-23.5,16.5,-12+3]) {
+            move([-3,0,0]) bullet_4mm_female();
+            move([+3,0,0]) bullet_4mm_female();
+        }
     } else {
         move([0,13,20]) battery_pack();
     }
 }
 
-module render_battery_pack_cover(toPrint)
+module render_battery_pack_lower_cover(toPrint)
 {
     if (!toPrint) {
-        //color([0.2,0.2,0.2,1]) {
-            color([0.6,0.6,0.6,1]) battery_pack_cover();
-        //}
+        color([0.6,0.6,0.6,1]) battery_pack_lower_cover();
     } else {
-        move([0,13,20]) battery_pack_cover();
+        move([0,13,23]) battery_pack_lower_cover();
+    }
+}
+
+module render_battery_pack_upper_cover(toPrint)
+{
+    if (!toPrint) {
+        color([0.6,0.6,0.6,1]) battery_pack_upper_cover();
+    } else {
+        move([0,-13,43]) xrot(180) battery_pack_upper_cover();
     }
 }
 
 module render_battery_pack_connector_cover(toPrint)
 {
     if (!toPrint) {
-        battery_pack_connector_cover();
+        color([0.2,0.2,0.2,1]) battery_pack_connector_cover();
     } else {
-        move([0,13,20]) battery_pack_connector_cover();
+        move([23.5,-15,18]) battery_pack_connector_cover();
     }
 }
 
