@@ -60,6 +60,42 @@ module batteries()
     move([9.5,-9.5,0]) battery18650_protected();
 }
 
+module bullet_4mm_female()
+{
+    move([0,0,12.25/2]) difference() {
+        union() {
+            move([0,0,0]) cyl(h=12.25, d=4.25);
+            move([0,0,-4.5-0.125]) cyl(h=3, d=4.75);
+            move([0,0,-2.5 - 0.125 + 0.75 - 0.125]) cyl(h=0.75, d=4.75);
+        }
+
+        move([0,0,9.5 - 6]) cyl(h=7, d=3.5);
+        move([0,0,-9.5+4]) cyl(h=7, d=3.5);
+    }
+}
+
+module bullet_4mm_male()
+{
+    move([0,0,12.25/2]) difference() {
+        union() {
+            move([0,0,0]) cyl(h=12.25, d=3.25);
+            move([0,0,2.25]) cyl(h=3.5, d=4);
+
+            move([0,0,-3.5 - 0.125]) cyl(h=5, d=4.25);
+            move([0,0,-4.5 +0.125]) cyl(h=3.5, d=4.75);
+            move([0,0,-2.5 + 1]) cyl(h=0.75, d=4.75);
+        }
+
+        move([0,0,-9.5+4]) cyl(h=7, d=3.5);
+        move([2,0,-5.25 + 0.5]) xcyl(h=4, d=2);
+    }
+}
+
+module bullet_connector_male()
+{
+
+}
+
 // Printable parts ----------------------------------------------------------------------
 
 module battery_pack_clip()
@@ -109,30 +145,156 @@ module battery_pack_clip()
     }
 }
 
+module bullet_connector_female_mask()
+{
+    move([0,0,9]) cyl(h=9,d=4.5);
+    move([0,0,-0.5]) cyl(h=1,d=4);
+    move([0,0,2.25]) cyl(h=5,d=5.5);
+}
+
 module battery_pack()
 {
     move([0,-12.5,10]) {
         difference() {
             union() {
                 cuboid([86-0.5,49-0.5,60], chamfer=1, edges=EDGES_Z_ALL);
+                //move([0,0,-8]) cuboid([86-0.5,49-0.5,10], chamfer=1, edges=EDGES_Z_ALL); // TEMP
                 move([0,0,-21.5]) cuboid([88,49-0.5,17], chamfer=1, edges=EDGES_Z_ALL);
+
+                // Battery connector
+                move([-23.5,27,-20.5]) move([0,-0.5,2.25]) cuboid([14,5,23.5]);
             }
             cuboid([81,44,64], chamfer=1, edges=EDGES_Z_ALL);
+
+            // Battery connector
+            move([-23.5 - 3,29,-22 + 3]) bullet_connector_female_mask();
+            move([-23.5 + 3,29,-22 + 3]) bullet_connector_female_mask();
+
+            // Cable gap
+            move([-23.5 - 3,25,-27 + 0]) cuboid([4,10,8]);
+            move([-23.5 + 3,25,-27 + 0]) cuboid([4,10,8]);
+            move([-23.5 - 3,29,-24.5 + 3]) cyl(h=4,d=4);
+            move([-23.5 + 3,29,-24.5 + 3]) cyl(h=4,d=4);
+
+             // Clip slots
+            move([-33.5,0,-17.25]) { 
+                move([1,23,0]) cuboid([2.5,9,21.5]);
+                move([19,23,0]) cuboid([2.5,9,21.5]);
+
+                // Angle the top of the slots for better printing
+                move([1,23,10.75]) yrot(45) cuboid([1.75,9,1.75]);
+                move([19,23,10.75]) yrot(45) cuboid([1.75,9,1.75]);
+                move([0.25 + 0.125,21,10.75]) yrot(45) cuboid([2.75 - 0.125,4,2.75 - 0.125]);
+                move([19.25 + 0.25 + 0.125,21,10.75]) yrot(45) cuboid([2.75 - 0.125,4,2.75 - 0.125]);
+
+                // Clip recess
+                move([-0.5,22,0]) cuboid([2,2,21.5]);
+                move([20.5,22,0]) cuboid([2,2,21.5]);
+            }
+
+            // Temp for test
+            //move([25,0,-14]) cuboid([60,60,40]);
+            //move([-15,-20,-14]) cuboid([60,60,40]);
         }
+
+        move([-33.5,0,-17.25]) { 
+            
+        }
+
+        // Clip base
+        move([-23.5,28,-29]) cuboid([20,12,2]);
+
+        // Shelf for fastener
+        move([-23.5,21.5,-22]) zrot(90) yrot(180) right_triangle([1, 15, 1], center=true);
 
         battery_pack_clip();
         xflip() battery_pack_clip();
     }
 }
 
+module battery_pack_connector_cover()
+{
+    move([0,-10.5,-21.5+3]) {
+        // Battery connector
+        difference() {
+            difference() {
+                move([-23.5,27.25,11.25]) cuboid([18,9.5,17.5 + 4]);
+                move([-23.5,26.75 - 4,10]) cuboid([20,8.5,25]);
+            }
+
+            move([-23.5 - 3,27,9.0]) bullet_connector_female_mask();
+            move([-23.5 + 3,27,9.0]) bullet_connector_female_mask();
+            move([-23.5 - 3,23.75,4.5]) cuboid([4,10,6]);
+            move([-23.5 + 3,23.75,4.5]) cuboid([4,10,6]);
+            move([-23.5 - 3,27,6.5]) cyl(h=4,d=4);
+            move([-23.5 + 3,27,6.5]) cyl(h=4,d=4);
+        }
+
+        // Clips
+        move([-33.5,0,0]) { 
+            move([0.5,26,11.25]) {
+                cuboid([1,12,21.5]);
+                move([-0.75,-5.5,0]) cuboid([0.5, 1, 21.5]);
+                move([-1.5,-5.5,0]) xrot(90) yrot(-90) right_triangle([1, 21.5, 1], center=true);
+            }
+
+            move([19.5,26,11.25]) {
+                cuboid([1,12,21.5]);
+                move([0.75,-5.5,0]) cuboid([0.5, 1, 21.5]);
+                move([1.5,-5.5,0]) xrot(90) right_triangle([1, 21.5, 1], center=true);
+            }
+        }
+    }
+}
+
+module battery_pack_cover()
+{
+    move([0,-12.5,-21.5]) {
+        cuboid([88,49-0.5,3], chamfer=1, edges=EDGES_Z_ALL+EDGES_BOTTOM);
+
+        difference() {
+            move([0,0,2]) cuboid([81,44,2], chamfer=1, edges=EDGES_Z_ALL);
+            move([0,0,2]) cuboid([81-4,44-4,4], chamfer=1, edges=EDGES_Z_ALL);
+
+            // Cable gap
+            move([-23.5 - 3,24,1]) cuboid([4,10,6]);
+            move([-23.5 + 3,24,1]) cuboid([4,10,6]);
+        }
+    }
+}
+
 module render_battery_pack(toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1]) {
-            battery_pack();
-        }
+        //color([0.2,0.2,0.2,1]);
+        battery_pack();
+
+        // color([0.8,0.8,0.0,1]) move([-23.5,14.5,-12+3]) {
+        //     move([-3,0,0]) bullet_4mm_female();
+        //     move([+3,0,0]) bullet_4mm_female();
+        // }
     } else {
         move([0,13,20]) battery_pack();
+    }
+}
+
+module render_battery_pack_cover(toPrint)
+{
+    if (!toPrint) {
+        //color([0.2,0.2,0.2,1]) {
+            color([0.6,0.6,0.6,1]) battery_pack_cover();
+        //}
+    } else {
+        move([0,13,20]) battery_pack_cover();
+    }
+}
+
+module render_battery_pack_connector_cover(toPrint)
+{
+    if (!toPrint) {
+        battery_pack_connector_cover();
+    } else {
+        move([0,13,20]) battery_pack_connector_cover();
     }
 }
 

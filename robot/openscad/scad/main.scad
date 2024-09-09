@@ -82,6 +82,8 @@ display_servo_holder = "No"; // [Yes, No]
 display_servo_horn = "No"; // [Yes, No]
 display_logotype = "No"; // [Yes, No]
 display_battery_pack = "No"; // [Yes, No]
+display_battery_pack_cover = "No"; // [Yes, No]
+display_battery_pack_connector_cover = "No"; // [Yes, No]
 display_eye_surround = "No"; // [Yes, No]
 display_eye_light_pipe = "No"; // [Yes, No]
 display_eye_light_pipe_surround = "No"; // [Yes, No]
@@ -145,6 +147,8 @@ module main() {
     d_servo_horn = (display_servo_horn == "Yes") ? true:false;
     d_logotype = (display_logotype == "Yes") ? true:false;
     d_battery_pack = (display_battery_pack == "Yes") ? true:false;
+    d_battery_pack_cover = (display_battery_pack_cover == "Yes") ? true:false;
+    d_battery_pack_connector_cover = (display_battery_pack_connector_cover == "Yes") ? true:false;
     d_eye_surround = (display_eye_surround == "Yes") ? true:false;
     d_eye_light_pipe = (display_eye_light_pipe == "Yes") ? true:false;
     d_eye_light_pipe_surround = (display_eye_light_pipe_surround == "Yes") ? true:false;
@@ -205,6 +209,8 @@ module main() {
     if (d_servo_horn) render_micro_servo_horn(toPrint, penUp);
     if (d_logotype) render_logotype(toPrint);
     if (d_battery_pack) render_battery_pack(toPrint);
+    if (d_battery_pack_cover) render_battery_pack_cover(toPrint);
+    if (d_battery_pack_connector_cover) render_battery_pack_connector_cover(toPrint);
     if (d_eye_surround) render_eye_surround(toPrint);
     if (d_eye_light_pipe) render_eye_light_pipe(toPrint);
     if (d_eye_light_pipe_surround) render_eye_light_pipe_surround(toPrint);
@@ -249,6 +255,6 @@ if (for_printing == "Printing") {
 } else {
     $fn=20;
     // Place the centre of the axis on the centre rotation point of the model
-    move([0,-29,6]) main();
-    //main();
+    //move([0,-29,6]) main();
+    main();
 }
