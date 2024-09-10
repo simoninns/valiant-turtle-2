@@ -332,18 +332,6 @@ module battery_access_hole()
     move([-23.5,15.5,0]) cuboid([20.25,12.25,12]);
 }
 
-module body_test()
-{
-    difference() {
-        move([0,-12.5 + 8,-1.5]) cuboid([112,80,3], chamfer=1, edges=EDGES_TOP+EDGES_Z_ALL);
-        battery_access_hole();
-
-        // Holes for the servo holder
-        move([38.5,26.5,0]) cyl(h=12,d=3.5);
-        move([-38.5,26.5,0]) cyl(h=12,d=3.5);
-    }
-}
-
 module control_panel_hole()
 {
     move([-23.5,33.25,-2]) cuboid([21,21.25,12], chamfer=1, edges=EDGES_Z_ALL);
@@ -415,15 +403,6 @@ module body_left()
     }
     xflip() pen_hole_key();
     control_panel_surround();
-}
-
-module render_body_test(toPrint)
-{
-    if (!toPrint) {
-        body_test();
-    } else {
-        body_test();
-    }
 }
 
 module render_body_right(toPrint)

@@ -61,7 +61,6 @@ pen_up = "Pen Up"; // [False, True]
 /* [Printable Parts] */
 display_body_left = "Yes"; // [Yes, No]
 display_body_right = "Yes"; // [Yes, No]
-display_body_test = "Yes"; // [Yes, No]
 display_head = "Yes"; // [Yes, No]
 display_head_shell_screw_guide = "Yes"; // [Yes, No]
 display_head_cover = "No"; // [Yes, No]
@@ -130,7 +129,6 @@ module main() {
 
     d_body_left = (display_body_left == "Yes") ? true:false;
     d_body_right = (display_body_right == "Yes") ? true:false;
-    d_body_test = (display_body_test == "Yes") ? true:false;
     d_head = (display_head == "Yes") ? true:false;
     d_head_shell_screw_guide = (display_head_shell_screw_guide == "Yes") ? true:false;
     d_shell_lid = (display_shell_lid == "Yes") ? true:false;
@@ -196,7 +194,6 @@ module main() {
     // Render the printable parts
     if (d_body_left) render_body_left(toPrint);
     if (d_body_right) render_body_right(toPrint);
-    if (d_body_test) render_body_test(toPrint);
     if (d_head) render_head(toPrint);
     if (d_head_shell_screw_guide) render_head_shell_screw_guide(toPrint);
     if (d_shell_lid) render_shell_lid(toPrint);
