@@ -87,6 +87,7 @@ display_battery_pack = "No"; // [Yes, No]
 display_battery_pack_upper_cover = "No"; // [Yes, No]
 display_battery_pack_lower_cover = "No"; // [Yes, No]
 display_battery_pack_connector_cover = "No"; // [Yes, No]
+display_battery_pack_connector_lock = "No"; // [Yes, No]
 display_eye_surround = "No"; // [Yes, No]
 display_eye_light_pipe = "No"; // [Yes, No]
 display_eye_light_pipe_surround = "No"; // [Yes, No]
@@ -155,6 +156,7 @@ module main() {
     d_battery_pack_upper_cover = (display_battery_pack_upper_cover == "Yes") ? true:false;
     d_battery_pack_lower_cover = (display_battery_pack_lower_cover == "Yes") ? true:false;
     d_battery_pack_connector_cover = (display_battery_pack_connector_cover == "Yes") ? true:false;
+    d_battery_pack_connector_lock = (display_battery_pack_connector_lock == "Yes") ? true:false;
     d_eye_surround = (display_eye_surround == "Yes") ? true:false;
     d_eye_light_pipe = (display_eye_light_pipe == "Yes") ? true:false;
     d_eye_light_pipe_surround = (display_eye_light_pipe_surround == "Yes") ? true:false;
@@ -220,6 +222,7 @@ module main() {
     if (d_battery_pack_upper_cover) render_battery_pack_upper_cover(toPrint);
     if (d_battery_pack_lower_cover) render_battery_pack_lower_cover(toPrint);
     if (d_battery_pack_connector_cover) render_battery_pack_connector_cover(toPrint);
+    if (d_battery_pack_connector_lock) render_battery_pack_connector_lock(toPrint);
     if (d_eye_surround) render_eye_surround(toPrint);
     if (d_eye_light_pipe) render_eye_light_pipe(toPrint);
     if (d_eye_light_pipe_surround) render_eye_light_pipe_surround(toPrint);

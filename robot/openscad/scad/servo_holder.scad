@@ -147,8 +147,8 @@ module bullet_4mm_male()
 
 module bullet_connector_male_mask()
 {
-    move([0,0,-9]) cyl(h=9,d=4.5);
-    move([0,0,0.5]) cyl(h=1,d=4);
+    move([0,0,-9]) cyl(h=9,d=3.5);
+    move([0,0,0.5]) cyl(h=1,d=3);
     move([0,0,-2.5]) cyl(h=5.5,d=5.5);
 }
 
@@ -178,7 +178,7 @@ module male_connector_back()
         }
 
         // Mask for the bullet connectors (male)
-        move([-23.5,16.5,9.5]) {
+        move([-23.5,16.5,10]) {
             move([-3,0,0]) bullet_connector_male_mask();
             move([+3,0,0]) bullet_connector_male_mask();
         }
@@ -213,7 +213,7 @@ module male_connector_front()
         }
 
         // Mask for the bullet connectors (male)
-        move([-23.5,16.5,9.5]) {
+        move([-23.5,16.5,10]) {
             move([-3,0,0]) bullet_connector_male_mask();
             move([+3,0,0]) bullet_connector_male_mask();
         }
@@ -286,7 +286,7 @@ module render_servo_holder(toPrint)
         color([0.2,0.2,0.2,1]) servo_holder();
 
         // Add in the bullet connectors
-        move([-23.5,16.5,9.5]) {
+        move([-23.5,16.5,10]) {
             move([-3,0,0]) bullet_4mm_male();
             move([+3,0,0]) bullet_4mm_male();
         }

@@ -365,15 +365,20 @@ module battery_pack_upper_cover()
     }
 }
 
+module battery_pack_connector_lock()
+{
+    move([-23.5,9,-4.5]) {
+        cuboid([18,1,14]);
+
+        move([8.5,3,0]) cuboid([1.25,7,14]);
+        move([-8.5,3,0]) cuboid([1.25,7,14]);
+    }
+}
+
 module render_battery_pack(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) battery_pack();
-
-        // color([0.8,0.8,0.0,1]) move([-23.5,16.5,-12+3]) {
-        //     move([-3,0,0]) bullet_4mm_female();
-        //     move([+3,0,0]) bullet_4mm_female();
-        // }
     } else {
         move([0,13,20]) battery_pack();
     }
@@ -408,6 +413,15 @@ module render_battery_pack_connector_cover(toPrint)
         }
     } else {
         move([23.5,-15,18]) battery_pack_connector_cover();
+    }
+}
+
+module render_battery_pack_connector_lock(toPrint)
+{
+    if (!toPrint) {
+        color([0.6,0.6,0.6,1]) battery_pack_connector_lock();
+    } else {
+        move([23.5,-4.5,-8.5]) xrot(90) battery_pack_connector_lock();
     }
 }
 
