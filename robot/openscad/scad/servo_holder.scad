@@ -265,9 +265,7 @@ module servo_holder()
 module render_male_connector_back(toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1]);
-        male_connector_back();
-
+        color([0.2,0.2,0.2,1]) male_connector_back();
     } else {
         move([23,-7,21.5]) xrot(-90) male_connector_back();
     }
@@ -276,9 +274,7 @@ module render_male_connector_back(toPrint)
 module render_male_connector_front(toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1]);
-        male_connector_front();
-
+        color([0.2,0.2,0.2,1]) male_connector_front();
     } else {
         move([23,7,-12.5]) xrot(90) male_connector_front();
     }

@@ -346,15 +346,15 @@ module body_test()
 
 module control_panel_hole()
 {
-    move([-23.5,30.5,-2]) cuboid([21,27,12], chamfer=1, edges=EDGES_Z_ALL);
+    move([-23.5,33.25,-2]) cuboid([21,21.25,12], chamfer=1, edges=EDGES_Z_ALL);
 }
 
 module control_panel_surround()
 {
-    move([-23.5,30.5,-4]) {
+    move([-23.5,33.25,-4]) {
         difference() {
-            cuboid([21+2,27+2,2], chamfer=1, edges=EDGES_Z_ALL);
-            cuboid([21,27,14], chamfer=1, edges=EDGES_Z_ALL);
+            cuboid([21+2,21.25+2,2], chamfer=1, edges=EDGES_Z_ALL);
+            cuboid([21,21.25,14], chamfer=1, edges=EDGES_Z_ALL);
         }
     }
 }
