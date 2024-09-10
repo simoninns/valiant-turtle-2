@@ -309,8 +309,39 @@ module pen_servo_mount_material()
 
 module battery_access_hole()
 {
+    // Main body of battery
     move([0,-12.5,0]) cuboid([86,49,22], chamfer=1, edges=EDGES_Z_ALL);
-    move([0,-12.5,0]) cuboid([100,25,22]);
+
+    // Screw columns
+    hull() {
+        move([+45.5,5.5,-1.5]) cyl(h=12,d=8.25);
+        move([-45.5,5.5,-1.5]) cyl(h=12,d=8.25);
+    }
+    hull() {
+        move([+45.5,-5.5 - 25,-1.5]) cyl(h=12,d=8.25);
+        move([-45.5,-5.5 - 25,-1.5]) cyl(h=12,d=8.25);
+    }
+
+    // Remove small tabs (as they will just break anyway)
+    move([0,-12.5,0]) cuboid([96,30,22]);
+
+    // Clip recesses
+    move([0,-12.5,0]) cuboid([101,25,22]);
+
+    // Power connector cut-out
+    move([-23.5,15.5,0]) cuboid([20.25,12.25,12]);
+}
+
+module body_test()
+{
+    difference() {
+        move([0,-12.5 + 8,-1.5]) cuboid([112,80,3], chamfer=1, edges=EDGES_TOP+EDGES_Z_ALL);
+        battery_access_hole();
+
+        // Holes for the servo holder
+        move([38.5,26.5,0]) cyl(h=12,d=3.5);
+        move([-38.5,26.5,0]) cyl(h=12,d=3.5);
+    }
 }
 
 module control_panel_hole()
@@ -384,14 +415,6 @@ module body_left()
     }
     xflip() pen_hole_key();
     control_panel_surround();
-}
-
-module body_test()
-{
-    difference() {
-        move([0,-12.5,-1.5]) cuboid([112,60,3], chamfer=1, edges=EDGES_TOP+EDGES_Z_ALL);
-        battery_access_hole();
-    }
 }
 
 module render_body_test(toPrint)

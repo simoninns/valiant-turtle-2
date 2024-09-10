@@ -80,6 +80,8 @@ display_pen_holder_top_large = "No"; // [Yes, No]
 display_pen_holder_cap = "No"; // [Yes, No]
 display_servo_holder = "No"; // [Yes, No]
 display_servo_horn = "No"; // [Yes, No]
+display_male_connector_back = "No"; // [Yes, No]
+display_male_connector_front = "No"; // [Yes, No]
 display_logotype = "No"; // [Yes, No]
 display_battery_pack = "No"; // [Yes, No]
 display_battery_pack_upper_cover = "No"; // [Yes, No]
@@ -146,6 +148,8 @@ module main() {
     d_pen_holder_cap = (display_pen_holder_cap == "Yes") ? true:false;
     d_servo_holder = (display_servo_holder == "Yes") ? true:false;
     d_servo_horn = (display_servo_horn == "Yes") ? true:false;
+    d_male_connector_back = (display_male_connector_back == "Yes") ? true:false;
+    d_male_connector_front = (display_male_connector_front == "Yes") ? true:false;
     d_logotype = (display_logotype == "Yes") ? true:false;
     d_battery_pack = (display_battery_pack == "Yes") ? true:false;
     d_battery_pack_upper_cover = (display_battery_pack_upper_cover == "Yes") ? true:false;
@@ -209,6 +213,8 @@ module main() {
     if (d_pen_holder_cap) render_pen_holder_cap(toPrint,penUp);
     if (d_servo_holder) render_servo_holder(toPrint);
     if (d_servo_horn) render_micro_servo_horn(toPrint, penUp);
+    if (d_male_connector_back) render_male_connector_back(toPrint);
+    if (d_male_connector_front) render_male_connector_front(toPrint);
     if (d_logotype) render_logotype(toPrint);
     if (d_battery_pack) render_battery_pack(toPrint);
     if (d_battery_pack_upper_cover) render_battery_pack_upper_cover(toPrint);

@@ -28,20 +28,20 @@ use <BOSL/shapes.scad>
 
 // Note: Both the left and right screw platforms are made to fit between the shell
 // back screw mounts; this is to stop the shell sliding around sideways
-module servo_holder()
+module servo_holder_edges()
 {
     move([30.5,34.5,8.5]) {
         difference() {
             union() {
-                // Servo attachement towers
+                // Servo attachment towers
                 move([-8,-14,0.5]) cuboid([7,4,16], chamfer=0.5, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
                 move([-8,+14,0.5]) cuboid([7,4,16], chamfer=0.5, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
 
                 // Right screw platform
-                move([0.25,-1,-7]) cuboid([25.5,36,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL); 
+                move([0.25,-2.5,-7]) cuboid([25.5,39,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL); 
 
                 // Left screw platform
-                move([-61.25,-1,-7]) cuboid([25.5,36,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
+                move([-61.25,-2.5,-7]) cuboid([25.5,39,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
 
                 // Platform to make installing the servo easier
                 move([4.5,0,-6]) cuboid([14,25,2], chamfer=0.5);
@@ -71,13 +71,11 @@ module servo_holder()
             }
 
             // Hole for toggle switch
-            move([-54,2,-6]) {
+            move([-54,2.5,-6]) {
                 cyl(h=12,d=7);
                 move([6,0,0]) cyl(h=10,d=3);
             }
         }
-
-        
     }
 }
 
@@ -87,7 +85,7 @@ module pen_support()
         difference() {
             union() {
                 cyl(h=24, d=25, center=false, chamfer2=0.5, $fn=8);
-                move([0,0.5+1,1.5]) cuboid([60,30,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL); 
+                move([0,0,1.5]) cuboid([60,33,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL); 
             }
             
             // Shaft center
@@ -130,20 +128,170 @@ module switch_support()
     }
 }
 
+module bullet_4mm_male()
+{
+    xrot(180) move([0,0,12.25/2]) difference() {
+        union() {
+            move([0,0,0]) cyl(h=12.25, d=3.25);
+            move([0,0,2.25]) cyl(h=3.5, d=4);
+
+            move([0,0,-3.5 - 0.125]) cyl(h=5, d=4.25);
+            move([0,0,-4.5 +0.125]) cyl(h=3.5, d=4.75);
+            move([0,0,-2.5 + 1]) cyl(h=0.75, d=4.75);
+        }
+
+        move([0,0,-9.5+4]) cyl(h=7, d=3.5);
+        move([2,0,-5.25 + 0.5]) xcyl(h=4, d=2);
+    }
+}
+
+module bullet_connector_male_mask()
+{
+    move([0,0,-9]) cyl(h=9,d=4.5);
+    move([0,0,0.5]) cyl(h=1,d=4);
+    move([0,0,-2.5]) cyl(h=5.5,d=5.5);
+}
+
+module male_connector_support()
+{
+    difference() {
+        move([-23.5,18,6]) cuboid([24,11,12], chamfer=1, edges=EDGES_Z_ALL);
+        move([-23.5,15.5,5]) cuboid([20.25,12.25,20]);
+
+        // Slots for connector
+        move([-12,16.5,1.5]) cuboid([3,3.25,16]);
+        move([-12 - 23,16.5,1.5]) cuboid([3,3.25,16]);
+    }
+
+    // Top stays
+    move([-23.5,17.5,11]) {
+        move([-9.25,0,0]) yrot(90) right_triangle([2, 10, 2], center=true);
+        move([+9.25,0,0]) yrot(180) right_triangle([2, 10, 2], center=true);
+    }
+}
+
+module male_connector_back()
+{
+    difference() {
+        move([-23.5,19,7.75]) {
+            cuboid([20,5,8.5]);
+        }
+
+        // Mask for the bullet connectors (male)
+        move([-23.5,16.5,9.5]) {
+            move([-3,0,0]) bullet_connector_male_mask();
+            move([+3,0,0]) bullet_connector_male_mask();
+        }
+
+        // Cable clearance
+        move([-23.5,16.5,11.5]) {
+            move([-3,0,-0]) cyl(h=4,d=3.5);
+            move([+3,0,-0]) cyl(h=4,d=3.5);
+        }
+
+        move([-23.5,17.5,11]) {
+            move([-9.25,0,0]) yrot(90) right_triangle([2.01, 12, 2.01], center=true);
+            move([+9.25,0,0]) yrot(180) right_triangle([2.01, 12, 2.01], center=true);
+        }
+    }
+
+    // Slots
+    difference() {
+        union() {
+            move([-13,17.25,4.75]) cuboid([2.75,1.5,9.5]);
+            move([-13 - 21,17.25,4.75]) cuboid([2.75,1.5,9.5]);
+        }
+        move([-23.5,16,1.5]) cuboid([20.5,8,4]);
+    }
+}
+
+module male_connector_front()
+{
+    difference() {
+        move([-23.5,19 - 4.5,7.75]) {
+            cuboid([20,4,8.5]);
+        }
+
+        // Mask for the bullet connectors (male)
+        move([-23.5,16.5,9.5]) {
+            move([-3,0,0]) bullet_connector_male_mask();
+            move([+3,0,0]) bullet_connector_male_mask();
+        }
+
+        // Cable clearance
+        move([-23.5,16.5,11.5]) {
+            move([-3,0,-0]) cyl(h=4,d=3.5);
+            move([+3,0,-0]) cyl(h=4,d=3.5);
+        }
+
+        move([-23.5,17.5,11]) {
+            move([-9.25,0,0]) yrot(90) right_triangle([2.01, 12, 2.01], center=true);
+            move([+9.25,0,0]) yrot(180) right_triangle([2.01, 12, 2.01], center=true);
+        }
+    }
+
+    // Slots
+    difference() {
+        union() {
+            move([-13,15.75,4.75]) cuboid([2.75,1.5,9.5]);
+            move([-13 - 21,15.75,4.75]) cuboid([2.75,1.5,9.5]);
+        }
+        move([-23.5,16,1.5]) cuboid([20.5,8,4]);
+    }
+}
+
+module servo_holder()
+{
+    difference() {
+        union() {
+            servo_holder_edges();
+            pen_support();
+            switch_support();
+        }
+
+        // Cut-out for power connector
+        move([-23.5,15.5,0]) cuboid([20.25,12.25,12]);
+
+        // Slots for connector
+        move([-13,16.5,1.5]) cuboid([3,3.25,16]);
+        move([-11 - 23,16.5,1.5]) cuboid([3,3.25,16]);
+    }
+
+    male_connector_support();
+}
+
+module render_male_connector_back(toPrint)
+{
+    if (!toPrint) {
+        color([0.2,0.2,0.2,1]) male_connector_back();
+
+    } else {
+        move([23,-7,21.5]) xrot(-90) male_connector_back();
+    }
+}
+
+module render_male_connector_front(toPrint)
+{
+    if (!toPrint) {
+        color([0.2,0.2,0.2,1]) male_connector_front();
+
+    } else {
+        move([23,7,-12.5]) xrot(90) male_connector_front();
+    }
+}
+
 module render_servo_holder(toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1])  {
-            servo_holder();
-            pen_support();
-            switch_support();
+        color([0.2,0.2,0.2,1]) servo_holder();
+
+        // Add in the bullet connectors
+        move([-23.5,16.5,9.5]) {
+            move([-3,0,0]) bullet_4mm_male();
+            move([+3,0,0]) bullet_4mm_male();
         }
     } else {
-        move([0,-29,0]) {
-            servo_holder();
-            pen_support();
-            switch_support();
-        }
+        move([0,-29,0]) servo_holder();
     }
 }
 
