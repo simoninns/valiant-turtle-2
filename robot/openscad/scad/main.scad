@@ -92,6 +92,7 @@ display_eye_light_pipe = "No"; // [Yes, No]
 display_eye_light_pipe_surround = "No"; // [Yes, No]
 display_display_mount = "No"; // [Yes, No]
 display_stand = "No"; // [Yes, No]
+display_stand_battery_cover = "No"; // [Yes, No]
 
 /* [Print Supports] */
 display_shell_support = "No"; // [Yes, No]
@@ -160,6 +161,7 @@ module main() {
     d_eye_light_pipe_surround = (display_eye_light_pipe_surround == "Yes") ? true:false;
     d_display_mount = (display_display_mount == "Yes") ? true:false;
     d_stand = (display_stand == "Yes") ? true:false;
+    d_stand_battery_cover = (display_stand_battery_cover == "Yes") ? true:false;
 
     // Print supports
     d_shell_support = (display_shell_support == "Yes") ? true:false;
@@ -225,6 +227,7 @@ module main() {
     if (d_eye_light_pipe_surround) render_eye_light_pipe_surround(toPrint);
     if (d_display_mount) render_display_mount(toPrint);
     if (d_stand) render_stand(toPrint);
+    if (d_stand_battery_cover) render_stand_battery_cover(toPrint);
 
     // Render the print supports
     if (d_shell_support) render_shell_support(toPrint);
@@ -264,6 +267,6 @@ if (for_printing == "Printing") {
 } else {
     $fn=20;
     // Place the centre of the axis on the centre rotation point of the model
-    //move([0,-29,6]) main();
-    main();
+    move([0,-29,6]) main();
+    //main();
 }

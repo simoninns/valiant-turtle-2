@@ -396,7 +396,7 @@ module render_battery_pack_lower_cover(toPrint)
 module render_battery_pack_upper_cover(toPrint)
 {
     if (!toPrint) {
-        color([0.6,0.6,0.6,1]) battery_pack_upper_cover();
+        color([0.9,0.9,0.6,1]) battery_pack_upper_cover();
     } else {
         move([0,-13,43]) xrot(180) battery_pack_upper_cover();
     }
