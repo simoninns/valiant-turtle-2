@@ -173,20 +173,21 @@ module male_connector_support()
 module male_connector_back()
 {
     difference() {
-        move([-23.5,19,7.75]) {
-            cuboid([20,5,8.5]);
+        move([-23.5,19,8.125]) {
+            cuboid([20,5,7.75]);
+            move([0,0,6]) cuboid([10,5,5]);
         }
 
         // Mask for the bullet connectors (male)
-        move([-23.5,16.5,10]) {
+        move([-23.5,16.5,10.25]) {
             move([-3,0,0]) bullet_connector_male_mask();
             move([+3,0,0]) bullet_connector_male_mask();
         }
 
         // Cable clearance
         move([-23.5,16.5,11.5]) {
-            move([-3,0,-0]) cyl(h=4,d=3.5);
-            move([+3,0,-0]) cyl(h=4,d=3.5);
+            move([-3,0,3.5]) cyl(h=8,d=3);
+            move([+3,0,3.5]) cyl(h=8,d=3);
         }
 
         move([-23.5,17.5,11]) {
@@ -201,27 +202,28 @@ module male_connector_back()
             move([-13,17.25,4.75]) cuboid([2.75,1.5,9.5]);
             move([-13 - 21,17.25,4.75]) cuboid([2.75,1.5,9.5]);
         }
-        move([-23.5,16,1.5]) cuboid([20.5,8,4]);
+        move([-23.5,16,1.25]) cuboid([20.5,8,6]);
     }
 }
 
 module male_connector_front()
 {
     difference() {
-        move([-23.5,19 - 4.5,7.75]) {
-            cuboid([20,4,8.5]);
+        move([-23.5,19 - 4.5,8.125]) {
+            cuboid([20,4,7.75]);
+            move([0,0,6]) cuboid([10,4,5]);
         }
 
         // Mask for the bullet connectors (male)
-        move([-23.5,16.5,10]) {
+        move([-23.5,16.5,10.25]) {
             move([-3,0,0]) bullet_connector_male_mask();
             move([+3,0,0]) bullet_connector_male_mask();
         }
 
         // Cable clearance
         move([-23.5,16.5,11.5]) {
-            move([-3,0,-0]) cyl(h=4,d=3.5);
-            move([+3,0,-0]) cyl(h=4,d=3.5);
+            move([-3,0,3.5]) cyl(h=8,d=3);
+            move([+3,0,3.5]) cyl(h=8,d=3);
         }
 
         move([-23.5,17.5,11]) {
@@ -236,7 +238,7 @@ module male_connector_front()
             move([-13,15.75,4.75]) cuboid([2.75,1.5,9.5]);
             move([-13 - 21,15.75,4.75]) cuboid([2.75,1.5,9.5]);
         }
-        move([-23.5,16,1.5]) cuboid([20.5,8,4]);
+        move([-23.5,16,1.25]) cuboid([20.5,8,6]);
     }
 }
 
@@ -263,7 +265,8 @@ module servo_holder()
 module render_male_connector_back(toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1]) male_connector_back();
+        color([0.2,0.2,0.2,1]);
+        male_connector_back();
 
     } else {
         move([23,-7,21.5]) xrot(-90) male_connector_back();
@@ -273,7 +276,8 @@ module render_male_connector_back(toPrint)
 module render_male_connector_front(toPrint)
 {
     if (!toPrint) {
-        color([0.2,0.2,0.2,1]) male_connector_front();
+        color([0.2,0.2,0.2,1]);
+        male_connector_front();
 
     } else {
         move([23,7,-12.5]) xrot(90) male_connector_front();
@@ -286,7 +290,7 @@ module render_servo_holder(toPrint)
         color([0.2,0.2,0.2,1]) servo_holder();
 
         // Add in the bullet connectors
-        move([-23.5,16.5,10]) {
+        move([-23.5,16.5,10.25]) {
             move([-3,0,0]) bullet_4mm_male();
             move([+3,0,0]) bullet_4mm_male();
         }
