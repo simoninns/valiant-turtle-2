@@ -214,6 +214,7 @@ module battery_pack_screw_columns()
 
 module battery_pack()
 {
+    difference() {
     move([0,-12.5,10]) {
         difference() {
             union() {
@@ -269,6 +270,13 @@ module battery_pack()
         xflip() battery_pack_clip();
 
         battery_pack_screw_columns();
+    }
+
+        // Test
+        // move([0,0,28]) cuboid([70,100,40]);
+        // move([0,-12.5,40]) cuboid([100,20,30]);
+        // move([0,-40,8]) cuboid([70,70,40]);
+        // move([15,0,8]) cuboid([40,70,40]);
     }
 }
 
