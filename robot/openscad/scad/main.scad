@@ -60,7 +60,7 @@ include <stand.scad>
 // Select Display for viewing the model or Printing to orientate parts for STL generation
 for_printing = "Display"; // [Display, Printing]
 // Display with pen up or down
-pen_up = "Pen Up"; // [False, True]
+pen_up = "Up"; // [Up, Down]
 
 /* [Printable Parts] */
 display_body_left = "No"; // [Yes, No]
@@ -98,7 +98,7 @@ display_display_mount = "No"; // [Yes, No]
 display_stand = "No"; // [Yes, No]
 display_stand_battery_cover = "No"; // [Yes, No]
 
-/* [Print Supports] */
+/* [Support Enforcers] */
 display_shell_supports = "No"; // [Yes, No]
 display_battery_pack_supports = "No"; // [Yes, No]
 
@@ -131,7 +131,7 @@ display_battery_screws = "No"; // [Yes, No]
 
 module main() {
     toPrint = (for_printing == "Printing") ? true:false;
-    penUp = (pen_up == "True") ? true:false;
+    penUp = (pen_up == "Up") ? true:false;
 
     d_body_left = (display_body_left == "Yes") ? true:false;
     d_body_right = (display_body_right == "Yes") ? true:false;
@@ -168,7 +168,7 @@ module main() {
     d_stand = (display_stand == "Yes") ? true:false;
     d_stand_battery_cover = (display_stand_battery_cover == "Yes") ? true:false;
 
-    // Print supports
+    // Support enforcers
     d_shell_supports = (display_shell_supports == "Yes") ? true:false;
     d_battery_pack_supports = (display_battery_pack_supports == "Yes") ? true:false;
 
@@ -235,7 +235,7 @@ module main() {
     if (d_stand) render_stand(toPrint);
     if (d_stand_battery_cover) render_stand_battery_cover(toPrint);
 
-    // Render the print supports
+    // Render the support enforcers
     if (d_shell_supports) render_shell_supports(toPrint);
     if (d_battery_pack_supports) render_battery_pack_supports(toPrint);
 
