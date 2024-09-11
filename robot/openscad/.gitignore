@@ -1,0 +1,5 @@
+# OpenSCAD ignores
+
+# STL files
+*.stl
+
