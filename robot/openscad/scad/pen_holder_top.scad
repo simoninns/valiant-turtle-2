@@ -137,7 +137,7 @@ module holder_insert_large()
 module render_pen_holder_top_small(toPrint, penUp)
 {
     if (!toPrint) {
-        if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 4]) rotate([180,0,0]) holder_insert_small();
+        if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 8]) rotate([180,0,0]) holder_insert_small();
         else color([0.8,0.8,0.8]) move([0,29,16 + 7 + 0]) rotate([180,0,0]) holder_insert_small();
     } else {
         move([0,0,9.5]) rotate([0,-15,0]) holder_insert_small();
@@ -148,7 +148,7 @@ module render_pen_holder_top_small(toPrint, penUp)
 module render_pen_holder_top_medium(toPrint, penUp)
 {
     if (!toPrint) {
-        if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 4]) rotate([180,0,0]) holder_insert_medium();
+        if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 8]) rotate([180,0,0]) holder_insert_medium();
         else color([0.8,0.8,0.8]) move([0,29,16 + 7]) rotate([180,0,0]) holder_insert_medium();
     } else {
         move([0,0,9.5]) rotate([0,-15,0]) holder_insert_medium();
@@ -159,7 +159,7 @@ module render_pen_holder_top_medium(toPrint, penUp)
 module render_pen_holder_top_large(toPrint, penUp)
 {
     if (!toPrint) {
-        if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 4]) rotate([180,0,0]) holder_insert_large();
+        if (penUp) color([0.8,0.8,0.8]) move([0,29,16 + 7 + 8]) rotate([180,0,0]) holder_insert_large();
         else color([0.8,0.8,0.8]) move([0,29,16 + 7]) rotate([180,0,0]) holder_insert_large();
     }
     else move([0,0,9.5]) rotate([0,-15,0]) holder_insert_large();
