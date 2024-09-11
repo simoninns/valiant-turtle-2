@@ -387,7 +387,7 @@ module render_battery_pack_supports(toPrint)
 module render_battery_pack_lower_cover(toPrint)
 {
     if (!toPrint) {
-        color([0.6,0.6,0.6,1]) battery_pack_lower_cover();
+        color([0.9,0.9,0.6,1]) battery_pack_lower_cover();
     } else {
         move([0,13,23]) battery_pack_lower_cover();
     }
@@ -440,8 +440,16 @@ module render_batteries(toPrint)
 module render_battery_screws(toPrint)
 {
     if (!toPrint) {
-        move([44.5,-19,-3]) xrot(180) m3x10_screw();
-        move([-44.5,-19,-3]) xrot(180) m3x10_screw();
-        move([0,5,-3]) xrot(180) m3x10_screw();
+        // Lower screws
+        move([45.5,-30.5,-21.5]) xrot(180) m3x10_screw();
+        move([45.5,5.5,-21.5]) xrot(180) m3x10_screw();
+        move([-45.5,-30.5,-21.5]) xrot(180) m3x10_screw();
+        move([-45.5,5.5,-21.5]) xrot(180) m3x10_screw();
+
+        // Upper screws
+        move([45.5,-30.5,41.5]) m3x10_screw();
+        move([45.5,5.5,41.5])  m3x10_screw();
+        move([-45.5,-30.5,41.5])  m3x10_screw();
+        move([-45.5,5.5,41.5])  m3x10_screw();
     }
 }
