@@ -1,5 +1,5 @@
 #!bin/bash
-echo "Generating STL model files..."
+echo "Generating 3D STL model files..."
 echo "  body_left.stl"
 openscad -o ./stl/body_left.stl -D 'for_printing="Printing"' -D 'display_body_left="Yes"' ./scad/main.scad
 echo "  body_right.stl"
@@ -69,11 +69,17 @@ openscad -o ./stl/stand.stl -D 'for_printing="Printing"' -D 'display_stand="Yes"
 echo "  stand_battery_cover.stl"
 openscad -o ./stl/stand_battery_cover.stl -D 'for_printing="Printing"' -D 'display_stand_battery_cover="Yes"' ./scad/main.scad
 
-echo "Generating STL support enforcer files..."
+echo "Generating 3D STL support enforcer files..."
 echo "  shell_support_enforcer.stl"
 openscad -o ./stl_support_enforcers/shell_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_shell_supports="Yes"' ./scad/main.scad
 echo "  stand_battery_cover.stl"
 openscad -o ./stl_support_enforcers/battery_pack_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_battery_pack_supports="Yes"' ./scad/main.scad
+
+echo "Generating 2D DXF files for KiCAD..."
+echo "  main_pcb.dxf"
+openscad -o ./dxf/main_pcb.dxf -D 'for_printing="Printing"' -D 'display_main_pcb="Yes"' ./scad/main.scad
+echo "  eye_pcb.dxf"
+openscad -o ./dxf/eye_pcb.dxf -D 'for_printing="Printing"' -D 'display_eye_pcb="Yes"' ./scad/main.scad
 
 echo "Script complete"
 

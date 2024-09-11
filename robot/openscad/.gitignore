@@ -3,3 +3,5 @@
 # STL files
 *.stl
 
+# DXF files
+*.dxf

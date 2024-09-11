@@ -201,5 +201,9 @@ module render_eye_pcb(toPrint)
 {
     if(!toPrint) {
         color([0,0.6,0,1]) eye_pcb();
+    } else {
+        // This will allow you to render and export a DXF file that
+        // can be used as a KiCAD PCB outline...
+        move([0,106,0.5]) projection() eye_pcb();
     }
 }
