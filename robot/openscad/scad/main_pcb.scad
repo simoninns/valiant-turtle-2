@@ -33,9 +33,8 @@ module main_pcb_mount_front()
 
         // Threaded insert slots
         move([0,0,29 - 6]) xrot(180) cyl(h=8,d=4);
-        move([0,0,29 - 6]) xrot(180) cyl(h=10,d=3);
         move([0,0,-29 + 6]) xrot(180) cyl(h=8,d=4);
-        move([0,0,-29 + 6]) xrot(180) cyl(h=10,d=3);
+        move([0,0,0]) xrot(180) cyl(h=60,d=3);
     }
 }
 
@@ -57,9 +56,9 @@ module main_pcb_mount_back()
         move([7,0,-29 + 6]) xrot(180) cyl(h=8,d=4);
         move([-7,0,-29 + 6]) xrot(180) cyl(h=8,d=4);
 
-        move([0,0,29 - 6]) xrot(180) cyl(h=10,d=3);
-        move([7,0,-29 + 6]) xrot(180) cyl(h=10,d=3);
-        move([-7,0,-29 + 6]) xrot(180) cyl(h=10,d=3);
+        move([0,0,29 - 9]) xrot(180) cyl(h=16,d=3);
+        move([7,0,-29 + 9]) xrot(180) cyl(h=16,d=3);
+        move([-7,0,-29 + 9]) xrot(180) cyl(h=16,d=3);
     }
 }
 
