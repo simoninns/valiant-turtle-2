@@ -80,6 +80,12 @@ echo "  main_pcb.dxf"
 openscad -o ./dxf/main_pcb.dxf -D 'for_printing="Printing"' -D 'display_main_pcb="Yes"' ./scad/main.scad
 echo "  eye_pcb.dxf"
 openscad -o ./dxf/eye_pcb.dxf -D 'for_printing="Printing"' -D 'display_eye_pcb="Yes"' ./scad/main.scad
+echo "  logotype_2D.dxf"
+openscad -o ./dxf/logotype_2D.dxf -D 'for_printing="Printing"' -D 'display_logotype_2D="Yes"' ./scad/main.scad
+
+echo "Generating 2D SVG files for Inkscape..."
+echo "  logotype_2D.svg"
+openscad -o ./svg/logotype_2D.svg -D 'for_printing="Printing"' -D 'display_logotype_2D="Yes"' ./scad/main.scad
 
 echo "Script complete"
 

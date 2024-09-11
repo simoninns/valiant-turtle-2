@@ -5,3 +5,7 @@
 
 # DXF files
 *.dxf
+
+# SVG files
+*.svg
+

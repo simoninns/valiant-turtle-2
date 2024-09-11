@@ -29,8 +29,8 @@ use <BOSL/shapes.scad>
 module rounded_line(from_coord, to_coord)
 {
     hull() {
-        move(from_coord) cyl(h=1, d=1);
-        move(to_coord) cyl(h=1, d=1);
+        move(from_coord) cyl(h=1, d=1, $fn=24);
+        move(to_coord) cyl(h=1, d=1, $fn=24);
     }
 }
 
@@ -38,7 +38,7 @@ module logo_flippers()
 {
     // V
     rounded_line([-19,0,0], [-16,3,0]);
-    rounded_line([-16,3,0], [-12,3,0]);
+    rounded_line([-16,3,0], [-11.75,3,0]);
 
     // Back flippers
     rounded_line([1,15,0], [13,15,0]);
@@ -48,9 +48,11 @@ module logo_flippers()
 
     // Front flippers
     rounded_line([-9,15,0], [-13,15,0]);
-    rounded_line([-9,15,0], [-6,11,0]);
+    rounded_line([-9,15,0], [-5.75,11,0]);
+
     rounded_line([-13,15,0], [-14,9,0]);
-    rounded_line([-14,9,0],[-11,6.5,0]);
+    rounded_line([-14,9,0],[-10.75,6.25,0]);
+    
 }
 
 module logo_graphics()
@@ -97,5 +99,17 @@ module render_logotype(toPrint)
         }
     } else {
         logotype();
+    }
+}
+
+// This is for DXF and SVG 2D projection
+module render_logotype_2D(toPrint)
+{
+    if (!toPrint) {
+        color([0.9,0.5,0.0,1]) {
+            projection() logotype();
+        }
+    } else {
+        projection() logotype();
     }
 }

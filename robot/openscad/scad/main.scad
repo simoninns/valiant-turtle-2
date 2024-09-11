@@ -116,6 +116,7 @@ display_pen = "No"; // [Yes, No]
 display_servo = "No"; // [Yes, No]
 display_batteries = "No"; // [Yes, No]
 display_toggle_switch = "No"; // [Yes, No]
+display_logotype_2D = "No"; // [Yes, No]
 
 /* [Screws] */
 display_motor_mounts_screws = "No"; // [Yes, No]
@@ -186,6 +187,7 @@ module main() {
     d_servo = (display_servo == "Yes") ? true:false;
     d_batteries = (display_batteries == "Yes") ? true:false;
     d_toggle_switch = (display_toggle_switch == "Yes") ? true:false;
+    d_logotype_2D = (display_logotype_2D == "Yes") ? true:false;
 
     // Screws
     d_motor_mounts_screws = (display_motor_mounts_screws == "Yes") ? true:false;
@@ -253,6 +255,7 @@ module main() {
     if (d_servo) render_micro_servo(toPrint);
     if (d_batteries) render_batteries(toPrint);
     if (d_toggle_switch) render_toggle_switch(toPrint);
+    if (d_logotype_2D) render_logotype_2D(toPrint);
 
     // Render screws
     if (d_motor_mounts_screws) render_motor_mounts_screws(toPrint);
