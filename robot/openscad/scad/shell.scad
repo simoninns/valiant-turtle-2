@@ -562,7 +562,7 @@ module render_shell_dot(toPrint)
     }
 }
 
-module render_shell_support(toPrint)
+module render_shell_supports(toPrint)
 {
     if (toPrint) {
         move([0,-83,9.5]) cuboid([23,20,19]);

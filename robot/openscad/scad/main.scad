@@ -54,12 +54,15 @@ include <stand.scad>
 // // Viewport distance
 // $vpd = 950;
 
+// Note: Default display must be "No" otherwise STL generation script will fail
+
 /* [Rendering Parameters] */
+// Select Display for viewing the model or Printing to orientate parts for STL generation
 for_printing = "Display"; // [Display, Printing]
+// Display with pen up or down
 pen_up = "Pen Up"; // [False, True]
 
 /* [Printable Parts] */
-// Note: Default must be "No" otherwise STL generation script will fail
 display_body_left = "No"; // [Yes, No]
 display_body_right = "No"; // [Yes, No]
 display_head = "No"; // [Yes, No]
@@ -96,7 +99,8 @@ display_stand = "No"; // [Yes, No]
 display_stand_battery_cover = "No"; // [Yes, No]
 
 /* [Print Supports] */
-display_shell_support = "No"; // [Yes, No]
+display_shell_supports = "No"; // [Yes, No]
+display_battery_pack_supports = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
 display_motor_small = "No"; // [Yes, No]
@@ -165,7 +169,8 @@ module main() {
     d_stand_battery_cover = (display_stand_battery_cover == "Yes") ? true:false;
 
     // Print supports
-    d_shell_support = (display_shell_support == "Yes") ? true:false;
+    d_shell_supports = (display_shell_supports == "Yes") ? true:false;
+    d_battery_pack_supports = (display_battery_pack_supports == "Yes") ? true:false;
 
     // Non-printable parts
     d_motor_small = (display_motor_small == "Yes") ? true:false;
@@ -231,7 +236,8 @@ module main() {
     if (d_stand_battery_cover) render_stand_battery_cover(toPrint);
 
     // Render the print supports
-    if (d_shell_support) render_shell_support(toPrint);
+    if (d_shell_supports) render_shell_supports(toPrint);
+    if (d_battery_pack_supports) render_battery_pack_supports(toPrint);
 
     // Render the non-printable parts
     if (d_motor_small) render_motor_small(toPrint);

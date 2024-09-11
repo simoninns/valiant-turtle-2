@@ -81,44 +81,29 @@ module battery_pack_clip()
     move([41.5,0,-15]) { 
         difference() {
             union() {
-                move([+7,0,+2.5]) cuboid([2, 12+6,35]);
-                move([-7,0,-2.5]) cuboid([2, 12+6,35]);
+                move([3.5,0,+2.5]) cuboid([9, 24,35]);
+                move([-1,-12,20]) right_triangle([9, 24, 9]);
 
-                difference() {
-                    move([0,0,20]) ycyl(h=12+6,d=16);
-                    move([0,0,20]) ycyl(h=15+6,d=12);
+                // Tab
+                move([8.5,0,-13]) cuboid([3,18,4], chamfer=1, edges=EDGES_Z_ALL+EDGES_RIGHT);
+
+                // Clip
+                move([8,-9,6]) {
+                    difference() {
+                        right_triangle([3, 18, 3]);
+                        move([4,9,0]) cuboid([3.5,20,3]);
+                    }
                 }
             }
 
-            move([0,0,5]) cuboid([12,14+12,30]);
-            move([-5,0,8]) cuboid([12,14+12,60]);
-        }
-        
-        // Tabs
-        move([10,0,-13]) cuboid([6,18,4], chamfer=1, edges=EDGES_Z_ALL+EDGES_RIGHT);
-
-        // Side protectors
-        difference() {
-            union() {
-                move([+4,8 + 3,+2.5]) {
-                    cuboid([8, 2,35]);
-                    move([-4,0,17.5]) ycyl(h=2,d=16);
-                }
-                move([+4,-8 - 3,+2.5]) {
-                    cuboid([8, 2,35]);
-                    move([-4,0,17.5]) ycyl(h=2,d=16);
-                }
+            move([-2,0,-2]) union() {
+                move([3.5,0,+2.5]) cuboid([9, 18+2,37.1]);
+                move([-1,-10,21]) right_triangle([9, 18+2, 9]);
             }
 
-            move([-6,0,24]) cuboid([10, 20+12,30]);
-        }
-
-        // Clip
-        move([8,-9,5]) {
-            difference() {
-                right_triangle([3, 18, 3]);
-                move([4,9,0]) cuboid([3.5,20,3]);
-            }
+            // Cut-outs to form side protectors
+            move([+4,-9.5,9]) cuboid([24, 1,50]);
+            move([+4,+9.5,9]) cuboid([24, 1,50]);
         }
     }
 }
@@ -252,6 +237,12 @@ module battery_pack()
     }
 }
 
+module battery_pack_supports()
+{
+    move([+50.5,-12.5,-7]) cuboid([6,18,26]);
+    move([-50.5,-12.5,-7]) cuboid([6,18,26]);
+}
+
 module battery_pack_connector_cover()
 {
     move([0,-10.5,-21.5+3]) {
@@ -381,6 +372,15 @@ module render_battery_pack(toPrint)
         color([0.2,0.2,0.2,1]) battery_pack();
     } else {
         move([0,13,20]) battery_pack();
+    }
+}
+
+module render_battery_pack_supports(toPrint)
+{
+    if (!toPrint) {
+        // Nothing for display model
+    } else {
+        move([0,13,20]) battery_pack_supports();
     }
 }
 
