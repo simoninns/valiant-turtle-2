@@ -55,11 +55,11 @@ module battery18650()
 module batteries()
 {
     move([0,0,0]) {
-        move([19.5,9.5,0]) battery18650();
-        move([19.5,-9.5,0]) xrot(180) battery18650();
+        move([19,9.5,0]) battery18650();
+        move([19,-9.5,0]) xrot(180) battery18650();
 
-        move([-6,9.5,0]) xrot(180) battery18650();
-        move([-6,-9.5,0]) battery18650();
+        move([-5.5,9.5,0]) xrot(180) battery18650();
+        move([-5.5,-9.5,0]) battery18650();
     }
 }
 
@@ -163,13 +163,13 @@ module bms_pcb()
 // Battery holders and BMS PCB mock-up
 module battery_pack_internal()
 {
-    zflip() move([0,0,-20]) {
-        move([0,-12.5,2]) {
-            move([0,-3,0]) yrot(90) xrot(90) battery_18650_holder();
-            move([0,+3,0]) yrot(90) xrot(-90) battery_18650_holder();
+    move([0,0,0]) {
+        move([0,-12.5,18]) {
+            move([0,-2.5,0]) yrot(90) xrot(90) zrot(180) battery_18650_holder();
+            move([0,+2.5,0]) yrot(90) xrot(-90) zrot(180) battery_18650_holder();
         }
 
-        move([0,-12.5,25.75]) bms_pcb();
+        move([0,-12.5,-6.5]) yrot(180) bms_pcb();
     }
 }
 
@@ -421,7 +421,7 @@ module battery_pack_bms_bracket()
     move([0,-12.5,-49]) {
         // BMS mounting bracket
         move([0,0,45]) {
-            cuboid([73,6,3], chamfer = 0.5);
+            cuboid([73,5,3], chamfer = 0.5);
             cuboid([26,26,3], chamfer = 0.5);
 
             move([+30,0,2.5]) cuboid([10,2,3], chamfer = 0.5);
@@ -470,8 +470,8 @@ module battery_pack_upper_cover()
         difference() {
             // Pillars to mount battery holders on
             union() {
-                move([30,0,-22]) cuboid([13,6,44], chamfer = 0.5);
-                move([-30,0,-22]) cuboid([13,6,44], chamfer = 0.5);
+                move([30,0,-22]) cuboid([13,5,44], chamfer = 0.5);
+                move([-30,0,-22]) cuboid([13,5,44], chamfer = 0.5);
             }
 
             // Screw holes
@@ -479,8 +479,8 @@ module battery_pack_upper_cover()
             move([-27.75,0,-23.5]) ycyl(h=10,d=3.25);
 
             // Orientation holes
-            move([36.25,3,-40.75]) ycyl(h=4,d=1.75);
-            move([-36.25,-6,-40.75]) ycyl(h=10,d=1.5);
+            move([36.25,-3,-40.75]) ycyl(h=4,d=1.75);
+            move([-36.25,6,-40.75]) ycyl(h=10,d=1.5);
 
 
             // BMS mounting slots
