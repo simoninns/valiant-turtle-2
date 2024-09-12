@@ -366,6 +366,38 @@ module battery_pack_connector_lock()
     }
 }
 
+module bms_pcb()
+{
+    difference() {
+        union() {
+            color([0,0.6,0,1]) cuboid([34,34,1.25], fillet=5, edges=EDGES_Z_ALL);
+
+            // Pads
+            color([0.8,0.8,0.0,1]) move([0,0,1]) {
+                move([0,-15.5,0]) {
+                    move([-9,0,0]) cuboid([6,3,1]); // B1
+                    move([0,0,0]) cuboid([6,3,1]);  // B2
+                    move([+9,0,0]) cuboid([6,3,1]);  // B3
+                }
+
+                move([-15.5,0,0]) cuboid([3,6,1]); // B-
+                move([+15.5,0,0]) cuboid([3,6,1]); // B+
+
+                move([0,14,-0.25]) {
+                    move([-1.5 - 1.5,0,0]) cuboid([3,6,0.5], fillet=1.5, edges=EDGES_Z_ALL); // B1
+                    move([+1.5 + 1.5,0,0]) cuboid([3,6,0.5], fillet=1.5, edges=EDGES_Z_ALL);  // B3
+                }
+            }
+        }
+
+        // Wire holes
+        move([0,14,0]) {
+            move([-1.5 - 1.5,0,0]) cyl(h=4,d=1);
+            move([+1.5 + 1.5,0,0]) cyl(h=4,d=1);
+        }
+    }
+}
+
 module render_battery_pack(toPrint)
 {
     if (!toPrint) {
@@ -398,7 +430,7 @@ module render_battery_pack_upper_cover(toPrint)
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) battery_pack_upper_cover();
     } else {
-        move([0,-13,43]) xrot(180) battery_pack_upper_cover();
+        move([0,-12,43]) xrot(180) battery_pack_upper_cover();
     }
 }
 
@@ -451,5 +483,12 @@ module render_battery_screws(toPrint)
         move([45.5,5.5,41.5])  m3x10_screw();
         move([-45.5,-30.5,41.5])  m3x10_screw();
         move([-45.5,5.5,41.5])  m3x10_screw();
+    }
+}
+
+module render_bms_pcb(toPrint)
+{
+    if (!toPrint) {
+        bms_pcb();
     }
 }

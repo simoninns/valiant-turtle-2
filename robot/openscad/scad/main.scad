@@ -61,6 +61,8 @@ include <stand.scad>
 for_printing = "Display"; // [Display, Printing]
 // Display with pen up or down
 pen_up = "Up"; // [Up, Down]
+// Origin on model or pen
+origin_position = "Model"; // [Pen, Model]
 
 /* [Printable Parts] */
 display_body_left = "No"; // [Yes, No]
@@ -115,6 +117,7 @@ display_ball_bearing = "No"; // [Yes, No]
 display_pen = "No"; // [Yes, No]
 display_servo = "No"; // [Yes, No]
 display_batteries = "No"; // [Yes, No]
+display_bms_pcb = "No"; // [Yes, No]
 display_toggle_switch = "No"; // [Yes, No]
 display_logotype_2D = "No"; // [Yes, No]
 
@@ -131,9 +134,16 @@ display_shell_screws = "No"; // [Yes, No]
 display_battery_screws = "No"; // [Yes, No]
 
 module main() {
+    // Rendering parameters
     toPrint = (for_printing == "Printing") ? true:false;
     penUp = (pen_up == "Up") ? true:false;
 
+    // Set the origin
+    originX = (origin_position == "Pen") ? 0:0;
+    originY = (origin_position == "Pen") ? -29:0;
+    originZ = (origin_position == "Pen") ? 6:0;
+
+    // Printable parts
     d_body_left = (display_body_left == "Yes") ? true:false;
     d_body_right = (display_body_right == "Yes") ? true:false;
     d_head = (display_head == "Yes") ? true:false;
@@ -186,6 +196,7 @@ module main() {
     d_pen = (display_pen == "Yes") ? true:false;
     d_servo = (display_servo == "Yes") ? true:false;
     d_batteries = (display_batteries == "Yes") ? true:false;
+    d_bms_pcb = (display_bms_pcb == "Yes") ? true:false;
     d_toggle_switch = (display_toggle_switch == "Yes") ? true:false;
     d_logotype_2D = (display_logotype_2D == "Yes") ? true:false;
 
@@ -201,73 +212,76 @@ module main() {
     d_shell_screws = (display_shell_screws == "Yes") ? true:false;
     d_battery_screws = (display_battery_screws == "Yes") ? true:false;
 
-    // Render the printable parts
-    if (d_body_left) render_body_left(toPrint);
-    if (d_body_right) render_body_right(toPrint);
-    if (d_head) render_head(toPrint);
-    if (d_head_shell_screw_guide) render_head_shell_screw_guide(toPrint);
-    if (d_shell_lid) render_shell_lid(toPrint);
-    if (d_shell) render_shell(toPrint);
-    if (d_shell_dot) render_shell_dot(toPrint);
-    if (d_motor_bay) render_motor_bay(toPrint);
-    if (d_motor_mounts) render_motor_mounts(toPrint);
-    if (d_wheels) render_wheels(toPrint);
-    if (d_main_pcb_mounts_front) render_main_pcb_mounts_front(toPrint);
-    if (d_main_pcb_mounts_back) render_main_pcb_mounts_back(toPrint);
-    if (d_head_cover) render_head_cover(toPrint);
-    if (d_pen_holder_base) render_pen_holder_base(toPrint, penUp);
-    if (d_pen_holder_top_small) render_pen_holder_top_small(toPrint, penUp);
-    if (d_pen_holder_top_medium) render_pen_holder_top_medium(toPrint, penUp);
-    if (d_pen_holder_top_large) render_pen_holder_top_large(toPrint, penUp);
-    if (d_pen_holder_cap) render_pen_holder_cap(toPrint,penUp);
-    if (d_servo_holder) render_servo_holder(toPrint);
-    if (d_servo_horn) render_micro_servo_horn(toPrint, penUp);
-    if (d_male_connector_back) render_male_connector_back(toPrint);
-    if (d_male_connector_front) render_male_connector_front(toPrint);
-    if (d_logotype) render_logotype(toPrint);
-    if (d_battery_pack) render_battery_pack(toPrint);
-    if (d_battery_pack_upper_cover) render_battery_pack_upper_cover(toPrint);
-    if (d_battery_pack_lower_cover) render_battery_pack_lower_cover(toPrint);
-    if (d_battery_pack_connector_cover) render_battery_pack_connector_cover(toPrint);
-    if (d_battery_pack_connector_lock) render_battery_pack_connector_lock(toPrint);
-    if (d_eye_surround) render_eye_surround(toPrint);
-    if (d_eye_light_pipe) render_eye_light_pipe(toPrint);
-    if (d_eye_light_pipe_surround) render_eye_light_pipe_surround(toPrint);
-    if (d_display_mount) render_display_mount(toPrint);
-    if (d_stand) render_stand(toPrint);
-    if (d_stand_battery_cover) render_stand_battery_cover(toPrint);
+    move([originX,originY,originZ]) {
+        // Render the printable parts
+        if (d_body_left) render_body_left(toPrint);
+        if (d_body_right) render_body_right(toPrint);
+        if (d_head) render_head(toPrint);
+        if (d_head_shell_screw_guide) render_head_shell_screw_guide(toPrint);
+        if (d_shell_lid) render_shell_lid(toPrint);
+        if (d_shell) render_shell(toPrint);
+        if (d_shell_dot) render_shell_dot(toPrint);
+        if (d_motor_bay) render_motor_bay(toPrint);
+        if (d_motor_mounts) render_motor_mounts(toPrint);
+        if (d_wheels) render_wheels(toPrint);
+        if (d_main_pcb_mounts_front) render_main_pcb_mounts_front(toPrint);
+        if (d_main_pcb_mounts_back) render_main_pcb_mounts_back(toPrint);
+        if (d_head_cover) render_head_cover(toPrint);
+        if (d_pen_holder_base) render_pen_holder_base(toPrint, penUp);
+        if (d_pen_holder_top_small) render_pen_holder_top_small(toPrint, penUp);
+        if (d_pen_holder_top_medium) render_pen_holder_top_medium(toPrint, penUp);
+        if (d_pen_holder_top_large) render_pen_holder_top_large(toPrint, penUp);
+        if (d_pen_holder_cap) render_pen_holder_cap(toPrint,penUp);
+        if (d_servo_holder) render_servo_holder(toPrint);
+        if (d_servo_horn) render_micro_servo_horn(toPrint, penUp);
+        if (d_male_connector_back) render_male_connector_back(toPrint);
+        if (d_male_connector_front) render_male_connector_front(toPrint);
+        if (d_logotype) render_logotype(toPrint);
+        if (d_battery_pack) render_battery_pack(toPrint);
+        if (d_battery_pack_upper_cover) render_battery_pack_upper_cover(toPrint);
+        if (d_battery_pack_lower_cover) render_battery_pack_lower_cover(toPrint);
+        if (d_battery_pack_connector_cover) render_battery_pack_connector_cover(toPrint);
+        if (d_battery_pack_connector_lock) render_battery_pack_connector_lock(toPrint);
+        if (d_eye_surround) render_eye_surround(toPrint);
+        if (d_eye_light_pipe) render_eye_light_pipe(toPrint);
+        if (d_eye_light_pipe_surround) render_eye_light_pipe_surround(toPrint);
+        if (d_display_mount) render_display_mount(toPrint);
+        if (d_stand) render_stand(toPrint);
+        if (d_stand_battery_cover) render_stand_battery_cover(toPrint);
 
-    // Render the support enforcers
-    if (d_shell_supports) render_shell_supports(toPrint);
-    if (d_battery_pack_supports) render_battery_pack_supports(toPrint);
+        // Render the support enforcers
+        if (d_shell_supports) render_shell_supports(toPrint);
+        if (d_battery_pack_supports) render_battery_pack_supports(toPrint);
 
-    // Render the non-printable parts
-    if (d_motor_small) render_motor_small(toPrint);
-    if (d_motor_large) render_motor_large(toPrint);
-    if (d_rotational_axis) render_rotational_axis(toPrint);
-    if (d_turning_circle) render_turning_circle(toPrint);
-    if (d_tires) render_tires(toPrint);
-    if (d_main_pcb) render_main_pcb(toPrint);
-    if (d_eye_pcb) render_eye_pcb(toPrint);
-    if (d_leds) render_leds(toPrint);
-    if (d_ball_bearing) render_ball_bearing(toPrint);
-    if (d_pen) render_pen(toPrint, penUp);
-    if (d_servo) render_micro_servo(toPrint);
-    if (d_batteries) render_batteries(toPrint);
-    if (d_toggle_switch) render_toggle_switch(toPrint);
-    if (d_logotype_2D) render_logotype_2D(toPrint);
+        // Render the non-printable parts
+        if (d_motor_small) render_motor_small(toPrint);
+        if (d_motor_large) render_motor_large(toPrint);
+        if (d_rotational_axis) render_rotational_axis(toPrint);
+        if (d_turning_circle) render_turning_circle(toPrint);
+        if (d_tires) render_tires(toPrint);
+        if (d_main_pcb) render_main_pcb(toPrint);
+        if (d_eye_pcb) render_eye_pcb(toPrint);
+        if (d_leds) render_leds(toPrint);
+        if (d_ball_bearing) render_ball_bearing(toPrint);
+        if (d_pen) render_pen(toPrint, penUp);
+        if (d_servo) render_micro_servo(toPrint);
+        if (d_batteries) render_batteries(toPrint);
+        if (d_bms_pcb) render_bms_pcb(toPrint);
+        if (d_toggle_switch) render_toggle_switch(toPrint);
+        if (d_logotype_2D) render_logotype_2D(toPrint);
 
-    // Render screws
-    if (d_motor_mounts_screws) render_motor_mounts_screws(toPrint);
-    if (d_body_left_screws) render_body_left_screws(toPrint);
-    if (d_body_right_screws) render_body_right_screws(toPrint);
-    if (d_motor_bay_screws) render_motor_bay_screws(toPrint);
-    if (d_head_screws) render_head_screws(toPrint);
-    if (d_servo_holder_screws) render_servo_holder_screws(toPrint);
-    if (d_main_pcb_mounts_front_screws) render_main_pcb_mounts_front_screws(toPrint);
-    if (d_main_pcb_mounts_back_screws) render_main_pcb_mounts_back_screws(toPrint);
-    if (d_shell_screws) render_shell_screws(toPrint);
-    if (d_battery_screws) render_battery_screws(toPrint);
+        // Render screws
+        if (d_motor_mounts_screws) render_motor_mounts_screws(toPrint);
+        if (d_body_left_screws) render_body_left_screws(toPrint);
+        if (d_body_right_screws) render_body_right_screws(toPrint);
+        if (d_motor_bay_screws) render_motor_bay_screws(toPrint);
+        if (d_head_screws) render_head_screws(toPrint);
+        if (d_servo_holder_screws) render_servo_holder_screws(toPrint);
+        if (d_main_pcb_mounts_front_screws) render_main_pcb_mounts_front_screws(toPrint);
+        if (d_main_pcb_mounts_back_screws) render_main_pcb_mounts_back_screws(toPrint);
+        if (d_shell_screws) render_shell_screws(toPrint);
+        if (d_battery_screws) render_battery_screws(toPrint);
+    }
 }
 
 // Set the arc resolution higher when in printing mode
@@ -276,7 +290,5 @@ if (for_printing == "Printing") {
     main();
 } else {
     $fn=20;
-    // Place the centre of the axis on the centre rotation point of the model
-    move([0,-29,6]) main();
-    //main();
+    main();
 }
