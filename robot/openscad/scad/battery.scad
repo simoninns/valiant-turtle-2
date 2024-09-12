@@ -54,10 +54,14 @@ module battery18650()
 
 module batteries()
 {
-    move([9.5,9.5,0]) battery18650_protected();
-    move([-9.5,-9.5,0]) battery18650_protected();
-    move([-9.5,9.5,0]) battery18650_protected();
-    move([9.5,-9.5,0]) battery18650_protected();
+    move([0,-17,0]) {
+        move([19,9.5,0]) battery18650();
+        move([19,-9.5,0]) xrot(180) battery18650();
+
+        move([-5.5,9.5,0]) xrot(180) battery18650();
+        move([-5.5,-9.5,0]) battery18650();
+
+    }
 }
 
 module bullet_4mm_female()
@@ -72,6 +76,100 @@ module bullet_4mm_female()
         move([0,0,9.5 - 6]) cyl(h=7, d=3.5);
         move([0,0,-9.5+4]) cyl(h=7, d=3.5);
     }
+}
+
+module battery_18650_holder()
+{
+    difference() {
+        union() {
+            move([0,0,3.5]) cuboid([39,78,7]);
+            move([0,+37.25,7]) prismoid(size1=[39,3.5], size2=[36,3.5], h=7.5);
+            move([0,-37.25,7]) prismoid(size1=[39,3.5], size2=[36,3.5], h=7.5);
+        }
+
+        move([-9.5,0,8]) ycyl(h=71,d=18);
+        move([+9.5,0,8]) ycyl(h=71,d=18);
+
+        // Screw recesses
+        move([0,-(55.5/2),5]) cuboid([6,6,8]);
+        move([0,+(55.5/2),5]) cuboid([6,6,8]);
+
+        // Screw holes
+        move([0,-(55.5/2),0]) cyl(h=8,d=3);
+        move([0,+(55.5/2),0]) cyl(h=8,d=3);
+
+        // Positive markers
+        move([9.5,39,4]) {
+            cuboid([5,1,1]);
+            cuboid([1,1,5]);
+        }
+
+        move([-9.5,-39,4]) {
+            cuboid([5,1,1]);
+            cuboid([1,1,5]);
+        }
+
+        // Negative markers
+        move([-9.5,39,4]) {
+            cuboid([5,1,1]);
+        }
+
+        move([+9.5,-39,4]) {
+            cuboid([5,1,1]);
+        }
+    }
+
+    // Tabs
+    move([-9.5,+41,0.2]) cuboid([6.5,4.5,0.4]);
+    move([+9.5,+41,0.2]) cuboid([6.5,4.5,0.4]);
+    move([-9.5,-41,0.2]) cuboid([6.5,4.5,0.4]);
+    move([+9.5,-41,0.2]) cuboid([6.5,4.5,0.4]);
+
+    // Orientation tab
+    move([-18.75 + 1.5,-38.25 + 2,-0.5]) cyl(h=1,d=1.5);
+}
+
+module bms_pcb()
+{
+    difference() {
+        union() {
+            color([0,0.6,0,1]) cuboid([34,34,1.25], fillet=5, edges=EDGES_Z_ALL);
+
+            // Pads
+            color([0.8,0.8,0.0,1]) move([0,0,1]) {
+                move([0,-15.5,0]) {
+                    move([-9,0,0]) cuboid([6,3,1]); // B1
+                    move([0,0,0]) cuboid([6,3,1]);  // B2
+                    move([+9,0,0]) cuboid([6,3,1]);  // B3
+                }
+
+                move([-15.5,0,0]) cuboid([3,6,1]); // B-
+                move([+15.5,0,0]) cuboid([3,6,1]); // B+
+
+                move([0,14,-0.25]) {
+                    move([-1.5 - 1.5,0,0]) cuboid([3,6,0.5], fillet=1.5, edges=EDGES_Z_ALL); // B1
+                    move([+1.5 + 1.5,0,0]) cuboid([3,6,0.5], fillet=1.5, edges=EDGES_Z_ALL);  // B3
+                }
+            }
+        }
+
+        // Wire holes
+        move([0,14,0]) {
+            move([-1.5 - 1.5,0,0]) cyl(h=4,d=1);
+            move([+1.5 + 1.5,0,0]) cyl(h=4,d=1);
+        }
+    }
+}
+
+// Battery holders and BMS PCB mock-up
+module battery_pack_internal()
+{
+    move([0,-12.5,2]) {
+        move([0,-3,0]) yrot(90) xrot(90) battery_18650_holder();
+        move([0,+3,0]) yrot(90) xrot(-90) battery_18650_holder();
+    }
+
+    move([0,-12.5,25.75]) bms_pcb();
 }
 
 // Printable parts ----------------------------------------------------------------------
@@ -314,6 +412,42 @@ module battery_pack_lower_cover()
             move([-45.5,-18,0]) cyl(h=6,d=3.5);
             move([-45.5,-18,0 - 1]) cyl(h=3,d=6.5);
         }
+
+        difference() {
+            // Pillars to mount battery holders on
+            union() {
+                move([31,0,22]) cuboid([16,6,44], chamfer = 0.5);
+                move([-31,0,22]) cuboid([16,6,44], chamfer = 0.5);
+            }
+
+            // Screw holes
+            move([27.75,0,23.5]) ycyl(h=10,d=3);
+            move([-27.75,0,23.5]) ycyl(h=10,d=3);
+
+            // Orientation holes
+            move([36.25,3,40.75]) ycyl(h=4,d=1.75);
+            move([-36.25,-3,40.75]) ycyl(h=10,d=1.5);
+
+            // BMS mounting slots
+            move([0,0,45]) {
+                move([+31,0,-2.5]) cuboid([10,2,4], chamfer = 0.5);
+                move([-31,0,-2.5]) cuboid([10,2,4], chamfer = 0.5);
+            }
+        }
+    }
+}
+
+module battery_pack_bms_bracket()
+{
+    move([0,-12.5,-21.5]) {
+        // BMS mounting bracket
+        move([0,0,45]) {
+            cuboid([78,6,3], chamfer = 0.5);
+            cuboid([26,26,3], chamfer = 0.5);
+
+            move([+31,0,-2.5]) cuboid([10,2,3], chamfer = 0.5);
+            move([-31,0,-2.5]) cuboid([10,2,3], chamfer = 0.5);
+        }
     }
 }
 
@@ -366,35 +500,12 @@ module battery_pack_connector_lock()
     }
 }
 
-module bms_pcb()
+module render_battery_pack_bms_bracket(toPrint)
 {
-    difference() {
-        union() {
-            color([0,0.6,0,1]) cuboid([34,34,1.25], fillet=5, edges=EDGES_Z_ALL);
-
-            // Pads
-            color([0.8,0.8,0.0,1]) move([0,0,1]) {
-                move([0,-15.5,0]) {
-                    move([-9,0,0]) cuboid([6,3,1]); // B1
-                    move([0,0,0]) cuboid([6,3,1]);  // B2
-                    move([+9,0,0]) cuboid([6,3,1]);  // B3
-                }
-
-                move([-15.5,0,0]) cuboid([3,6,1]); // B-
-                move([+15.5,0,0]) cuboid([3,6,1]); // B+
-
-                move([0,14,-0.25]) {
-                    move([-1.5 - 1.5,0,0]) cuboid([3,6,0.5], fillet=1.5, edges=EDGES_Z_ALL); // B1
-                    move([+1.5 + 1.5,0,0]) cuboid([3,6,0.5], fillet=1.5, edges=EDGES_Z_ALL);  // B3
-                }
-            }
-        }
-
-        // Wire holes
-        move([0,14,0]) {
-            move([-1.5 - 1.5,0,0]) cyl(h=4,d=1);
-            move([+1.5 + 1.5,0,0]) cyl(h=4,d=1);
-        }
+    if (!toPrint) {
+        color([0.9,0.9,0.6,1]) battery_pack_bms_bracket();
+    } else {
+        move([0,12.5,25]) yrot(180) battery_pack_bms_bracket();
     }
 }
 
@@ -486,9 +597,9 @@ module render_battery_screws(toPrint)
     }
 }
 
-module render_bms_pcb(toPrint)
+module render_battery_pack_internal(toPrint)
 {
     if (!toPrint) {
-        bms_pcb();
+        battery_pack_internal();
     }
 }
