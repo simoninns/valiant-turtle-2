@@ -26,15 +26,46 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
+// Other project includes
+include <../../../robot/openscad/scad/body.scad>
+
 // Local includes
 include <screws.scad>
 
 module charger_base()
 {
+    move([0,0,23]) {
+        difference() {
+            cuboid([110,80,46], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
+            move([0,0,2]) cuboid([110-4,80-4,46], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
+        }
 
+        // Screw columns
+        move([0,0,0]) difference() {
+            union() {
+                move([+((110/2) - 5),+((80/2) - 5),0]) cyl(h=46, d=8);
+                move([+((110/2) - 5),-((80/2) - 5),0]) cyl(h=46, d=8);
+                move([-((110/2) - 5),+((80/2) - 5),0]) cyl(h=46, d=8);
+                move([-((110/2) - 5),-((80/2) - 5),0]) cyl(h=46, d=8);
+            }
+
+            move([+((110/2) - 5),+((80/2) - 5),0]) cyl(h=46, d=3);
+            move([+((110/2) - 5),-((80/2) - 5),0]) cyl(h=46, d=3);
+            move([-((110/2) - 5),+((80/2) - 5),0]) cyl(h=46, d=3);
+            move([-((110/2) - 5),-((80/2) - 5),0]) cyl(h=46, d=3);
+
+            // Threaded inserts
+            move([0,0,27 - 6]) {
+                move([+((110/2) - 5),+((80/2) - 5),0]) cyl(h=8, d=4);
+                move([+((110/2) - 5),-((80/2) - 5),0]) cyl(h=8, d=4);
+                move([-((110/2) - 5),+((80/2) - 5),0]) cyl(h=8, d=4);
+                move([-((110/2) - 5),-((80/2) - 5),0]) cyl(h=8, d=4);
+            }
+        } 
+    }
 }
 
-module charger_screws()
+module charger_base_screws()
 {
 
 }
@@ -42,15 +73,15 @@ module charger_screws()
 module render_charger_base(toPrint)
 {
     if (!toPrint) {
-        color([0.9,0.9,0.6,1]) charger_base();
+        color([0.2,0.2,0.2,1]) charger_base();
     } else {
         charger_base();
     }
 }
 
-module render_charger_screws(toPrint)
+module render_charger_base_screws(toPrint)
 {
     if (!toPrint) {
-        charger_screws();
+        charger_base_screws();
     }
 }

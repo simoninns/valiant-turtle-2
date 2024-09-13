@@ -26,8 +26,12 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
+// Other project includes
+include <../../../robot/openscad/scad/battery.scad>
+
 // Local includes
 include <base.scad>
+include <lid.scad>
 
 // Rendering resolution
 $fn=100;
@@ -37,7 +41,12 @@ for_printing = "Display"; // [Display, Printing]
 
 // Choose what to display
 display_charger_base = "Yes"; // [Yes, No]
-display_charger_screws = "Yes"; // [Yes, No]
+display_charger_lid = "Yes"; // [Yes, No]
+
+display_charger_base_screws = "Yes"; // [Yes, No]
+display_charger_lid_screws = "Yes"; // [Yes, No]
+
+display_battery = "Yes"; // [Yes, No]
 
 // Render the required items
 module main() {
@@ -46,10 +55,28 @@ module main() {
 
     // Display selections
     d_charger_base = (display_charger_base == "Yes") ? true:false;
-    d_charger_screws = (display_charger_screws == "Yes") ? true:false;
+    d_charger_lid = (display_charger_lid == "Yes") ? true:false;
+
+    d_charger_base_screws = (display_charger_base_screws == "Yes") ? true:false;
+    d_charger_lid_screws = (display_charger_lid_screws == "Yes") ? true:false;
+    d_battery = (display_battery == "Yes") ? true:false;
 
     if (d_charger_base) render_charger_base(toPrint);
-    if (d_charger_screws) render_charger_screws(toPrint);
+    if (d_charger_lid) render_charger_lid(toPrint);
+
+    if (d_charger_base_screws) render_charger_base_screws(toPrint);
+    if (d_charger_lid_screws) render_charger_lid_screws(toPrint);
+
+    if (d_battery) {
+        if (!toPrint) {
+            move([0,-12 + 8,46]) xrot(180) {
+                render_battery_pack(false);
+                render_battery_pack_lower_cover(false);
+                render_battery_pack_upper_cover(false);
+                render_battery_pack_connector_cover(false);
+            }
+        }
+    }
 }
 
 main();
