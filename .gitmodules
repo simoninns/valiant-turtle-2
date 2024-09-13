@@ -14,3 +14,6 @@ url = https://github.com/daschr/pico-ssd1306.git
 path = communicator/openscad/scad/BOSL
 url = https://github.com/revarbat/BOSL.git
 
+[submodule "charger/openscad/scad/BOSL"]
+path = charger/openscad/scad/BOSL
+url = https://github.com/revarbat/BOSL.git
