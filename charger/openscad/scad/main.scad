@@ -32,6 +32,7 @@ include <../../../robot/openscad/scad/battery.scad>
 // Local includes
 include <base.scad>
 include <lid.scad>
+include <connector.scad>
 
 // Rendering resolution
 $fn=100;
@@ -42,6 +43,8 @@ for_printing = "Display"; // [Display, Printing]
 // Choose what to display
 display_charger_base = "Yes"; // [Yes, No]
 display_charger_lid = "Yes"; // [Yes, No]
+display_connector_front = "Yes"; // [Yes, No]
+display_connector_back = "Yes"; // [Yes, No]
 
 display_charger_base_screws = "Yes"; // [Yes, No]
 display_charger_lid_screws = "Yes"; // [Yes, No]
@@ -56,6 +59,8 @@ module main() {
     // Display selections
     d_charger_base = (display_charger_base == "Yes") ? true:false;
     d_charger_lid = (display_charger_lid == "Yes") ? true:false;
+    d_connector_front = (display_connector_front == "Yes") ? true:false;
+    d_connector_back = (display_connector_back == "Yes") ? true:false;
 
     d_charger_base_screws = (display_charger_base_screws == "Yes") ? true:false;
     d_charger_lid_screws = (display_charger_lid_screws == "Yes") ? true:false;
@@ -63,6 +68,8 @@ module main() {
 
     if (d_charger_base) render_charger_base(toPrint);
     if (d_charger_lid) render_charger_lid(toPrint);
+    if (d_connector_front) render_connector_front(toPrint);
+    if (d_connector_back) render_connector_back(toPrint);
 
     if (d_charger_base_screws) render_charger_base_screws(toPrint);
     if (d_charger_lid_screws) render_charger_lid_screws(toPrint);
