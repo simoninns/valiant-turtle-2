@@ -26,30 +26,28 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-// Other project includes
-include <../../../robot/openscad/scad/body.scad>
-
 // Local includes
 include <screws.scad>
+include <battery_cutout.scad>
 
 module charger_lid()
 {
     move([0,0,47.5]) {
         difference() {
-            cuboid([110,80,3], chamfer=1, edges=EDGES_TOP+EDGES_Z_ALL);
-            move([0,-12 + 8,0]) xrot(180) battery_access_hole();
+            cuboid([110,74,3], chamfer=1, edges=EDGES_TOP+EDGES_Z_ALL);
+            move([0,-12 + 8,0]) xrot(180) battery_access_hole_top();
 
             // Screw head recess
-            move([+((110/2) - 5),+((80/2) - 5),3 - 2]) cyl(h=3, d=6);
-            move([+((110/2) - 5),-((80/2) - 5),3 - 2]) cyl(h=3, d=6);
-            move([-((110/2) - 5),+((80/2) - 5),3 - 2]) cyl(h=3, d=6);
-            move([-((110/2) - 5),-((80/2) - 5),3 - 2]) cyl(h=3, d=6);
+            move([+((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=3, d=6);
+            move([+((110/2) - 4),-((74/2) - 4),3 - 2]) cyl(h=3, d=6);
+            move([-((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=3, d=6);
+            move([-((110/2) - 4),-((74/2) - 4),3 - 2]) cyl(h=3, d=6);
 
             // Screw holes
-            move([+((110/2) - 5),+((80/2) - 5),3 - 3]) cyl(h=6, d=3.25);
-            move([+((110/2) - 5),-((80/2) - 5),3 - 3]) cyl(h=6, d=3.25);
-            move([-((110/2) - 5),+((80/2) - 5),3 - 3]) cyl(h=6, d=3.25);
-            move([-((110/2) - 5),-((80/2) - 5),3 - 3]) cyl(h=6, d=3.25);
+            move([+((110/2) - 4),+((74/2) - 4),3 - 3]) cyl(h=6, d=3.25);
+            move([+((110/2) - 4),-((74/2) - 4),3 - 3]) cyl(h=6, d=3.25);
+            move([-((110/2) - 4),+((74/2) - 4),3 - 3]) cyl(h=6, d=3.25);
+            move([-((110/2) - 4),-((74/2) - 4),3 - 3]) cyl(h=6, d=3.25);
         }
     }
 }
@@ -57,10 +55,10 @@ module charger_lid()
 module charger_lid_screws()
 {
     move([0,0,48]) {
-        move([+((110/2) - 5),+((80/2) - 5),0]) m3x10_screw();
-        move([+((110/2) - 5),-((80/2) - 5),0]) m3x10_screw();
-        move([-((110/2) - 5),+((80/2) - 5),0]) m3x10_screw();
-        move([-((110/2) - 5),-((80/2) - 5),0]) m3x10_screw();
+        move([+((110/2) - 4),+((74/2) - 4),0]) m3x10_screw();
+        move([+((110/2) - 4),-((74/2) - 4),0]) m3x10_screw();
+        move([-((110/2) - 4),+((74/2) - 4),0]) m3x10_screw();
+        move([-((110/2) - 4),-((74/2) - 4),0]) m3x10_screw();
     }
 }
 

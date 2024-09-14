@@ -102,6 +102,10 @@ module male_connector_front()
         }
     }
 
+    move([-23.5,13.5,17.5]) {
+            cuboid([16.5,2,11]);
+    }
+
     // Slots
     difference() {
         union() {
