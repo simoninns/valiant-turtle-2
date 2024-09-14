@@ -30,24 +30,15 @@ module stand()
 {
     move([0,-12.5,-40]) difference() {
         union() {
-            // Outside ring
-            difference() {
-                cyl(h=4, d=200, $fn=6);
-                cyl(h=5, d=150, $fn=6);
-            }
-
-            // Inside ring
-            difference() {
-                cyl(h=4, d=110, $fn=6);
-                cyl(h=5, d=70, $fn=6);
-            }
-
             // Central pillar
-            move([0,0,7.5]) cyl(h=19, d=42, $fn=6);
+            move([0,0,7.5]) cyl(h=19, d=42);
 
             // Spokes
-            for (rot = [0:360/6: 360-1]) {
-                zrot(rot) cuboid([10,170,4]);
+            for (rot = [0:360/3: 360-1]) {
+                hull() {
+                    zrot(rot+(360/6)) move([0,100/2,-1]) cuboid([20,100,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+                    zrot(rot+(360/6)) move([0,20,1]) cuboid([20,2,6], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+                }
             }
         }
 
@@ -64,10 +55,6 @@ module stand()
 
         // Gap for cable
         move([0,12,6]) zrot(90) xrot(360/12) xcyl(h=24, d=6, $fn=6);
-
-        // Some clearance so you can reach the battery release tabs
-        move([50,0,0]) cuboid([12,38,20]);
-        move([-50,0,0]) cuboid([12,38,20]);
     }
 }
 
