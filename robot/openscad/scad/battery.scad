@@ -225,7 +225,7 @@ module battery_pack_screw_columns()
             }
 
             // Threaded insert
-            cyl(h=64,d=3);
+            cyl(h=64,d=3.25);
             move([0,0,+(34 - 6)]) cyl(h=8,d=4);
             move([0,0,-(34 - 6)]) cyl(h=8,d=4);
         }
@@ -239,7 +239,7 @@ module battery_pack_screw_columns()
             }
 
             // Threaded insert
-            cyl(h=64,d=3);
+            cyl(h=64,d=3.25);
             move([0,0,+(34 - 6)]) cyl(h=8,d=4);
             move([0,0,-(34 - 6)]) cyl(h=8,d=4);
         }
@@ -253,7 +253,7 @@ module battery_pack_screw_columns()
             }
 
             // Threaded insert
-            cyl(h=64,d=3);
+            cyl(h=64,d=3.25);
             move([0,0,+(34 - 6)]) cyl(h=8,d=4);
             move([0,0,-(34 - 6)]) cyl(h=8,d=4);
         }
@@ -267,7 +267,7 @@ module battery_pack_screw_columns()
             }
 
             // Threaded insert
-            cyl(h=64,d=3);
+            cyl(h=64,d=3.25);
             move([0,0,+(34 - 6)]) cyl(h=8,d=4);
             move([0,0,-(34 - 6)]) cyl(h=8,d=4);
         }
