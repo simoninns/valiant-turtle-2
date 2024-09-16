@@ -62,7 +62,7 @@ void btcomms_initialise(void)
     current_bt_state[SPP_CLI_SERVER_CHANNEL] = BTCOMMS_OFF;
     current_bt_state[SPP_DEBUG_SERVER_CHANNEL] = BTCOMMS_OFF;
 
-    // Set up the FIFO buffer for incoming characters
+    // Set up the FIFO buffers for incoming and outgoing characters
     fifo_initialise();
 
     btcomms_one_shot_timer_setup();
@@ -153,14 +153,14 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
 
                     // Check if requesting CID belongs to server channel 1 (CLI)
                     if (requesting_cid == rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]) {
-                        // Output the contents of the output buffer
+                        // Output the contents of the CLI output buffer
                         int16_t pos = 0;
-                        char outputLine[128];
+                        char outputLine[512];
                         bool finished = false;
                         while (!finished) {
-                            outputLine[pos] = fifo_out_read();
+                            outputLine[pos] = fifo_out_read(CLI_BUFFER);
                             if (outputLine[pos] == 0) finished = true;
-                            if (pos == 126) {
+                            if (pos == 512-2) {
                                 outputLine[pos+1] = 0;
                                 finished = true;
                             }
@@ -169,6 +169,24 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
 
                         if (pos != 0) {
                             rfcomm_send(rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL], (uint8_t*) outputLine, (uint16_t) pos);
+                        }
+                    } else if (requesting_cid == rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL]) {
+                        // Output the contents of the Debug output buffer
+                        int16_t pos = 0;
+                        char outputLine[512];
+                        bool finished = false;
+                        while (!finished) {
+                            outputLine[pos] = fifo_out_read(DEBUG_BUFFER);
+                            if (outputLine[pos] == 0) finished = true;
+                            if (pos == 512-2) {
+                                outputLine[pos+1] = 0;
+                                finished = true;
+                            }
+                            pos++;
+                        }
+
+                        if (pos != 0) {
+                            rfcomm_send(rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL], (uint8_t*) outputLine, (uint16_t) pos);
                         }
                     }
                     break;
@@ -199,7 +217,10 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
         case RFCOMM_DATA_PACKET:
             if (channel == rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]) {
                 // Place the incoming characters into our input buffer
-                for (int i=0; i<size; i++) fifo_in_write((char)packet[i]);
+                for (int i=0; i<size; i++) fifo_in_write(CLI_BUFFER, (char)packet[i]);
+            } else if (channel == rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL]) {
+                // Place the incoming characters into our input buffer
+                for (int i=0; i<size; i++) fifo_in_write(DEBUG_BUFFER, (char)packet[i]);
             } else {
                 debug_printf("btcomms_packet_handler(): Received RFCOMM_DATA_PACKET event with CID %u - Ignoring\n", channel);
             }
@@ -229,10 +250,19 @@ static void btcomms_cli_process_handler(struct btstack_timer_source *ts)
         // Process the CLI
         cli_process();
 
-        // Check the output buffer
-        if (!fifo_is_out_empty()) {
+        // Check the CLI output buffer
+        if (!fifo_is_out_empty(CLI_BUFFER)) {
             // Ask for a send event on the CLI channel
             rfcomm_request_can_send_now_event(rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]);
+        }
+    }
+
+    // Ensure the RFCOMM channel for the Debug is valid (open and connected)
+    if (channel_open[SPP_DEBUG_SERVER_CHANNEL]) {
+        // Check the DEBUG output buffer
+        if (!fifo_is_out_empty(DEBUG_BUFFER)) {
+            // Ask for a send event on the DEBUG channel
+            rfcomm_request_can_send_now_event(rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL]);
         }
     }
 
@@ -241,16 +271,34 @@ static void btcomms_cli_process_handler(struct btstack_timer_source *ts)
     btstack_run_loop_add_timer(ts);
 } 
 
-// A printf like function but outputs via BT SPP
-void btcomms_printf(const char *fmt, ...)
+// A printf like function but outputs via BT SPP for CLI
+void btcomms_printf_cli(const char *fmt, ...)
 {
-    static char lineBuffer[256];
+    if (channel_open[SPP_CLI_SERVER_CHANNEL]) {
+        static char lineBuffer[512];
 
-    va_list args;
-    va_start(args, fmt);
-    vsprintf(lineBuffer, fmt, args);
-    va_end(args);
+        va_list args;
+        va_start(args, fmt);
+        vsprintf(lineBuffer, fmt, args);
+        va_end(args);
 
-    // Copy the output string to the output buffer
-    for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifo_out_write(lineBuffer[i]);
+        // Copy the output string to the output buffer
+        for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifo_out_write(CLI_BUFFER, lineBuffer[i]);
+    }
+}
+
+// A printf like function but outputs via BT SPP for debug
+void btcomms_printf_debug(const char *fmt, ...)
+{
+    if (channel_open[SPP_DEBUG_SERVER_CHANNEL]) {
+        static char lineBuffer[512];
+
+        va_list args;
+        va_start(args, fmt);
+        vsprintf(lineBuffer, fmt, args);
+        va_end(args);
+
+        // Copy the output string to the output buffer
+        for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifo_out_write(DEBUG_BUFFER, lineBuffer[i]);
+    }
 }

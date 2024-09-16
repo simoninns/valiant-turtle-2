@@ -28,6 +28,7 @@
 #include <pico/stdlib.h>
 
 #include "debug.h"
+#include "btcomms.h"
 
 void debug_initialise() {
     debug_printf("\n\n");
@@ -37,6 +38,7 @@ void debug_initialise() {
 
 void debug_printf(const char *fmt, ...) {
     va_list args;
+
     va_start(args, fmt);
     vfprintf(stderr, fmt, args);
     va_end(args);

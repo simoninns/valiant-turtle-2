@@ -32,6 +32,9 @@
 #define SPP_CLI_SERVER_CHANNEL 1
 #define SPP_DEBUG_SERVER_CHANNEL 2
 
+#define CLI_BUFFER 0
+#define DEBUG_BUFFER 1
+
 // Enumerations
 typedef enum {
     BTCOMMS_OFF,
@@ -50,6 +53,7 @@ static void btcomms_cli_process_handler(struct btstack_timer_source *ts);
 
 void btcomms_initialise(void);
 void btcomms_process(void);
-void btcomms_printf(const char *fmt, ...);
+void btcomms_printf_cli(const char *fmt, ...);
+void btcomms_printf_debug(const char *fmt, ...);
 
 #endif /* BTCOMMS_H_ */
