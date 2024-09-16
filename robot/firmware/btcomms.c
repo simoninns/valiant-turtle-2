@@ -44,103 +44,153 @@
 
 // Globals
 static btstack_timer_source_t btcomms_cli_process_timer;
-static uint16_t rfcomm_channel_id;
-static uint8_t  spp_service_buffer[150];
 static btstack_packet_callback_registration_t hci_event_callback_registration;
-static bool channel_open;
-btComms_state_t current_bt_state;
+
+static uint8_t spp_service_buffer[2][150];
+
+btComms_state_t current_bt_state[3];
+static bool channel_open[3];
+static uint16_t rfcomm_channel_id[3];
+
+// Initialise the Bluetooth stack and functionality
+void btcomms_initialise(void)
+{
+    debug_printf("btcomms_initialise(): Initialising Bluetooth\n");
+    // Set initial state
+    channel_open[SPP_CLI_SERVER_CHANNEL] = false;
+    channel_open[SPP_DEBUG_SERVER_CHANNEL] = false;
+    current_bt_state[SPP_CLI_SERVER_CHANNEL] = BTCOMMS_OFF;
+    current_bt_state[SPP_DEBUG_SERVER_CHANNEL] = BTCOMMS_OFF;
+
+    // Set up the FIFO buffer for incoming characters
+    fifo_initialise();
+
+    btcomms_one_shot_timer_setup();
+    btcomms_spp_service_setup();
+
+    gap_discoverable_control(1);
+    gap_ssp_set_io_capability(SSP_IO_CAPABILITY_DISPLAY_YES_NO);
+
+    // Use the following to include the HW Address in the device name
+    gap_set_local_name("Valiant Turtle 2 00:00:00:00:00:00");
+
+    // Power on the Bluetooth device
+    hci_power_control(HCI_POWER_ON);
+    current_bt_state[SPP_CLI_SERVER_CHANNEL] = BTCOMMS_DISCONNECTED;
+    current_bt_state[SPP_DEBUG_SERVER_CHANNEL] = BTCOMMS_DISCONNECTED;
+
+    debug_printf("btcomms_initialise(): Bluetooth is powered on\n");
+}
 
 // Set up Serial Port Profile (SPP)
-static void spp_service_setup(void)
+static void btcomms_spp_service_setup(void)
 {
+    debug_printf("btcomms_spp_service_setup(): Setting up Bluetooth SPP services\n");
+
     // register for HCI events
-    hci_event_callback_registration.callback = &packet_handler;
+    hci_event_callback_registration.callback = &btcomms_packet_handler;
     hci_add_event_handler(&hci_event_callback_registration);
 
     l2cap_init();
     rfcomm_init();
-    rfcomm_register_service(packet_handler, RFCOMM_SERVER_CHANNEL, 0xffff);  // reserved channel, mtu limited by l2cap
+    rfcomm_register_service(btcomms_packet_handler, SPP_CLI_SERVER_CHANNEL, 0xffff);  // Reserve channel 1, mtu limited by l2cap
+    rfcomm_register_service(btcomms_packet_handler, SPP_DEBUG_SERVER_CHANNEL, 0xffff);  // Reserve channel 2, mtu limited by l2cap
 
-    // init SDP, create record for SPP and register with SDP
+    // Initialise SDP
     sdp_init();
-    memset(spp_service_buffer, 0, sizeof(spp_service_buffer));
-    spp_create_sdp_record(spp_service_buffer, sdp_create_service_record_handle(), RFCOMM_SERVER_CHANNEL, "Valiant Turtle SPP");
-    btstack_assert(de_get_len( spp_service_buffer) <= sizeof(spp_service_buffer));
-    sdp_register_service(spp_service_buffer);
+
+    // Set up SPP Channel 1 for Valiant Turtle CLI
+    memset(spp_service_buffer[0], 0, sizeof(spp_service_buffer[0]));
+    spp_create_sdp_record(spp_service_buffer[0], sdp_create_service_record_handle(), 1, "Valiant Turtle CLI");
+    btstack_assert(de_get_len(spp_service_buffer[0]) <= sizeof(spp_service_buffer[0]));
+    sdp_register_service(spp_service_buffer[0]);
+
+    // Set up SPP Channel 2 for Valiant Turtle Debug
+    memset(spp_service_buffer[1], 0, sizeof(spp_service_buffer[1]));
+    spp_create_sdp_record(spp_service_buffer[1], sdp_create_service_record_handle(), 2, "Valiant Turtle Debug");
+    btstack_assert(de_get_len(spp_service_buffer[1]) <= sizeof(spp_service_buffer[1]));
+    sdp_register_service(spp_service_buffer[1]);
 }
 
 // Bluetooth packet handler
-static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size)
+static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size)
 {
     UNUSED(channel);
 
     bd_addr_t event_addr;
-    uint8_t   rfcomm_channel_nr;
-    uint16_t  mtu;
-    int i;
+    uint8_t rfcomm_server_channel;
+    uint16_t mtu;
+    uint16_t requesting_cid;
 
     switch (packet_type) {
         case HCI_EVENT_PACKET:
             switch (hci_event_packet_get_type(packet)) {
-                case HCI_EVENT_PIN_CODE_REQUEST:
-                    // inform about pin code request
-                    debug_printf("Bluetooth: Pin code request - using '0000'\n");
-                    current_bt_state = BTCOMMS_PAIRING;
-                    hci_event_pin_code_request_get_bd_addr(packet, event_addr);
-                    gap_pin_code_response(event_addr, "0000");
-                    break;
-
-                case HCI_EVENT_USER_CONFIRMATION_REQUEST:
-                    // ssp: inform about user confirmation request
-                    debug_printf("Bluetooth: SSP User Confirmation Request with numeric value '%06"PRIu32"'\n", little_endian_read_32(packet, 8));
-                    debug_printf("Bluetooth: SSP User Confirmation Auto accept\n");
-                    current_bt_state = BTCOMMS_PAIRING;
-                    break;
-
                 case RFCOMM_EVENT_INCOMING_CONNECTION:
                     rfcomm_event_incoming_connection_get_bd_addr(packet, event_addr);
-                    rfcomm_channel_nr = rfcomm_event_incoming_connection_get_server_channel(packet);
-                    rfcomm_channel_id = rfcomm_event_incoming_connection_get_rfcomm_cid(packet);
-                    debug_printf("Bluetooth: RFCOMM channel %u requested for client %s\n", rfcomm_channel_nr, bd_addr_to_str(event_addr));
-                    rfcomm_accept_connection(rfcomm_channel_id);
+                    rfcomm_server_channel = rfcomm_event_incoming_connection_get_server_channel(packet);
+                    rfcomm_channel_id[rfcomm_server_channel] = rfcomm_event_incoming_connection_get_rfcomm_cid(packet);
+                    debug_printf("btcomms_packet_handler(): Received RFCOMM_EVENT_INCOMING_CONNECTION event on server channel %u with CID %u\n", rfcomm_server_channel, rfcomm_channel_id[rfcomm_server_channel]);
+                    
+                    rfcomm_accept_connection(rfcomm_channel_id[rfcomm_server_channel]);
+                    debug_printf("btcomms_packet_handler():   Connection request accepted from client %s\n", bd_addr_to_str(event_addr));
                     break;
                
                 case RFCOMM_EVENT_CHANNEL_OPENED:
                     if (rfcomm_event_channel_opened_get_status(packet)) {
-                        debug_printf("Bluetooth: RFCOMM channel open failed, status 0x%02x\n", rfcomm_event_channel_opened_get_status(packet));
+                        debug_printf("btcomms_packet_handler(): RFCOMM channel open FAILED, status 0x%02x\n", rfcomm_event_channel_opened_get_status(packet));
                     } else {
-                        rfcomm_channel_id = rfcomm_event_channel_opened_get_rfcomm_cid(packet);
+                        rfcomm_server_channel = rfcomm_event_channel_opened_get_server_channel(packet);
+                        rfcomm_channel_id[rfcomm_server_channel] = rfcomm_event_channel_opened_get_rfcomm_cid(packet);
+                        debug_printf("btcomms_packet_handler(): Received RFCOMM_EVENT_CHANNEL_OPENED event on server channel %u with CID %u\n", rfcomm_server_channel, rfcomm_channel_id[rfcomm_server_channel]);
+
                         mtu = rfcomm_event_channel_opened_get_max_frame_size(packet);
-                        debug_printf("Bluetooth: RFCOMM channel open succeeded. New RFCOMM Channel ID %u, max frame size %u\n", rfcomm_channel_id, mtu);
-                        current_bt_state = BTCOMMS_CONNECTED;
-                        channel_open = true;
+                        debug_printf("btcomms_packet_handler():   RFCOMM channel open succeeded - max frame size %u\n", mtu);
+                        current_bt_state[rfcomm_server_channel] = BTCOMMS_CONNECTED;
+                        channel_open[rfcomm_server_channel] = true;
                     }
                     break;
-                case RFCOMM_EVENT_CAN_SEND_NOW:
-                    // Output the contents of the output buffer
-                    int16_t pos = 0;
-                    char outputLine[128];
-                    bool finished = false;
-                    while (!finished) {
-                        outputLine[pos] = fifo_out_read();
-                        if (outputLine[pos] == 0) finished = true;
-                        if (pos == 126) {
-                            outputLine[pos+1] = 0;
-                            finished = true;
-                        }
-                        pos++;
-                    }
 
-                    if (pos != 0) {
-                        rfcomm_send(rfcomm_channel_id, (uint8_t*) outputLine, (uint16_t) pos);
+                case RFCOMM_EVENT_CAN_SEND_NOW:
+                    requesting_cid = rfcomm_event_can_send_now_get_rfcomm_cid(packet);
+
+                    // Check if requesting CID belongs to server channel 1 (CLI)
+                    if (requesting_cid == rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]) {
+                        // Output the contents of the output buffer
+                        int16_t pos = 0;
+                        char outputLine[128];
+                        bool finished = false;
+                        while (!finished) {
+                            outputLine[pos] = fifo_out_read();
+                            if (outputLine[pos] == 0) finished = true;
+                            if (pos == 126) {
+                                outputLine[pos+1] = 0;
+                                finished = true;
+                            }
+                            pos++;
+                        }
+
+                        if (pos != 0) {
+                            rfcomm_send(rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL], (uint8_t*) outputLine, (uint16_t) pos);
+                        }
                     }
                     break;
 
                 case RFCOMM_EVENT_CHANNEL_CLOSED:
-                    debug_printf("Bluetooth: RFCOMM channel is closed\n");
-                    rfcomm_channel_id = 0;
-                    current_bt_state = BTCOMMS_DISCONNECTED;
-                    channel_open = false;
+                    requesting_cid = rfcomm_event_channel_closed_get_rfcomm_cid(packet);
+                    debug_printf("btcomms_packet_handler(): Received RFCOMM_EVENT_CHANNEL_CLOSED event with CID %u\n", requesting_cid);
+
+                    // Check if requesting CID belongs to the CLI channel
+                    if (requesting_cid == rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]) {
+                        current_bt_state[SPP_CLI_SERVER_CHANNEL] = BTCOMMS_DISCONNECTED;
+                        channel_open[SPP_CLI_SERVER_CHANNEL] = false;
+                        debug_printf("btcomms_packet_handler():   RFCOMM CLI channel is closed\n");
+                    } else if (requesting_cid == rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL]) {
+                        current_bt_state[SPP_DEBUG_SERVER_CHANNEL] = BTCOMMS_DISCONNECTED;
+                        channel_open[SPP_DEBUG_SERVER_CHANNEL] = false;
+                        debug_printf("btcomms_packet_handler():   RFCOMM Debug channel is closed\n");
+                    } else {
+                        debug_printf("btcomms_packet_handler():   Got a channel closed event for an unknown channel!\n");
+                    }
                     break;
                 
                 default:
@@ -149,8 +199,9 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
             break;
 
         case RFCOMM_DATA_PACKET:
+            // TODO -> MAKE SURE WHICH CHANNEL THIS IS COMING IN ON!
             // Place the incoming characters into our input buffer
-            for (i=0;i<size;i++) fifo_in_write((char)packet[i]);
+            for (int i=0; i<size; i++) fifo_in_write((char)packet[i]);
             break;
 
         default:
@@ -158,33 +209,7 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
     }
 }
 
-// Initialise the Bluetooth stack and functionality
-void btcomms_initialise(void)
-{
-    channel_open = false;
-    current_bt_state = BTCOMMS_OFF;
-
-    // Set up the FIFO buffer for incoming characters
-    fifo_initialise();
-
-    one_shot_timer_setup();
-    spp_service_setup();
-
-    gap_discoverable_control(1);
-    gap_ssp_set_io_capability(SSP_IO_CAPABILITY_DISPLAY_YES_NO);
-
-    // Use the following to include the HW Address in the device name
-    //gap_set_local_name("VT2 00:00:00:00:00:00");
-    gap_set_local_name("Valiant Turtle 2");
-
-    // Power on the Bluetooth device
-    hci_power_control(HCI_POWER_ON);
-    current_bt_state = BTCOMMS_DISCONNECTED;
-
-    debug_printf("Bluetooth: HCI is powered on\r\n");
-}
-
-static void one_shot_timer_setup(void)
+static void btcomms_one_shot_timer_setup(void)
 {
     // Initialise the CLI
     cli_initialise();
@@ -198,31 +223,22 @@ static void one_shot_timer_setup(void)
 // Handler for the Bluetooth CLI Process timer
 static void btcomms_cli_process_handler(struct btstack_timer_source *ts)
 {
-    // Ensure the RFCOMM channel is valid
-    if (channel_open) {
+    // Ensure the RFCOMM channel for the CLI is valid (open and connected)
+    if (channel_open[SPP_CLI_SERVER_CHANNEL]) {
         // Process the CLI
         cli_process();
 
         // Check the output buffer
         if (!fifo_is_out_empty()) {
-            // Ask for a send event
-            rfcomm_request_can_send_now_event(rfcomm_channel_id);
+            // Ask for a send event on the CLI channel
+            rfcomm_request_can_send_now_event(rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]);
         }
-    } else {
-        // Channel is lost
-        // We could do something here if we wanted to
     }
 
     // Set up the next timer shot
     btstack_run_loop_set_timer(ts, BTCLIPROCESS_PERIOD_MS);
     btstack_run_loop_add_timer(ts);
 } 
-
-// Get the current bluetooth state
-btComms_state_t btcomms_get_status(void)
-{
-    return current_bt_state;
-}
 
 // A printf like function but outputs via BT SPP
 void btcomms_printf(const char *fmt, ...)

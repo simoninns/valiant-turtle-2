@@ -27,8 +27,10 @@
 #ifndef BTCOMMS_H_
 #define BTCOMMS_H_
 
-#define RFCOMM_SERVER_CHANNEL 1
 #define BTCLIPROCESS_PERIOD_MS 10
+
+#define SPP_CLI_SERVER_CHANNEL 1
+#define SPP_DEBUG_SERVER_CHANNEL 2
 
 // Enumerations
 typedef enum {
@@ -40,15 +42,14 @@ typedef enum {
 
 struct btstack_timer_source;
 
-static void spp_service_setup(void);
-static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
+static void btcomms_spp_service_setup(void);
+static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
 
-static void one_shot_timer_setup(void);
+static void btcomms_one_shot_timer_setup(void);
 static void btcomms_cli_process_handler(struct btstack_timer_source *ts);
 
 void btcomms_initialise(void);
 void btcomms_process(void);
-btComms_state_t btcomms_get_status(void);
 void btcomms_printf(const char *fmt, ...);
 
 #endif /* BTCOMMS_H_ */
