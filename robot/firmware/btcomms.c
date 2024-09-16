@@ -115,8 +115,6 @@ static void btcomms_spp_service_setup(void)
 // Bluetooth packet handler
 static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size)
 {
-    UNUSED(channel);
-
     bd_addr_t event_addr;
     uint8_t rfcomm_server_channel;
     uint16_t mtu;
@@ -199,9 +197,12 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
             break;
 
         case RFCOMM_DATA_PACKET:
-            // TODO -> MAKE SURE WHICH CHANNEL THIS IS COMING IN ON!
-            // Place the incoming characters into our input buffer
-            for (int i=0; i<size; i++) fifo_in_write((char)packet[i]);
+            if (channel == rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]) {
+                // Place the incoming characters into our input buffer
+                for (int i=0; i<size; i++) fifo_in_write((char)packet[i]);
+            } else {
+                debug_printf("btcomms_packet_handler(): Received RFCOMM_DATA_PACKET event with CID %u - Ignoring\n", channel);
+            }
             break;
 
         default:
