@@ -35,6 +35,8 @@
 #define CLI_BUFFER 0
 #define DEBUG_BUFFER 1
 
+#define LINE_BUFFER_SIZE 2048
+
 // Enumerations
 typedef enum {
     BTCOMMS_OFF,

@@ -27,7 +27,7 @@
 #ifndef FIFO_H_
 #define FIFO_H_
 
-#define IN_BUFFER_SIZE 256
+#define IN_BUFFER_SIZE 512
 #define OUT_BUFFER_SIZE 2048
 
 typedef struct {

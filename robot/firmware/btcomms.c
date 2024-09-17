@@ -52,6 +52,8 @@ btComms_state_t current_bt_state[3];
 static bool channel_open[3];
 static uint16_t rfcomm_channel_id[3];
 
+char *lineBuffer;
+
 // Initialise the Bluetooth stack and functionality
 void btcomms_initialise(void)
 {
@@ -80,6 +82,14 @@ void btcomms_initialise(void)
     current_bt_state[SPP_DEBUG_SERVER_CHANNEL] = BTCOMMS_DISCONNECTED;
 
     debug_printf("btcomms_initialise(): Bluetooth is powered on\n");
+
+    // Malloc some memory for the shared lineBuffer
+    lineBuffer = malloc(sizeof(char*) * LINE_BUFFER_SIZE);
+
+    if (!lineBuffer) {
+        debug_printf("btcomms_initialise(): Line buffer memory allocation failed\n"); 
+        exit(0); 
+    }
 }
 
 // Set up Serial Port Profile (SPP)
@@ -155,38 +165,36 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
                     if (requesting_cid == rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]) {
                         // Output the contents of the CLI output buffer
                         int16_t pos = 0;
-                        char outputLine[512];
                         bool finished = false;
                         while (!finished) {
-                            outputLine[pos] = fifo_out_read(CLI_BUFFER);
-                            if (outputLine[pos] == 0) finished = true;
-                            if (pos == 512-2) {
-                                outputLine[pos+1] = 0;
+                            lineBuffer[pos] = fifo_out_read(CLI_BUFFER);
+                            if (lineBuffer[pos] == 0) finished = true;
+                            if (pos == 128-2) {
+                                lineBuffer[pos+1] = 0;
                                 finished = true;
                             }
                             pos++;
                         }
 
                         if (pos != 0) {
-                            rfcomm_send(rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL], (uint8_t*) outputLine, (uint16_t) pos);
+                            rfcomm_send(rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL], (uint8_t*) lineBuffer, (uint16_t) pos);
                         }
                     } else if (requesting_cid == rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL]) {
                         // Output the contents of the Debug output buffer
                         int16_t pos = 0;
-                        char outputLine[512];
                         bool finished = false;
                         while (!finished) {
-                            outputLine[pos] = fifo_out_read(DEBUG_BUFFER);
-                            if (outputLine[pos] == 0) finished = true;
-                            if (pos == 512-2) {
-                                outputLine[pos+1] = 0;
+                            lineBuffer[pos] = fifo_out_read(DEBUG_BUFFER);
+                            if (lineBuffer[pos] == 0) finished = true;
+                            if (pos == 128-2) {
+                                lineBuffer[pos+1] = 0;
                                 finished = true;
                             }
                             pos++;
                         }
 
                         if (pos != 0) {
-                            rfcomm_send(rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL], (uint8_t*) outputLine, (uint16_t) pos);
+                            rfcomm_send(rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL], (uint8_t*) lineBuffer, (uint16_t) pos);
                         }
                     }
                     break;
@@ -275,8 +283,6 @@ static void btcomms_cli_process_handler(struct btstack_timer_source *ts)
 void btcomms_printf_cli(const char *fmt, ...)
 {
     if (channel_open[SPP_CLI_SERVER_CHANNEL]) {
-        static char lineBuffer[512];
-
         va_list args;
         va_start(args, fmt);
         vsprintf(lineBuffer, fmt, args);
@@ -291,12 +297,14 @@ void btcomms_printf_cli(const char *fmt, ...)
 void btcomms_printf_debug(const char *fmt, ...)
 {
     if (channel_open[SPP_DEBUG_SERVER_CHANNEL]) {
-        static char lineBuffer[512];
-
         va_list args;
         va_start(args, fmt);
         vsprintf(lineBuffer, fmt, args);
         va_end(args);
+
+        if (strlen(lineBuffer) >= LINE_BUFFER_SIZE) {
+            debug_printf("btcomms_printf_debug(): Possible line buffer overrun\n"); 
+        }
 
         // Copy the output string to the output buffer
         for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifo_out_write(DEBUG_BUFFER, lineBuffer[i]);

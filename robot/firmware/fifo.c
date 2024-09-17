@@ -53,7 +53,7 @@ void fifo_initialise(void) {
         output_buffer[i].tail = 0;
         output_buffer[i].data = malloc(sizeof(char*) * OUT_BUFFER_SIZE);
 
-        if (!input_buffer[i].data) {
+        if (!output_buffer[i].data) {
             debug_printf("fifo_initialise(): Output buffer memory allocation failed\n"); 
             exit(0); 
         }
