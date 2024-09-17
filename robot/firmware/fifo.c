@@ -62,30 +62,36 @@ void fifo_initialise(void) {
  
 // Reads a byte from the buffer and return 0 if buffer empty
 char fifo_in_read(uint16_t buffer_number) {
-   if (input_buffer[buffer_number].head == input_buffer[buffer_number].tail) return 0;
-   input_buffer[buffer_number].tail = (input_buffer[buffer_number].tail + 1) % IN_BUFFER_SIZE;
-   return input_buffer[buffer_number].data[input_buffer[buffer_number].tail];
+    if (input_buffer[buffer_number].head == input_buffer[buffer_number].tail) return 0;
+    input_buffer[buffer_number].tail = (input_buffer[buffer_number].tail + 1) % IN_BUFFER_SIZE;
+    return input_buffer[buffer_number].data[input_buffer[buffer_number].tail];
 }
  
 // Writes a byte to the buffer if not full
 char fifo_in_write(uint16_t buffer_number, char val) {
-   if (input_buffer[buffer_number].head + 1 == input_buffer[buffer_number].tail) return 0;
-   input_buffer[buffer_number].head = (input_buffer[buffer_number].head + 1) % IN_BUFFER_SIZE;
-   return input_buffer[buffer_number].data[input_buffer[buffer_number].head] = val;
+    if (input_buffer[buffer_number].head + 1 == input_buffer[buffer_number].tail) {
+        panic("fifo_in_write(): Failure - input buffer overrun\n"); 
+        return 0;
+    }
+    input_buffer[buffer_number].head = (input_buffer[buffer_number].head + 1) % IN_BUFFER_SIZE;
+    return input_buffer[buffer_number].data[input_buffer[buffer_number].head] = val;
 }
 
 // Reads a byte from the buffer and return 0 if buffer empty
 char fifo_out_read(uint16_t buffer_number) {
-   if (output_buffer[buffer_number].head == output_buffer[buffer_number].tail) return 0;
-   output_buffer[buffer_number].tail = (output_buffer[buffer_number].tail + 1) % OUT_BUFFER_SIZE;
-   return output_buffer[buffer_number].data[output_buffer[buffer_number].tail];
+    if (output_buffer[buffer_number].head == output_buffer[buffer_number].tail) return 0;
+    output_buffer[buffer_number].tail = (output_buffer[buffer_number].tail + 1) % OUT_BUFFER_SIZE;
+    return output_buffer[buffer_number].data[output_buffer[buffer_number].tail];
 }
  
 // Writes a byte to the buffer if not full
 char fifo_out_write(uint16_t buffer_number, char val) {
-   if (output_buffer[buffer_number].head + 1 == output_buffer[buffer_number].tail) return 0;
-   output_buffer[buffer_number].head = (output_buffer[buffer_number].head + 1) % OUT_BUFFER_SIZE;
-   return output_buffer[buffer_number].data[output_buffer[buffer_number].head] = val;
+   if (output_buffer[buffer_number].head + 1 == output_buffer[buffer_number].tail)  {
+        panic("fifo_out_write(): Failure - output buffer overrun\n");
+        return 0;
+    }
+    output_buffer[buffer_number].head = (output_buffer[buffer_number].head + 1) % OUT_BUFFER_SIZE;
+    return output_buffer[buffer_number].data[output_buffer[buffer_number].head] = val;
 }
 
 bool fifo_is_in_empty(uint16_t buffer_number) {

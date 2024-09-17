@@ -163,39 +163,45 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
 
                     // Check if requesting CID belongs to server channel 1 (CLI)
                     if (requesting_cid == rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]) {
+                        int16_t max_frame_size = rfcomm_get_max_frame_size(rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]);
+                        if (max_frame_size > LINE_BUFFER_SIZE) {
+                            panic("btcomms.c: The allocated LINE_BUFFER_SIZE is smaller than the maximum allowed MTU - increase the buffer size\n");
+                        }
+
                         // Output the contents of the CLI output buffer
                         int16_t pos = 0;
                         bool finished = false;
                         while (!finished) {
                             lineBuffer[pos] = fifo_out_read(CLI_BUFFER);
                             if (lineBuffer[pos] == 0) finished = true;
-                            if (pos == 128-2) {
+                            if (pos == max_frame_size-2) {
                                 lineBuffer[pos+1] = 0;
                                 finished = true;
                             }
                             pos++;
                         }
 
-                        if (pos != 0) {
-                            rfcomm_send(rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL], (uint8_t*) lineBuffer, (uint16_t) pos);
-                        }
+                        if (pos != 0) rfcomm_send(rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL], (uint8_t*) lineBuffer, (uint16_t) pos);
                     } else if (requesting_cid == rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL]) {
+                        int16_t max_frame_size = rfcomm_get_max_frame_size(rfcomm_channel_id[SPP_CLI_SERVER_CHANNEL]);
+                        if (max_frame_size > LINE_BUFFER_SIZE) {
+                            panic("btcomms.c: The allocated LINE_BUFFER_SIZE is smaller than the maximum allowed MTU - increase the buffer size\n");
+                        }
+
                         // Output the contents of the Debug output buffer
                         int16_t pos = 0;
                         bool finished = false;
                         while (!finished) {
                             lineBuffer[pos] = fifo_out_read(DEBUG_BUFFER);
                             if (lineBuffer[pos] == 0) finished = true;
-                            if (pos == 128-2) {
+                            if (pos == max_frame_size-2) {
                                 lineBuffer[pos+1] = 0;
                                 finished = true;
                             }
                             pos++;
                         }
 
-                        if (pos != 0) {
-                            rfcomm_send(rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL], (uint8_t*) lineBuffer, (uint16_t) pos);
-                        }
+                        if (pos != 0) rfcomm_send(rfcomm_channel_id[SPP_DEBUG_SERVER_CHANNEL], (uint8_t*) lineBuffer, (uint16_t) pos);
                     }
                     break;
 
@@ -285,7 +291,13 @@ void btcomms_printf_cli(const char *fmt, ...)
     if (channel_open[SPP_CLI_SERVER_CHANNEL]) {
         va_list args;
         va_start(args, fmt);
-        vsprintf(lineBuffer, fmt, args);
+
+        int rc = vsnprintf(lineBuffer, LINE_BUFFER_SIZE, fmt, args);
+        //assert(rc != -1 && rc < LINE_BUFFER_SIZE);
+        if (rc == -1 || rc >= LINE_BUFFER_SIZE) {
+            panic("btcomms_printf_cli(): Line buffer overflow\n");
+        }
+
         va_end(args);
 
         // Copy the output string to the output buffer
@@ -299,12 +311,14 @@ void btcomms_printf_debug(const char *fmt, ...)
     if (channel_open[SPP_DEBUG_SERVER_CHANNEL]) {
         va_list args;
         va_start(args, fmt);
-        vsprintf(lineBuffer, fmt, args);
-        va_end(args);
-
-        if (strlen(lineBuffer) >= LINE_BUFFER_SIZE) {
-            debug_printf("btcomms_printf_debug(): Possible line buffer overrun\n"); 
+        
+        int rc = vsnprintf(lineBuffer, LINE_BUFFER_SIZE, fmt, args);
+        //assert(rc != -1 && rc < LINE_BUFFER_SIZE);
+        if (rc == -1 || rc >= LINE_BUFFER_SIZE) {
+            panic("btcomms_printf_debug(): Line buffer overflow\n");
         }
+
+        va_end(args);
 
         // Copy the output string to the output buffer
         for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifo_out_write(DEBUG_BUFFER, lineBuffer[i]);
