@@ -70,7 +70,8 @@ char fifo_in_read(uint16_t buffer_number) {
 // Writes a byte to the buffer if not full
 char fifo_in_write(uint16_t buffer_number, char val) {
     if (input_buffer[buffer_number].head + 1 == input_buffer[buffer_number].tail) {
-        panic("fifo_in_write(): Failure - input buffer overrun\n"); 
+        if (buffer_number == 0) panic("fifo_out_write(): Failure - input buffer 0 overrun\n");
+        else panic("fifo_out_write(): Failure - input buffer 1 overrun\n");
         return 0;
     }
     input_buffer[buffer_number].head = (input_buffer[buffer_number].head + 1) % IN_BUFFER_SIZE;
@@ -87,7 +88,8 @@ char fifo_out_read(uint16_t buffer_number) {
 // Writes a byte to the buffer if not full
 char fifo_out_write(uint16_t buffer_number, char val) {
    if (output_buffer[buffer_number].head + 1 == output_buffer[buffer_number].tail)  {
-        panic("fifo_out_write(): Failure - output buffer overrun\n");
+        if (buffer_number == 0) panic("fifo_out_write(): Failure - output buffer 0 overrun\n");
+        else panic("fifo_out_write(): Failure - output buffer 1 overrun\n");
         return 0;
     }
     output_buffer[buffer_number].head = (output_buffer[buffer_number].head + 1) % OUT_BUFFER_SIZE;

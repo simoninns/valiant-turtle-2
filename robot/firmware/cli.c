@@ -296,7 +296,7 @@ void on_right(EmbeddedCli *cli, char *args, void *context) {
 // Embedded CLI library requires a write char function
 static void write_char_fn(EmbeddedCli *embeddedCli, char c) {
     (void)embeddedCli;
-    fifo_out_write(CLI_BUFFER, c);
+    fifo_out_write(SPP_CLI_SERVER_CHANNEL-1, c);
 }
 
 // Function is called every time a CLI command is received
@@ -462,7 +462,7 @@ void cli_initialise() {
 // Process any waiting characters into the CLI
 void cli_process() {
     //int c = getchar_timeout_us(0);
-    int c = fifo_in_read(CLI_BUFFER); // Get input from BT
+    int c = fifo_in_read(SPP_CLI_SERVER_CHANNEL-1); // Get input from BT
     if (c != PICO_ERROR_TIMEOUT) {
         embeddedCliReceiveChar(cli, c);
         embeddedCliProcess(cli);

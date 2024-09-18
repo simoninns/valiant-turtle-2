@@ -29,13 +29,9 @@
 
 #define BTCLIPROCESS_PERIOD_MS 10
 
+// Note: Channels must start at 1 (0 is invalid)
 #define SPP_CLI_SERVER_CHANNEL 1
 #define SPP_DEBUG_SERVER_CHANNEL 2
-
-#define CLI_BUFFER 0
-#define DEBUG_BUFFER 1
-
-#define LINE_BUFFER_SIZE 2048
 
 // Enumerations
 typedef enum {
