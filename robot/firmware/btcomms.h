@@ -27,11 +27,10 @@
 #ifndef BTCOMMS_H_
 #define BTCOMMS_H_
 
-#define BTCLIPROCESS_PERIOD_MS 10
+#define SPP_PROCESS_PERIOD_MS 10
 
-// Note: Channels must start at 1 (0 is invalid)
-#define SPP_CLI_SERVER_CHANNEL 1
-#define SPP_DEBUG_SERVER_CHANNEL 2
+// Define the required number of virtual serial ports
+#define SPP_PORTS 2
 
 // Enumerations
 typedef enum {
@@ -39,7 +38,7 @@ typedef enum {
     BTCOMMS_DISCONNECTED,
     BTCOMMS_CONNECTED,
     BTCOMMS_PAIRING
-} btComms_state_t;
+} btcomms_state_t;
 
 struct btstack_timer_source;
 
@@ -47,11 +46,12 @@ static void btcomms_spp_service_setup(void);
 static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
 
 static void btcomms_one_shot_timer_setup(void);
-static void btcomms_cli_process_handler(struct btstack_timer_source *ts);
+static void btcomms_process_handler(struct btstack_timer_source *ts);
 
 void btcomms_initialise(void);
 void btcomms_process(void);
-// void btcomms_printf_cli(const char *fmt, ...);
-// void btcomms_printf_debug(const char *fmt, ...);
+
+int btcomms_getchar(int8_t channel);
+int btcomms_putchar(int8_t channel, char c);
 
 #endif /* BTCOMMS_H_ */

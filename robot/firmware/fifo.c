@@ -33,11 +33,11 @@
 #include "fifo.h"
 #include "debug.h"
  
-fifoBuffer_t input_buffer[2];
-fifoBuffer_t output_buffer[2];
+fifoBuffer_t input_buffer[NUMBER_OF_BUFFERS];
+fifoBuffer_t output_buffer[NUMBER_OF_BUFFERS];
 
 void fifo_initialise(void) {
-    for (int i=0; i<2; i++){
+    for (int i = 0; i < NUMBER_OF_BUFFERS; i++){
         // Initialise the input buffer
         input_buffer[i].head = 0;
         input_buffer[i].tail = 0;

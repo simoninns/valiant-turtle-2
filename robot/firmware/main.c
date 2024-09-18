@@ -52,7 +52,7 @@ int main() {
     oled_initialise();
     stepconf_initialise();
     cli_initialise();
-    //btcomms_initialise();
+    btcomms_initialise();
 
     // Turn on the PICO W system LED
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);

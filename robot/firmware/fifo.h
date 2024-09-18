@@ -30,6 +30,9 @@
 #define IN_BUFFER_SIZE 512
 #define OUT_BUFFER_SIZE 2048
 
+// Define the required number of buffers
+#define NUMBER_OF_BUFFERS 2
+
 typedef struct {
     int16_t head;
     int16_t tail;
