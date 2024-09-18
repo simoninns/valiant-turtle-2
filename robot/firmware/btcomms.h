@@ -50,6 +50,7 @@ static void btcomms_process_handler(struct btstack_timer_source *ts);
 
 void btcomms_initialise(void);
 void btcomms_process(void);
+bool btcomms_is_channel_open(int8_t channel);
 
 int btcomms_getchar(int8_t channel);
 int btcomms_putchar(int8_t channel, char c);

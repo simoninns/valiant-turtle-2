@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <pico/stdlib.h>
+#include <string.h>
 
 #include "debug.h"
 #include "btcomms.h"
@@ -36,10 +37,27 @@ void debug_initialise() {
     debug_printf("\n");
 }
 
-void debug_printf(const char *fmt, ...) {
-    fprintf(stderr, "Debug: ");
+int debug_printf(const char *fmt, ...) {
     va_list args;
-    va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    va_end(args);
+    int ret = 0;
+
+    if (!btcomms_is_channel_open(1)) {
+        // The BT SPP channel is closed, so we send debug to stderr
+        va_start(args, fmt);
+        ret = vfprintf(stderr, fmt, args);
+        va_end(args);
+    } else {
+        // The BT SPP channel is open, so we send debug to channel 1
+        va_start(args, fmt);
+        char stringBuffer[256];
+        ret = vsprintf(stringBuffer, fmt, args);
+        va_end(args);
+
+        for (int i=0; i < strlen(stringBuffer); i++) {
+            if (stringBuffer[i] == '\n') btcomms_putchar(1, '\r');
+            btcomms_putchar(1, stringBuffer[i]);
+        }
+    }    
+
+    return ret;
 }

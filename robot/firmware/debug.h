@@ -28,6 +28,6 @@
 #define DEBUG_H_
 
 void debug_initialise(void);
-void debug_printf(const char *fmt, ...);
+int debug_printf(const char *fmt, ...);
 
 #endif /* DEBUG_H_ */

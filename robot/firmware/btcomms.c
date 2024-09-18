@@ -289,7 +289,13 @@ static void btcomms_process_handler(struct btstack_timer_source *ts)
     // Set up the next timer shot
     btstack_run_loop_set_timer(ts, SPP_PROCESS_PERIOD_MS);
     btstack_run_loop_add_timer(ts);
-} 
+}
+
+// Returns true if a channel is open and false if it's closed
+bool btcomms_is_channel_open(int8_t channel)
+{
+    return channel_open[channel];
+}
 
 // Read a character from a channel's FIFO input buffer
 int btcomms_getchar(int8_t channel)
