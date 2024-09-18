@@ -33,6 +33,7 @@
 #include "stepper.h"
 #include "stepper.pio.h"
 #include "seqarray.h"
+#include "debug.h"
 
 // Globals
 static PIO pio[3];
@@ -93,25 +94,25 @@ void stepper_set_direction(sm_direction_t direction)
         case SM_FORWARDS:
             gpio_put(SM_LDIR_GPIO, 1);
             gpio_put(SM_RDIR_GPIO, 0);
-            printf("stepper_set_direction(): Direction forwards\r\n");
+            debug_printf("stepper_set_direction(): Direction forwards\r\n");
             break;
 
         case SM_BACKWARDS:
             gpio_put(SM_LDIR_GPIO, 0);
             gpio_put(SM_RDIR_GPIO, 1);
-            printf("stepper_set_direction(): Direction backwards\r\n");
+            debug_printf("stepper_set_direction(): Direction backwards\r\n");
             break;
 
         case SM_LEFT:
             gpio_put(SM_LDIR_GPIO, 1);
             gpio_put(SM_RDIR_GPIO, 1);
-            printf("stepper_set_direction(): Direction left\r\n");
+            debug_printf("stepper_set_direction(): Direction left\r\n");
             break;
 
         case SM_RIGHT:
             gpio_put(SM_LDIR_GPIO, 0);
             gpio_put(SM_RDIR_GPIO, 0);
-            printf("stepper_set_direction(): Direction right\r\n");
+            debug_printf("stepper_set_direction(): Direction right\r\n");
             break;
     }
 }
@@ -121,10 +122,10 @@ void stepper_enable(bool state)
 {
     if (state) {
         gpio_put(SM_ENABLE_GPIO, 1);
-        printf("steppers_enable(): Stepper motors enabled\r\n");
+        debug_printf("steppers_enable(): Stepper motors enabled\r\n");
     } else {
         gpio_put(SM_ENABLE_GPIO, 0);
-        printf("steppers_enable(): Stepper motors disabled\r\n");
+        debug_printf("steppers_enable(): Stepper motors disabled\r\n");
     }
 }
 
@@ -148,7 +149,7 @@ void stepper_set_microstep_mode(sm_microstep_mode_t microstep_mode)
             gpio_put(SM_LM1_GPIO, 0);
             gpio_put(SM_RM0_GPIO, 0);
             gpio_put(SM_RM1_GPIO, 0);
-            printf("stepper_set_microstep_mode(): Set microstep to 200 steps/revolution\r\n");
+            debug_printf("stepper_set_microstep_mode(): Set microstep to 200 steps/revolution\r\n");
             break;
 
         case SM_MODE_400:
@@ -156,7 +157,7 @@ void stepper_set_microstep_mode(sm_microstep_mode_t microstep_mode)
             gpio_put(SM_LM1_GPIO, 0);
             gpio_put(SM_RM0_GPIO, 1);
             gpio_put(SM_RM1_GPIO, 0);
-            printf("stepper_set_microstep_mode(): Set microstep to 400 steps/revolution\r\n");
+            debug_printf("stepper_set_microstep_mode(): Set microstep to 400 steps/revolution\r\n");
             break;
 
         case SM_MODE_800:
@@ -164,7 +165,7 @@ void stepper_set_microstep_mode(sm_microstep_mode_t microstep_mode)
             gpio_put(SM_LM1_GPIO, 1);
             gpio_put(SM_RM0_GPIO, 0);
             gpio_put(SM_RM1_GPIO, 1);
-            printf("stepper_set_microstep_mode(): Set microstep to 800 steps/revolution\r\n");
+            debug_printf("stepper_set_microstep_mode(): Set microstep to 800 steps/revolution\r\n");
             break;
 
         case SM_MODE_1600:
@@ -172,7 +173,7 @@ void stepper_set_microstep_mode(sm_microstep_mode_t microstep_mode)
             gpio_put(SM_LM1_GPIO, 1);
             gpio_put(SM_RM0_GPIO, 1);
             gpio_put(SM_RM1_GPIO, 1);
-            printf("stepper_set_microstep_mode(): Set microstep to 1600 steps/revolution\r\n");
+            debug_printf("stepper_set_microstep_mode(): Set microstep to 1600 steps/revolution\r\n");
             break;
     }
 }
@@ -215,11 +216,11 @@ bool stepper_set(sequence_array_t* container)
 {
     // Check that the stepper is not busy
     if (sm_busy) {
-        printf("stepper_set(): Stepper is busy, cannot set new sequence!");
+        debug_printf("stepper_set(): Stepper is busy, cannot set new sequence!");
         return false;
     }
 
-    printf("stepper_set(): Starting new sequence - Stepper Busy\n");
+    debug_printf("stepper_set(): Starting new sequence - Stepper Busy\n");
 
     sequence_pointer = 0;
     local_container = container; // Make a local copy so the interrupt handler can reference the sequence container
@@ -261,7 +262,7 @@ int32_t stepper_sps_to_delay(int32_t sps) {
     float required_delay =  (pio_clock_pps / spsf) / 2.0;
     required_delay = required_delay - (delay_loop_overhead / 2.0);
 
-    //printf("Requested SPS = %f - required PIO delay = %f\n", spsf, required_delay);
+    //debug_printf("Requested SPS = %f - required PIO delay = %f\n", spsf, required_delay);
 
     return (int32_t)required_delay; // Range check this? 0-4,294,967,295
 }
@@ -282,7 +283,7 @@ static void pio_irq_func() {
             
             sequence_pointer++;
         } else {
-            printf("pio_irq_func(): Stepper - no more sequence data\n");
+            debug_printf("pio_irq_func(): Stepper - no more sequence data\n");
             sm_busy = false;
         }
 

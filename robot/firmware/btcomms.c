@@ -286,42 +286,42 @@ static void btcomms_cli_process_handler(struct btstack_timer_source *ts)
     btstack_run_loop_add_timer(ts);
 } 
 
-// A printf like function but outputs via BT SPP for CLI
-void btcomms_printf_cli(const char *fmt, ...)
-{
-    if (channel_open[SPP_CLI_SERVER_CHANNEL-1]) {
-        char lineBuffer[256];
-        va_list args;
-        va_start(args, fmt);
+// // A printf like function but outputs via BT SPP for CLI
+// void btcomms_printf_cli(const char *fmt, ...)
+// {
+//     if (channel_open[SPP_CLI_SERVER_CHANNEL-1]) {
+//         char lineBuffer[256];
+//         va_list args;
+//         va_start(args, fmt);
 
-        int rc = vsnprintf(lineBuffer, 256, fmt, args);
-        if (rc == -1 || rc >= 256) {
-            panic("btcomms_printf_cli(): Line buffer overflow\n");
-        }
+//         int rc = vsnprintf(lineBuffer, 256, fmt, args);
+//         if (rc == -1 || rc >= 256) {
+//             panic("btcomms_printf_cli(): Line buffer overflow\n");
+//         }
 
-        va_end(args);
+//         va_end(args);
 
-        // Copy the output string to the output buffer
-        for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifo_out_write(SPP_CLI_SERVER_CHANNEL-1, lineBuffer[i]);
-    }
-}
+//         // Copy the output string to the output buffer
+//         for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifo_out_write(SPP_CLI_SERVER_CHANNEL-1, lineBuffer[i]);
+//     }
+// }
 
-// A printf like function but outputs via BT SPP for debug
-void btcomms_printf_debug(const char *fmt, ...)
-{
-    if (channel_open[SPP_DEBUG_SERVER_CHANNEL-1]) {
-        char lineBuffer[256];
-        va_list args;
-        va_start(args, fmt);
+// // A printf like function but outputs via BT SPP for debug
+// void btcomms_printf_debug(const char *fmt, ...)
+// {
+//     if (channel_open[SPP_DEBUG_SERVER_CHANNEL-1]) {
+//         char lineBuffer[256];
+//         va_list args;
+//         va_start(args, fmt);
         
-        int rc = vsnprintf(lineBuffer, 256, fmt, args);
-        if (rc == -1 || rc >= 265) {
-            panic("btcomms_printf_debug(): Line buffer overflow\n");
-        }
+//         int rc = vsnprintf(lineBuffer, 256, fmt, args);
+//         if (rc == -1 || rc >= 265) {
+//             panic("btcomms_printf_debug(): Line buffer overflow\n");
+//         }
 
-        va_end(args);
+//         va_end(args);
 
-        // Copy the output string to the output buffer
-        for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifo_out_write(SPP_DEBUG_SERVER_CHANNEL-1, lineBuffer[i]);
-    }
-}
+//         // Copy the output string to the output buffer
+//         for (uint16_t i = 0; i < strlen(lineBuffer); i++) fifo_out_write(SPP_DEBUG_SERVER_CHANNEL-1, lineBuffer[i]);
+//     }
+// }

@@ -37,10 +37,9 @@ void debug_initialise() {
 }
 
 void debug_printf(const char *fmt, ...) {
+    fprintf(stderr, "Debug: ");
     va_list args;
-
     va_start(args, fmt);
-    btcomms_printf_debug(fmt, args);
     vfprintf(stderr, fmt, args);
     va_end(args);
 }

@@ -51,7 +51,7 @@ static void btcomms_cli_process_handler(struct btstack_timer_source *ts);
 
 void btcomms_initialise(void);
 void btcomms_process(void);
-void btcomms_printf_cli(const char *fmt, ...);
-void btcomms_printf_debug(const char *fmt, ...);
+// void btcomms_printf_cli(const char *fmt, ...);
+// void btcomms_printf_debug(const char *fmt, ...);
 
 #endif /* BTCOMMS_H_ */
