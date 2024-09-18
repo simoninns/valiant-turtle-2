@@ -37,6 +37,7 @@
 #include "penservo.h"
 #include "stepconf.h"
 #include "metricmotion.h"
+#include "btcomms.h"
 
 #include "cli.h"
 
@@ -46,24 +47,24 @@ EmbeddedCli *cli;
 
 // This function is called for unknown commands
 static void on_command(const char* name, char *tokens) {
-    printf("Received unknown command: %s\r\n",name);
+    cli_printf("Received unknown command: %s\r\n",name);
 
     for (int i = 0; i < embeddedCliGetTokenCount(tokens); ++i) {
-        printf("Arg %d : %s\r\n", i, embeddedCliGetToken(tokens, i + 1));
+        cli_printf("Arg %d : %s\r\n", i, embeddedCliGetToken(tokens, i + 1));
     }
 }
 
 static void on_about(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
-    printf("About:\r\n");
-    printf("  Valiant Turtle 2\r\n");
-    printf("  (c) 2024 Simon Inns - GPL Open-Source\r\n");
-    printf("\r\n");
+    cli_printf("About:\r\n");
+    cli_printf("  Valiant Turtle 2\r\n");
+    cli_printf("  (c) 2024 Simon Inns - GPL Open-Source\r\n");
+    cli_printf("\r\n");
 }
 
 void on_clear_cli(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
-    printf("\33[2J\r\n");
+    cli_printf("\33[2J\r\n");
 }
 
 static void on_power(EmbeddedCli *cli, char *args, void *context) {
@@ -73,10 +74,10 @@ static void on_power(EmbeddedCli *cli, char *args, void *context) {
     float voltage = ina260_read_bus_voltage();
     float power = ina260_read_power();
 
-    printf("INA260 Power information:\r\n");
-    printf("  Current: %.2f mA\r\n", current);
-    printf("  Bus voltage: %.2f mV\r\n", voltage);
-    printf("  Power: %.2f mW\r\n", power);
+    cli_printf("INA260 Power information:\r\n");
+    cli_printf("  Current: %.2f mA\r\n", current);
+    cli_printf("  Bus voltage: %.2f mV\r\n", voltage);
+    cli_printf("  Power: %.2f mW\r\n", power);
 }
 
 void on_pen(EmbeddedCli *cli, char *args, void *context) {
@@ -86,21 +87,21 @@ void on_pen(EmbeddedCli *cli, char *args, void *context) {
     if (arg1 != NULL) {
         // Argument received
         if (!strcmp(arg1, "up")) {
-            printf("Moving the pen servo to the up position\r\n");
+            cli_printf("Moving the pen servo to the up position\r\n");
             pen_up();
         } else if (!strcmp(arg1, "down")) {
-            printf("Moving the pen servo to the down position\r\n");
+            cli_printf("Moving the pen servo to the down position\r\n");
             pen_down();
         } else if (!strcmp(arg1, "off")) {
-            printf("Turning the pen servo off\r\n");
+            cli_printf("Turning the pen servo off\r\n");
             pen_off();
         } else {
             // Invalid argument
-            printf("Pen command invalid argument - Usage: pen [up/down/off]\r\n");
+            cli_printf("Pen command invalid argument - Usage: pen [up/down/off]\r\n");
         }
     } else {
         // Missing argument
-        printf("Pen command missing argument - Usage: pen [up/down/off]\r\n");
+        cli_printf("Pen command missing argument - Usage: pen [up/down/off]\r\n");
     }
 }
 
@@ -108,14 +109,14 @@ void on_stepper_enable(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
 
     stepconf_set_enable(true);
-    printf("Stepper motors enabled\r\n");
+    cli_printf("Stepper motors enabled\r\n");
 }
 
 void on_stepper_disable(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
 
     stepconf_set_enable(false);
-    printf("Stepper motors disabled\r\n");
+    cli_printf("Stepper motors disabled\r\n");
 }
 
 void on_stepper_set(EmbeddedCli *cli, char *args, void *context) {
@@ -124,8 +125,8 @@ void on_stepper_set(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 4 arguments...
     if (embeddedCliGetTokenCount(args) != 4) {
         // Missing argument
-        printf("stepper-set command missing argument(s)\r\n");
-        printf("  Usage: stepper-set [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]\r\n");
+        cli_printf("stepper-set command missing argument(s)\r\n");
+        cli_printf("  Usage: stepper-set [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]\r\n");
         return;
     }
 
@@ -136,7 +137,7 @@ void on_stepper_set(EmbeddedCli *cli, char *args, void *context) {
     int32_t updatesPerSecond = atoi(embeddedCliGetToken(args, 4));
 
     stepconf_set_parameters(accSpsps, minimumSps, maximumSps, updatesPerSecond);
-    printf("Stepper parameters set\r\n");
+    cli_printf("Stepper parameters set\r\n");
 }
 
 void on_stepper_show(EmbeddedCli *cli, char *args, void *context) {
@@ -144,11 +145,11 @@ void on_stepper_show(EmbeddedCli *cli, char *args, void *context) {
     stepconf_t stepconf;
 
     stepconf = stepconf_get_parameters();
-    printf("Stepper parameters:\r\n");
-    printf("  Acceleration in Steps per Second per Second = %d\r\n", stepconf.accSpsps);
-    printf("  Minimum Steps per Second = %d\r\n", stepconf.minimumSps);
-    printf("  Maximum Steps per Second = %d\r\n", stepconf.maximumSps);
-    printf("  Updates per second = %d\r\n", stepconf.updatesPerSecond);
+    cli_printf("Stepper parameters:\r\n");
+    cli_printf("  Acceleration in Steps per Second per Second = %d\r\n", stepconf.accSpsps);
+    cli_printf("  Minimum Steps per Second = %d\r\n", stepconf.minimumSps);
+    cli_printf("  Maximum Steps per Second = %d\r\n", stepconf.maximumSps);
+    cli_printf("  Updates per second = %d\r\n", stepconf.updatesPerSecond);
 }
 
 void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context) {
@@ -157,8 +158,8 @@ void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 1 arguments...
     if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
-        printf("stepper-dryrun command missing argument(s)\r\n");
-        printf("  Usage: stepper-dryrun [required number of steps]\r\n");
+        cli_printf("stepper-dryrun command missing argument(s)\r\n");
+        cli_printf("  Usage: stepper-dryrun [required number of steps]\r\n");
         return;
     }
 
@@ -166,7 +167,7 @@ void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context) {
     int32_t requiredSteps = atoi(embeddedCliGetToken(args, 1));
     if (requiredSteps < 1) {
         // Invalid argument
-        printf("stepper-dryrun command invalid argument - You must specify 1 or more steps\r\n");
+        cli_printf("stepper-dryrun command invalid argument - You must specify 1 or more steps\r\n");
         return;
     }
 
@@ -179,8 +180,8 @@ void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 1 argument...
     if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
-        printf("stepper-run command missing argument(s)\r\n");
-        printf("  Usage: stepper-run [required number of steps]\r\n");
+        cli_printf("stepper-run command missing argument(s)\r\n");
+        cli_printf("  Usage: stepper-run [required number of steps]\r\n");
         return;
     }
 
@@ -188,11 +189,11 @@ void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
     int32_t requiredSteps = atoi(embeddedCliGetToken(args, 1));
     if (requiredSteps < 1) {
         // Invalid argument
-        printf("stepper-run command invalid argument - You must specify 1 or more steps\r\n");
+        cli_printf("stepper-run command invalid argument - You must specify 1 or more steps\r\n");
         return;
     }
 
-    printf("Running stepper for %d steps\r\n", requiredSteps);
+    cli_printf("Running stepper for %d steps\r\n", requiredSteps);
     stepconf_run(requiredSteps);
 }
 
@@ -203,20 +204,20 @@ void on_forwards(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 1 arguments...
     if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
-        printf("forward command missing argument\r\n");
-        printf("  Usage: forwards [number of millimeters]\r\n");
+        cli_printf("forward command missing argument\r\n");
+        cli_printf("  Usage: forwards [number of millimeters]\r\n");
         return;
     }
 
     int32_t millimeters = atoi(embeddedCliGetToken(args, 1));
     if (millimeters < 1) {
         // Invalid argument
-        printf("forwards command invalid argument - You must specify 1 or more millimeters\r\n");
+        cli_printf("forwards command invalid argument - You must specify 1 or more millimeters\r\n");
         return;
     }
 
     // Perform command
-    printf("Moving forwards %d millimeters\r\n", millimeters);
+    cli_printf("Moving forwards %d millimeters\r\n", millimeters);
     metricmotion_forwards(millimeters);
 }
 
@@ -226,20 +227,20 @@ void on_backwards(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 1 arguments...
     if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
-        printf("backward command missing argument\r\n");
-        printf("  Usage: backwards [number of millimeters]\r\n");
+        cli_printf("backward command missing argument\r\n");
+        cli_printf("  Usage: backwards [number of millimeters]\r\n");
         return;
     }
 
     int32_t millimeters = atoi(embeddedCliGetToken(args, 1));
     if (millimeters < 1) {
         // Invalid argument
-        printf("backwards command invalid argument - You must specify 1 or more millimeters\r\n");
+        cli_printf("backwards command invalid argument - You must specify 1 or more millimeters\r\n");
         return;
     }
 
     // Perform command
-    printf("Moving backwards %d millimeters\r\n", millimeters);
+    cli_printf("Moving backwards %d millimeters\r\n", millimeters);
     metricmotion_backwards(millimeters);
 }
 
@@ -249,20 +250,20 @@ void on_left(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 1 arguments...
     if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
-        printf("left command missing argument\r\n");
-        printf("  Usage: left [number of degrees]\r\n");
+        cli_printf("left command missing argument\r\n");
+        cli_printf("  Usage: left [number of degrees]\r\n");
         return;
     }
 
     int32_t degrees = atoi(embeddedCliGetToken(args, 1));
     if (degrees < 1) {
         // Invalid argument
-        printf("left command invalid argument - You must specify 1 or more degrees\r\n");
+        cli_printf("left command invalid argument - You must specify 1 or more degrees\r\n");
         return;
     }
 
     // Perform command
-    printf("Turning left %d degrees\r\n", degrees);
+    cli_printf("Turning left %d degrees\r\n", degrees);
     metricmotion_left(degrees);
 }
 
@@ -272,20 +273,20 @@ void on_right(EmbeddedCli *cli, char *args, void *context) {
     // Ensure we have 1 arguments...
     if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
-        printf("right command missing argument\r\n");
-        printf("  Usage: right [number of degrees]\r\n");
+        cli_printf("right command missing argument\r\n");
+        cli_printf("  Usage: right [number of degrees]\r\n");
         return;
     }
 
     int32_t degrees = atoi(embeddedCliGetToken(args, 1));
     if (degrees < 1) {
         // Invalid argument
-        printf("right command invalid argument - You must specify 1 or more degrees\r\n");
+        cli_printf("right command invalid argument - You must specify 1 or more degrees\r\n");
         return;
     }
 
     // Perform command
-    printf("Turning right %d degrees\r\n", degrees);
+    cli_printf("Turning right %d degrees\r\n", degrees);
     metricmotion_right(degrees);
 }
 
@@ -444,11 +445,11 @@ void cli_initialise() {
     embeddedCliAddBinding(cli, right_binding);
 
     // Show initial CLI instructions to user
-    printf("\r\n\r\nWelcome to the Valiant Turtle 2 CLI\r\n");
-    printf("  Type \"help\" for a list of commands\r\n");
-    printf("  Use <Backspace> to remove characters and <TAB> to autocomplete a command\r\n");
-    printf("  Use the up and down arrow keys to recall and scroll through previous commands\r\n");
-    printf("\r\n");
+    cli_printf("\r\n\r\nWelcome to the Valiant Turtle 2 CLI\r\n");
+    cli_printf("  Type \"help\" for a list of commands\r\n");
+    cli_printf("  Use <Backspace> to remove characters and <TAB> to autocomplete a command\r\n");
+    cli_printf("  Use the up and down arrow keys to recall and scroll through previous commands\r\n");
+    cli_printf("\r\n");
 
     // Flush the input buffer
     while(getchar_timeout_us(0) != PICO_ERROR_TIMEOUT);
@@ -460,12 +461,48 @@ void cli_initialise() {
 // Embedded CLI library requires a write char function
 static void write_char_fn(EmbeddedCli *embeddedCli, char c) {
     (void)embeddedCli;
-    putchar(c);
+
+    if (!btcomms_is_channel_open(0)) putchar(c);
+    else btcomms_putchar(0, c);
+}
+
+// CLI printf function
+int cli_printf(const char *fmt, ...) {
+    va_list args;
+    int ret = 0;
+
+    if (!btcomms_is_channel_open(0)) {
+        // The BT SPP channel is closed, so we send cli to stdout
+        va_start(args, fmt);
+        ret = vfprintf(stdout, fmt, args);
+        va_end(args);
+    } else {
+        // The BT SPP channel is open, so we send debug to channel 1
+        va_start(args, fmt);
+        char stringBuffer[256];
+        ret = vsprintf(stringBuffer, fmt, args);
+        va_end(args);
+
+        for (int i=0; i < strlen(stringBuffer); i++) {
+            if (stringBuffer[i] == '\n') btcomms_putchar(1, '\r');
+            btcomms_putchar(0, stringBuffer[i]);
+        }
+    }    
+
+    return ret;
 }
 
 // Process any waiting characters into the CLI
 void cli_process() {
-    int c = getchar_timeout_us(0);
+    int c = PICO_ERROR_TIMEOUT;
+
+    // If the Bluetooth SPP channel is closed, use stdin
+    if (!btcomms_is_channel_open(0)) {
+        c = getchar_timeout_us(0);
+    } else {
+        c = btcomms_getchar(0);
+    }
+
     if (c != PICO_ERROR_TIMEOUT) {
         embeddedCliReceiveChar(cli, c);
         embeddedCliProcess(cli);

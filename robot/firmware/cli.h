@@ -48,7 +48,7 @@ void on_left(EmbeddedCli *cli, char *args, void *context);
 void on_right(EmbeddedCli *cli, char *args, void *context);
 
 static void write_char_fn(EmbeddedCli *embeddedCli, char c);
-//void cli_printf(const char *fmt, ...);
+int cli_printf(const char *fmt, ...);
 static void on_command_fn(EmbeddedCli *embeddedCli, CliCommand *command);
 void cli_initialise();
 void cli_process();
