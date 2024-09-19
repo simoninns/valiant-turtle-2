@@ -34,20 +34,38 @@ module charger_lid()
 {
     move([0,0,47.5]) {
         difference() {
-            cuboid([110,74,3], chamfer=1, edges=EDGES_TOP+EDGES_Z_ALL);
+            move([0,-2,0]) cuboid([110,78,3], chamfer=1, edges=EDGES_TOP+EDGES_Z_ALL);
             move([0,-12 + 8,0]) xrot(180) battery_access_hole_top();
 
             // Screw head recess
             move([+((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=3, d=6);
-            move([+((110/2) - 4),-((74/2) - 4),3 - 2]) cyl(h=3, d=6);
+            move([+((110/2) - 4),-((78/2) - 2),3 - 2]) cyl(h=3, d=6);
             move([-((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=3, d=6);
-            move([-((110/2) - 4),-((74/2) - 4),3 - 2]) cyl(h=3, d=6);
+            move([-((110/2) - 4),-((78/2) - 2),3 - 2]) cyl(h=3, d=6);
 
             // Screw holes
             move([+((110/2) - 4),+((74/2) - 4),3 - 3]) cyl(h=6, d=3.25);
-            move([+((110/2) - 4),-((74/2) - 4),3 - 3]) cyl(h=6, d=3.25);
+            move([+((110/2) - 4),-((78/2) - 2),3 - 3]) cyl(h=6, d=3.25);
             move([-((110/2) - 4),+((74/2) - 4),3 - 3]) cyl(h=6, d=3.25);
-            move([-((110/2) - 4),-((74/2) - 4),3 - 3]) cyl(h=6, d=3.25);
+            move([-((110/2) - 4),-((78/2) - 2),3 - 3]) cyl(h=6, d=3.25);
+
+            // Light pipes
+            move([26.125,-34,-6]) cyl(h=28,d=1.75);
+            move([26.125 -2 ,-34,-6]) cyl(h=28,d=1.75);
+        }
+
+        // Light pipe support
+        difference() {
+            move([26.125 - 1,-34,-7.5]) cuboid([6,4,16], chamfer=1, edges=EDGES_Z_ALL);
+            hull() {
+                move([26.125,-34,-6]) cyl(h=28,d=1.75);
+                move([26.125,-33,-6]) cyl(h=28,d=1.75);
+            }
+            hull() {
+                move([26.125 -2 ,-34,-6]) cyl(h=28,d=1.75);
+                move([26.125 -2 ,-33,-6]) cyl(h=28,d=1.75);
+            }
+            move([26.125 - 1,-34 + 3,-7.5]) cuboid([7,4,17]);
         }
     }
 }
@@ -56,9 +74,9 @@ module charger_lid_screws()
 {
     move([0,0,48]) {
         move([+((110/2) - 4),+((74/2) - 4),0]) m3x10_screw();
-        move([+((110/2) - 4),-((74/2) - 4),0]) m3x10_screw();
+        move([+((110/2) - 4),-((78/2) - 2),0]) m3x10_screw();
         move([-((110/2) - 4),+((74/2) - 4),0]) m3x10_screw();
-        move([-((110/2) - 4),-((74/2) - 4),0]) m3x10_screw();
+        move([-((110/2) - 4),-((78/2) - 2),0]) m3x10_screw();
     }
 }
 
@@ -67,7 +85,7 @@ module render_charger_lid(toPrint)
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) charger_lid();
     } else {
-        charger_lid();
+        move([0,0,49]) xrot(180) charger_lid();
     }
 }
 

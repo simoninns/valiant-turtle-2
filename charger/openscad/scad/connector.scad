@@ -121,7 +121,7 @@ module render_connector_back(toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) connector_back();
     } else {
-        connector_back();
+        move([23,37,25.5]) xrot(90) connector_back();
     }
 }
 
@@ -130,6 +130,6 @@ module render_connector_front(toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) connector_front();
     } else {
-        connector_front();
+        move([23,-33,-16.5]) xrot(-90) connector_front();
     }
 }

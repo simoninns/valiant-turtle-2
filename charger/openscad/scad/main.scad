@@ -33,6 +33,7 @@ include <../../../robot/openscad/scad/battery.scad>
 include <base.scad>
 include <lid.scad>
 include <connector.scad>
+include <pcb.scad>
 
 // Rendering resolution
 $fn=100;
@@ -49,6 +50,7 @@ display_connector_back = "Yes"; // [Yes, No]
 display_charger_lid_screws = "Yes"; // [Yes, No]
 
 display_battery = "Yes"; // [Yes, No]
+display_pcb = "Yes"; // [Yes, No]
 
 // Render the required items
 module main() {
@@ -63,6 +65,7 @@ module main() {
 
     d_charger_lid_screws = (display_charger_lid_screws == "Yes") ? true:false;
     d_battery = (display_battery == "Yes") ? true:false;
+    d_pcb = (display_pcb == "Yes") ? true:false;
 
     if (d_charger_base) render_charger_base(toPrint);
     if (d_charger_lid) render_charger_lid(toPrint);
@@ -81,6 +84,8 @@ module main() {
             }
         }
     }
+
+    if (d_pcb) render_pcb(toPrint);
 }
 
 main();

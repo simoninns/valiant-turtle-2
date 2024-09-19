@@ -31,20 +31,38 @@ include <screws.scad>
 include <bullet_connector.scad>
 include <battery_cutout.scad>
 
+module usbc_hole()
+{
+    hull() {
+        move([0,+(2.75+0.125),0]) xcyl(h=7,d=3.5);
+        move([0,-(2.75+0.125),0]) xcyl(h=7,d=3.5);
+    }
+}
+
 module charger_base()
 {
     move([0,0,33]) {
         difference() {
-            cuboid([110,74,26], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
-            move([0,0,3]) cuboid([110-4,74-4,26], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
+            move([0,-2,0]) cuboid([110,78,26], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
+            move([0,-2,3]) cuboid([110-4,78-4,26], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
             move([0,-12 + 8,-10]) xrot(180) battery_access_hole_bottom();
+
+            move([54,-28,-0.5]) usbc_hole();
+            
+            // Remove material around USB-C connector and PCB
+            move([48 + 1,-28,0]) cuboid([10,13,6], chamfer=1);
+            move([48 + 1,-28,-2.5]) cuboid([10,20,4], chamfer=1);
         }
 
         // Interior wall on connector side
         difference() {
             move([0,-17,0]) cuboid([108,2,26]);
             move([-23.5,-17.5,2]) cuboid([20.25,6,30]);
+            
+            // Clearance to all insertion of the M2.5 threaded insert
+            move([18.75,-34.25 + 13.5,0]) cyl(h=30,d=8);
         }
+        
 
         // Interior wall on back side
         move([0,34,0]) cuboid([96,2,26]);
@@ -53,26 +71,42 @@ module charger_base()
         move([0,0,1]) difference() {
             union() {
                 move([+((110/2) - 4),+((74/2) - 4),0]) cyl(h=24, d=8);
-                move([+((110/2) - 4),-((74/2) - 4),0]) cyl(h=24, d=8);
+
+                // Need to allow some PCB clearance
+                hull() {
+                    move([+((110/2) - 4),-((78/2) - 2),8]) cyl(h=8, d=8);
+                    move([+((110/2) - 4) + 2,-((78/2) - 2) - 2,-2]) cyl(h=1, d=2);
+                }
+                
                 move([-((110/2) - 4),+((74/2) - 4),0]) cyl(h=24, d=8);
-                move([-((110/2) - 4),-((74/2) - 4),0]) cyl(h=24, d=8);
+                move([-((110/2) - 4),-((78/2) - 2),0]) cyl(h=24, d=8);
             }
 
             move([+((110/2) - 4),+((74/2) - 4),0]) cyl(h=28, d=3);
-            move([+((110/2) - 4),-((74/2) - 4),0]) cyl(h=28, d=3);
+            move([+((110/2) - 4),-((78/2) - 2),9]) cyl(h=8, d=3);
             move([-((110/2) - 4),+((74/2) - 4),0]) cyl(h=28, d=3);
-            move([-((110/2) - 4),-((74/2) - 4),0]) cyl(h=28, d=3);
+            move([-((110/2) - 4),-((78/2) - 2),0]) cyl(h=28, d=3);
 
             // Threaded inserts
-            // move([0,0,27 - 6]) {
-            //     move([+((110/2) - 5),+((80/2) - 5),0]) cyl(h=8, d=4);
-            //     move([+((110/2) - 5),-((80/2) - 5),0]) cyl(h=8, d=4);
-            //     move([-((110/2) - 5),+((80/2) - 5),0]) cyl(h=8, d=4);
-            //     move([-((110/2) - 5),-((80/2) - 5),0]) cyl(h=8, d=4);
-            // }
+            move([0,0,17 - 7]) {
+                move([+((110/2) - 4),+((74/2) - 4),0]) cyl(h=8, d=4);
+                move([+((110/2) - 4),-((78/2) - 2),0]) cyl(h=8, d=4);
+                move([-((110/2) - 4),+((74/2) - 4),0]) cyl(h=8, d=4);
+                move([-((110/2) - 4),-((78/2) - 2),0]) cyl(h=8, d=4);
+            }
         } 
-    }
 
+        // PCB mounting columns for M2.5 threaded inserts
+        difference() {
+            union() {
+                move([18.25,-35,-7]) cyl(h=6,d=6);
+                move([18.25,-34.25 + 13.5,-7]) cyl(h=6,d=6);
+            }
+
+            move([18.75,-35,-7]) cyl(h=8,d=3.5);
+            move([18.75,-34.25 + 13.5,-7]) cyl(h=8,d=3.5);
+        }
+    }
     
     difference() {
         union() {
@@ -114,7 +148,7 @@ module render_charger_base(toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) charger_base();
     } else {
-        charger_base();
+        move([0,0,-20]) charger_base();
     }
 }
 
