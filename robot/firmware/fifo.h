@@ -27,8 +27,9 @@
 #ifndef FIFO_H_
 #define FIFO_H_
 
-#define IN_BUFFER_SIZE 512
-#define OUT_BUFFER_SIZE 2048
+// Define FIFO buffer sizes in KBytes
+#define IN_BUFFER_KSIZE 1
+#define OUT_BUFFER_KSIZE 4
 
 // Define the required number of buffers
 #define NUMBER_OF_BUFFERS 2
@@ -42,10 +43,10 @@ typedef struct {
 void fifo_initialise(void);
 
 char fifo_in_read(uint16_t buffer_number);
-char fifo_in_write(uint16_t buffer_number,char val);
+bool fifo_in_write(uint16_t buffer_number,char val);
 
 char fifo_out_read(uint16_t buffer_number);
-char fifo_out_write(uint16_t buffer_number, char val);
+bool fifo_out_write(uint16_t buffer_number, char val);
 
 bool fifo_is_in_empty(uint16_t buffer_number);
 bool fifo_is_out_empty(uint16_t buffer_number);

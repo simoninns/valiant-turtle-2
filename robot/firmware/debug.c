@@ -41,16 +41,17 @@ int debug_printf(const char *fmt, ...) {
     va_list args;
     int ret = 0;
 
-    if (!btcomms_is_channel_open(1)) {
-        // The BT SPP channel is closed, so we send debug to stderr
-        va_start(args, fmt);
-        ret = vfprintf(stderr, fmt, args);
-        va_end(args);
-    } else {
+    // Send debug to stderr
+    va_start(args, fmt);
+    ret = vfprintf(stderr, fmt, args);
+    va_end(args);
+    
+    // If BT SPP channel 1 is open, copy the debug to it as well
+    if (btcomms_is_channel_open(1)) {
         // The BT SPP channel is open, so we send debug to channel 1
         va_start(args, fmt);
         char stringBuffer[256];
-        ret = vsprintf(stringBuffer, fmt, args);
+        vsprintf(stringBuffer, fmt, args);
         va_end(args);
 
         for (int i=0; i < strlen(stringBuffer); i++) {

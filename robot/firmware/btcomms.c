@@ -190,8 +190,6 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
                     if (rfcomm_server_channel == -1) {
                         debug_printf("btcomms_packet_handler(): Error CID %u doesn't belong to any open server channel!\n", requesting_cid);
                         panic("Something bad happened to the Bluetooth stack!");
-                    } else {
-                        debug_printf("btcomms_packet_handler(): CID %u maps to server channel %u\n", requesting_cid, rfcomm_server_channel+1);
                     }
 
                     // Set the channel state to disconnected and free the send buffer memory
@@ -256,7 +254,9 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
             }
 
             // Place the incoming characters into the associated channel's input FIFO
-            for (int i=0; i<size; i++) fifo_in_write(rfcomm_server_channel, (char)packet[i]);
+            for (int i=0; i<size; i++) {
+                fifo_in_write(rfcomm_server_channel, (char)packet[i]);
+            }
             break;
 
         default:
@@ -311,7 +311,5 @@ int btcomms_getchar(int8_t channel)
 // Write a character to a channel's FIFO output buffer
 int btcomms_putchar(int8_t channel, char c)
 {
-    fifo_out_write(channel, c);
-
-    return 0;
+    return fifo_out_write(channel, c);;
 }

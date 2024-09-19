@@ -31,30 +31,32 @@
 #include <stdlib.h>
 
 #include "fifo.h"
-#include "debug.h"
  
 fifoBuffer_t input_buffer[NUMBER_OF_BUFFERS];
 fifoBuffer_t output_buffer[NUMBER_OF_BUFFERS];
+
+// Note: Do not use debug.h in this module - since debug requires the FIFO for output
+// to Bluetooth, it can cause a race condition and crash.  Better to simply panic()
 
 void fifo_initialise(void) {
     for (int i = 0; i < NUMBER_OF_BUFFERS; i++){
         // Initialise the input buffer
         input_buffer[i].head = 0;
         input_buffer[i].tail = 0;
-        input_buffer[i].data = malloc(sizeof(char*) * IN_BUFFER_SIZE);
+        input_buffer[i].data = malloc(sizeof(char*) * (IN_BUFFER_KSIZE * 1024));
 
         if (!input_buffer[i].data) {
-            debug_printf("fifo_initialise(): Input buffer memory allocation failed\n"); 
+            panic("fifo_initialise(): Input buffer memory allocation failed!"); 
             exit(0); 
         }
 
         // Initialise the output buffer
         output_buffer[i].head = 0;
         output_buffer[i].tail = 0;
-        output_buffer[i].data = malloc(sizeof(char*) * OUT_BUFFER_SIZE);
+        output_buffer[i].data = malloc(sizeof(char*) * (OUT_BUFFER_KSIZE * 1024));
 
         if (!output_buffer[i].data) {
-            debug_printf("fifo_initialise(): Output buffer memory allocation failed\n"); 
+            panic("fifo_initialise(): Output buffer memory allocation failed!"); 
             exit(0); 
         }
     }
@@ -63,37 +65,35 @@ void fifo_initialise(void) {
 // Reads a byte from the buffer and return 0 if buffer empty
 char fifo_in_read(uint16_t buffer_number) {
     if (input_buffer[buffer_number].head == input_buffer[buffer_number].tail) return 0;
-    input_buffer[buffer_number].tail = (input_buffer[buffer_number].tail + 1) % IN_BUFFER_SIZE;
+    input_buffer[buffer_number].tail = (input_buffer[buffer_number].tail + 1) % (IN_BUFFER_KSIZE * 1024);
     return input_buffer[buffer_number].data[input_buffer[buffer_number].tail];
 }
  
 // Writes a byte to the buffer if not full
-char fifo_in_write(uint16_t buffer_number, char val) {
+bool fifo_in_write(uint16_t buffer_number, char val) {
     if (input_buffer[buffer_number].head + 1 == input_buffer[buffer_number].tail) {
-        if (buffer_number == 0) panic("fifo_out_write(): Failure - input buffer 0 overrun\n");
-        else panic("fifo_out_write(): Failure - input buffer 1 overrun\n");
-        return 0;
+        return false;
     }
-    input_buffer[buffer_number].head = (input_buffer[buffer_number].head + 1) % IN_BUFFER_SIZE;
-    return input_buffer[buffer_number].data[input_buffer[buffer_number].head] = val;
+    input_buffer[buffer_number].head = (input_buffer[buffer_number].head + 1) % (IN_BUFFER_KSIZE * 1024);
+    input_buffer[buffer_number].data[input_buffer[buffer_number].head] = val;
+    return true;
 }
 
 // Reads a byte from the buffer and return 0 if buffer empty
 char fifo_out_read(uint16_t buffer_number) {
     if (output_buffer[buffer_number].head == output_buffer[buffer_number].tail) return 0;
-    output_buffer[buffer_number].tail = (output_buffer[buffer_number].tail + 1) % OUT_BUFFER_SIZE;
+    output_buffer[buffer_number].tail = (output_buffer[buffer_number].tail + 1) % (OUT_BUFFER_KSIZE * 1024);
     return output_buffer[buffer_number].data[output_buffer[buffer_number].tail];
 }
  
 // Writes a byte to the buffer if not full
-char fifo_out_write(uint16_t buffer_number, char val) {
+bool fifo_out_write(uint16_t buffer_number, char val) {
    if (output_buffer[buffer_number].head + 1 == output_buffer[buffer_number].tail)  {
-        if (buffer_number == 0) panic("fifo_out_write(): Failure - output buffer 0 overrun\n");
-        else panic("fifo_out_write(): Failure - output buffer 1 overrun\n");
-        return 0;
+        return false;
     }
-    output_buffer[buffer_number].head = (output_buffer[buffer_number].head + 1) % OUT_BUFFER_SIZE;
-    return output_buffer[buffer_number].data[output_buffer[buffer_number].head] = val;
+    output_buffer[buffer_number].head = (output_buffer[buffer_number].head + 1) % (OUT_BUFFER_KSIZE * 1024);
+    output_buffer[buffer_number].data[output_buffer[buffer_number].head] = val;
+    return true;
 }
 
 bool fifo_is_in_empty(uint16_t buffer_number) {
