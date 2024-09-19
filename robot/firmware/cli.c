@@ -41,7 +41,9 @@
 
 #include "cli.h"
 
+// Globals
 EmbeddedCli *cli;
+bool bluetooth_open;
 
 // ------------------------------------------------------------------------
 
@@ -445,17 +447,25 @@ void cli_initialise() {
     embeddedCliAddBinding(cli, right_binding);
 
     // Show initial CLI instructions to user
-    cli_printf("\r\n\r\nWelcome to the Valiant Turtle 2 CLI\r\n");
-    cli_printf("  Type \"help\" for a list of commands\r\n");
-    cli_printf("  Use <Backspace> to remove characters and <TAB> to autocomplete a command\r\n");
-    cli_printf("  Use the up and down arrow keys to recall and scroll through previous commands\r\n");
-    cli_printf("\r\n");
+    bluetooth_open = false;
+    cli_initial_prompt();
 
     // Flush the input buffer
     while(getchar_timeout_us(0) != PICO_ERROR_TIMEOUT);
 
     // Initial process call before triggering on keypresses
     embeddedCliProcess(cli);
+}
+
+// Show an initial prompt to the user
+void cli_initial_prompt()
+{
+    cli_printf("\r\n\r\nWelcome to the Valiant Turtle 2 CLI\r\n");
+    cli_printf("  Type \"help\" for a list of commands\r\n");
+    cli_printf("  Use <Backspace> to remove characters and <TAB> to autocomplete a command\r\n");
+    cli_printf("  Use the up and down arrow keys to recall and scroll through previous commands\r\n");
+    cli_printf("\r\n");
+    cli_printf("VT2> ");
 }
 
 // Embedded CLI library requires a write char function
@@ -496,9 +506,17 @@ int cli_printf(const char *fmt, ...) {
 void cli_process() {
     int c = PICO_ERROR_TIMEOUT;
 
+    // This is the ensure the user sees the initial prompt when
+    // connecting via bluetooth SPP
+    if (btcomms_is_channel_open(0) && bluetooth_open == false) {
+        cli_initial_prompt();
+        bluetooth_open = true;
+    }
+
     // If the Bluetooth SPP channel is closed, use stdin
     if (!btcomms_is_channel_open(0)) {
         c = getchar_timeout_us(0);
+        bluetooth_open = false;
     } else {
         c = btcomms_getchar(0);
     }
