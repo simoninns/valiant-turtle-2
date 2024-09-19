@@ -60,7 +60,7 @@ module charger_base()
             move([-23.5,-17.5,2]) cuboid([20.25,6,30]);
             
             // Clearance to all insertion of the M2.5 threaded insert
-            move([18.75,-34.25 + 13.5,0]) cyl(h=30,d=8);
+            move([18.25,-34.25 + 13.5,0]) cyl(h=30,d=8);
         }
         
 
@@ -103,8 +103,8 @@ module charger_base()
                 move([18.25,-34.25 + 13.5,-7]) cyl(h=6,d=6);
             }
 
-            move([18.75,-35,-7]) cyl(h=8,d=3.5);
-            move([18.75,-34.25 + 13.5,-7]) cyl(h=8,d=3.5);
+            move([18.25,-35,-7]) cyl(h=8,d=3.5);
+            move([18.25,-34.25 + 13.5,-7]) cyl(h=8,d=3.5);
         }
     }
     
