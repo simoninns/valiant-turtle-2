@@ -34,6 +34,7 @@ include <base.scad>
 include <lid.scad>
 include <connector.scad>
 include <pcb.scad>
+include <light_pipe.scad>
 
 // Rendering resolution
 $fn=100;
@@ -46,9 +47,9 @@ display_charger_base = "Yes"; // [Yes, No]
 display_charger_lid = "Yes"; // [Yes, No]
 display_connector_front = "Yes"; // [Yes, No]
 display_connector_back = "Yes"; // [Yes, No]
+display_light_pipe = "Yes"; // [Yes, No]
 
 display_charger_lid_screws = "Yes"; // [Yes, No]
-
 display_battery = "Yes"; // [Yes, No]
 display_pcb = "Yes"; // [Yes, No]
 
@@ -62,6 +63,7 @@ module main() {
     d_charger_lid = (display_charger_lid == "Yes") ? true:false;
     d_connector_front = (display_connector_front == "Yes") ? true:false;
     d_connector_back = (display_connector_back == "Yes") ? true:false;
+    d_light_pipe = (display_light_pipe == "Yes") ? true:false;
 
     d_charger_lid_screws = (display_charger_lid_screws == "Yes") ? true:false;
     d_battery = (display_battery == "Yes") ? true:false;
@@ -71,6 +73,7 @@ module main() {
     if (d_charger_lid) render_charger_lid(toPrint);
     if (d_connector_front) render_connector_front(toPrint);
     if (d_connector_back) render_connector_back(toPrint);
+    if (d_light_pipe) render_light_pipe(toPrint);
 
     if (d_charger_lid_screws) render_charger_lid_screws(toPrint);
 
