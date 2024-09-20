@@ -26,27 +26,27 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-// M3x5.7x4.6 threaded insert profile (CNC Kitchen)
-// Blind hole
-module insertM3x57()
-{
-    move([0,0,-4]) difference() {
-        cyl(h=8,d=6);
-        move([0,0,8 - 5]) cyl(h=1,d=4.5);
-        move([0,0,8 - 7]) cyl(h=8,d=4);
-        move([0,0,3.5]) cyl(h=2,d=4+1, chamfer1=1);
-    }
-}
+// // M3x5.7x4.6 threaded insert profile (CNC Kitchen)
+// // Blind hole
+// module insertM3x57()
+// {
+//     move([0,0,-4]) difference() {
+//         cyl(h=8,d=6);
+//         move([0,0,8 - 5]) cyl(h=1,d=4.5);
+//         move([0,0,8 - 7]) cyl(h=8,d=4);
+//         move([0,0,3.5]) cyl(h=2,d=4+1, chamfer1=1);
+//     }
+// }
 
-// M3x5.7x4.6 threaded insert profile (CNC Kitchen)
-// Through hole
-module insertM3x57_th()
-{
-    difference() {
-        insertM3x57();
-        move([0,0,-3.1 - 4]) cyl(h=2,d=3.25);
-    }
-}
+// // M3x5.7x4.6 threaded insert profile (CNC Kitchen)
+// // Through hole
+// module insertM3x57_th()
+// {
+//     difference() {
+//         insertM3x57();
+//         move([0,0,-3.1 - 4]) cyl(h=2,d=3.25);
+//     }
+// }
 
 // M3x10mm Philips head screw
 module m3x10_screw()

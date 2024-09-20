@@ -168,21 +168,11 @@ module front_screw_mount()
             }
 
             // Hole for threaded insert
-            move([0,-2,0]) zcyl(h=12, d=5);
+            move([0,-2,0]) zcyl(h=12, d=4);
 
             move([6,-6,-2]) xrot(45) zrot(28) cuboid([15,4,14]);
         xflip() move([6,-6,-2]) xrot(45) zrot(28) cuboid([15,4,14]);
         }
-
-        // Threaded insert
-        move([0,-2,0]) difference() {
-            move([0,0,-5]) xrot(180) insertM3x57();
-            
-            // M3 Screw clearance
-            move([0,0,-5]) xrot(180) zcyl(h=18, d=3.25);
-        }
-
-        
     }
 }
 
@@ -226,7 +216,7 @@ module front_panels()
                 }
 
                 // Hole for threaded insert
-                move([0,-93 + 4 - 1.5,23 - 9]) zcyl(h=12, d=5);
+                move([0,-93 + 4 - 1.5,23 - 9]) zcyl(h=12, d=4);
                 
                 // Head cutout
                 headCutout();
@@ -237,8 +227,6 @@ module front_panels()
         move([0,0,-29]) cuboid([200,200,40]);
     }
 
-    
-    
     front_screw_mount();
 }
 
@@ -451,15 +439,7 @@ module back_screw_mount()
         }
 
         // Hole for threaded insert
-        move([0,0,-1]) zcyl(h=9, d=5);
-    }
-
-    // Threaded insert
-    difference() {
-        move([0,0,-5]) xrot(180) insertM3x57();
-        
-        // M3 Screw clearance
-        move([0,0,-5]) xrot(180) zcyl(h=18, d=3.25);
+        move([0,0,-1]) zcyl(h=9, d=4);
     }
 }
 
