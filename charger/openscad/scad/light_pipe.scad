@@ -28,8 +28,12 @@ use <BOSL/shapes.scad>
 
 module light_pipe()
 {
-    cuboid([2,2,1], chamfer=0.5, edges=EDGES_TOP);
-    move([0.25,0,-8.5]) cuboid([1.5,1.5,17]);
+    move([-0.5,0,0]) cuboid([3,3,2], chamfer=0.75, edges=EDGES_TOP);
+
+    hull() {
+    move([-0.0,0,-8]) cuboid([2,3,15]);
+    move([0.5,0,-16.5]) cuboid([1,2,1]);
+    }
 }
 
 module render_light_pipe(toPrint)

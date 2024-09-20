@@ -44,8 +44,20 @@ module charger_base()
     move([0,0,33]) {
         // Main body
         difference() {
-            move([0,-2,0]) cuboid([110,78,26], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
-            move([0,-2,3]) cuboid([110-4,78-4,26], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
+            union() {
+                difference() {
+                    move([0,-2,0]) cuboid([110,78,26], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
+                    move([0,-2,3]) cuboid([110-4,78-4,26], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
+                }
+
+                // Guides to keep the battery sliding in straight
+                move([52,26.5,1]) cuboid([6,7,24]);
+                move([52,-9.5,1]) cuboid([6,7,24]);
+
+                xflip() move([52,26.5,1]) cuboid([6,7,24]);
+                xflip() move([52,-9.5,1]) cuboid([6,7,24]);
+            }
+            
             move([0,-12 + 8,-10]) xrot(180) battery_access_hole_bottom();
 
             move([54,-28,-0.5]) usbc_hole();

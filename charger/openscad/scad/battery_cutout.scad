@@ -58,12 +58,12 @@ module battery_access_hole_bottom()
 
     // Screw columns
     hull() {
-        move([+45.5,5.5,-1.5]) cyl(h=12,d=8.5);
-        move([-45.5,5.5,-1.5]) cyl(h=12,d=8.5);
+        move([+45.5,5.5,-1.5]) cyl(h=60,d=8.5);
+        move([-45.5,5.5,-1.5]) cyl(h=60,d=8.5);
     }
     hull() {
-        move([+45.5,-5.5 - 25,-1.5]) cyl(h=12,d=8.5);
-        move([-45.5,-5.5 - 25,-1.5]) cyl(h=12,d=8.5);
+        move([+45.5,-5.5 - 25,-1.5]) cyl(h=60,d=8.5);
+        move([-45.5,-5.5 - 25,-1.5]) cyl(h=60,d=8.5);
     }
 
     // Trim the edges for easier insertion
