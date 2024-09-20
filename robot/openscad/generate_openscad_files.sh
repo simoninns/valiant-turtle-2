@@ -16,10 +16,14 @@ echo "  shell.stl"
 openscad -o ./stl/shell.stl -D 'for_printing="Printing"' -D 'display_shell="Yes"' ./scad/main.scad
 echo "  shell_dot.stl"
 openscad -o ./stl/shell_dot.stl -D 'for_printing="Printing"' -D 'display_shell_dot="Yes"' ./scad/main.scad
-echo "  motor_bay.stl"
-openscad -o ./stl/motor_bay.stl -D 'for_printing="Printing"' -D 'display_motor_bay="Yes"' ./scad/main.scad
-echo "  motor_mounts.stl"
-openscad -o ./stl/motor_mounts.stl -D 'for_printing="Printing"' -D 'display_motor_mounts="Yes"' ./scad/main.scad
+echo "  motor_bay_left.stl"
+openscad -o ./stl/motor_bay_left.stl -D 'for_printing="Printing"' -D 'display_motor_bay_left="Yes"' ./scad/main.scad
+echo "  motor_bay_right.stl"
+openscad -o ./stl/motor_bay_right.stl -D 'for_printing="Printing"' -D 'display_motor_bay_right="Yes"' ./scad/main.scad
+echo "  motor_mount_left.stl"
+openscad -o ./stl/motor_mount_left.stl -D 'for_printing="Printing"' -D 'display_motor_mount_left="Yes"' ./scad/main.scad
+echo "  motor_mount_right.stl"
+openscad -o ./stl/motor_mount_right.stl -D 'for_printing="Printing"' -D 'display_motor_mount_right="Yes"' ./scad/main.scad
 echo "  wheels.stl"
 openscad -o ./stl/wheels.stl -D 'for_printing="Printing"' -D 'display_wheels="Yes"' ./scad/main.scad
 echo "  main_pcb_mounts_front.stl"

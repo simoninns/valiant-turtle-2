@@ -73,8 +73,10 @@ display_head_cover = "No"; // [Yes, No]
 display_shell_lid = "No"; // [Yes, No]
 display_shell = "No"; // [Yes, No]
 display_shell_dot = "No"; // [Yes, No]
-display_motor_bay = "No"; // [Yes, No]
-display_motor_mounts = "No"; // [Yes, No]
+display_motor_bay_left = "No"; // [Yes, No]
+display_motor_bay_right = "No"; // [Yes, No]
+display_motor_mount_left = "No"; // [Yes, No]
+display_motor_mount_right = "No"; // [Yes, No]
 display_wheels = "No"; // [Yes, No]
 display_main_pcb_mounts_front = "No"; // [Yes, No]
 display_main_pcb_mounts_back = "No"; // [Yes, No]
@@ -152,8 +154,10 @@ module main() {
     d_shell_lid = (display_shell_lid == "Yes") ? true:false;
     d_shell = (display_shell == "Yes") ? true:false;
     d_shell_dot = (display_shell_dot == "Yes") ? true:false;
-    d_motor_bay = (display_motor_bay == "Yes") ? true:false;
-    d_motor_mounts = (display_motor_mounts == "Yes") ? true:false;
+    d_motor_bay_left = (display_motor_bay_left == "Yes") ? true:false;
+    d_motor_bay_right = (display_motor_bay_right == "Yes") ? true:false;
+    d_motor_mount_left = (display_motor_mount_left == "Yes") ? true:false;
+    d_motor_mount_right = (display_motor_mount_right == "Yes") ? true:false;
     d_wheels = (display_wheels == "Yes") ? true:false;
     d_main_pcb_mounts_front = (display_main_pcb_mounts_front == "Yes") ? true:false;
     d_main_pcb_mounts_back = (display_main_pcb_mounts_back == "Yes") ? true:false;
@@ -223,8 +227,10 @@ module main() {
         if (d_shell_lid) render_shell_lid(toPrint);
         if (d_shell) render_shell(toPrint);
         if (d_shell_dot) render_shell_dot(toPrint);
-        if (d_motor_bay) render_motor_bay(toPrint);
-        if (d_motor_mounts) render_motor_mounts(toPrint);
+        if (d_motor_bay_left) render_motor_bay_left(toPrint);
+        if (d_motor_bay_right) render_motor_bay_right(toPrint);
+        if (d_motor_mount_left) render_motor_mount_left(toPrint);
+        if (d_motor_mount_right) render_motor_mount_right(toPrint);
         if (d_wheels) render_wheels(toPrint);
         if (d_main_pcb_mounts_front) render_main_pcb_mounts_front(toPrint);
         if (d_main_pcb_mounts_back) render_main_pcb_mounts_back(toPrint);

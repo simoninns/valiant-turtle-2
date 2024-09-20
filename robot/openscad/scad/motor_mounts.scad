@@ -119,16 +119,25 @@ module nema17_mount()
     }
 }
 
-module render_motor_mounts(toPrint)
+module render_motor_mount_left(toPrint)
+{
+    if (!toPrint) {
+        color([0.2,0.2,0.2,1]) {
+            xflip() move([98-4,64-35,-6]) nema17_mount();
+        }
+    } else {
+        xflip() move([0,0,7]) yrot(90) nema17_mount();
+    }
+}
+
+module render_motor_mount_right(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) {
             move([98-4,64-35,-6]) nema17_mount();
-            xflip() move([98-4,64-35,-6]) nema17_mount();
         }
     } else {
-        move([30,0,7]) yrot(90) nema17_mount();
-        xflip() move([30,0,7]) yrot(90) nema17_mount();
+        move([0,0,7]) yrot(90) nema17_mount();
     }
 }
 

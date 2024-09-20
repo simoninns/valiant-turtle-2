@@ -269,16 +269,25 @@ module motor_bay()
     }
 }
 
-module render_motor_bay(toPrint)
+module render_motor_bay_left(toPrint)
+{
+    if (!toPrint) {
+        color([0.9,0.9,0.6,1]) {
+            xflip() motor_bay();
+        }
+    } else {
+        xflip() move([-15,0,-57]) yrot(-90) motor_bay();
+    }
+}
+
+module render_motor_bay_right(toPrint)
 {
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) {
             motor_bay();
-            xflip() motor_bay();
         }
     } else {
-        move([10,0,-57]) yrot(-90) motor_bay();
-        xflip() move([10,0,-57]) yrot(-90) motor_bay();
+        move([-15,0,-57]) yrot(-90) motor_bay();
     }
 }
 
