@@ -42,6 +42,7 @@ module usbc_hole()
 module charger_base()
 {
     move([0,0,33]) {
+        // Main body
         difference() {
             move([0,-2,0]) cuboid([110,78,26], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
             move([0,-2,3]) cuboid([110-4,78-4,26], chamfer=1, edges=EDGES_BOTTOM+EDGES_Z_ALL);
@@ -62,7 +63,6 @@ module charger_base()
             // Clearance to all insertion of the M2.5 threaded insert
             move([18.25,-34.25 + 13.5,0]) cyl(h=30,d=8);
         }
-        
 
         // Interior wall on back side
         move([0,34,0]) cuboid([96,2,26]);
@@ -108,6 +108,7 @@ module charger_base()
         }
     }
     
+    // Connector support
     difference() {
         union() {
             connector_support();
@@ -115,12 +116,16 @@ module charger_base()
         }
         move([-23.5,-22 + 1.75,18]) cuboid([24-7.5,11,32+4]);
 
-        // Cabel pass-through
+        // Cable pass-through
         move([-23.5,-26.5,20]) {
             cuboid([6,4,20]);
             move([0,0,10]) yrot(45) cuboid([4.25,4.25,4.25]);
         }
     }
+
+    // Slopes to help guide batter
+    move([-53,-4.5,23]) right_triangle([9,26,8]);
+    xflip() move([-53,-4.5,23]) right_triangle([9,26,8]);
 }
 
 module connector_support()

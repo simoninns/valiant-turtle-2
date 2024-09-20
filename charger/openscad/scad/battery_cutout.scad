@@ -58,20 +58,14 @@ module battery_access_hole_bottom()
 
     // Screw columns
     hull() {
-        move([+45.5,5.5,-1.5]) cyl(h=12,d=8.25);
-        move([-45.5,5.5,-1.5]) cyl(h=12,d=8.25);
+        move([+45.5,5.5,-1.5]) cyl(h=12,d=8.5);
+        move([-45.5,5.5,-1.5]) cyl(h=12,d=8.5);
     }
     hull() {
-        move([+45.5,-5.5 - 25,-1.5]) cyl(h=12,d=8.25);
-        move([-45.5,-5.5 - 25,-1.5]) cyl(h=12,d=8.25);
+        move([+45.5,-5.5 - 25,-1.5]) cyl(h=12,d=8.5);
+        move([-45.5,-5.5 - 25,-1.5]) cyl(h=12,d=8.5);
     }
 
-    // // Remove small tabs (as they will just break anyway)
-    // move([0,-12.5,0]) cuboid([96,30,22]);
-
-    // // Clip recesses
-    // move([0,-12.5,0]) cuboid([101,25,22]);
-
-    // // Power connector cut-out
-    // move([-23.5,15.5,0]) cuboid([20.25,12.25,12]);
+    // Trim the edges for easier insertion
+    move([0,-12.5,0]) cuboid([88,28,22]);
 }
