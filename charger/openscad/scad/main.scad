@@ -43,15 +43,15 @@ $fn=100;
 for_printing = "Display"; // [Display, Printing]
 
 // Choose what to display
-display_charger_base = "Yes"; // [Yes, No]
-display_charger_lid = "Yes"; // [Yes, No]
-display_connector_front = "Yes"; // [Yes, No]
-display_connector_back = "Yes"; // [Yes, No]
-display_light_pipe = "Yes"; // [Yes, No]
+display_charger_base = "No"; // [Yes, No]
+display_charger_lid = "No"; // [Yes, No]
+display_connector_front = "No"; // [Yes, No]
+display_connector_back = "No"; // [Yes, No]
+display_light_pipe = "No"; // [Yes, No]
 
-display_charger_lid_screws = "Yes"; // [Yes, No]
-display_battery = "Yes"; // [Yes, No]
-display_pcb = "Yes"; // [Yes, No]
+display_charger_lid_screws = "No"; // [Yes, No]
+display_battery = "No"; // [Yes, No]
+display_pcb = "No"; // [Yes, No]
 
 // Render the required items
 module main() {
