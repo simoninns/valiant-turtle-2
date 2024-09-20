@@ -230,6 +230,12 @@ module male_connector_front()
             move([-9.25,0,0]) yrot(90) right_triangle([2.01, 12, 2.01], center=true);
             move([+9.25,0,0]) yrot(180) right_triangle([2.01, 12, 2.01], center=true);
         }
+
+        // Positive symbol
+        move([-20.5,12.25,7]) {
+            cuboid([3,1,1]);
+            cuboid([1,1,3]);
+        }
     }
 
     // Slots

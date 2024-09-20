@@ -358,6 +358,12 @@ module battery_pack_connector_cover()
             move([-23.5 + 3,23.75,4.5]) cuboid([4,10,6]);
             move([-23.5 - 3,27,6.5]) cyl(h=4,d=4);
             move([-23.5 + 3,27,6.5]) cyl(h=4,d=4);
+
+            // Positive symbol
+            move([-20.5,32.25,19]) {
+                cuboid([3,1,1]);
+                cuboid([1,1,3]);
+            }
         }
 
         // Clips

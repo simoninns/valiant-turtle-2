@@ -100,6 +100,12 @@ module male_connector_front()
             move([-9.25,0,0]) yrot(90) right_triangle([2.01, 12, 2.01], center=true);
             move([+9.25,0,0]) yrot(180) right_triangle([2.01, 12, 2.01], center=true);
         }
+
+        // Positive symbol
+        move([-20.5,12.25,7]) {
+            cuboid([3,1,1]);
+            cuboid([1,1,3]);
+        }
     }
 
     move([-23.5,13.5,17.5]) {
@@ -114,6 +120,8 @@ module male_connector_front()
         }
         move([-23.5,16,1.25]) cuboid([20.5,8,6]);
     }
+
+    
 }
 
 module render_connector_back(toPrint)
