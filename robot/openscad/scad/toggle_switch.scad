@@ -26,7 +26,7 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-include <threaded_inserts.scad>
+include <screws.scad>
 
 module toggle_switch()
 {

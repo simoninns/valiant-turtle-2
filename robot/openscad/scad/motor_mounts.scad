@@ -28,7 +28,7 @@ use <BOSL/shapes.scad>
 use <BOSL/nema_steppers.scad>
 use <BOSL/metric_screws.scad>
 
-include <threaded_inserts.scad>
+include <screws.scad>
 
 module nema17_motor_small()
 {

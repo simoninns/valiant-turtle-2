@@ -27,7 +27,7 @@ use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 use <BOSL/nema_steppers.scad>
 
-include <threaded_inserts.scad>
+include <screws.scad>
 
 module wheel_body()
 {
