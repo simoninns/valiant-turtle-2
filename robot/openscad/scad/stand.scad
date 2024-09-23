@@ -26,35 +26,67 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
+// Marker to show where the feet should be attached
+module foot_marker()
+{
+    difference() {
+        move([0,0,0]) cuboid([13,13,1]);
+        move([0,0,-1]) cuboid([11.5,11.5,3]);
+    }
+}
+
 module stand()
 {
-    move([0,-12.5,-40]) difference() {
-        union() {
-            // Central pillar
-            move([0,0,7.5]) cyl(h=19, d=42);
+    move([0,-12.5,-40]) {
+        difference() {
+            union() {
+                // Central pillar
+                difference() {
+                    hull() {
+                        move([0,0,7.5]) cyl(h=19, d=42);
+                        move([0,41.5,7.5-5]) cyl(h=19-10, d=42);
+                    }
+                }
 
-            // Spokes
-            for (rot = [0:360/3: 360-1]) {
-                hull() {
-                    zrot(rot+(360/6)) move([0,100/2,-1]) cuboid([20,100,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
-                    zrot(rot+(360/6)) move([0,20,1]) cuboid([20,2,6], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+                // Spokes
+                move([0,41.5,0]) for (rot = [0:360/3: 360-1]) {
+                    if (rot != (360/3)*1) {
+                        difference() {
+                            hull() {
+                                zrot(rot+(360/6)) move([0,100/2,-1]) cuboid([20,100,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+                                zrot(rot+(360/6)) move([0,20,1]) cuboid([20,2,6], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+                            }
+
+                            zrot(rot+(360/6)) move([0,90,-2.25]) foot_marker();
+                        }
+                    }
                 }
             }
-        }
 
-        // Threaded inserts
-        for (rot = [0:360/4: 360-1]) {
-            zrot(rot+(360/8)) move([0,14,21 - 6]) {
-                cyl(h=8, d=4);
-                cyl(h=16, d=3);
+            // Remove some material
+            hull() {
+                move([0,41.5,7.5]) cyl(h=24, d=30);
+                move([0,41.5-12,7.5]) cyl(h=24, d=30);
             }
+
+            // Threaded inserts
+            for (rot = [0:360/4: 360-1]) {
+                zrot(rot+(360/8)) move([0,14,21 - 6]) {
+                    cyl(h=8, d=4);
+                    cyl(h=16, d=3);
+                }
+            }
+
+            // Central pillar hole
+            move([0,0,10+2]) cyl(h=24, d=20);
+
+            // Gap for cable
+            move([0,12,3.5]) zrot(90) xrot(360/12) xcyl(h=12, d=6, $fn=6);
+            move([0,59,2.5]) zrot(90) xrot(360/12) xcyl(h=12, d=6, $fn=6);
+
+            // Front foot marker
+            move([0,-10,-2.25]) foot_marker();
         }
-
-        // Central pillar hole
-        move([0,0,10+4]) cyl(h=24, d=20);
-
-        // Gap for cable
-        move([0,12,6]) zrot(90) xrot(360/12) xcyl(h=24, d=6, $fn=6);
     }
 }
 
