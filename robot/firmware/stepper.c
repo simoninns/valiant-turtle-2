@@ -157,11 +157,13 @@ void stepper_set_velocity(stepper_side_t side, int32_t accSpsps, int32_t minimum
 void stepper_set_steps(stepper_side_t side, int32_t steps)
 {
     if (side == STEPPER_LEFT || side == STEPPER_BOTH) {
-        stepper_config[STEPPER_LEFT].steps_remaining = steps;
+        if (!stepper_config[STEPPER_LEFT].isBusy)stepper_config[STEPPER_LEFT].steps_remaining = steps;
+        else debug_printf("stepper_set_steps(): WARNING - Stepper left is busy... ignoring set\n");
     }
 
     if (side == STEPPER_RIGHT || side == STEPPER_BOTH) {
-        stepper_config[STEPPER_RIGHT].steps_remaining = steps;
+        if (!stepper_config[STEPPER_RIGHT].isBusy)stepper_config[STEPPER_RIGHT].steps_remaining = steps;
+        else debug_printf("stepper_set_steps(): WARNING - Stepper right is busy... ignoring set\n");
     }
 }
 

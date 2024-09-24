@@ -277,6 +277,12 @@ void on_stepper_steps(EmbeddedCli *cli, char *args, void *context) {
         }
     }
 
+    // Check that steppers aren't busy
+    if (stepper_isBusy(stepper_choice)) {
+        cli_printf("stepper-steps command cannot be used when stepper is busy! - Ignoring\n");
+        return;
+    }
+
     // Get the rest of the arguments and store as integers
     int32_t steps = atoi(embeddedCliGetToken(args, 2));
 
@@ -426,6 +432,12 @@ void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
         }
     }
 
+    // Check that steppers aren't busy
+    if (stepper_isBusy(stepper_choice)) {
+        cli_printf("stepper-run command cannot be used when stepper is busy! - Ignoring\n");
+        return;
+    }
+
     if (stepper_choice == STEPPER_LEFT || stepper_choice == STEPPER_BOTH) {
         if (stepper_get_steps(STEPPER_LEFT) != 0) {
             stepper_run(STEPPER_LEFT);
@@ -487,6 +499,12 @@ void on_metric_forwards(EmbeddedCli *cli, char *args, void *context) {
         return;
     }
 
+    // Check that steppers aren't busy
+    if (stepper_isBusy(STEPPER_BOTH)) {
+        cli_printf("metric-forwards command cannot be used when steppers are busy! - Ignoring\n");
+        return;
+    }
+
     // get the argument and store as float
     float distance_mm = atof(embeddedCliGetToken(args, 1));
 
@@ -510,6 +528,12 @@ void on_metric_backwards(EmbeddedCli *cli, char *args, void *context) {
         // Missing argument
         cli_printf("metric-backwards command missing argument(s)\r\n");
         cli_printf("  Usage: metric-backwards [distance in mm]\r\n");
+        return;
+    }
+
+    // Check that steppers aren't busy
+    if (stepper_isBusy(STEPPER_BOTH)) {
+        cli_printf("metric-backwards command cannot be used when steppers are busy! - Ignoring\n");
         return;
     }
 
@@ -539,6 +563,12 @@ void on_metric_left(EmbeddedCli *cli, char *args, void *context) {
         return;
     }
 
+    // Check that steppers aren't busy
+    if (stepper_isBusy(STEPPER_BOTH)) {
+        cli_printf("metric-left command cannot be used when steppers are busy! - Ignoring\n");
+        return;
+    }
+
     // get the argument and store as float
     float degrees = atof(embeddedCliGetToken(args, 1));
 
@@ -562,6 +592,12 @@ void on_metric_right(EmbeddedCli *cli, char *args, void *context) {
         // Missing argument
         cli_printf("metric-right command missing argument(s)\r\n");
         cli_printf("  Usage: metric-right [degrees]\r\n");
+        return;
+    }
+
+    // Check that steppers aren't busy
+    if (stepper_isBusy(STEPPER_BOTH)) {
+        cli_printf("metric-right command cannot be used when steppers are busy! - Ignoring\n");
         return;
     }
 
