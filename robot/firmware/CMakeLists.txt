@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
     pulse_generator.c
     velocity.c
     stepper.c
+    metric.c
     ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/src/embedded_cli.c
     ${CMAKE_CURRENT_LIST_DIR}/pico-ssd1306/ssd1306.c
     )

@@ -37,6 +37,7 @@
 #include "penservo.h"
 #include "stepper.h"
 #include "velocity.h"
+#include "metric.h"
 #include "btcomms.h"
 
 #include "cli.h"
@@ -444,98 +445,140 @@ void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
     }
 }
 
-// // Metric motion commands
-// void on_forwards(EmbeddedCli *cli, char *args, void *context) {
-//     (void)cli;
+// Metric commands
+void on_metric_show(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+    metric_config_t metric_config = metric_get_config();
 
-//     // Ensure we have 1 arguments...
-//     if (embeddedCliGetTokenCount(args) != 1) {
-//         // Missing argument
-//         cli_printf("forward command missing argument\r\n");
-//         cli_printf("  Usage: forwards [number of millimeters]\r\n");
-//         return;
-//     }
+    cli_printf("Metric configuration:\r\n");
+    cli_printf("  Wheel diameter = %.2fmm\r\n", metric_config.wheel_diameter_mm);
+    cli_printf("  Axel distance = %.2fmm\r\n", metric_config.axel_distance_mm);
+}
 
-//     int32_t millimeters = atoi(embeddedCliGetToken(args, 1));
-//     if (millimeters < 1) {
-//         // Invalid argument
-//         cli_printf("forwards command invalid argument - You must specify 1 or more millimeters\r\n");
-//         return;
-//     }
+void on_metric_set(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
 
-//     // Perform command
-//     cli_printf("Moving forwards %d millimeters\r\n", millimeters);
-//     metricmotion_forwards(millimeters);
-// }
+    // Ensure we have 2 arguments...
+    if (embeddedCliGetTokenCount(args) != 2) {
+        // Missing argument
+        cli_printf("metric-set command missing argument(s)\r\n");
+        cli_printf("  Usage: metric-set [wheel diameter in mm] [axel distance in mm]\r\n");
+        return;
+    }
 
-// void on_backwards(EmbeddedCli *cli, char *args, void *context) {
-//     (void)cli;
+    // Get the current configuration
+    metric_config_t metric_config = metric_get_config();
 
-//     // Ensure we have 1 arguments...
-//     if (embeddedCliGetTokenCount(args) != 1) {
-//         // Missing argument
-//         cli_printf("backward command missing argument\r\n");
-//         cli_printf("  Usage: backwards [number of millimeters]\r\n");
-//         return;
-//     }
+    // Get the rest of the arguments and store as floats
+    metric_config.wheel_diameter_mm = atof(embeddedCliGetToken(args, 1));
+    metric_config.axel_distance_mm = atof(embeddedCliGetToken(args, 2));
 
-//     int32_t millimeters = atoi(embeddedCliGetToken(args, 1));
-//     if (millimeters < 1) {
-//         // Invalid argument
-//         cli_printf("backwards command invalid argument - You must specify 1 or more millimeters\r\n");
-//         return;
-//     }
+    metric_set_config(metric_config);
+}
 
-//     // Perform command
-//     cli_printf("Moving backwards %d millimeters\r\n", millimeters);
-//     metricmotion_backwards(millimeters);
-// }
+void on_metric_forwards(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
 
-// void on_left(EmbeddedCli *cli, char *args, void *context) {
-//     (void)cli;
+    // Ensure we have 1 argument...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        cli_printf("metric-forwards command missing argument(s)\r\n");
+        cli_printf("  Usage: metric-forwards [distance in mm]\r\n");
+        return;
+    }
 
-//     // Ensure we have 1 arguments...
-//     if (embeddedCliGetTokenCount(args) != 1) {
-//         // Missing argument
-//         cli_printf("left command missing argument\r\n");
-//         cli_printf("  Usage: left [number of degrees]\r\n");
-//         return;
-//     }
+    // get the argument and store as float
+    float distance_mm = atof(embeddedCliGetToken(args, 1));
 
-//     int32_t degrees = atoi(embeddedCliGetToken(args, 1));
-//     if (degrees < 1) {
-//         // Invalid argument
-//         cli_printf("left command invalid argument - You must specify 1 or more degrees\r\n");
-//         return;
-//     }
+    // Get the metric conversion result
+    metric_result_t metric_result = metric_forwards(distance_mm);
 
-//     // Perform command
-//     cli_printf("Turning left %d degrees\r\n", degrees);
-//     metricmotion_left(degrees);
-// }
+    // Configure the steppers
+    stepper_set_direction(STEPPER_LEFT, metric_result.left_direction);
+    stepper_set_steps(STEPPER_LEFT, metric_result.left_steps);
+    stepper_set_direction(STEPPER_RIGHT, metric_result.right_direction);
+    stepper_set_steps(STEPPER_RIGHT, metric_result.right_steps);
 
-// void on_right(EmbeddedCli *cli, char *args, void *context) {
-//     (void)cli;
+    cli_printf("Steppers configured to move forward %.2f millimeters using %d steps\r\n", distance_mm, metric_result.left_steps);
+}
 
-//     // Ensure we have 1 arguments...
-//     if (embeddedCliGetTokenCount(args) != 1) {
-//         // Missing argument
-//         cli_printf("right command missing argument\r\n");
-//         cli_printf("  Usage: right [number of degrees]\r\n");
-//         return;
-//     }
+void on_metric_backwards(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
 
-//     int32_t degrees = atoi(embeddedCliGetToken(args, 1));
-//     if (degrees < 1) {
-//         // Invalid argument
-//         cli_printf("right command invalid argument - You must specify 1 or more degrees\r\n");
-//         return;
-//     }
+    // Ensure we have 1 argument...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        cli_printf("metric-backwards command missing argument(s)\r\n");
+        cli_printf("  Usage: metric-backwards [distance in mm]\r\n");
+        return;
+    }
 
-//     // Perform command
-//     cli_printf("Turning right %d degrees\r\n", degrees);
-//     metricmotion_right(degrees);
-// }
+    // get the argument and store as float
+    float distance_mm = atof(embeddedCliGetToken(args, 1));
+
+    // Get the metric conversion result
+    metric_result_t metric_result = metric_backwards(distance_mm);
+
+    // Configure the steppers
+    stepper_set_direction(STEPPER_LEFT, metric_result.left_direction);
+    stepper_set_steps(STEPPER_LEFT, metric_result.left_steps);
+    stepper_set_direction(STEPPER_RIGHT, metric_result.right_direction);
+    stepper_set_steps(STEPPER_RIGHT, metric_result.right_steps);
+
+    cli_printf("Steppers configured to move backward %.2f millimeters using %d steps\r\n", distance_mm, metric_result.left_steps);
+}
+
+void on_metric_left(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 1 argument...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        cli_printf("metric-left command missing argument(s)\r\n");
+        cli_printf("  Usage: metric-left [degrees]\r\n");
+        return;
+    }
+
+    // get the argument and store as float
+    float degrees = atof(embeddedCliGetToken(args, 1));
+
+    // Get the metric conversion result
+    metric_result_t metric_result = metric_left(degrees);
+
+    // Configure the steppers
+    stepper_set_direction(STEPPER_LEFT, metric_result.left_direction);
+    stepper_set_steps(STEPPER_LEFT, metric_result.left_steps);
+    stepper_set_direction(STEPPER_RIGHT, metric_result.right_direction);
+    stepper_set_steps(STEPPER_RIGHT, metric_result.right_steps);
+
+    cli_printf("Steppers configured to rotate left %.2f degrees using %d steps\r\n", degrees, metric_result.left_steps);
+}
+
+void on_metric_right(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 1 argument...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        cli_printf("metric-right command missing argument(s)\r\n");
+        cli_printf("  Usage: metric-right [degrees]\r\n");
+        return;
+    }
+
+    // get the argument and store as float
+    float degrees = atof(embeddedCliGetToken(args, 1));
+
+    // Get the metric conversion result
+    metric_result_t metric_result = metric_right(degrees);
+
+    // Configure the steppers
+    stepper_set_direction(STEPPER_LEFT, metric_result.left_direction);
+    stepper_set_steps(STEPPER_LEFT, metric_result.left_steps);
+    stepper_set_direction(STEPPER_RIGHT, metric_result.right_direction);
+    stepper_set_steps(STEPPER_RIGHT, metric_result.right_steps);
+
+    cli_printf("Steppers configured to rotate left %.2f degrees using %d steps\r\n", degrees, metric_result.left_steps);
+}
 
 // ------------------------------------------------------------------------
 
@@ -556,7 +599,7 @@ void cli_initialise() {
     // config->cliBufferSize = 0;
     // config->maxBindingCount = 8;
     // config->enableAutoComplete = true;
-    config->maxBindingCount = 16;
+    config->maxBindingCount = 24;
     config->invitation = "VT2> ";
 
     cli = embeddedCliNew(config);
@@ -663,42 +706,60 @@ void cli_initialise() {
     };
     embeddedCliAddBinding(cli, stepper_run_binding);
 
-    // // Metric motion commands
-    // CliCommandBinding forwards_binding = {
-    //         "forwards",
-    //         "Move forwards the specified number of millimeters\r\n\tforwards [number of millimeters]",
-    //         true,
-    //         NULL,
-    //         on_forwards
-    // };
-    // embeddedCliAddBinding(cli, forwards_binding);
+    // Metric commands
+    CliCommandBinding metric_show_binding = {
+            "metric-show",
+            "Show the current metric to steps configuration",
+            true,
+            NULL,
+            on_metric_show
+    };
+    embeddedCliAddBinding(cli, metric_show_binding);
 
-    // CliCommandBinding backwards_binding = {
-    //         "backwards",
-    //         "Move backwards the specified number of millimeters\r\n\tbackwards [number of millimeters]",
-    //         true,
-    //         NULL,
-    //         on_backwards
-    // };
-    // embeddedCliAddBinding(cli, backwards_binding);
+    CliCommandBinding metric_set_binding = {
+            "metric-set",
+            "Set the current metric to steps configuration\r\n\tmetric-set [wheel diameter in mm] [axel distance in mm]",
+            true,
+            NULL,
+            on_metric_set
+    };
+    embeddedCliAddBinding(cli, metric_set_binding);
 
-    // CliCommandBinding left_binding = {
-    //         "left",
-    //         "Turn left the specified number of degrees\r\n\tleft [number of degrees]",
-    //         true,
-    //         NULL,
-    //         on_left
-    // };
-    // embeddedCliAddBinding(cli, left_binding);
+    CliCommandBinding metric_forwards_binding = {
+            "metric-forwards",
+            "Configure the steppers ready to move the robot forwards a specified number of millimeters\r\n\tmetric-forwards [distance in mm]",
+            true,
+            NULL,
+            on_metric_forwards
+    };
+    embeddedCliAddBinding(cli, metric_forwards_binding);
 
-    // CliCommandBinding right_binding = {
-    //         "right",
-    //         "Turn right the specified number of degrees\r\n\tright [number of degrees]",
-    //         true,
-    //         NULL,
-    //         on_right
-    // };
-    // embeddedCliAddBinding(cli, right_binding);
+    CliCommandBinding metric_backwards_binding = {
+            "metric-backwards",
+            "Configure the steppers ready to move the robot backwards a specified number of millimeters\r\n\tmetric-backwards [distance in mm]",
+            true,
+            NULL,
+            on_metric_backwards
+    };
+    embeddedCliAddBinding(cli, metric_backwards_binding);
+
+    CliCommandBinding metric_left_binding = {
+            "metric-left",
+            "Configure the steppers ready to rotate the robot left a specified number of degrees\r\n\tmetric-left [degrees]",
+            true,
+            NULL,
+            on_metric_left
+    };
+    embeddedCliAddBinding(cli, metric_left_binding);
+
+    CliCommandBinding metric_right_binding = {
+            "metric-right",
+            "Configure the steppers ready to rotate the robot right a specified number of degrees\r\n\tmetric-right [degrees]",
+            true,
+            NULL,
+            on_metric_right
+    };
+    embeddedCliAddBinding(cli, metric_right_binding);
 
     // Show initial CLI instructions to user
     bluetooth_open = false;

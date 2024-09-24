@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    main.c
+    metric.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,47 +24,34 @@
 
 ************************************************************************/
 
-#include <stdio.h>
-#include <pico/stdlib.h>
-#include "pico/cyw43_arch.h"
-#include "btstack.h"
-#include "pico/btstack_cyw43.h"
+#ifndef METRIC_H_
+#define METRIC_H_
 
-#include "debug.h"
-#include "cli.h"
-#include "i2cbus.h"
-#include "ina260.h"
-#include "penservo.h"
-#include "oleddisplay.h"
-#include "stepper.h"
-#include "metric.h"
-#include "btcomms.h"
+// Type definition for metric configuration
+typedef struct metric_config_t {
+    float wheel_diameter_mm;
+    float axel_distance_mm;
+    float steps_per_revolution;
+} metric_config_t;
 
-int main() {
-    // Initialise the hardware
-    stdio_init_all();
-    if (cyw43_arch_init()) return -1;
+// Type definition for metric calculation result
+typedef struct metric_result_t {
+    int32_t left_steps;
+    int32_t right_steps;
+    stepper_direction_t left_direction;
+    stepper_direction_t right_direction;
+} metric_result_t;
 
-    // Initialise modules
-    debug_initialise();
-    i2c_initialise();
-    ina260_initialise();
-    pen_servo_initialise();
-    oled_initialise();
-    stepper_initialise();
-    metric_initialise();
-    cli_initialise();
-    btcomms_initialise();
+void metric_initialise(void);
+metric_config_t metric_get_config(void);
+void metric_set_config(metric_config_t config);
 
-    // Turn on the PICO W system LED
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+metric_result_t metric_forwards(float distance_mm);
+metric_result_t metric_backwards(float distance_mm);
+metric_result_t metric_left(float degrees);
+metric_result_t metric_right(float degrees);
 
-    // Loop and process any non-interrupt driven activities
-    while (true) {
-        // Process the CLI
-        cli_process();
+int32_t metric_mm_to_steps(float millimeters);
+int32_t metric_deg_to_steps(float degrees);
 
-        // Sleep a bit
-        sleep_ms(10);
-    }
-}
+#endif /* METRIC_H_ */
