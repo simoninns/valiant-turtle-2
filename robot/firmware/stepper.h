@@ -42,38 +42,55 @@
 #define SM_LDIR_GPIO 4
 #define SM_RDIR_GPIO 5
 
-// Drive motor microstep control
-#define SM_LM0_GPIO 21
-#define SM_LM1_GPIO 20
-#define SM_RM0_GPIO 19
-#define SM_RM1_GPIO 18
+// Enumerations
+typedef struct velocity_sequence velocity_sequence_t; // Forward declaration from velocity.h
 
+// ENUM indication which stepper is required
 typedef enum {
-    SM_FORWARDS,
-    SM_BACKWARDS,
-    SM_LEFT,
-    SM_RIGHT
-} sm_direction_t;
+    STEPPER_LEFT = 0,
+    STEPPER_RIGHT = 1,
+    STEPPER_BOTH = 2
+} stepper_side_t;
 
+// ENUM for stepper direction
 typedef enum {
-    SM_MODE_200,  //  200 steps/revolution (70% torque)
-    SM_MODE_400,  //  400 steps/revolution (38% torque)
-    SM_MODE_800,  //  800 steps/revolution (19% torque)
-    SM_MODE_1600  // 1600 steps/revolution (10% torque)
-} sm_microstep_mode_t;
+    STEPPER_FORWARDS,
+    STEPPER_BACKWARDS
+} stepper_direction_t;
 
-typedef struct sequence_array sequence_array_t; // Forward declaration
+// Typedef for stepper's velocity configuration
+typedef struct stepper_velocity_config_t {
+    stepper_direction_t direction;
+    int32_t accSpsps;
+    int32_t minimumSps;
+    int32_t maximumSps;
+    int32_t updatesPerSecond;
+} stepper_velocity_config_t;
 
-void stepper_init(void);
-void stepper_set_direction(sm_direction_t direction);
-void stepper_enable(bool state);
-void stepper_set_microstep_mode(sm_microstep_mode_t microstep_mode);
-bool stepper_is_busy(void);
+// Type definition for overall stepper configuration
+typedef struct stepper_config_t {
+    stepper_direction_t direction;
+    stepper_velocity_config_t velocity;
+    velocity_sequence_t *velocity_sequence;
+    int32_t sequence_position;
+    bool isEnabled;
+    bool isBusy;
+    int32_t steps_remaining;
+} stepper_config_t;
 
-void stepper_pio_start(void);
-void stepper_pio_stop(void);
-bool stepper_set(sequence_array_t* container);
-int32_t stepper_sps_to_delay(int32_t sps);
-static void pio_irq_func(void);
+void stepper_initialise(void);
+void stepper_enable(bool isEnabled);
+void stepper_set_direction(stepper_side_t side, stepper_direction_t direction);
+void stepper_set_velocity(stepper_side_t side, int32_t accSpsps, int32_t minimumSps, int32_t maximumSps, int32_t updatesPerSecond);
+void stepper_set_steps(stepper_side_t side, int32_t steps);
+int32_t stepper_get_steps(stepper_side_t side);
+void stepper_dryrun(stepper_side_t side);
+void stepper_dryrun_free(stepper_side_t side);
+void stepper_run(stepper_side_t side);
+stepper_config_t stepper_get_configuration(stepper_side_t side);
+bool stepper_isBusy(stepper_side_t side);
+
+void stepper_left_callback();
+void stepper_right_callback();
 
 #endif /* STEPPER_H_ */

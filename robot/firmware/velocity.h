@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    stepconfig.h
+    velocity.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,32 +24,28 @@
 
 ************************************************************************/
 
-#ifndef STEPCONF_H_
-#define STEPCONF_H_
+#ifndef VELOCITY_H_
+#define VELOCITY_H_
 
-// Enumerations
-typedef enum {
-    STEPPER_FORWARDS,
-    STEPPER_BACKWARDS,
-    STEPPER_LEFT,
-    STEPPER_RIGHT
-} stepconf_direction_t;
+#define INITIAL_SEQUENCE_SIZE 8
 
-typedef struct stepconf_t {
-    stepconf_direction_t direction;
-    int32_t accSpsps;
-    int32_t minimumSps;
-    int32_t maximumSps;
-    int32_t updatesPerSecond;
-} stepconf_t;
+// Sequence array structure 
+struct velocity_sequence { 
+    size_t size; 
+    size_t capacity; 
+    int32_t* steps;
+    int32_t* sps; 
+};
 
-void stepconf_initialise(void);
-void stepconf_set_enable(bool status);
-void stepconf_set_direction(stepconf_direction_t direction);
-void stepconf_set_parameters(int32_t accSpsps, int32_t minimumSps,
-    int32_t maximumSps, int32_t updatesPerSecond);
-stepconf_t stepconf_get_parameters(void);
-void stepconf_dryrun(int32_t requiredSteps);
-void stepconf_run(int32_t requiredSteps);
+typedef struct velocity_sequence velocity_sequence_t;
 
-#endif /* STEPCONF_H_ */
+void velocity_calculator_init(velocity_sequence_t** sequence);
+int32_t velocity_calculator(velocity_sequence_t* container, int32_t requiredSteps, int32_t accSpsps, int32_t minimumSps, int32_t maximumSps, int32_t updatesPerSecond);
+void velocity_calculator_free(velocity_sequence_t* container);
+int32_t velocity_get_steps(velocity_sequence_t* container, int32_t index);
+int32_t velocity_get_sps(velocity_sequence_t* container, int32_t index);
+int32_t velocity_get_size(velocity_sequence_t* container);
+
+void velocity_sequence_insert(velocity_sequence_t* container, int32_t steps, int32_t sps);
+
+#endif /* VELOCITY_H_ */

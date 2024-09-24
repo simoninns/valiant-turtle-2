@@ -1,6 +1,6 @@
 ;************************************************************************
 ;
-;   stepper.pio
+;   pulse_generator.pio
 ;
 ;   Valiant Turtle 2 - Raspberry Pi Pico W Firmware
 ;   Copyright (C) 2024 Simon Inns
@@ -26,7 +26,7 @@
 
 .pio_version 0
 
-.program stepper
+.program pulse_generator
 
 .wrap_target
     pull block              ; Pull (with blocking) FIFO into OSR (first, number of steps)
@@ -35,11 +35,11 @@
     pull block              ; Pull (with blocking) FIFO into OSR (second, number of delay cycles)
     mov y, osr              ; Store the OSR in Y
 
-    irq nowait 0            ; Signal parameters read to CPU
+    irq nowait 0 rel        ; Signal parameters read to CPU (IRQ relative to SM number)
 
 step:
     jmp !x finished         ; If X == 0 then jump to "finished"
-    set pins, 0b11          ; Turn pin on
+    set pins, 0b1           ; Turn pin on
 ondelay:
     jmp y-- ondelay
     mov y, osr              ; Restore the Y register (number of delay cycles)
@@ -56,26 +56,21 @@ finished:
 .wrap
 
 % c-sdk {
-// this is a raw helper function for use by the user which sets up the GPIO output, and configures the SM to output on a particular pin
-
-void stepper_program_init(PIO pio, uint sm, uint offset, uint pin_one, uint pin_two) {
-    pio_sm_config c = stepper_program_get_default_config(offset);
-
-    // This is used if the PIO is using the "out" command to output to the pin
-    //sm_config_set_out_pins(&c, pin_one, 2);
+// Initiate the pulse generator PIO program and configure the SM to GPIO mapping
+void pulse_generator_program_init(PIO pio, uint sm, uint offset, uint gpio_pin) {
+    pio_sm_config c = pulse_generator_program_get_default_config(offset);
 
     // This is used if the PIO is using the "set" command to output to the pin
-    sm_config_set_set_pins(&c, pin_one, 2);
+    sm_config_set_set_pins(&c, gpio_pin, 1);
 
     // Set the clock divider to /50
     sm_config_set_clkdiv(&c, 50);
 
     // Set this pin's GPIO function (connect PIO to the pad)
-    pio_gpio_init(pio, pin_one);
-    pio_gpio_init(pio, pin_two);
+    pio_gpio_init(pio, gpio_pin);
 
     // Set the pin direction to output at the PIO
-    pio_sm_set_consecutive_pindirs(pio, sm, pin_one, 2, true);
+    pio_sm_set_consecutive_pindirs(pio, sm, gpio_pin, 2, true);
 
     // Load our configuration, and jump to the start of the program
     pio_sm_init(pio, sm, offset, &c);

@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    seqarray.h
+    pulse_generator.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,19 +24,24 @@
 
 ************************************************************************/
 
-#ifndef SEQARRAY_H_
-#define SEQARRAY_H_
+#ifndef PULSE_GENERATOR_H_
+#define PULSE_GENERATOR_H_
 
-#define INITIAL_SEQUENCE_SIZE 8
+// Define 2 step output GPIOs - These must be consecutive GPIOs
+// due to PIO restrictions
+#define PG_GPIO0 2
+#define PG_GPIO1 3
 
-typedef struct sequence_array sequence_array_t; // Forward declaration
+// Type for callback function
+typedef void (*callback_t) (void);
 
-void seqarray_init(sequence_array_t** sequence);
-void seqarray_insert(sequence_array_t* container, int32_t steps, int32_t sps);
-int32_t seqarray_get_steps(sequence_array_t* container, int32_t index);
-int32_t seqarray_get_sps(sequence_array_t* container, int32_t index);
-void seqarray_display(sequence_array_t* container);
-int32_t seqarray_get_size(sequence_array_t* container);
-void seqarray_free(sequence_array_t* container);
+// Prototypes
+void pulse_generator_init(void);
+void pulse_generator_pio_start(void);
+void pulse_generator_pio_stop(void);
+void pulse_generator_set(int32_t sm, int32_t pio_delay, int32_t pulses);
+uint32_t pulse_generator_pps_to_pio_delay(uint32_t pps);
+void pulse_generator_register_callback(uint8_t sm, callback_t _registered_callback);
+static void pulse_generator_interrupt_handler(void);
 
-#endif /* SEQARRAY_H_ */
+#endif /* PULSE_GENERATOR_H_ */

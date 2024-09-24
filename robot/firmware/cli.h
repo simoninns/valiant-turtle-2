@@ -37,15 +37,16 @@ static void on_power(EmbeddedCli *cli, char *args, void *context);
 static void on_pen(EmbeddedCli *cli, char *args, void *context);
 void on_stepper_enable(EmbeddedCli *cli, char *args, void *context);
 void on_stepper_disable(EmbeddedCli *cli, char *args, void *context);
-void on_stepper_set(EmbeddedCli *cli, char *args, void *context);
+
+void on_stepper_velocity(EmbeddedCli *cli, char *args, void *context);
 void on_stepper_show(EmbeddedCli *cli, char *args, void *context);
 void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context);
 void on_stepper_run(EmbeddedCli *cli, char *args, void *context);
 
-void on_forwards(EmbeddedCli *cli, char *args, void *context);
-void on_backwards(EmbeddedCli *cli, char *args, void *context);
-void on_left(EmbeddedCli *cli, char *args, void *context);
-void on_right(EmbeddedCli *cli, char *args, void *context);
+// void on_forwards(EmbeddedCli *cli, char *args, void *context);
+// void on_backwards(EmbeddedCli *cli, char *args, void *context);
+// void on_left(EmbeddedCli *cli, char *args, void *context);
+// void on_right(EmbeddedCli *cli, char *args, void *context);
 
 void cli_initial_prompt(void);
 static void write_char_fn(EmbeddedCli *embeddedCli, char c);

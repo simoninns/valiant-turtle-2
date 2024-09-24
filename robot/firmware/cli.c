@@ -35,8 +35,8 @@
 
 #include "ina260.h"
 #include "penservo.h"
-#include "stepconf.h"
-#include "metricmotion.h"
+#include "stepper.h"
+#include "velocity.h"
 #include "btcomms.h"
 
 #include "cli.h"
@@ -110,48 +110,184 @@ void on_pen(EmbeddedCli *cli, char *args, void *context) {
 void on_stepper_enable(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
 
-    stepconf_set_enable(true);
+    stepper_enable(true);
     cli_printf("Stepper motors enabled\r\n");
 }
 
 void on_stepper_disable(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
 
-    stepconf_set_enable(false);
+    stepper_enable(false);
     cli_printf("Stepper motors disabled\r\n");
 }
 
-void on_stepper_set(EmbeddedCli *cli, char *args, void *context) {
+void on_stepper_velocity(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
 
-    // Ensure we have 4 arguments...
-    if (embeddedCliGetTokenCount(args) != 4) {
+    // Ensure we have 5 arguments...
+    if (embeddedCliGetTokenCount(args) != 5) {
         // Missing argument
-        cli_printf("stepper-set command missing argument(s)\r\n");
-        cli_printf("  Usage: stepper-set [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]\r\n");
+        cli_printf("stepper-velocity command missing argument(s)\r\n");
+        cli_printf("  Usage: stepper-velocity [left/right/both] [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]\r\n");
         return;
     }
 
-    // Get the arguments and store as integers
-    int32_t accSpsps = atoi(embeddedCliGetToken(args, 1));
-    int32_t minimumSps = atoi(embeddedCliGetToken(args, 2));
-    int32_t maximumSps = atoi(embeddedCliGetToken(args, 3));
-    int32_t updatesPerSecond = atoi(embeddedCliGetToken(args, 4));
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    stepper_side_t stepper_choice = STEPPER_LEFT;
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "left")) {
+            stepper_choice = STEPPER_LEFT;
+        } else if (!strcmp(arg1, "right")) {
+            stepper_choice = STEPPER_RIGHT;
+        } else if (!strcmp(arg1, "both")) {
+            stepper_choice = STEPPER_BOTH;
+        } else {
+            // Invalid argument
+            cli_printf("stepper-velocity command invalid argument - You must specify left, right or both\n");
+            return;
+        }
+    }
 
-    stepconf_set_parameters(accSpsps, minimumSps, maximumSps, updatesPerSecond);
-    cli_printf("Stepper parameters set\r\n");
+    // Get the rest of the arguments and store as integers
+    int32_t accSpsps = atoi(embeddedCliGetToken(args, 2));
+    int32_t minimumSps = atoi(embeddedCliGetToken(args, 3));
+    int32_t maximumSps = atoi(embeddedCliGetToken(args, 4));
+    int32_t updatesPerSecond = atoi(embeddedCliGetToken(args, 5));
+
+    stepper_set_velocity(STEPPER_BOTH, accSpsps, minimumSps, maximumSps, updatesPerSecond);
+    cli_printf("Stepper velocity set\r\n");
 }
 
 void on_stepper_show(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
-    stepconf_t stepconf;
+    
+    // Ensure we have 1 argument...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        cli_printf("stepper-show command missing argument(s)\r\n");
+        cli_printf("  Usage: stepper-show [left/right/both]\r\n");
+        return;
+    }
 
-    stepconf = stepconf_get_parameters();
-    cli_printf("Stepper parameters:\r\n");
-    cli_printf("  Acceleration in Steps per Second per Second = %d\r\n", stepconf.accSpsps);
-    cli_printf("  Minimum Steps per Second = %d\r\n", stepconf.minimumSps);
-    cli_printf("  Maximum Steps per Second = %d\r\n", stepconf.maximumSps);
-    cli_printf("  Updates per second = %d\r\n", stepconf.updatesPerSecond);
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    stepper_side_t stepper_choice = STEPPER_LEFT;
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "left")) {
+            stepper_choice = STEPPER_LEFT;
+        } else if (!strcmp(arg1, "right")) {
+            stepper_choice = STEPPER_RIGHT;
+        } else if (!strcmp(arg1, "both")) {
+            stepper_choice = STEPPER_BOTH;
+        } else {
+            // Invalid argument
+            cli_printf("stepper-show command invalid argument - You must specify left, right or both\n");
+            return;
+        }
+    }
+
+    if (stepper_choice == STEPPER_LEFT || stepper_choice == STEPPER_BOTH) {
+        stepper_config_t stepper_config;
+        stepper_config = stepper_get_configuration(STEPPER_LEFT);
+        cli_printf("Left Stepper parameters:\r\n");
+        cli_printf("  Acceleration in Steps per Second per Second = %d\r\n", stepper_config.velocity.accSpsps);
+        cli_printf("  Minimum Steps per Second = %d\r\n", stepper_config.velocity.minimumSps);
+        cli_printf("  Maximum Steps per Second = %d\r\n", stepper_config.velocity.maximumSps);
+        cli_printf("  Updates per second = %d\r\n", stepper_config.velocity.updatesPerSecond);
+
+        if (stepper_config.direction == STEPPER_FORWARDS) {
+            cli_printf("  Stepper direction = forwards\r\n");
+        } else {
+            cli_printf("  Stepper direction = backwards\r\n");
+        }
+
+        if (stepper_config.isEnabled) {
+            cli_printf("  Stepper enabled = true\r\n");
+        } else {
+            cli_printf("  Stepper enabled = false\r\n");
+        }
+
+        if (stepper_config.isBusy) {
+            cli_printf("  Stepper busy = true\r\n");
+        } else {
+            cli_printf("  Stepper busy = false\r\n");
+        }
+        
+        cli_printf("  Steps remaining = %d\r\n", stepper_config.steps_remaining);
+    }
+
+    if (stepper_choice == STEPPER_RIGHT || stepper_choice == STEPPER_BOTH) {
+        stepper_config_t stepper_config;
+        stepper_config = stepper_get_configuration(STEPPER_RIGHT);
+        cli_printf("Right Stepper parameters:\r\n");
+        cli_printf("  Acceleration in Steps per Second per Second = %d\r\n", stepper_config.velocity.accSpsps);
+        cli_printf("  Minimum Steps per Second = %d\r\n", stepper_config.velocity.minimumSps);
+        cli_printf("  Maximum Steps per Second = %d\r\n", stepper_config.velocity.maximumSps);
+        cli_printf("  Updates per second = %d\r\n", stepper_config.velocity.updatesPerSecond);
+
+        if (stepper_config.direction == STEPPER_FORWARDS) {
+            cli_printf("  Stepper direction = forwards\r\n");
+        } else {
+            cli_printf("  Stepper direction = backwards\r\n");
+        }
+
+        if (stepper_config.isEnabled) {
+            cli_printf("  Stepper enabled = true\r\n");
+        } else {
+            cli_printf("  Stepper enabled = false\r\n");
+        }
+
+        if (stepper_config.isBusy) {
+            cli_printf("  Stepper busy = true\r\n");
+        } else {
+            cli_printf("  Stepper busy = false\r\n");
+        }
+        
+        cli_printf("  Steps remaining = %d\r\n", stepper_config.steps_remaining);
+    }
+}
+
+void on_stepper_steps(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 5 arguments...
+    if (embeddedCliGetTokenCount(args) != 2) {
+        // Missing argument
+        cli_printf("stepper-steps command missing argument(s)\r\n");
+        cli_printf("  Usage: stepper-steps [left/right/both] [number of steps]\r\n");
+        return;
+    }
+
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    stepper_side_t stepper_choice = STEPPER_LEFT;
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "left")) {
+            stepper_choice = STEPPER_LEFT;
+        } else if (!strcmp(arg1, "right")) {
+            stepper_choice = STEPPER_RIGHT;
+        } else if (!strcmp(arg1, "both")) {
+            stepper_choice = STEPPER_BOTH;
+        } else {
+            // Invalid argument
+            cli_printf("stepper-steps command invalid argument - You must specify left, right or both\n");
+            return;
+        }
+    }
+
+    // Get the rest of the arguments and store as integers
+    int32_t steps = atoi(embeddedCliGetToken(args, 2));
+
+    if (stepper_choice == STEPPER_LEFT || stepper_choice == STEPPER_BOTH) {
+        stepper_set_steps(STEPPER_LEFT, steps);
+        cli_printf("Stepper left steps set\r\n");
+    }
+
+    if (stepper_choice == STEPPER_RIGHT || stepper_choice == STEPPER_BOTH) {
+        stepper_set_steps(STEPPER_RIGHT, steps);
+        cli_printf("Stepper right steps set\r\n");
+    }
 }
 
 void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context) {
@@ -161,136 +297,245 @@ void on_stepper_dryrun(EmbeddedCli *cli, char *args, void *context) {
     if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
         cli_printf("stepper-dryrun command missing argument(s)\r\n");
-        cli_printf("  Usage: stepper-dryrun [required number of steps]\r\n");
+        cli_printf("  Usage: stepper-dryrun [left/right/both]\r\n");
         return;
     }
 
-    // Get the arguments and store as integers
-    int32_t requiredSteps = atoi(embeddedCliGetToken(args, 1));
-    if (requiredSteps < 1) {
-        // Invalid argument
-        cli_printf("stepper-dryrun command invalid argument - You must specify 1 or more steps\r\n");
-        return;
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    stepper_side_t stepper_choice = STEPPER_LEFT;
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "left")) {
+            stepper_choice = STEPPER_LEFT;
+        } else if (!strcmp(arg1, "right")) {
+            stepper_choice = STEPPER_RIGHT;
+        } else if (!strcmp(arg1, "both")) {
+            stepper_choice = STEPPER_BOTH;
+        } else {
+            // Invalid argument
+            cli_printf("stepper-dryrun command invalid argument - You must specify left, right or both\n");
+            return;
+        }
     }
 
-    stepconf_dryrun(requiredSteps);
+    if (stepper_choice == STEPPER_LEFT || stepper_choice == STEPPER_BOTH) {
+        if (stepper_get_steps(STEPPER_LEFT) != 0) {
+            stepper_dryrun(STEPPER_LEFT);
+
+            velocity_sequence_t* sequence = stepper_get_configuration(STEPPER_LEFT).velocity_sequence;
+            if (velocity_get_size(sequence) > 0) {
+                int32_t totalSteps = 0;
+                int32_t maxSps = 0;
+
+                cli_printf("Left stepper velocity sequence:\r\n");
+                cli_printf("  +----------+--------+--------+\r\n");
+                cli_printf("  | Interval | Steps  | SPS    |\r\n");
+                cli_printf("  +----------+--------+--------+\r\n");
+
+                for (int i = 0; i < velocity_get_size(sequence); i++) { 
+                    cli_printf("  | %6d   | %6d | %6d |\r\n", i, velocity_get_steps(sequence, i), velocity_get_sps(sequence, i));
+
+                    totalSteps += velocity_get_steps(sequence, i);
+                    if (velocity_get_sps(sequence, i) > maxSps) maxSps = velocity_get_sps(sequence, i);
+                }
+                cli_printf("  +----------+--------+--------+\r\n");
+
+                cli_printf("\r\n");
+                cli_printf("  Maximum achieved SPS: %d\r\n", maxSps); 
+                cli_printf("  Total steps: %d\r\n", totalSteps);
+                cli_printf("\r\n");
+            } else {
+                // The sequence is empty
+                cli_printf("stepper-dryrun - Left sequence is empty - nothing to display\r\n");
+            }
+
+            // Free the sequence
+            stepper_dryrun_free(STEPPER_LEFT);
+        } else {
+            // No steps
+            cli_printf("stepper-dryrun - The number of left steps required is 0 - nothing to display\r\n");
+        }
+    }
+
+    if (stepper_choice == STEPPER_RIGHT || stepper_choice == STEPPER_BOTH) {
+        if (stepper_get_steps(STEPPER_RIGHT) != 0) {
+            stepper_dryrun(STEPPER_RIGHT);
+
+            velocity_sequence_t* sequence = stepper_get_configuration(STEPPER_RIGHT).velocity_sequence;
+            if (velocity_get_size(sequence) > 0) {
+                int32_t totalSteps = 0;
+                int32_t maxSps = 0;
+
+                cli_printf("Right stepper velocity sequence:\r\n");
+                cli_printf("  +----------+--------+--------+\r\n");
+                cli_printf("  | Interval | Steps  | SPS    |\r\n");
+                cli_printf("  +----------+--------+--------+\r\n");
+
+                for (int i = 0; i < velocity_get_size(sequence); i++) { 
+                    cli_printf("  | %6d   | %6d | %6d |\r\n", i, velocity_get_steps(sequence, i), velocity_get_sps(sequence, i));
+
+                    totalSteps += velocity_get_steps(sequence, i);
+                    if (velocity_get_sps(sequence, i) > maxSps) maxSps = velocity_get_sps(sequence, i);
+                }
+                cli_printf("  +----------+--------+--------+\r\n");
+
+                cli_printf("\r\n");
+                cli_printf("  Maximum achieved SPS: %d\r\n", maxSps); 
+                cli_printf("  Total steps: %d\r\n", totalSteps);
+                cli_printf("\r\n");
+            } else {
+                // The sequence is empty
+                cli_printf("stepper-dryrun - Right sequence is empty - nothing to display\r\n");
+            }
+
+            // Free the sequence
+            stepper_dryrun_free(STEPPER_RIGHT);
+        } else {
+            // No steps
+            cli_printf("stepper-dryrun - The number of right steps required is 0 - nothing to display\r\n");
+        }
+    }
 }
 
 void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
 
-    // Ensure we have 1 argument...
+    // Ensure we have 1 arguments...
     if (embeddedCliGetTokenCount(args) != 1) {
         // Missing argument
         cli_printf("stepper-run command missing argument(s)\r\n");
-        cli_printf("  Usage: stepper-run [required number of steps]\r\n");
+        cli_printf("  Usage: stepper-run [left/right/both]\r\n");
         return;
     }
 
-    // Get the arguments and store as integers
-    int32_t requiredSteps = atoi(embeddedCliGetToken(args, 1));
-    if (requiredSteps < 1) {
-        // Invalid argument
-        cli_printf("stepper-run command invalid argument - You must specify 1 or more steps\r\n");
-        return;
+    const char *arg1 = embeddedCliGetToken(args, 1);
+    stepper_side_t stepper_choice = STEPPER_LEFT;
+    if (arg1 != NULL) {
+        // Argument received
+        if (!strcmp(arg1, "left")) {
+            stepper_choice = STEPPER_LEFT;
+        } else if (!strcmp(arg1, "right")) {
+            stepper_choice = STEPPER_RIGHT;
+        } else if (!strcmp(arg1, "both")) {
+            stepper_choice = STEPPER_BOTH;
+        } else {
+            // Invalid argument
+            cli_printf("stepper-run command invalid argument - You must specify left, right or both\n");
+            return;
+        }
     }
 
-    cli_printf("Running stepper for %d steps\r\n", requiredSteps);
-    stepconf_run(requiredSteps);
+    if (stepper_choice == STEPPER_LEFT || stepper_choice == STEPPER_BOTH) {
+        if (stepper_get_steps(STEPPER_LEFT) != 0) {
+            stepper_run(STEPPER_LEFT);
+        } else {
+            // No steps
+            cli_printf("stepper-run - The number of left steps required is 0 - nothing to do\r\n");
+        }
+    }
+
+    if (stepper_choice == STEPPER_RIGHT || stepper_choice == STEPPER_BOTH) {
+        if (stepper_get_steps(STEPPER_RIGHT) != 0) {
+            stepper_run(STEPPER_RIGHT);
+        } else {
+            // No steps
+            cli_printf("stepper-run - The number of right steps required is 0 - nothing to do\r\n");
+        }
+    }
 }
 
-// Metric motion commands
-void on_forwards(EmbeddedCli *cli, char *args, void *context) {
-    (void)cli;
+// // Metric motion commands
+// void on_forwards(EmbeddedCli *cli, char *args, void *context) {
+//     (void)cli;
 
-    // Ensure we have 1 arguments...
-    if (embeddedCliGetTokenCount(args) != 1) {
-        // Missing argument
-        cli_printf("forward command missing argument\r\n");
-        cli_printf("  Usage: forwards [number of millimeters]\r\n");
-        return;
-    }
+//     // Ensure we have 1 arguments...
+//     if (embeddedCliGetTokenCount(args) != 1) {
+//         // Missing argument
+//         cli_printf("forward command missing argument\r\n");
+//         cli_printf("  Usage: forwards [number of millimeters]\r\n");
+//         return;
+//     }
 
-    int32_t millimeters = atoi(embeddedCliGetToken(args, 1));
-    if (millimeters < 1) {
-        // Invalid argument
-        cli_printf("forwards command invalid argument - You must specify 1 or more millimeters\r\n");
-        return;
-    }
+//     int32_t millimeters = atoi(embeddedCliGetToken(args, 1));
+//     if (millimeters < 1) {
+//         // Invalid argument
+//         cli_printf("forwards command invalid argument - You must specify 1 or more millimeters\r\n");
+//         return;
+//     }
 
-    // Perform command
-    cli_printf("Moving forwards %d millimeters\r\n", millimeters);
-    metricmotion_forwards(millimeters);
-}
+//     // Perform command
+//     cli_printf("Moving forwards %d millimeters\r\n", millimeters);
+//     metricmotion_forwards(millimeters);
+// }
 
-void on_backwards(EmbeddedCli *cli, char *args, void *context) {
-    (void)cli;
+// void on_backwards(EmbeddedCli *cli, char *args, void *context) {
+//     (void)cli;
 
-    // Ensure we have 1 arguments...
-    if (embeddedCliGetTokenCount(args) != 1) {
-        // Missing argument
-        cli_printf("backward command missing argument\r\n");
-        cli_printf("  Usage: backwards [number of millimeters]\r\n");
-        return;
-    }
+//     // Ensure we have 1 arguments...
+//     if (embeddedCliGetTokenCount(args) != 1) {
+//         // Missing argument
+//         cli_printf("backward command missing argument\r\n");
+//         cli_printf("  Usage: backwards [number of millimeters]\r\n");
+//         return;
+//     }
 
-    int32_t millimeters = atoi(embeddedCliGetToken(args, 1));
-    if (millimeters < 1) {
-        // Invalid argument
-        cli_printf("backwards command invalid argument - You must specify 1 or more millimeters\r\n");
-        return;
-    }
+//     int32_t millimeters = atoi(embeddedCliGetToken(args, 1));
+//     if (millimeters < 1) {
+//         // Invalid argument
+//         cli_printf("backwards command invalid argument - You must specify 1 or more millimeters\r\n");
+//         return;
+//     }
 
-    // Perform command
-    cli_printf("Moving backwards %d millimeters\r\n", millimeters);
-    metricmotion_backwards(millimeters);
-}
+//     // Perform command
+//     cli_printf("Moving backwards %d millimeters\r\n", millimeters);
+//     metricmotion_backwards(millimeters);
+// }
 
-void on_left(EmbeddedCli *cli, char *args, void *context) {
-    (void)cli;
+// void on_left(EmbeddedCli *cli, char *args, void *context) {
+//     (void)cli;
 
-    // Ensure we have 1 arguments...
-    if (embeddedCliGetTokenCount(args) != 1) {
-        // Missing argument
-        cli_printf("left command missing argument\r\n");
-        cli_printf("  Usage: left [number of degrees]\r\n");
-        return;
-    }
+//     // Ensure we have 1 arguments...
+//     if (embeddedCliGetTokenCount(args) != 1) {
+//         // Missing argument
+//         cli_printf("left command missing argument\r\n");
+//         cli_printf("  Usage: left [number of degrees]\r\n");
+//         return;
+//     }
 
-    int32_t degrees = atoi(embeddedCliGetToken(args, 1));
-    if (degrees < 1) {
-        // Invalid argument
-        cli_printf("left command invalid argument - You must specify 1 or more degrees\r\n");
-        return;
-    }
+//     int32_t degrees = atoi(embeddedCliGetToken(args, 1));
+//     if (degrees < 1) {
+//         // Invalid argument
+//         cli_printf("left command invalid argument - You must specify 1 or more degrees\r\n");
+//         return;
+//     }
 
-    // Perform command
-    cli_printf("Turning left %d degrees\r\n", degrees);
-    metricmotion_left(degrees);
-}
+//     // Perform command
+//     cli_printf("Turning left %d degrees\r\n", degrees);
+//     metricmotion_left(degrees);
+// }
 
-void on_right(EmbeddedCli *cli, char *args, void *context) {
-    (void)cli;
+// void on_right(EmbeddedCli *cli, char *args, void *context) {
+//     (void)cli;
 
-    // Ensure we have 1 arguments...
-    if (embeddedCliGetTokenCount(args) != 1) {
-        // Missing argument
-        cli_printf("right command missing argument\r\n");
-        cli_printf("  Usage: right [number of degrees]\r\n");
-        return;
-    }
+//     // Ensure we have 1 arguments...
+//     if (embeddedCliGetTokenCount(args) != 1) {
+//         // Missing argument
+//         cli_printf("right command missing argument\r\n");
+//         cli_printf("  Usage: right [number of degrees]\r\n");
+//         return;
+//     }
 
-    int32_t degrees = atoi(embeddedCliGetToken(args, 1));
-    if (degrees < 1) {
-        // Invalid argument
-        cli_printf("right command invalid argument - You must specify 1 or more degrees\r\n");
-        return;
-    }
+//     int32_t degrees = atoi(embeddedCliGetToken(args, 1));
+//     if (degrees < 1) {
+//         // Invalid argument
+//         cli_printf("right command invalid argument - You must specify 1 or more degrees\r\n");
+//         return;
+//     }
 
-    // Perform command
-    cli_printf("Turning right %d degrees\r\n", degrees);
-    metricmotion_right(degrees);
-}
+//     // Perform command
+//     cli_printf("Turning right %d degrees\r\n", degrees);
+//     metricmotion_right(degrees);
+// }
 
 // ------------------------------------------------------------------------
 
@@ -373,18 +618,27 @@ void cli_initialise() {
     };
     embeddedCliAddBinding(cli, stepper_disable);
 
-    CliCommandBinding stepper_set_binding = {
-            "stepper-set",
-            "Set the acc/dec parameters for the stepper motors\r\n\tstepper-set [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]",
+    CliCommandBinding stepper_velocity_binding = {
+            "stepper-velocity",
+            "Set the velocity parameters for the stepper motors\r\n\tstepper-velocity [left/right/both] [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]",
             true,
             NULL,
-            on_stepper_set
+            on_stepper_velocity
     };
-    embeddedCliAddBinding(cli, stepper_set_binding);
+    embeddedCliAddBinding(cli, stepper_velocity_binding);
+
+    CliCommandBinding stepper_steps_binding = {
+        "stepper-steps",
+        "Set the required number of steps for the stepper motors\r\n\tstepper-steps [left/right/both] [steps]",
+        true,
+        NULL,
+        on_stepper_steps
+    };
+    embeddedCliAddBinding(cli, stepper_steps_binding);
 
     CliCommandBinding stepper_show_binding = {
             "stepper-show",
-            "Show the acc/dec parameters for the stepper motors\r\n\tstepper-show",
+            "Show the configuration parameters for the stepper motors\r\n\tstepper-show [left/right/both]",
             true,
             NULL,
             on_stepper_show
@@ -393,7 +647,7 @@ void cli_initialise() {
 
     CliCommandBinding stepper_dryrun_binding = {
             "stepper-dryrun",
-            "Dry run the stepper (shows the calculated sequence)\r\n\tstepper-dryrun [required number of steps]",
+            "Dry run the stepper (shows the calculated velocity sequence)\r\n\tstepper-dryrun [left/right/both]",
             true,
             NULL,
             on_stepper_dryrun
@@ -402,49 +656,49 @@ void cli_initialise() {
 
     CliCommandBinding stepper_run_binding = {
             "stepper-run",
-            "Run the stepper\r\n\tstepper-run [required number of steps]([required number of steps])",
+            "Run the stepper\r\n\tstepper-run [left/right/both])",
             true,
             NULL,
             on_stepper_run
     };
     embeddedCliAddBinding(cli, stepper_run_binding);
 
-    // Metric motion commands
-    CliCommandBinding forwards_binding = {
-            "forwards",
-            "Move forwards the specified number of millimeters\r\n\tforwards [number of millimeters]",
-            true,
-            NULL,
-            on_forwards
-    };
-    embeddedCliAddBinding(cli, forwards_binding);
+    // // Metric motion commands
+    // CliCommandBinding forwards_binding = {
+    //         "forwards",
+    //         "Move forwards the specified number of millimeters\r\n\tforwards [number of millimeters]",
+    //         true,
+    //         NULL,
+    //         on_forwards
+    // };
+    // embeddedCliAddBinding(cli, forwards_binding);
 
-    CliCommandBinding backwards_binding = {
-            "backwards",
-            "Move backwards the specified number of millimeters\r\n\tbackwards [number of millimeters]",
-            true,
-            NULL,
-            on_backwards
-    };
-    embeddedCliAddBinding(cli, backwards_binding);
+    // CliCommandBinding backwards_binding = {
+    //         "backwards",
+    //         "Move backwards the specified number of millimeters\r\n\tbackwards [number of millimeters]",
+    //         true,
+    //         NULL,
+    //         on_backwards
+    // };
+    // embeddedCliAddBinding(cli, backwards_binding);
 
-    CliCommandBinding left_binding = {
-            "left",
-            "Turn left the specified number of degrees\r\n\tleft [number of degrees]",
-            true,
-            NULL,
-            on_left
-    };
-    embeddedCliAddBinding(cli, left_binding);
+    // CliCommandBinding left_binding = {
+    //         "left",
+    //         "Turn left the specified number of degrees\r\n\tleft [number of degrees]",
+    //         true,
+    //         NULL,
+    //         on_left
+    // };
+    // embeddedCliAddBinding(cli, left_binding);
 
-    CliCommandBinding right_binding = {
-            "right",
-            "Turn right the specified number of degrees\r\n\tright [number of degrees]",
-            true,
-            NULL,
-            on_right
-    };
-    embeddedCliAddBinding(cli, right_binding);
+    // CliCommandBinding right_binding = {
+    //         "right",
+    //         "Turn right the specified number of degrees\r\n\tright [number of degrees]",
+    //         true,
+    //         NULL,
+    //         on_right
+    // };
+    // embeddedCliAddBinding(cli, right_binding);
 
     // Show initial CLI instructions to user
     bluetooth_open = false;

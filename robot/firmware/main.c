@@ -36,7 +36,7 @@
 #include "ina260.h"
 #include "penservo.h"
 #include "oleddisplay.h"
-#include "stepconf.h"
+#include "stepper.h"
 #include "btcomms.h"
 
 int main() {
@@ -50,7 +50,7 @@ int main() {
     ina260_initialise();
     pen_servo_initialise();
     oled_initialise();
-    stepconf_initialise();
+    stepper_initialise();
     cli_initialise();
     btcomms_initialise();
 
