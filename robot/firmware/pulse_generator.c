@@ -37,7 +37,7 @@
 // Globals
 static PIO pulse_generator_pio;
 static uint pulse_generator_sm[2];
-static uint offset;
+static uint pulse_generator_offset;
 static int8_t pio_irq[2];
 
 // Callback global
@@ -68,7 +68,7 @@ void pulse_generator_pio_start()
     pulse_generator_pio = pio0;
 
     // Load PIO 0 and claim SM 0 and 1
-    offset = pio_add_program(pulse_generator_pio, &pulse_generator_program);
+    pulse_generator_offset = pio_add_program(pulse_generator_pio, &pulse_generator_program);
     pulse_generator_sm[0] = (int8_t)pio_claim_unused_sm(pulse_generator_pio, false);
     pulse_generator_sm[1] = (int8_t)pio_claim_unused_sm(pulse_generator_pio, false);
 
@@ -84,8 +84,8 @@ void pulse_generator_pio_start()
     irq_set_exclusive_handler(pio_irq[1], pulse_generator_interrupt_handler);  // Set the handler function in the NVIC
     irq_set_enabled(pio_irq[1], true); // Enabling the PIO0_IRQ_1
 
-    pulse_generator_program_init(pulse_generator_pio, pulse_generator_sm[0], offset, PG_GPIO0);
-    pulse_generator_program_init(pulse_generator_pio, pulse_generator_sm[1], offset, PG_GPIO1);
+    pulse_generator_program_init(pulse_generator_pio, pulse_generator_sm[0], pulse_generator_offset, PG_GPIO0);
+    pulse_generator_program_init(pulse_generator_pio, pulse_generator_sm[1], pulse_generator_offset, PG_GPIO1);
 }
 
 // Stop the PIOs and free the PIOs and SMs
@@ -102,8 +102,8 @@ void pulse_generator_pio_stop()
     irq_remove_handler(pio_irq[1], pulse_generator_interrupt_handler);
 
     // Cleanup PIO
-    pio_remove_program_and_unclaim_sm(&pulse_generator_program, pulse_generator_pio, pulse_generator_sm[0], offset);
-    pio_remove_program_and_unclaim_sm(&pulse_generator_program, pulse_generator_pio, pulse_generator_sm[1], offset);
+    pio_remove_program_and_unclaim_sm(&pulse_generator_program, pulse_generator_pio, pulse_generator_sm[0], pulse_generator_offset);
+    pio_remove_program_and_unclaim_sm(&pulse_generator_program, pulse_generator_pio, pulse_generator_sm[1], pulse_generator_offset);
 }
 
 // Set the step generator PIO:

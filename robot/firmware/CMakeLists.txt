@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME}
     velocity.c
     stepper.c
     metric.c
+    ws2812.c
     ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/src/embedded_cli.c
     ${CMAKE_CURRENT_LIST_DIR}/pico-ssd1306/ssd1306.c
     )
@@ -32,6 +33,7 @@ pico_add_extra_outputs(${PROJECT_NAME})
 
 # PIO code generation
 pico_generate_pio_header(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/pulse_generator.pio)
+pico_generate_pio_header(${PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio)
 
 target_link_libraries(${PROJECT_NAME} 
     pico_stdlib
