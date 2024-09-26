@@ -61,27 +61,11 @@ int main() {
     // Turn on the PICO W system LED
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
-    // Turn on the eye-balls
-    ws2812_put_pixel(255,0,0);
-    ws2812_put_pixel(0,255,0);
-
     // Loop and process any non-interrupt driven activities
     int b=0;
     while (true) {
         // Process the CLI
         cli_process();
-
-        // Turn on the eye-balls
-        if (b < 25) {
-            ws2812_put_pixel(255,0,0);
-            ws2812_put_pixel(0,255,0);
-        } else {
-            ws2812_put_pixel(0,255,0);
-            ws2812_put_pixel(255,0,0);
-        }
-
-        b++;
-        if (b==50) b=0;
 
         // Sleep a bit
         sleep_ms(10);

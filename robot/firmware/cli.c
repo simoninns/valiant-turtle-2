@@ -38,6 +38,7 @@
 #include "stepper.h"
 #include "velocity.h"
 #include "metric.h"
+#include "ws2812.h"
 #include "btcomms.h"
 
 #include "cli.h"
@@ -45,6 +46,9 @@
 // Globals
 EmbeddedCli *cli;
 bool bluetooth_open;
+
+uint8_t left_led[3];
+uint8_t right_led[3];
 
 // ------------------------------------------------------------------------
 
@@ -106,6 +110,76 @@ void on_pen(EmbeddedCli *cli, char *args, void *context) {
         // Missing argument
         cli_printf("Pen command missing argument - Usage: pen [up/down/off]\r\n");
     }
+}
+
+void on_eye_left(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 3 arguments...
+    if (embeddedCliGetTokenCount(args) != 3) {
+        // Missing argument
+        cli_printf("eye-left command missing argument(s)\r\n");
+        cli_printf("  Usage: eye-left [Red] [Green] [Blue]\r\n");
+        return;
+    }
+
+    int32_t red = atoi(embeddedCliGetToken(args, 1));
+    int32_t green = atoi(embeddedCliGetToken(args, 2));
+    int32_t blue = atoi(embeddedCliGetToken(args, 3));
+
+    if (red < 0 || green < 0 || blue < 0) {
+        // Invalid argument
+        cli_printf("eye-left command invalid argument - Red, green and blue must be 0-255\r\n");
+        return;
+    }
+
+    if (red > 255 || green > 255 || blue > 255) {
+        // Invalid argument
+        cli_printf("eye-left command invalid argument - Red, green and blue must be 0-255\r\n");
+        return;
+    }
+
+    left_led[0] = (uint8_t)red;
+    left_led[1] = (uint8_t)green;
+    left_led[2] = (uint8_t)blue;
+
+    ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
+    ws2812_put_pixel(right_led[0], right_led[1], right_led[2]);
+}
+
+void on_eye_right(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 3 arguments...
+    if (embeddedCliGetTokenCount(args) != 3) {
+        // Missing argument
+        cli_printf("eye-right command missing argument(s)\r\n");
+        cli_printf("  Usage: eye-right [Red] [Green] [Blue]\r\n");
+        return;
+    }
+
+    int32_t red = atoi(embeddedCliGetToken(args, 1));
+    int32_t green = atoi(embeddedCliGetToken(args, 2));
+    int32_t blue = atoi(embeddedCliGetToken(args, 3));
+
+    if (red < 0 || green < 0 || blue < 0) {
+        // Invalid argument
+        cli_printf("eye-right command invalid argument - Red, green and blue must be 0-255\r\n");
+        return;
+    }
+
+    if (red > 255 || green > 255 || blue > 255) {
+        // Invalid argument
+        cli_printf("eye-right command invalid argument - Red, green and blue must be 0-255\r\n");
+        return;
+    }
+
+    right_led[0] = (uint8_t)red;
+    right_led[1] = (uint8_t)green;
+    right_led[2] = (uint8_t)blue;
+
+    ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
+    ws2812_put_pixel(right_led[0], right_led[1], right_led[2]);
 }
 
 void on_stepper_enable(EmbeddedCli *cli, char *args, void *context) {
@@ -679,6 +753,24 @@ void cli_initialise() {
     };
     embeddedCliAddBinding(cli, pen_binding);
 
+    CliCommandBinding eye_left_binding = {
+            "eye-left",
+            "Set the colour of the left eye\r\n\teye-left [Red] [Green] [Blue]",
+            true,
+            NULL,
+            on_eye_left
+    };
+    embeddedCliAddBinding(cli, eye_left_binding);
+
+    CliCommandBinding eye_right_binding = {
+            "eye-right",
+            "Set the colour of the right eye\r\n\teye-right [Red] [Green] [Blue]",
+            true,
+            NULL,
+            on_eye_right
+    };
+    embeddedCliAddBinding(cli, eye_right_binding);
+
     CliCommandBinding stepper_enable = {
             "stepper-enable",
             "Enable the stepper motors",
@@ -796,6 +888,17 @@ void cli_initialise() {
             on_metric_right
     };
     embeddedCliAddBinding(cli, metric_right_binding);
+
+    // Initialise the LED eyes
+    left_led[0] = 0;
+    left_led[1] = 0;
+    left_led[2] = 0;
+    right_led[0] = 0;
+    right_led[1] = 0;
+    right_led[2] = 0;
+
+    ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
+    ws2812_put_pixel(right_led[0], right_led[1], right_led[2]);
 
     // Show initial CLI instructions to user
     bluetooth_open = false;

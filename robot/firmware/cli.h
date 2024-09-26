@@ -35,6 +35,9 @@ static void on_about(EmbeddedCli *cli, char *args, void *context);
 static void on_clear_cli(EmbeddedCli *cli, char *args, void *context);
 static void on_power(EmbeddedCli *cli, char *args, void *context);
 static void on_pen(EmbeddedCli *cli, char *args, void *context);
+static void on_eye_left(EmbeddedCli *cli, char *args, void *context);
+static void on_eye_right(EmbeddedCli *cli, char *args, void *context);
+
 void on_stepper_enable(EmbeddedCli *cli, char *args, void *context);
 void on_stepper_disable(EmbeddedCli *cli, char *args, void *context);
 
