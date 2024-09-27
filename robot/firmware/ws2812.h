@@ -28,7 +28,7 @@
 #define WS2812_H_
 
 // Define GPIO for WS2812 data out
-#define WS2812_DATAOUT_GPIO 14
+#define WS2812_DATAOUT_GPIO 7
 
 #define IS_RGBW false
 
