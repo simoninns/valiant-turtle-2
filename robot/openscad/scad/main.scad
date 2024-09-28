@@ -41,6 +41,7 @@ include <pen_holder_top.scad>
 include <servo.scad>
 include <servo_holder.scad>
 include <battery.scad>
+include <battery_clip.scad>
 include <pen_holder_cap.scad>
 include <logotype.scad>
 include <toggle_switch.scad>
@@ -95,6 +96,7 @@ display_battery_pack_lower_cover = "No"; // [Yes, No]
 display_battery_pack_connector_cover = "No"; // [Yes, No]
 display_battery_pack_connector_lock = "No"; // [Yes, No]
 display_battery_pack_bms_bracket = "No"; // [Yes, No]
+display_battery_clip = "No"; // [Yes, No]
 display_eye_surround = "No"; // [Yes, No]
 display_eye_light_pipe = "No"; // [Yes, No]
 display_eye_light_pipe_surround = "No"; // [Yes, No]
@@ -118,9 +120,10 @@ display_ball_bearing = "No"; // [Yes, No]
 display_pen = "No"; // [Yes, No]
 display_servo = "No"; // [Yes, No]
 display_batteries = "No"; // [Yes, No]
-display_battery_pack_internal = "No"; // [Yes, No]
+display_battery_pack_bms_pcb = "No"; // [Yes, No]
 display_toggle_switch = "No"; // [Yes, No]
 display_logotype_2D = "No"; // [Yes, No]
+display_battery_clip_contacts = "No"; // [Yes, No]
 
 /* [Screws] */
 display_motor_mounts_screws = "No"; // [Yes, No]
@@ -176,6 +179,7 @@ module main() {
     d_battery_pack_connector_cover = (display_battery_pack_connector_cover == "Yes") ? true:false;
     d_battery_pack_connector_lock = (display_battery_pack_connector_lock == "Yes") ? true:false;
     d_battery_pack_bms_bracket = (display_battery_pack_bms_bracket == "Yes") ? true:false;
+    d_battery_clip = (display_battery_clip == "Yes") ? true:false;
     d_eye_surround = (display_eye_surround == "Yes") ? true:false;
     d_eye_light_pipe = (display_eye_light_pipe == "Yes") ? true:false;
     d_eye_light_pipe_surround = (display_eye_light_pipe_surround == "Yes") ? true:false;
@@ -199,9 +203,10 @@ module main() {
     d_pen = (display_pen == "Yes") ? true:false;
     d_servo = (display_servo == "Yes") ? true:false;
     d_batteries = (display_batteries == "Yes") ? true:false;
-    d_battery_pack_internal = (display_battery_pack_internal == "Yes") ? true:false;
+    d_battery_pack_bms_pcb = (display_battery_pack_bms_pcb == "Yes") ? true:false;
     d_toggle_switch = (display_toggle_switch == "Yes") ? true:false;
     d_logotype_2D = (display_logotype_2D == "Yes") ? true:false;
+    d_battery_clip_contacts = (display_battery_clip_contacts == "Yes") ? true:false;
 
     // Screws
     d_motor_mounts_screws = (display_motor_mounts_screws == "Yes") ? true:false;
@@ -248,6 +253,7 @@ module main() {
         if (d_battery_pack_connector_cover) render_battery_pack_connector_cover(toPrint);
         if (d_battery_pack_connector_lock) render_battery_pack_connector_lock(toPrint);
         if (d_battery_pack_bms_bracket) render_battery_pack_bms_bracket(toPrint);
+        if (d_battery_clip) render_battery_clip(toPrint);
         if (d_eye_surround) render_eye_surround(toPrint);
         if (d_eye_light_pipe) render_eye_light_pipe(toPrint);
         if (d_eye_light_pipe_surround) render_eye_light_pipe_surround(toPrint);
@@ -271,9 +277,10 @@ module main() {
         if (d_pen) render_pen(toPrint, penUp);
         if (d_servo) render_micro_servo(toPrint);
         if (d_batteries) render_batteries(toPrint);
-        if (d_battery_pack_internal) render_battery_pack_internal(toPrint);
+        if (d_battery_pack_bms_pcb) render_battery_pack_bms_pcb(toPrint);
         if (d_toggle_switch) render_toggle_switch(toPrint);
         if (d_logotype_2D) render_logotype_2D(toPrint);
+        if (d_battery_clip_contacts) render_battery_clip_contacts(toPrint);
 
         // Render screws
         if (d_motor_mounts_screws) render_motor_mounts_screws(toPrint);

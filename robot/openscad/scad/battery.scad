@@ -160,17 +160,10 @@ module bms_pcb()
     }
 }
 
-// Battery holders and BMS PCB mock-up
-module battery_pack_internal()
+// BMS PCB mock-up
+module battery_pack_bms_pcb()
 {
-    move([0,0,0]) {
-        move([0,-12.5,18]) {
-            move([0,-2.5,0]) yrot(90) xrot(90) zrot(180) battery_18650_holder();
-            move([0,+2.5,0]) yrot(90) xrot(-90) zrot(180) battery_18650_holder();
-        }
-
-        move([0,-12.5,-6.5]) yrot(180) bms_pcb();
-    }
+    move([0,-12.5,-6.5]) yrot(180) bms_pcb();
 }
 
 // Printable parts ----------------------------------------------------------------------
@@ -605,9 +598,9 @@ module render_battery_screws(toPrint)
     }
 }
 
-module render_battery_pack_internal(toPrint)
+module render_battery_pack_bms_pcb(toPrint)
 {
     if (!toPrint) {
-        battery_pack_internal();
+        battery_pack_bms_pcb();
     }
 }
