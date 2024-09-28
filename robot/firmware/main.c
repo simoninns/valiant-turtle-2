@@ -35,7 +35,6 @@
 #include "i2cbus.h"
 #include "ina260.h"
 #include "penservo.h"
-#include "oleddisplay.h"
 #include "stepper.h"
 #include "metric.h"
 #include "ws2812.h"
@@ -51,7 +50,6 @@ int main() {
     i2c_initialise();
     ina260_initialise();
     pen_servo_initialise();
-    //oled_initialise();
     stepper_initialise();
     metric_initialise();
     ws2812_initialise();
@@ -66,10 +64,6 @@ int main() {
     while (true) {
         // Process the CLI
         cli_process();
-
-        ws2812_put_pixel(255,0,0);
-        ws2812_put_pixel(0,255,0);
-        ws2812_put_pixel(0,0,255);
 
         // Sleep a bit
         sleep_ms(10);
