@@ -44,7 +44,6 @@ include <battery.scad>
 include <pen_holder_cap.scad>
 include <logotype.scad>
 include <toggle_switch.scad>
-include <display_mount.scad>
 include <stand.scad>
 
 // // Viewport translation
@@ -99,7 +98,6 @@ display_battery_pack_bms_bracket = "No"; // [Yes, No]
 display_eye_surround = "No"; // [Yes, No]
 display_eye_light_pipe = "No"; // [Yes, No]
 display_eye_light_pipe_surround = "No"; // [Yes, No]
-display_display_mount = "No"; // [Yes, No]
 display_stand = "No"; // [Yes, No]
 display_stand_battery_cover = "No"; // [Yes, No]
 
@@ -181,7 +179,6 @@ module main() {
     d_eye_surround = (display_eye_surround == "Yes") ? true:false;
     d_eye_light_pipe = (display_eye_light_pipe == "Yes") ? true:false;
     d_eye_light_pipe_surround = (display_eye_light_pipe_surround == "Yes") ? true:false;
-    d_display_mount = (display_display_mount == "Yes") ? true:false;
     d_stand = (display_stand == "Yes") ? true:false;
     d_stand_battery_cover = (display_stand_battery_cover == "Yes") ? true:false;
 
@@ -254,7 +251,6 @@ module main() {
         if (d_eye_surround) render_eye_surround(toPrint);
         if (d_eye_light_pipe) render_eye_light_pipe(toPrint);
         if (d_eye_light_pipe_surround) render_eye_light_pipe_surround(toPrint);
-        if (d_display_mount) render_display_mount(toPrint);
         if (d_stand) render_stand(toPrint);
         if (d_stand_battery_cover) render_stand_battery_cover(toPrint);
 

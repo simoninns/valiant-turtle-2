@@ -77,80 +77,13 @@ module main_pcb_mounts_back()
     }
 }
 
-module smPushButton()
-{
-    move([0,0,2.5]) {
-        color([0.8,0.8,0.8]) cuboid([6.2, 6.2, 3.3], chamfer=0.5, edges=EDGES_ALL-EDGES_BOTTOM);
-        move([0,0,2]) color([0.2,0.2,0.2]) cyl(h=1, d=3.5);
-    }
-}
-
-module main_pcb_buttons()
-{
-    move([3+3.5,53 - 102,0]) smPushButton();
-    move([-3-3.5,53 - 102,0]) smPushButton();
-}
-
-module main_pcb_oledDisplay()
-{
-    move([0,-30,1 + 3]) {
-        difference() {
-            color([0,0.3,0.8]) cuboid([28,28,1]); // PCB
-
-            // Screw holes
-            move([11.75,11.75,0]) cyl(h=4,d=2);
-            move([-11.75,11.75,0]) cyl(h=4,d=2);
-            move([11.75,-12.25,0]) cyl(h=4,d=2);
-            move([-11.75,-12.25,0]) cyl(h=4,d=2);
-        }
-
-        // Screen
-        move([0,1,1.5]) color([0.2,0.2,0.2]) cuboid([28,19,2]);
-        move([0,3,2.75 - 0.125]) color([0.4,0.4,0.4]) cuboid([28,15,0.25]);
-    }
-
-    move([0,57 - 75,0]) {
-        color([0.8,0.8,0.8]) { 
-            move([-(2.54/2),0,0]) cyl(h=11,d=0.6, chamfer=0.2);
-            move([(2.54/2),0,0]) cyl(h=11,d=0.6, chamfer=0.2);
-            move([-(2.54) - (2.54/2) ,0,0]) cyl(h=11,d=0.6, chamfer=0.2);
-            move([(2.54) + (2.54/2),0,0]) cyl(h=11,d=0.6, chamfer=0.2);
-        }
-
-        move([0,0,1.75]) color([0.2,0.2,0.2]) cuboid([10,2.5,2.5], chamfer=0.25, edges=EDGES_ALL-EDGES_TOP);
-    }
-}
-
-module main_pcb_displayMount()
-{
-    move([0,37 - 71,0]) {
-        // Display M2.5 Screw holes
-        move([15,19.5,0]) cyl(h=4,d=2.5);
-        move([-15,19.5,0]) cyl(h=4,d=2.5);
-        move([15,-19.5,0]) cyl(h=4,d=2.5);
-        move([-15,-19.5,0]) cyl(h=4,d=2.5);
-    }
-
-    // PCB header
-    move([0,57 - 75,0]) {
-        move([-(2.54/2),0,0]) cyl(h=4,d=1);
-        move([(2.54/2),0,0]) cyl(h=4,d=1);
-        move([-(2.54) - (2.54/2) ,0,0]) cyl(h=4,d=1);
-        move([(2.54) + (2.54/2),0,0]) cyl(h=4,d=1);
-    }
-}
-
 module main_pcb_complete()
 {
     color([0,0.6,0,1]) difference() {
         main_pcb();
         main_pcb_penhole();
         main_pcb_screws();
-        main_pcb_displayMount();
     }
-
-    main_pcb_buttons();
-    main_pcb_oledDisplay();
 }
 
 module main_pcb()
