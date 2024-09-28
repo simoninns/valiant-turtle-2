@@ -120,39 +120,40 @@ module battery_clip_body()
 {
     difference() {
         union() {
-            move([0,0,3.5+2.5]) cuboid([41,76,12], chamfer=0.5);
-            move([0,+36.25,7+4]) cuboid([41,3.5,12], chamfer=0.5);
-            move([0,-36.25,7+4]) cuboid([41,3.5,12], chamfer=0.5);
+            move([0,0,3.5+3]) cuboid([43,76,13], chamfer=0.5);
+            move([0,+36.25,7+4]) cuboid([43,3.5,12], chamfer=0.5);
+            move([0,-36.25,7+4]) cuboid([43,3.5,12], chamfer=0.5);
         }
 
-        move([-9.5,0,8.5]) ycyl(h=71,d=18);
-        move([+9.5,0,8.5]) ycyl(h=71,d=18);
+        // Battery recesses
+        move([-10.25,0,8.5]) ycyl(h=69,d=19);
+        move([+10.25,0,8.5]) ycyl(h=69,d=19);
 
         // Screw recesses
-        move([0,-(55.5/2),5+2]) cyl(h=12,d1=8, d2=12);
-        move([0,+(55.5/2),5+2]) cyl(h=12,d1=8, d2=12);
+        move([0,-(55.5/2),7.5]) cyl(h=13,d1=8, d2=12);
+        move([0,+(55.5/2),7.5]) cyl(h=13,d1=8, d2=12);
 
         // Screw holes
         move([0,-(55.5/2),0]) cyl(h=8,d=3);
         move([0,+(55.5/2),0]) cyl(h=8,d=3);
 
         // Positive markers
-        move([16.5,38.25,8]) {
+        move([17,38.25,8]) {
             cuboid([5,1,1]);
             cuboid([1,1,5]);
         }
 
-        move([-16.5,-38.25,8]) {
+        move([-17,-38.25,8]) {
             cuboid([5,1,1]);
             cuboid([1,1,5]);
         }
 
         // Negative markers
-        move([-16.5,38.25,8]) {
+        move([-17,38.25,8]) {
             cuboid([5,1,1]);
         }
 
-        move([+16.5,-38.25,8]) {
+        move([+17,-38.25,8]) {
             cuboid([5,1,1]);
         }
 
@@ -167,8 +168,6 @@ module battery_clip_body()
         move([0,39.5,6.5]) cuboid([20,4,4], chamfer=1);
         move([0,-39.5,6.5]) cuboid([20,4,4], chamfer=1);
     }
-
-    
 }
 
 module battery_clip()
