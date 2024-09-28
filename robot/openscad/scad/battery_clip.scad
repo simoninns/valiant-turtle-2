@@ -120,47 +120,52 @@ module battery_clip_body()
 {
     difference() {
         union() {
-            move([0,0,3.5]) cuboid([41,78,7], chamfer=0.5);
-            move([0,+37.25,7+4]) cuboid([41,3.5,12], chamfer=0.5);
-            move([0,-37.25,7+4]) cuboid([41,3.5,12], chamfer=0.5);
+            move([0,0,3.5+2.5]) cuboid([41,76,12], chamfer=0.5);
+            move([0,+36.25,7+4]) cuboid([41,3.5,12], chamfer=0.5);
+            move([0,-36.25,7+4]) cuboid([41,3.5,12], chamfer=0.5);
         }
 
-        move([-9.5,0,8]) ycyl(h=71,d=18);
-        move([+9.5,0,8]) ycyl(h=71,d=18);
+        move([-9.5,0,8.5]) ycyl(h=71,d=18);
+        move([+9.5,0,8.5]) ycyl(h=71,d=18);
 
         // Screw recesses
-        move([0,-(55.5/2),5]) cyl(h=8,d1=8, d2=12);
-        move([0,+(55.5/2),5]) cyl(h=8,d1=8, d2=12);
+        move([0,-(55.5/2),5+2]) cyl(h=12,d1=8, d2=12);
+        move([0,+(55.5/2),5+2]) cyl(h=12,d1=8, d2=12);
 
         // Screw holes
         move([0,-(55.5/2),0]) cyl(h=8,d=3);
         move([0,+(55.5/2),0]) cyl(h=8,d=3);
 
         // Positive markers
-        move([16.5,39.25,8]) {
+        move([16.5,38.25,8]) {
             cuboid([5,1,1]);
             cuboid([1,1,5]);
         }
 
-        move([-16.5,-39.25,8]) {
+        move([-16.5,-38.25,8]) {
             cuboid([5,1,1]);
             cuboid([1,1,5]);
         }
 
         // Negative markers
-        move([-16.5,39.25,8]) {
+        move([-16.5,38.25,8]) {
             cuboid([5,1,1]);
         }
 
-        move([+16.5,-39.25,8]) {
+        move([+16.5,-38.25,8]) {
             cuboid([5,1,1]);
         }
 
         // Orientation tab
         move([-18.75 + 1.5,-38.25 + 2,0]) cyl(h=1.1,d1=3, d2=2);
 
-        move([0,16,6]) cuboid([48,24,7], chamfer=2);
-        move([0,-16,6]) cuboid([48,24,7], chamfer=2);
+        // Side cut-outs to help get the batteries in and out
+        move([0,18,11]) cuboid([48,22,9], chamfer=2);
+        move([0,-18,11]) cuboid([48,22,9], chamfer=2);
+
+        // Wiring gully
+        move([0,39.5,6.5]) cuboid([20,4,4], chamfer=1);
+        move([0,-39.5,6.5]) cuboid([20,4,4], chamfer=1);
     }
 
     
@@ -172,13 +177,13 @@ module battery_clip()
         battery_clip_body();
 
         xrot(90) {
-            move([10.25,9.01,37.25]) battery_contact_mask();
-            move([-10.25,9.01,37.25]) battery_contact_mask();
+            move([10.25,9.01,36.25]) battery_contact_mask();
+            move([-10.25,9.01,36.25]) battery_contact_mask();
         }
 
         xrot(90) {
-            move([10.25,9.01,-37.25]) yrot(180) battery_contact_mask();
-            move([-10.25,9.01,-37.25]) yrot(180) battery_contact_mask();
+            move([10.25,9.01,-36.25]) yrot(180) battery_contact_mask();
+            move([-10.25,9.01,-36.25]) yrot(180) battery_contact_mask();
         }
     }
 }
@@ -186,13 +191,13 @@ module battery_clip()
 module battery_clips()
 {
     xrot(-90) zrot(180) {
-        move([10.25,9,-37.25]) battery_contact_positive();
-        move([-10.25,9,-37.25]) battery_contact_negative();
+        move([10.25,9,-36.25]) battery_contact_positive();
+        move([-10.25,9,-36.25]) battery_contact_negative();
     }
 
     xrot(90) zrot(0) {
-        move([10.25,9,-37.25]) battery_contact_positive();
-        move([-10.25,9,-37.25]) battery_contact_negative();
+        move([10.25,9,-36.25]) battery_contact_positive();
+        move([-10.25,9,-36.25]) battery_contact_negative();
     }
 }
 

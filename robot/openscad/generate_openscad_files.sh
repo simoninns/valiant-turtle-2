@@ -62,6 +62,8 @@ echo "  battery_pack_connector_lock.stl"
 openscad -o ./stl/battery_pack_connector_lock.stl -D 'for_printing="Printing"' -D 'display_battery_pack_connector_lock="Yes"' ./scad/main.scad
 echo "  battery_pack_bms_bracket.stl"
 openscad -o ./stl/battery_pack_bms_bracket.stl -D 'for_printing="Printing"' -D 'display_battery_pack_bms_bracket="Yes"' ./scad/main.scad
+echo "  battery_clip.stl"
+openscad -o ./stl/battery_clip.stl -D 'for_printing="Printing"' -D 'display_battery_clip="Yes"' ./scad/main.scad
 echo "  eye_surround.stl"
 openscad -o ./stl/eye_surround.stl -D 'for_printing="Printing"' -D 'display_eye_surround="Yes"' ./scad/main.scad
 echo "  eye_light_pipe.stl"
