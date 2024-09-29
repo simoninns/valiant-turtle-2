@@ -55,11 +55,11 @@ module battery18650()
 module batteries()
 {
     move([0,-2,0]) {
-        move([19,10.25,0]) battery18650();
-        move([19,-10.25,0]) xrot(180) battery18650();
+        move([19,10.25,1]) battery18650();
+        move([19,-10.25,-1]) xrot(180) battery18650();
 
-        move([-5.5,10.25,0]) xrot(180) battery18650();
-        move([-5.5,-10.25,0]) battery18650();
+        move([-5.5,10.25,-1]) xrot(180) battery18650();
+        move([-5.5,-10.25,1]) battery18650();
     }
 }
 
@@ -112,7 +112,7 @@ module bms_pcb()
 // BMS PCB mock-up
 module battery_pack_bms_pcb()
 {
-    move([0,-12.5,-8.5]) yrot(180) bms_pcb();
+    move([0,-12.5,-8.5-8]) yrot(180) bms_pcb();
 }
 
 // Printable parts ----------------------------------------------------------------------
@@ -159,59 +159,59 @@ module bullet_connector_female_mask()
 module battery_pack_screw_columns()
 {
     // Screw columns
-    move([45.5,18,0]) {
+    move([45.5,18,-4]) {
         difference() {
             hull() {
-                cyl(h=60,d=8);
-                move([-4,0,0]) cuboid([1,8,60]); 
+                cyl(h=52,d=8);
+                move([-4,0,0]) cuboid([1,8,52]); 
             }
 
             // Threaded insert
             cyl(h=64,d=3.25);
-            move([0,0,+(34 - 6)]) cyl(h=8,d=4);
-            move([0,0,-(34 - 6)]) cyl(h=8,d=4);
+            move([0,0,+(34 - 10)]) cyl(h=8,d=4);
+            move([0,0,-(34 - 10)]) cyl(h=8,d=4);
         }
     }
 
-    move([45.5,-18,0]) {
+    move([45.5,-18,-4]) {
         difference() {
             hull() {
-                cyl(h=60,d=8);
-                move([-4,0,0]) cuboid([1,8,60]); 
+                cyl(h=52,d=8);
+                move([-4,0,0]) cuboid([1,8,52]); 
             }
 
             // Threaded insert
             cyl(h=64,d=3.25);
-            move([0,0,+(34 - 6)]) cyl(h=8,d=4);
-            move([0,0,-(34 - 6)]) cyl(h=8,d=4);
+            move([0,0,+(34 - 10)]) cyl(h=8,d=4);
+            move([0,0,-(34 - 10)]) cyl(h=8,d=4);
         }
     }
 
-    move([-45.5,18,0]) {
+    move([-45.5,18,-4]) {
         difference() {
             hull() {
-                cyl(h=60,d=8);
-                move([+4,0,0]) cuboid([1,8,60]); 
+                cyl(h=52,d=8);
+                move([+4,0,0]) cuboid([1,8,52]); 
             }
 
             // Threaded insert
             cyl(h=64,d=3.25);
-            move([0,0,+(34 - 6)]) cyl(h=8,d=4);
-            move([0,0,-(34 - 6)]) cyl(h=8,d=4);
+            move([0,0,+(34 - 10)]) cyl(h=8,d=4);
+            move([0,0,-(34 - 10)]) cyl(h=8,d=4);
         }
     }
 
-    move([-45.5,-18,0]) {
+    move([-45.5,-18,-4]) {
         difference() {
             hull() {
-                cyl(h=60,d=8);
-                move([+4,0,0]) cuboid([1,8,60]); 
+                cyl(h=52,d=8);
+                move([+4,0,0]) cuboid([1,8,52]); 
             }
 
             // Threaded insert
             cyl(h=64,d=3.25);
-            move([0,0,+(34 - 6)]) cyl(h=8,d=4);
-            move([0,0,-(34 - 6)]) cyl(h=8,d=4);
+            move([0,0,+(34 - 10)]) cyl(h=8,d=4);
+            move([0,0,-(34 - 10)]) cyl(h=8,d=4);
         }
     }
 }
@@ -222,8 +222,7 @@ module battery_pack()
         move([0,-12.5,10]) {
             difference() {
                 union() {
-                    cuboid([86-0.5,49-0.5,60], chamfer=1, edges=EDGES_Z_ALL);
-                    //move([0,0,-8]) cuboid([86-0.5,49-0.5,10], chamfer=1, edges=EDGES_Z_ALL); // TEMP
+                    cuboid([86-0.5,49-0.5,60 -16], chamfer=1, edges=EDGES_Z_ALL);
                     move([0,0,-21.5]) cuboid([88,49-0.5,17], chamfer=1, edges=EDGES_Z_ALL);
 
                     // Battery connector
@@ -267,14 +266,14 @@ module battery_pack()
             // Clip base
             move([-23.5,28,-29]) cuboid([20,12,2]);
 
-            // Shelf for fastener
-            move([-23.5,21.5,-22]) zrot(90) yrot(180) right_triangle([1, 15, 1], center=true);
-
             battery_pack_clip();
             xflip() battery_pack_clip();
 
             battery_pack_screw_columns();
         }
+
+        // Recess for cover lock
+        move([-23.5,9.75,-4.5]) cuboid([18.25,2,14.5]);
     }
 }
 
@@ -366,7 +365,7 @@ module battery_pack_lower_cover()
 
 module battery_pack_bms_bracket()
 {
-    move([0,-12.5,-51]) {
+    move([0,-12.5,-51 - 8]) {
         // BMS mounting bracket
         move([0,0,45]) {
             cuboid([73,5,3], chamfer = 0.5);
@@ -380,7 +379,7 @@ module battery_pack_bms_bracket()
 
 module battery_pack_upper_cover()
 {
-    move([0,-12.5,41.5]) {
+    move([0,-12.5,41.5 - 8]) {
         difference() {
             union() {
                 cuboid([85.5,49-0.5,3], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
@@ -447,18 +446,16 @@ module battery_pack_upper_cover()
             move([-40.5,0,-34.75]) cuboid([10,10,7.5], chamfer = 1);
             move([-40.5,0,-14.25]) cuboid([10,10,7.5], chamfer = 1);
         }
-
-        
     }
 }
 
 module battery_pack_connector_lock()
 {
-    move([-23.5,9,-4.5]) {
-        cuboid([18,1,14]);
+    move([-23.5,10.125,-4.5]) {
+        cuboid([18.25,1,14]);
 
-        move([8.5,3,0]) cuboid([1.25,7,14]);
-        move([-8.5,3,0]) cuboid([1.25,7,14]);
+        move([8.5,3,0]) cuboid([1.25,6,14]);
+        move([-8.5,3,0]) cuboid([1.25,6,14]);
     }
 }
 
@@ -467,7 +464,7 @@ module render_battery_pack_bms_bracket(toPrint)
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) battery_pack_bms_bracket();
     } else {
-        move([0,12.5,7.5]) battery_pack_bms_bracket();
+        move([0,12.5,15.5]) battery_pack_bms_bracket();
     }
 }
 
@@ -503,7 +500,7 @@ module render_battery_pack_upper_cover(toPrint)
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) battery_pack_upper_cover();
     } else {
-        move([0,-12,43]) xrot(180) battery_pack_upper_cover();
+        move([0,-12,43 -8]) xrot(180) battery_pack_upper_cover();
     }
 }
 
@@ -526,7 +523,7 @@ module render_battery_pack_connector_lock(toPrint)
     if (!toPrint) {
         color([0.6,0.6,0.6,1]) battery_pack_connector_lock();
     } else {
-        move([23.5,-4.5,-8.5]) xrot(90) battery_pack_connector_lock();
+        move([23.5,-4.5,-9.5 - 0.125]) xrot(90) battery_pack_connector_lock();
     }
 }
 
@@ -535,7 +532,7 @@ module render_batteries(toPrint)
     if (!toPrint) {
         // 4 Batteries
         color([0.3,0.8,0.5]) {
-            move([0,-19,19]) {
+            move([0,-19,11]) {
                 xrot(90) yrot(90) batteries();
             }
         }
@@ -552,10 +549,10 @@ module render_battery_screws(toPrint)
         move([-45.5,5.5,-21.5]) xrot(180) m3x10_screw();
 
         // Upper screws
-        move([45.5,-30.5,41.5]) m3x10_screw();
-        move([45.5,5.5,41.5])  m3x10_screw();
-        move([-45.5,-30.5,41.5])  m3x10_screw();
-        move([-45.5,5.5,41.5])  m3x10_screw();
+        move([45.5,-30.5,41.5 - 8]) m3x10_screw();
+        move([45.5,5.5,41.5 - 8])  m3x10_screw();
+        move([-45.5,-30.5,41.5 - 8])  m3x10_screw();
+        move([-45.5,5.5,41.5 - 8])  m3x10_screw();
     }
 }
 

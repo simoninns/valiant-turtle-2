@@ -205,7 +205,7 @@ module battery_clips()
 module render_battery_clip(toPrint)
 {
     if (!toPrint) {
-        color([0.2, 0.2, 0.2]) move([0,-12.5,17]) {
+        color([0.2, 0.2, 0.2]) move([0,-12.5,9]) {
             move([0,-2.5,0]) yrot(90) xrot(90) zrot(180) battery_clip();
             move([0,+2.5,0]) yrot(90) xrot(-90) zrot(180) battery_clip();
         }
@@ -217,7 +217,7 @@ module render_battery_clip(toPrint)
 module render_battery_clip_contacts(toPrint)
 {
     if (!toPrint) {
-        color([0.8, 0.8, 0.8]) move([0,-12.5,18]) {
+        color([0.8, 0.8, 0.8]) move([0,-12.5,10]) {
             move([0,-2.5,0]) yrot(90) xrot(90) zrot(180) battery_clips();
             move([0,+2.5,0]) yrot(90) xrot(-90) zrot(180) battery_clips();
         }
