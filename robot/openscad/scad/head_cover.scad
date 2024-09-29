@@ -46,8 +46,8 @@ module head_cover_half()
         move([0,-133,-4]) xrot(180) cyl(h=8,d=3.5);
 
         // Screw head recess
-        move([12,-58,-8.5]) xrot(180) cyl(h=4,d=5.25);
-        move([0,-133,-8.5]) xrot(180) cyl(h=4,d=5.25);
+        move([12,-58,-8.5]) xrot(180) cyl(h=4,d=5.5);
+        move([0,-133,-8.5]) xrot(180) cyl(h=4,d=5.5);
 
         move([0,-144 + 35,3.5 - 22]) cyl(h=40, d=2.5); // Hole to release bearing through
     }

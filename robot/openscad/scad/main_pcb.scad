@@ -105,7 +105,7 @@ module main_pcb_screw_washer()
             move([0,0,-0.5]) cyl(h=3,d=8);
             move([0,0,1.5]) cyl(h=1,d1=8, d2=7);
         }
-        move([0,0,1]) cyl(h=4,d=5.25);
+        move([0,0,1]) cyl(h=4,d=5.5);
         move([0,0,0]) cyl(h=6,d=3.5);
     }
 }

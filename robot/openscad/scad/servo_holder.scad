@@ -62,12 +62,12 @@ module servo_holder_edges()
             }
 
             // M3 Recess
-            move([8,12,-3.5 - 2]) cyl(h=3,d=5.25);
-            move([8,-8,-3.5 - 2]) cyl(h=3,d=5.25);
+            move([8,12,-3.5 - 2]) cyl(h=3,d=5.5);
+            move([8,-8,-3.5 - 2]) cyl(h=3,d=5.5);
 
             move([-61,0,0]) {
-                move([-8,12,-3.5 - 2]) cyl(h=3,d=5.25);
-                move([-8,-8,-3.5 - 2]) cyl(h=3,d=5.25);
+                move([-8,12,-3.5 - 2]) cyl(h=3,d=5.5);
+                move([-8,-8,-3.5 - 2]) cyl(h=3,d=5.5);
             }
 
             // Hole for toggle switch
