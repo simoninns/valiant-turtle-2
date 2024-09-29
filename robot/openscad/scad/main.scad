@@ -80,6 +80,7 @@ display_motor_mount_right = "No"; // [Yes, No]
 display_wheels = "No"; // [Yes, No]
 display_main_pcb_mounts_front = "No"; // [Yes, No]
 display_main_pcb_mounts_back = "No"; // [Yes, No]
+display_main_pcb_screw_washer = "No"; // [Yes, No]
 display_pen_holder_base = "No"; // [Yes, No]
 display_pen_holder_top_small = "No"; // [Yes, No]
 display_pen_holder_top_medium = "No"; // [Yes, No]
@@ -162,6 +163,7 @@ module main() {
     d_wheels = (display_wheels == "Yes") ? true:false;
     d_main_pcb_mounts_front = (display_main_pcb_mounts_front == "Yes") ? true:false;
     d_main_pcb_mounts_back = (display_main_pcb_mounts_back == "Yes") ? true:false;
+    d_main_pcb_screw_washer = (display_main_pcb_screw_washer == "Yes") ? true:false;
     d_head_cover = (display_head_cover == "Yes") ? true:false;
     d_pen_holder_base = (display_pen_holder_base == "Yes") ? true:false;
     d_pen_holder_top_small = (display_pen_holder_top_small == "Yes") ? true:false;
@@ -236,6 +238,7 @@ module main() {
         if (d_wheels) render_wheels(toPrint);
         if (d_main_pcb_mounts_front) render_main_pcb_mounts_front(toPrint);
         if (d_main_pcb_mounts_back) render_main_pcb_mounts_back(toPrint);
+        if (d_main_pcb_screw_washer) render_main_pcb_screw_washer(toPrint);
         if (d_head_cover) render_head_cover(toPrint);
         if (d_pen_holder_base) render_pen_holder_base(toPrint, penUp);
         if (d_pen_holder_top_small) render_pen_holder_top_small(toPrint, penUp);

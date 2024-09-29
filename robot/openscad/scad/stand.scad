@@ -90,6 +90,19 @@ module stand()
     }
 }
 
+// Make it a little easier to guide the screw into place
+module stand_screw_surround()
+{
+    difference() {
+        union() {
+            move([0,0,-0.5]) cyl(h=3,d=8);
+            move([0,0,1.5]) cyl(h=1,d1=8, d2=7);
+        }
+        move([0,0,1]) cyl(h=4,d=5.25);
+        move([0,0,0]) cyl(h=6,d=3.5);
+    }
+}
+
 module stand_battery_cover()
 {
     difference() {
@@ -116,16 +129,16 @@ module stand_battery_cover()
                 }
 
                 move([+45.5,18,0]) cyl(h=6,d=3.5);
-                move([+45.5,18,0 - 1]) cyl(h=3,d=6.5);
+                move([+45.5,18,0 - 1]) cyl(h=3,d=5.25);
 
                 move([+45.5,-18,0]) cyl(h=6,d=3.5);
-                move([+45.5,-18,0 - 1]) cyl(h=3,d=6.5);
+                move([+45.5,-18,0 - 1]) cyl(h=3,d=5.25);
 
                 move([-45.5,18,0]) cyl(h=6,d=3.5);
-                move([-45.5,18,0 - 1]) cyl(h=3,d=6.5);
+                move([-45.5,18,0 - 1]) cyl(h=3,d=5.25);
 
                 move([-45.5,-18,0]) cyl(h=6,d=3.5);
-                move([-45.5,-18,0 - 1]) cyl(h=3,d=6.5);
+                move([-45.5,-18,0 - 1]) cyl(h=3,d=5.25);
             }
         }
 
@@ -138,6 +151,13 @@ module stand_battery_cover()
 
         // Central pillar hole
         move([0,-12.5,-20])cyl(h=24, d=20);
+    }
+
+    // M3 Screw surrounds
+    move([0,-12.5,-40]) for (rot = [0:360/4: 360-1]) {
+        zrot(rot+(360/8)) move([0,14,20]) {
+            move([0,0,2]) stand_screw_surround();
+        }
     }
 }
 

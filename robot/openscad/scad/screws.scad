@@ -26,19 +26,19 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-// M3x10mm Philips head screw
+// M3x10mm DIN912 head screw (hex bolt)
 module m3x10_screw()
 {
-    //metric_bolt(headtype="button", size=3, l=10, details=false, phillips="#2", pitch=0);
-
     // Generic quick screw render (the BOSL version was really slow)
     color([0.8, 0.8, 0.8]) difference() {
         union() {
-            move([0,0,1]) cyl(h=2,d=6, chamfer2=0.5);
-            move([0,0,-5]) cyl(h=10,d=3);
+            move([0,0,1]) cyl(h=3,d=5, chamfer2=0.125);
+            move([0,0,-5.5]) cyl(h=10,d=3);
         }
 
-        move([0,0,2]) cuboid([1,3,1], chamfer=0.25);
-        move([0,0,2]) cuboid([3,1,1], chamfer=0.25);
+        move([0,0,2]) cyl(h=2,d=2.5, $fn=6);
+
+        //move([0,0,2]) cuboid([1,3,1], chamfer=0.25);
+        //move([0,0,2]) cuboid([3,1,1], chamfer=0.25);
     }
 }

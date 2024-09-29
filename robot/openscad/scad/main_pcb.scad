@@ -97,6 +97,19 @@ module main_pcb_penhole()
     move([0,29,20]) zcyl(h=80, d=14);
 }
 
+// Washer to protect PCB from metal screw head
+module main_pcb_screw_washer()
+{
+    difference() {
+        union() {
+            move([0,0,-0.5]) cyl(h=3,d=8);
+            move([0,0,1.5]) cyl(h=1,d1=8, d2=7);
+        }
+        move([0,0,1]) cyl(h=4,d=5.25);
+        move([0,0,0]) cyl(h=6,d=3.5);
+    }
+}
+
 module main_pcb_screws()
 {
      // M3 screw holes
@@ -150,8 +163,8 @@ module render_main_pcb_mounts_front_screws(toPrint)
         move([60,-20,-3]) xrot(180) m3x10_screw();
         move([-60,-20,-3]) xrot(180) m3x10_screw();
 
-        move([60,-20,52]) m3x10_screw();
-        move([-60,-20,52]) m3x10_screw();
+        move([60,-20,53]) m3x10_screw();
+        move([-60,-20,53]) m3x10_screw();
     }
 }
 
@@ -161,6 +174,19 @@ module render_main_pcb_mounts_back_screws(toPrint)
         move([7,52,-3]) xrot(180) m3x10_screw();
         move([-7,52,-3]) xrot(180) m3x10_screw();
 
-        move([0,52,52]) m3x10_screw();
+        move([0,52,53]) m3x10_screw();
+    }
+}
+
+module render_main_pcb_screw_washer(toPrint)
+{
+    if (!toPrint) {
+        color([0.2,0.2,0.2,1]) {
+            move([60,-20,53.5]) main_pcb_screw_washer();
+            move([-60,-20,53.5]) main_pcb_screw_washer();
+            move([0,52,53]) main_pcb_screw_washer();
+        }
+    } else {
+        move([0,0,2]) main_pcb_screw_washer();
     }
 }
