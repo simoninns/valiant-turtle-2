@@ -441,11 +441,11 @@ module battery_pack_upper_cover()
             }
 
             // Clearance for contact solder tags
-            move([40.5,0,-33.75]) cuboid([10,10,7.5], chamfer = 1);
-            move([40.5,0,-13.25]) cuboid([10,10,7.5], chamfer = 1);
+            move([40.5,0,-34.75]) cuboid([10,10,7.5], chamfer = 1);
+            move([40.5,0,-14.25]) cuboid([10,10,7.5], chamfer = 1);
 
-            move([-40.5,0,-33.75]) cuboid([10,10,7.5], chamfer = 1);
-            move([-40.5,0,-13.25]) cuboid([10,10,7.5], chamfer = 1);
+            move([-40.5,0,-34.75]) cuboid([10,10,7.5], chamfer = 1);
+            move([-40.5,0,-14.25]) cuboid([10,10,7.5], chamfer = 1);
         }
 
         

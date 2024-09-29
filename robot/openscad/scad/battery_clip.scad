@@ -40,19 +40,19 @@ module battery_contact()
             // Main box rectangular upper part
             move([0,0+7/2,0]) cuboid([18.5,7, 0.3]);
 
-            // Soldering tag
-            difference() {
-                union() {
-                    move([0,-9 - 9,0]) cyl(h=0.3, d=5);
-                    move([0,-12.5,0]) cuboid([5,11, 0.3]);
-                }
-                move([0,-9 - 9,0]) cyl(h=1, d=2.25);
-            }
-
             // Clips
             move([(8.25 - 0.5),6 - 5,0 +0.6]) zrot(180) right_triangle(size=[2,2,1.5], orient=ORIENT_X, center=true);
             move([-(8.25 - 0.5),6 - 5,0 +0.6]) zrot(180) right_triangle(size=[2,2,1.5], orient=ORIENT_X, center=true);
+
+            // Soldering tag
+            move([0,-14,0]) cuboid([5,1, 0.3]);
+            move([0,-13.75+0.1,-0.5]) cuboid([5,0.3, 1.25]);
+
+            move([0,-16.75,-1.25]) cuboid([5,6.5, 0.3]);
+            move([0,-3,-1.25]) cyl(h=0.3, d=5);
         }
+
+        move([0,-3,-1.25]) cyl(h=2, d=2.25);
     }
 }
 
@@ -99,9 +99,9 @@ module battery_contact_mask()
     move([0,1,-2]) cuboid([11.5,14,4]);
 
     // Back centre clearance
-    move([0,2,2]) cuboid([5.5,16,4]);
-
-    move([0,-4,2]) cuboid([5.5,16,2]);
+    move([0,-3,2]) cuboid([5.5,10,4]);
+    move([0,2,2]) zrot(45) cuboid([4,4,4]);
+    move([0,-6,2]) cuboid([5.5,14,2]);
 
     // Tab clearance
     move([0,-10,0]) cuboid([5.5,16,0.5]);
@@ -189,14 +189,16 @@ module battery_clip()
 
 module battery_clips()
 {
-    xrot(-90) zrot(180) {
-        move([10.25,9,-36.25]) battery_contact_positive();
-        move([-10.25,9,-36.25]) battery_contact_negative();
-    }
+    move([-1,0,0]) {
+        xrot(-90) zrot(180) {
+            move([10.25,9,-36.25]) battery_contact_positive();
+            move([-10.25,9,-36.25]) battery_contact_negative();
+        }
 
-    xrot(90) zrot(0) {
-        move([10.25,9,-36.25]) battery_contact_positive();
-        move([-10.25,9,-36.25]) battery_contact_negative();
+        xrot(90) zrot(0) {
+            move([10.25,9,-36.25]) battery_contact_positive();
+            move([-10.25,9,-36.25]) battery_contact_negative();
+        }
     }
 }
 
