@@ -405,6 +405,30 @@ module body_left()
     control_panel_surround();
 }
 
+module body_supports_left()
+{
+    move([-54.5,0,3]) {
+        move([-7.5,(59.5 + 2.5),0]) cyl(h=6,d=8);
+        move([-7.5, (116.5 - 2.5),0]) cyl(h=6,d=8);
+
+        // Back
+        move([62, (59.5 + 2.5),0]) cyl(h=6,d=8);
+        move([62, (116.5 - 2.5),0]) cyl(h=6,d=8); 
+    }
+}
+
+module body_supports_right()
+{
+    move([0,0,3]) {
+        move([-7.5,(59.5 + 2.5),0]) cyl(h=6,d=8);
+        move([-7.5, (116.5 - 2.5),0]) cyl(h=6,d=8);
+
+        // Back
+        move([62, (59.5 + 2.5),0]) cyl(h=6,d=8);
+        move([62, (116.5 - 2.5),0]) cyl(h=6,d=8); 
+    }
+}
+
 module render_body_right(toPrint)
 {
     if (!toPrint) {
@@ -449,5 +473,19 @@ module render_body_right_screws(toPrint)
 {
     if (!toPrint) {
         body_right_screws();
+    }
+}
+
+module render_body_right_supports(toPrint)
+{
+    if (toPrint) {
+        body_supports_right();
+    }
+}
+
+module render_body_left_supports(toPrint)
+{
+    if (toPrint) {
+        body_supports_left();
     }
 }
