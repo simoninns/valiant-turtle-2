@@ -82,8 +82,12 @@ openscad -o ./stl/stand_battery_cover.stl -D 'for_printing="Printing"' -D 'displ
 echo "Generating 3D STL support enforcer files..."
 echo "  shell_support_enforcer.stl"
 openscad -o ./stl_support_enforcers/shell_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_shell_supports="Yes"' ./scad/main.scad
-echo "  stand_battery_cover.stl"
+echo "  battery_pack_support_enforcer.stl"
 openscad -o ./stl_support_enforcers/battery_pack_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_battery_pack_supports="Yes"' ./scad/main.scad
+echo "  battery_pack_lower_cover_support_enforcer.stl"
+openscad -o ./stl_support_enforcers/battery_pack_lower_cover_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_battery_pack_lower_cover_supports="Yes"' ./scad/main.scad
+echo "  battery_pack_upper_cover_support_enforcer.stl"
+openscad -o ./stl_support_enforcers/battery_pack_upper_cover_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_battery_pack_upper_cover_supports="Yes"' ./scad/main.scad
 
 echo "Generating 2D DXF files for KiCAD..."
 echo "  main_pcb.dxf"

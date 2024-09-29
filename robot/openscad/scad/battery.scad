@@ -459,6 +459,16 @@ module battery_pack_connector_lock()
     }
 }
 
+module battery_pack_cover_supports()
+{
+    move([0,0,2]) {
+        move([45.5,18.5,0]) cyl(h=4,d=8);
+        move([45.5,-17.5,0]) cyl(h=4,d=8);
+        move([-45.5,18.5,0]) cyl(h=4,d=8);
+        move([-45.5,-17.5,0]) cyl(h=4,d=8);
+    }
+}
+
 module render_battery_pack_bms_bracket(toPrint)
 {
     if (!toPrint) {
@@ -560,5 +570,19 @@ module render_battery_pack_bms_pcb(toPrint)
 {
     if (!toPrint) {
         battery_pack_bms_pcb();
+    }
+}
+
+module render_battery_pack_lower_cover_supports(toPrint)
+{
+    if (toPrint) {
+        battery_pack_cover_supports();
+    }
+}
+
+module render_battery_pack_upper_cover_supports(toPrint)
+{
+    if (toPrint) {
+        battery_pack_cover_supports();
     }
 }

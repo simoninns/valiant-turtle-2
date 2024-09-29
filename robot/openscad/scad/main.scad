@@ -107,6 +107,8 @@ display_stand_battery_cover = "No"; // [Yes, No]
 /* [Support Enforcers] */
 display_shell_supports = "No"; // [Yes, No]
 display_battery_pack_supports = "No"; // [Yes, No]
+display_battery_pack_lower_cover_supports = "No"; // [Yes, No]
+display_battery_pack_upper_cover_supports = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
 display_motor_small = "No"; // [Yes, No]
@@ -191,6 +193,8 @@ module main() {
     // Support enforcers
     d_shell_supports = (display_shell_supports == "Yes") ? true:false;
     d_battery_pack_supports = (display_battery_pack_supports == "Yes") ? true:false;
+    d_battery_pack_lower_cover_supports = (display_battery_pack_lower_cover_supports == "Yes") ? true:false;
+    d_battery_pack_upper_cover_supports = (display_battery_pack_upper_cover_supports == "Yes") ? true:false;
 
     // Non-printable parts
     d_motor_small = (display_motor_small == "Yes") ? true:false;
@@ -266,6 +270,8 @@ module main() {
         // Render the support enforcers
         if (d_shell_supports) render_shell_supports(toPrint);
         if (d_battery_pack_supports) render_battery_pack_supports(toPrint);
+        if (d_battery_pack_lower_cover_supports) render_battery_pack_lower_cover_supports(toPrint);
+        if (d_battery_pack_upper_cover_supports) render_battery_pack_upper_cover_supports(toPrint);
 
         // Render the non-printable parts
         if (d_motor_small) render_motor_small(toPrint);
