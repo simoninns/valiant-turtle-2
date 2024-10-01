@@ -120,7 +120,6 @@ display_turning_circle = "No"; // [Yes, No]
 display_tires = "No"; // [Yes, No]
 display_main_pcb = "No"; // [Yes, No]
 display_eye_pcb = "No"; // [Yes, No]
-display_leds = "No"; // [Yes, No]
 display_ball_bearing = "No"; // [Yes, No]
 display_pen = "No"; // [Yes, No]
 display_servo = "No"; // [Yes, No]
@@ -208,7 +207,6 @@ module main() {
     d_tires = (display_tires == "Yes") ? true:false;
     d_main_pcb = (display_main_pcb == "Yes") ? true:false;
     d_eye_pcb = (display_eye_pcb == "Yes") ? true:false;
-    d_leds = (display_leds == "Yes") ? true:false;
     d_ball_bearing = (display_ball_bearing == "Yes") ? true:false;
     d_pen = (display_pen == "Yes") ? true:false;
     d_servo = (display_servo == "Yes") ? true:false;
@@ -287,7 +285,6 @@ module main() {
         if (d_tires) render_tires(toPrint);
         if (d_main_pcb) render_main_pcb(toPrint);
         if (d_eye_pcb) render_eye_pcb(toPrint);
-        if (d_leds) render_leds(toPrint);
         if (d_ball_bearing) render_ball_bearing(toPrint);
         if (d_pen) render_pen(toPrint, penUp);
         if (d_servo) render_micro_servo(toPrint);
