@@ -127,7 +127,7 @@ module half_head()
             difference() {
                 hull() {
                     move([0,-133,3]) xrot(180) cyl(h=12,d=8);
-                    move([0,-133+2,14]) xrot(180) cuboid([5,2,2]);
+                    move([0,-133+2.5,14]) xrot(180) cuboid([5,3,2]);
                     move([0,-138,-2]) xrot(180) cuboid([7,6,2]);
                 }
 
@@ -137,10 +137,6 @@ module half_head()
 
                 // Slice half
                 move([-5.5,-133,5]) cuboid([10,17,20]);
-
-                // Space for LED holder
-                move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=7,d=11);
-
             }
         }
 
@@ -174,12 +170,57 @@ module head_shell_screw_guide()
     }
 }
 
+module head_light_pipe_guide()
+{
+    move([0,-120,0]) {
+        difference() {
+            move([0,4,6.5]) cuboid([40,14,19], chamfer=0, edges=EDGES_Y_ALL);
+
+            // Cable channel
+            move([2,3,-3.5]) cuboid([28,8,12]);
+
+            // Slice the tops to allow the light pipes to be inserted
+            move([-6,4,-2]) cuboid([8.5,16,15.5]);
+            move([+6,4,-2]) cuboid([8.5,16,15.5]);
+
+            move([-6,2.75,3.5+2]) cuboid([8.5,13,6.25], chamfer=3, edges=EDGE_TOP_BK);
+            move([+6,2.75,3.5+2]) cuboid([8.5,12,6.25], chamfer=3, edges=EDGE_TOP_BK);
+           
+            // Slice edges
+            move([21,0,10]) yrot(-33) cuboid([12,30,40]);
+            move([-21,0,10]) yrot(33) cuboid([12,30,40]);
+
+            // Cable exit
+            move([14,9,0]) {
+                ycyl(d=4,h=6);
+                move([0,0,-2]) cuboid([4,8,4]);
+            }
+        }
+
+        // Back wall
+        move([0,10,5]) cuboid([21,2,3]);
+
+        // Seperator
+        difference() {
+            move([0,0,6]) cuboid([3.5,21,18]);
+
+            // Cable channel in centre
+            move([0,3,-0.5]) cuboid([4,7,6]);
+        }
+    }
+}
+
 module head()
 {
-    half_head();
-    xflip() half_head();
+    difference() {
+        union() {
+            half_head();
+            xflip() half_head();
 
-    head_shell_screw_guide();
+            head_shell_screw_guide();
+            head_light_pipe_guide();
+        }
+    }
 }
 
 module render_head(toPrint)

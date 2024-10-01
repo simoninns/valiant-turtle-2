@@ -28,53 +28,45 @@ use <BOSL/shapes.scad>
 
 module eye_light_pipe()
 {
-    move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) yrot(90) {
-        move([0,0,4.5]) {
-            // Eyeball
-            hull() {
-                move([0,0,(8.6/2) - (4.9/2)]) staggered_sphere(d=4.9, $fn=16);
-                move([0,0,-0.4]) cyl(h=4, d=4.9);
+    move([0,-120,0]) {
+        move([-1,0,1.5]) zrot(-45) yrot(-22) move([10,0,0]) yrot(90) {
+            move([0,0,4.5]) {
+                // Eyeball
+                hull() {
+                    move([0,0,(8.6/2) - (4.9/2)]) staggered_sphere(d=4.9, $fn=16);
+                    move([0,0,-0.4]) cyl(h=4, d=4.9);
+                }
             }
         }
-    }
 
-    hull() {
-        move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) yrot(90) {
-            move([0,0,2]) cyl(h=0.25, d=4.9);
-        }
-        move([4,-123,5.5]) ycyl(h=0.25,d=5);
-    }
-
-    difference() {
         hull() {
-            move([4,-123,5.5]) ycyl(h=0.25,d=5);
-            move([5,-118,5.5]) cuboid([7,2,12], chamfer=0.5, edges=EDGES_Y_ALL);
+            move([-1,0,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) yrot(90) {
+                move([0,0,2]) cyl(h=0.25, d=4.9);
+            }
+            move([6,-4.5 + 2,5.5]) cuboid([8,1,6]);
         }
 
-        // Slot for 5050 WS2812 LED
-        move([5,-115.5,5.5]) cuboid([5.25+2,5,5.25+2], chamfer=1);
+        move([0,2,0]) {
+            // WS2812 Clips
+            move([0,-3,-2.5]) {
+                // Top
+                move([6,9.5,4]) cuboid([8,1,4]);
+                move([6,9,2]) cuboid([8,2,1], chamfer=0.5, edges=EDGES_X_ALL);
 
-        // Slots to make clips more flexible
-        move([-1,-120.5,-3.5 + 5]) {
-            move([6,4-1,9-0.5]) cuboid([9,3.5,1], chamfer=0.5);
-            move([6,4-1,-1 + 0.5]) cuboid([9,3.5,1], chamfer=0.5);
+                // Bottom
+                move([6,-1.5,4]) cuboid([8,1,4]);
+                move([6,-1,2]) cuboid([8,2,1], chamfer=0.5, edges=EDGES_X_ALL);
+            }
+
+            // Slot for 5050 WS2812 LED
+            difference() {
+                move([6,1,3.5+2]) cuboid([8,12,6], chamfer=3, edges=EDGE_TOP_BK);
+                move([6,1,2]) cuboid([5.25+2,5.25+2,2], chamfer=1);
+
+                move([6,-3.5,2]) cuboid([9,1,2], chamfer=0.5);
+                move([6,5.5,3]) cuboid([9,1,3], chamfer=0.5);
+            }
         }
-    }
-
-    // WS2812 Clips
-    move([-1,-120,-3.5 + 5]) {
-        // Top
-        move([6,4,9.5]) cuboid([7,3.5,1], chamfer=0.5, edges=EDGES_TOP-EDGES_BACK);
-        move([6,5.25,9]) cuboid([7,1,2], chamfer=0.5, edges=EDGES_X_ALL+EDGES_TOP);
-
-        // Bottom
-        move([6,4,-1.5]) cuboid([7,3.5,1], chamfer=0.5, edges=EDGES_BOTTOM-EDGES_BACK);
-        move([6,5.25,-1]) cuboid([7,1,2], chamfer=0.5, edges=EDGES_X_ALL+EDGES_BOTTOM);
-    }
-
-    // Surround locator tabs
-    move([0,-120,0]) {
-        move([8.5,-0.25,5.5]) cuboid([3.5,2,2]);
     }
 }
 
@@ -87,34 +79,6 @@ module eye_light_pipe_right()
 {
     xflip() {
         eye_light_pipe();
-    }
-}
-
-module eye_light_pipe_surround()
-{
-    move([0,-120,0]) {
-        difference() {
-            move([0,2.5,5.5]) cuboid([20,7,15], chamfer=1, edges=EDGES_Y_ALL);
-
-            move([-5,2.5,5.5]) cuboid([7,9,12], chamfer=0.5, edges=EDGES_Y_ALL);
-            move([+5,2.5,5.5]) cuboid([7,9,12], chamfer=0.5, edges=EDGES_Y_ALL);
-
-            // Cable channel
-            move([0,5,5.5]) cuboid([25,4.5,8]);
-
-            // Guide slots
-            move([10,-1.5,5.5]) cuboid([10,4.75,2.25]);
-            move([-10,-1.5,5.5]) cuboid([10,4.75,2.25]);
-        }
-
-        // Seperator
-        move([0,-3.75,5.5]) cuboid([2,10,15]);
-
-        move([1,-0.75,-2]) zrot(-90) right_triangle(size=[8,8,1.5], orient=ORIENT_Z);
-        xflip() move([1,-0.75,-2]) zrot(-90) right_triangle(size=[8,8,1.5], orient=ORIENT_Z); 
-
-        move([1,-0.75,11.5]) zrot(-90) right_triangle(size=[8,8,1.5], orient=ORIENT_Z);
-        xflip() move([1,-0.75,11.5]) zrot(-90) right_triangle(size=[8,8,1.5], orient=ORIENT_Z);
     }
 }
 
@@ -137,7 +101,7 @@ module eye_surround()
 module ws2812_5050_module()
 {
     // PCB
-    color([0,0.6,0,1]) zrot(360/16) cyl(h=1.2, d=9.5, $fn=8);
+    color([0,0.6,0,1]) zrot(360/16) cyl(h=1.2, d=10, $fn=8);
 
     // LED 5050 shape
     color([0.8,0.8,0.8,1]) move([0,0,(1.2/2)+(1.5/2)]) {
@@ -183,11 +147,9 @@ module ws2812_5050_module()
 // from Amazon or such-like
 module eye_pcb()
 {
-    move([0,-115.5,5.5]) {
-        xrot(90) {
-            move([-5,0,0]) ws2812_5050_module();
-            move([+5,0,0]) ws2812_5050_module();
-        }
+    move([0,-117,1.5]) {
+        move([-6,0,0]) ws2812_5050_module();
+        move([+6,0,0]) ws2812_5050_module();
     }
 }
 
@@ -219,15 +181,6 @@ module render_eye_light_pipe(toPrint)
     } else {
         move([-3,120,-1.5]) yrot(-90) eye_light_pipe_left();
         move([3,120,-1.5]) yrot(90) eye_light_pipe_right();
-    }
-}
-
-module render_eye_light_pipe_surround(toPrint)
-{
-    if(!toPrint) {
-        color([0.2,0.2,0.2,1]) eye_light_pipe_surround();
-    } else {
-        move([0,-5.5,-114]) xrot(-90) eye_light_pipe_surround();
     }
 }
 

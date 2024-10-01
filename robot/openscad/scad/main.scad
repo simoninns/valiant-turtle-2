@@ -99,7 +99,6 @@ display_battery_pack_bms_bracket = "No"; // [Yes, No]
 display_battery_clip = "No"; // [Yes, No]
 display_eye_surround = "No"; // [Yes, No]
 display_eye_light_pipe = "No"; // [Yes, No]
-display_eye_light_pipe_surround = "No"; // [Yes, No]
 display_stand = "No"; // [Yes, No]
 display_stand_battery_cover = "No"; // [Yes, No]
 
@@ -185,7 +184,6 @@ module main() {
     d_battery_clip = (display_battery_clip == "Yes") ? true:false;
     d_eye_surround = (display_eye_surround == "Yes") ? true:false;
     d_eye_light_pipe = (display_eye_light_pipe == "Yes") ? true:false;
-    d_eye_light_pipe_surround = (display_eye_light_pipe_surround == "Yes") ? true:false;
     d_stand = (display_stand == "Yes") ? true:false;
     d_stand_battery_cover = (display_stand_battery_cover == "Yes") ? true:false;
 
@@ -262,7 +260,6 @@ module main() {
         if (d_battery_clip) render_battery_clip(toPrint);
         if (d_eye_surround) render_eye_surround(toPrint);
         if (d_eye_light_pipe) render_eye_light_pipe(toPrint);
-        if (d_eye_light_pipe_surround) render_eye_light_pipe_surround(toPrint);
         if (d_stand) render_stand(toPrint);
         if (d_stand_battery_cover) render_stand_battery_cover(toPrint);
 

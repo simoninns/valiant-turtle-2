@@ -68,8 +68,6 @@ echo "  eye_surround.stl"
 openscad -o ./stl/eye_surround.stl -D 'for_printing="Printing"' -D 'display_eye_surround="Yes"' ./scad/main.scad
 echo "  eye_light_pipe.stl"
 openscad -o ./stl/eye_light_pipe.stl -D 'for_printing="Printing"' -D 'display_eye_light_pipe="Yes"' ./scad/main.scad
-echo "  eye_light_pipe_surround.stl"
-openscad -o ./stl/eye_light_pipe_surround.stl -D 'for_printing="Printing"' -D 'display_eye_light_pipe_surround="Yes"' ./scad/main.scad
 echo "  display_mount.stl"
 openscad -o ./stl/display_mount.stl -D 'for_printing="Printing"' -D 'display_display_mount="Yes"' ./scad/main.scad
 echo "  stand.stl"
