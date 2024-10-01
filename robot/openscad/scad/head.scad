@@ -144,9 +144,6 @@ module half_head()
             }
         }
 
-        // Slot for shell screw guide
-        move([0,-89,7 +4.5]) cyl(h=10, d=11);
-
         // Eye socket (7mm for LED with grommet)
         move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) xcyl(h=16,d=7);
         
@@ -172,8 +169,8 @@ module head_shell_screw_guide()
 {
     // Screw guide for shell mounting hole
     difference() {
-        move([0,-89,6.75]) cyl(h=19.5, d=11);
-        move([0,-89,7]) cyl(h=26, d=8);
+        move([0,-89,6.75]) cyl(h=19.5, d=8);
+        move([0,-89,7]) cyl(h=26, d=6);
     }
 }
 
@@ -181,6 +178,8 @@ module head()
 {
     half_head();
     xflip() half_head();
+
+    head_shell_screw_guide();
 }
 
 module render_head(toPrint)
@@ -192,19 +191,6 @@ module render_head(toPrint)
     } else {
         xrot(180) move([0,90,-18]) {
             head();
-        }
-    }
-}
-
-module render_head_shell_screw_guide(toPrint)
-{
-    if (!toPrint) {
-        color([0.9,0.9,0.6,1]) {
-            head_shell_screw_guide();
-        }
-    } else {
-        xrot(180) move([0,90,-16.5]) {
-            head_shell_screw_guide();
         }
     }
 }

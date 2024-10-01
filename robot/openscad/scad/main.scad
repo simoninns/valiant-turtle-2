@@ -68,7 +68,6 @@ origin_position = "Model"; // [Pen, Model]
 display_body_left = "No"; // [Yes, No]
 display_body_right = "No"; // [Yes, No]
 display_head = "No"; // [Yes, No]
-display_head_shell_screw_guide = "No"; // [Yes, No]
 display_head_cover = "No"; // [Yes, No]
 display_shell_lid = "No"; // [Yes, No]
 display_shell = "No"; // [Yes, No]
@@ -155,7 +154,6 @@ module main() {
     d_body_left = (display_body_left == "Yes") ? true:false;
     d_body_right = (display_body_right == "Yes") ? true:false;
     d_head = (display_head == "Yes") ? true:false;
-    d_head_shell_screw_guide = (display_head_shell_screw_guide == "Yes") ? true:false;
     d_shell_lid = (display_shell_lid == "Yes") ? true:false;
     d_shell = (display_shell == "Yes") ? true:false;
     d_shell_dot = (display_shell_dot == "Yes") ? true:false;
@@ -233,7 +231,6 @@ module main() {
         if (d_body_left) render_body_left(toPrint);
         if (d_body_right) render_body_right(toPrint);
         if (d_head) render_head(toPrint);
-        if (d_head_shell_screw_guide) render_head_shell_screw_guide(toPrint);
         if (d_shell_lid) render_shell_lid(toPrint);
         if (d_shell) render_shell(toPrint);
         if (d_shell_dot) render_shell_dot(toPrint);

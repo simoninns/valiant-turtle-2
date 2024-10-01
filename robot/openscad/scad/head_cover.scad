@@ -76,8 +76,8 @@ module head_cover()
         }
 
         // Shell mount hole
-        move([0,-89,6.5 - 4]) cyl(h=24, d=8);
-        move([0,-89,-11]) cyl(h=8, d=10, chamfer=2);
+        move([0,-89,6.5 - 4]) cyl(h=24, d=6);
+        move([0,-89,-11]) cyl(h=8, d=8, chamfer=2);
     }
 
     bearing_mount();

@@ -134,8 +134,8 @@ module battery_clip_body()
         move([0,+(55.5/2),7.5]) cyl(h=13,d1=8, d2=12);
 
         // Screw holes
-        move([0,-(55.5/2),0]) cyl(h=8,d=3);
-        move([0,+(55.5/2),0]) cyl(h=8,d=3);
+        move([0,-(55.5/2),0]) cyl(h=8,d=3.5);
+        move([0,+(55.5/2),0]) cyl(h=8,d=3.5);
 
         // Positive markers
         move([17,38.25,8]) {

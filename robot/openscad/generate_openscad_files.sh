@@ -6,8 +6,6 @@ echo "  body_right.stl"
 openscad -o ./stl/body_right.stl -D 'for_printing="Printing"' -D 'display_body_right="Yes"' ./scad/main.scad
 echo "  head.stl"
 openscad -o ./stl/head.stl -D 'for_printing="Printing"' -D 'display_head="Yes"' ./scad/main.scad
-echo "  head_shell_screw_guide.stl"
-openscad -o ./stl/head_shell_screw_guide.stl -D 'for_printing="Printing"' -D 'display_head_shell_screw_guide="Yes"' ./scad/main.scad
 echo "  head_cover.stl"
 openscad -o ./stl/head_cover.stl -D 'for_printing="Printing"' -D 'display_head_cover="Yes"' ./scad/main.scad
 echo "  shell_lid.stl"
