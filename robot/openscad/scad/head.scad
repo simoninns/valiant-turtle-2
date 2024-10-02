@@ -174,7 +174,10 @@ module head_light_pipe_guide()
 {
     move([0,-120,0]) {
         difference() {
-            move([0,4,6.5]) cuboid([40,14,19], chamfer=0, edges=EDGES_Y_ALL);
+            union() {
+                move([0,4,6.5]) cuboid([40,14,19], chamfer=0, edges=EDGES_Y_ALL);
+                move([0,0,6]) cuboid([3.5,21,18]);
+            }
 
             // Cable channel
             move([2,3,-3.5]) cuboid([28,8,12]);
@@ -195,18 +198,13 @@ module head_light_pipe_guide()
                 ycyl(d=4,h=6);
                 move([0,0,-2]) cuboid([4,8,4]);
             }
+
+            // Cable channel in centre
+            move([0,3,-0.5]) cuboid([4,9,8]);
         }
 
         // Back wall
         move([0,10,5]) cuboid([21,2,3]);
-
-        // Seperator
-        difference() {
-            move([0,0,6]) cuboid([3.5,21,18]);
-
-            // Cable channel in centre
-            move([0,3,-0.5]) cuboid([4,7,6]);
-        }
     }
 }
 
