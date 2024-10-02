@@ -29,6 +29,7 @@
 #include "hardware/i2c.h"
 
 #include "i2cbus.h"
+#include "cli.h"
 #include "debug.h"
 
 // Initialise the I2C buses
@@ -60,12 +61,19 @@ void i2c_bus_scan(uint16_t busNumber) {
     if (busNumber > 1) busNumber = 1;
 
     // Show header
-    debug_printf("\r\nI2C Bus Scan of bus %d\r\n\r\n", busNumber);
-    debug_printf("     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\r\n");
+    if (busNumber == 0) {
+        cli_printf("I2C Bus Scan of bus 0 (internal):\r\n\r\n");
+    }
+
+    if (busNumber == 1) {
+        cli_printf("I2C Bus Scan of bus 1 (external QT Stemma/QWIIC):\r\n\r\n");
+    }
+
+    cli_printf("     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\r\n");
 
     for (int16_t addr = 0; addr < (1 << 7); ++addr) {
         if (addr % 16 == 0) {
-            debug_printf("0x%02x ", addr);
+            cli_printf("0x%02x ", addr);
         }
 
         // Perform a 1-byte dummy read from the probe address. If a slave
@@ -82,8 +90,8 @@ void i2c_bus_scan(uint16_t busNumber) {
             else ret = i2c_read_blocking(i2c1, addr, &rxdata, 1, false);
         }
 
-        debug_printf(ret < 0 ? "." : "@");
-        debug_printf(addr % 16 == 15 ? "\r\n" : "  ");
+        cli_printf(ret < 0 ? "." : "O");
+        cli_printf(addr % 16 == 15 ? "\r\n" : "  ");
     }
-    debug_printf("\r\nScan complete\r\n");
+    cli_printf("\r\nScan complete\r\n");
 }

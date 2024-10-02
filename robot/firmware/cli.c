@@ -40,6 +40,7 @@
 #include "metric.h"
 #include "ws2812.h"
 #include "btcomms.h"
+#include "i2cbus.h"
 
 #include "cli.h"
 
@@ -180,6 +181,25 @@ void on_eye_right(EmbeddedCli *cli, char *args, void *context) {
 
     ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
     ws2812_put_pixel(right_led[0], right_led[1], right_led[2]);
+}
+
+void on_i2c_scan(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 1 argument...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        cli_printf("i2c-scan command missing argument(s)\r\n");
+        cli_printf("  Usage: i2c-scan [bus number]\r\n");
+        return;
+    }
+
+    int32_t bus_number = atoi(embeddedCliGetToken(args, 1));
+
+    if (bus_number < 0) bus_number = 0;
+    if (bus_number > 1) bus_number = 1;
+
+    i2c_bus_scan(bus_number);
 }
 
 void on_stepper_enable(EmbeddedCli *cli, char *args, void *context) {
@@ -770,6 +790,15 @@ void cli_initialise() {
             on_eye_right
     };
     embeddedCliAddBinding(cli, eye_right_binding);
+
+    CliCommandBinding i2c_scan_binding = {
+            "i2c-scan",
+            "Scan an I2C bus for attached devices\r\n\tUsage: i2c-scan [bus number]",
+            true,
+            NULL,
+            on_i2c_scan
+    };
+    embeddedCliAddBinding(cli, i2c_scan_binding);
 
     CliCommandBinding stepper_enable = {
             "stepper-enable",
