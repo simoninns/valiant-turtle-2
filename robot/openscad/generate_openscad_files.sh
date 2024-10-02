@@ -74,6 +74,8 @@ echo "  stand.stl"
 openscad -o ./stl/stand.stl -D 'for_printing="Printing"' -D 'display_stand="Yes"' ./scad/main.scad
 echo "  stand_battery_cover.stl"
 openscad -o ./stl/stand_battery_cover.stl -D 'for_printing="Printing"' -D 'display_stand_battery_cover="Yes"' ./scad/main.scad
+echo "  eye_pcb_jig.stl"
+openscad -o ./stl/eye_pcb_jig.stl -D 'for_printing="Printing"' -D 'display_eye_pcb_jig="Yes"' ./scad/main.scad
 
 echo "Generating 3D STL support enforcer files..."
 echo "  shell_support_enforcer.stl"

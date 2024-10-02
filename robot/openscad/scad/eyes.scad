@@ -135,11 +135,11 @@ module ws2812_5050_module()
         move([-2.25,0,0]) cuboid([2.5,1,1]);
         move([+2.25,0,0]) cuboid([2.5,1,1]);
 
-        move([-2.25,-1.75,0]) cuboid([2.5,1,1]);
-        move([+2.25,-1.75,0]) cuboid([2.5,1,1]);
+        move([-2.25,-2,0]) cuboid([2.5,1,1]);
+        move([+2.25,-2,0]) cuboid([2.5,1,1]);
 
-        move([-2.25,+1.75,0]) cuboid([2.5,1,1]);
-        move([+2.25,+1.75,0]) cuboid([2.5,1,1]);
+        move([-2.25,+2,0]) cuboid([2.5,1,1]);
+        move([+2.25,+2,0]) cuboid([2.5,1,1]);
     }
 }
 
@@ -150,6 +150,63 @@ module eye_pcb()
     move([0,-117,1.5]) {
         move([-6,0,0]) ws2812_5050_module();
         move([+6,0,0]) ws2812_5050_module();
+    }
+}
+
+module eye_pcb_jig_rest()
+{
+    // Cable rest
+    move([0,0,0]) {
+        difference() {
+            move([0,0,0]) cuboid([10,10,4], chamfer=1, edges=EDGES_Z_ALL);
+
+            move([0,0,1]) xcyl(h=12,d=1.5);
+            move([0,2,1]) xcyl(h=12,d=1.5);
+            move([0,-2,1]) xcyl(h=12,d=1.5);
+
+            move([0,0,1.5]) cuboid([12,1.5,1.5]);
+            move([0,2,1.5]) cuboid([12,1.5,1.5]);
+            move([0,-2,1.5]) cuboid([12,1.5,1.5]);
+        }
+    }
+}
+
+// This jig isn't required for the robot.  It is to assist
+// when solding the 5050 LEDs together to make the robot's eyes
+module eye_pcb_jig()
+{
+    move([0,0,3.5]) {
+        // Edges
+        move([0,6,-1]) cuboid([24,2,4]);
+        move([0,-6,-1]) cuboid([24,2,4]);
+
+        // Base
+        difference() {
+            union() {
+                move([4,0,-2.5]) cuboid([36,16,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+                move([0,12,-2.5]) cuboid([24,30,2], chamfer=1, edges=EDGES_TOP);
+            }
+
+            move([0,17,-2.5]) cuboid([24-8,20-8,4]);
+
+            move([6,0,-1.5]) cuboid([5.25,5.25,2]);
+            move([-6,0,-1.5]) cuboid([5.25,5.25,2]);
+        }
+
+        // Slot for joining pin header
+        difference() {
+            union() {
+                move([0,5.25,0]) cuboid([4,3.75,4]);
+                move([0,-5.25,0]) cuboid([4,3.75,4]);
+            }
+            cuboid([2.75,10,6]);
+        }
+
+        // Cable rests
+        move([16,0,0]) eye_pcb_jig_rest();
+
+        // End stop
+        move([-12,0,0]) cuboid([2,14,3]);
     }
 }
 
@@ -192,5 +249,16 @@ module render_eye_pcb(toPrint)
         // This will allow you to render and export a DXF file that
         // can be used as a KiCAD PCB outline...
         move([0,106,0.5]) projection() eye_pcb();
+    }
+}
+
+module render_eye_pcb_jig(toPrint)
+{
+    if(!toPrint) {
+        move([-6,0,3.5]) xrot(180) ws2812_5050_module();
+        move([+6,0,3.5]) xrot(180) ws2812_5050_module();
+        eye_pcb_jig();
+    } else {
+        eye_pcb_jig();
     }
 }
