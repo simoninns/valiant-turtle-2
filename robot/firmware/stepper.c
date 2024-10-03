@@ -32,10 +32,11 @@
 #include "stepper.h"
 #include "velocity.h"
 #include "pulse_generator.h"
+#include "configuration.h"
 #include "debug.h"
 
 // Globals
-stepper_config_t stepper_config[2];
+stepper_settings_t stepper_settings[2];
 
 void stepper_initialise()
 {
@@ -56,15 +57,28 @@ void stepper_initialise()
     // Disable steppers
     stepper_enable(false);
 
-    // Set direction to forwards
-    stepper_set_direction(STEPPER_BOTH, STEPPER_FORWARDS);
-
-    // Set the initial velocity default
-    stepper_set_velocity(STEPPER_BOTH, 2, 2, 800, 8);
+    // Set stepper direction
+    stepper_set_direction(STEPPER_LEFT, STEPPER_FORWARDS);
+    stepper_set_direction(STEPPER_LEFT, STEPPER_FORWARDS);
 
     // Set the steppers as not busy
-    stepper_config[STEPPER_LEFT].isBusy = false;
-    stepper_config[STEPPER_RIGHT].isBusy = false;
+    stepper_settings[STEPPER_LEFT].isBusy = false;
+    stepper_settings[STEPPER_RIGHT].isBusy = false;
+
+    // Read the stepper configuration
+    configuration_t configuration = configuration_get();
+
+    // Set stepper velocities from configuration
+    stepper_set_velocity(STEPPER_LEFT,
+        configuration.stepper_left.accSpsps,
+        configuration.stepper_left.minimumSps,
+        configuration.stepper_left.maximumSps,
+        configuration.stepper_left.updatesPerSecond);
+    stepper_set_velocity(STEPPER_RIGHT,
+        configuration.stepper_right.accSpsps,
+        configuration.stepper_right.minimumSps,
+        configuration.stepper_right.maximumSps,
+        configuration.stepper_right.updatesPerSecond);
 
     // Initialise the pulse generator (to generate the step pulses)
     pulse_generator_init();
@@ -78,8 +92,8 @@ void stepper_initialise()
 // Note: There is only one enable signal for both steppers
 void stepper_enable(bool isEnabled)
 {
-    stepper_config[STEPPER_LEFT].isEnabled = isEnabled;
-    stepper_config[STEPPER_RIGHT].isEnabled = isEnabled;
+    stepper_settings[STEPPER_LEFT].isEnabled = isEnabled;
+    stepper_settings[STEPPER_RIGHT].isEnabled = isEnabled;
 
     if (isEnabled) {
         gpio_put(SM_ENABLE_GPIO, 1);
@@ -94,8 +108,8 @@ void stepper_enable(bool isEnabled)
 void stepper_set_direction(stepper_side_t side, stepper_direction_t direction)
 {
     if (side == STEPPER_LEFT || side == STEPPER_BOTH) {
-        if (!stepper_config[STEPPER_LEFT].isBusy) {
-            stepper_config[STEPPER_LEFT].direction = direction;
+        if (!stepper_settings[STEPPER_LEFT].isBusy) {
+            stepper_settings[STEPPER_LEFT].direction = direction;
 
             if (direction == STEPPER_FORWARDS) {
                 gpio_put(SM_LDIR_GPIO, 1);
@@ -110,8 +124,8 @@ void stepper_set_direction(stepper_side_t side, stepper_direction_t direction)
     }
 
     if (side == STEPPER_RIGHT || side == STEPPER_BOTH) {
-        if (!stepper_config[STEPPER_RIGHT].isBusy) {
-            stepper_config[STEPPER_RIGHT].direction = direction;
+        if (!stepper_settings[STEPPER_RIGHT].isBusy) {
+            stepper_settings[STEPPER_RIGHT].direction = direction;
 
             if (direction == STEPPER_FORWARDS) {
                 gpio_put(SM_RDIR_GPIO, 0);
@@ -131,22 +145,22 @@ void stepper_set_velocity(stepper_side_t side, int32_t accSpsps, int32_t minimum
     int32_t maximumSps, int32_t updatesPerSecond)
 {
     if (side == STEPPER_LEFT || side == STEPPER_BOTH) {
-        if (!stepper_config[STEPPER_LEFT].isBusy) {
-            stepper_config[STEPPER_LEFT].velocity.accSpsps = accSpsps;
-            stepper_config[STEPPER_LEFT].velocity.minimumSps = minimumSps;
-            stepper_config[STEPPER_LEFT].velocity.maximumSps = maximumSps;
-            stepper_config[STEPPER_LEFT].velocity.updatesPerSecond = updatesPerSecond;
+        if (!stepper_settings[STEPPER_LEFT].isBusy) {
+            stepper_settings[STEPPER_LEFT].velocity.accSpsps = accSpsps;
+            stepper_settings[STEPPER_LEFT].velocity.minimumSps = minimumSps;
+            stepper_settings[STEPPER_LEFT].velocity.maximumSps = maximumSps;
+            stepper_settings[STEPPER_LEFT].velocity.updatesPerSecond = updatesPerSecond;
         } else {
             debug_printf("stepper_set_velocity(): WARNING - Stepper left is busy... ignoring set\n");
         }
     }
 
     if (side == STEPPER_RIGHT || side == STEPPER_BOTH) {
-        if (!stepper_config[STEPPER_RIGHT].isBusy) {
-            stepper_config[STEPPER_RIGHT].velocity.accSpsps = accSpsps;
-            stepper_config[STEPPER_RIGHT].velocity.minimumSps = minimumSps;
-            stepper_config[STEPPER_RIGHT].velocity.maximumSps = maximumSps;
-            stepper_config[STEPPER_RIGHT].velocity.updatesPerSecond = updatesPerSecond;
+        if (!stepper_settings[STEPPER_RIGHT].isBusy) {
+            stepper_settings[STEPPER_RIGHT].velocity.accSpsps = accSpsps;
+            stepper_settings[STEPPER_RIGHT].velocity.minimumSps = minimumSps;
+            stepper_settings[STEPPER_RIGHT].velocity.maximumSps = maximumSps;
+            stepper_settings[STEPPER_RIGHT].velocity.updatesPerSecond = updatesPerSecond;
         } else {
             debug_printf("stepper_set_velocity(): WARNING - Stepper right is busy... ignoring set\n");
         }
@@ -157,12 +171,12 @@ void stepper_set_velocity(stepper_side_t side, int32_t accSpsps, int32_t minimum
 void stepper_set_steps(stepper_side_t side, int32_t steps)
 {
     if (side == STEPPER_LEFT || side == STEPPER_BOTH) {
-        if (!stepper_config[STEPPER_LEFT].isBusy)stepper_config[STEPPER_LEFT].steps_remaining = steps;
+        if (!stepper_settings[STEPPER_LEFT].isBusy)stepper_settings[STEPPER_LEFT].steps_remaining = steps;
         else debug_printf("stepper_set_steps(): WARNING - Stepper left is busy... ignoring set\n");
     }
 
     if (side == STEPPER_RIGHT || side == STEPPER_BOTH) {
-        if (!stepper_config[STEPPER_RIGHT].isBusy)stepper_config[STEPPER_RIGHT].steps_remaining = steps;
+        if (!stepper_settings[STEPPER_RIGHT].isBusy)stepper_settings[STEPPER_RIGHT].steps_remaining = steps;
         else debug_printf("stepper_set_steps(): WARNING - Stepper right is busy... ignoring set\n");
     }
 }
@@ -173,11 +187,11 @@ int32_t stepper_get_steps(stepper_side_t side)
     int32_t steps = 0;
 
     if (side == STEPPER_LEFT || side == STEPPER_BOTH) {
-        steps = stepper_config[STEPPER_LEFT].steps_remaining;
+        steps = stepper_settings[STEPPER_LEFT].steps_remaining;
     }
 
     if (side == STEPPER_RIGHT || side == STEPPER_BOTH) {
-        steps = stepper_config[STEPPER_RIGHT].steps_remaining;
+        steps = stepper_settings[STEPPER_RIGHT].steps_remaining;
     }
 
     return steps;
@@ -189,27 +203,27 @@ void stepper_dryrun(stepper_side_t side)
 {
     // Calculate the required velocity sequence(s)
     if (side == STEPPER_LEFT || side == STEPPER_BOTH) {
-        velocity_calculator_init(&stepper_config[STEPPER_LEFT].velocity_sequence);
-        velocity_calculator(stepper_config[STEPPER_LEFT].velocity_sequence,
-            stepper_config[STEPPER_LEFT].steps_remaining,
-            stepper_config[STEPPER_LEFT].velocity.accSpsps,
-            stepper_config[STEPPER_LEFT].velocity.minimumSps,
-            stepper_config[STEPPER_LEFT].velocity.maximumSps,
-            stepper_config[STEPPER_LEFT].velocity.updatesPerSecond);
+        velocity_calculator_init(&stepper_settings[STEPPER_LEFT].velocity_sequence);
+        velocity_calculator(stepper_settings[STEPPER_LEFT].velocity_sequence,
+            stepper_settings[STEPPER_LEFT].steps_remaining,
+            stepper_settings[STEPPER_LEFT].velocity.accSpsps,
+            stepper_settings[STEPPER_LEFT].velocity.minimumSps,
+            stepper_settings[STEPPER_LEFT].velocity.maximumSps,
+            stepper_settings[STEPPER_LEFT].velocity.updatesPerSecond);
 
-        stepper_config[STEPPER_LEFT].sequence_position = 0;
+        stepper_settings[STEPPER_LEFT].sequence_position = 0;
     }
 
     if (side == STEPPER_RIGHT || side == STEPPER_BOTH) {
-        velocity_calculator_init(&stepper_config[STEPPER_RIGHT].velocity_sequence);
-        velocity_calculator(stepper_config[STEPPER_RIGHT].velocity_sequence,
-            stepper_config[STEPPER_RIGHT].steps_remaining,
-            stepper_config[STEPPER_RIGHT].velocity.accSpsps,
-            stepper_config[STEPPER_RIGHT].velocity.minimumSps,
-            stepper_config[STEPPER_RIGHT].velocity.maximumSps,
-            stepper_config[STEPPER_RIGHT].velocity.updatesPerSecond);
+        velocity_calculator_init(&stepper_settings[STEPPER_RIGHT].velocity_sequence);
+        velocity_calculator(stepper_settings[STEPPER_RIGHT].velocity_sequence,
+            stepper_settings[STEPPER_RIGHT].steps_remaining,
+            stepper_settings[STEPPER_RIGHT].velocity.accSpsps,
+            stepper_settings[STEPPER_RIGHT].velocity.minimumSps,
+            stepper_settings[STEPPER_RIGHT].velocity.maximumSps,
+            stepper_settings[STEPPER_RIGHT].velocity.updatesPerSecond);
 
-        stepper_config[STEPPER_RIGHT].sequence_position = 0;
+        stepper_settings[STEPPER_RIGHT].sequence_position = 0;
     }
 }
 
@@ -217,11 +231,11 @@ void stepper_dryrun(stepper_side_t side)
 void stepper_dryrun_free(stepper_side_t side)
 {
     if (side == STEPPER_LEFT || side == STEPPER_BOTH) {
-        velocity_calculator_free(stepper_config[STEPPER_LEFT].velocity_sequence);
+        velocity_calculator_free(stepper_settings[STEPPER_LEFT].velocity_sequence);
     }
 
     if (side == STEPPER_RIGHT || side == STEPPER_BOTH) {
-        velocity_calculator_free(stepper_config[STEPPER_RIGHT].velocity_sequence);
+        velocity_calculator_free(stepper_settings[STEPPER_RIGHT].velocity_sequence);
     }
 }
 
@@ -230,62 +244,62 @@ void stepper_run(stepper_side_t side)
 {
     // Calculate the required velocity sequence(s)
     if (side == STEPPER_LEFT || side == STEPPER_BOTH) {
-        velocity_calculator_init(&stepper_config[STEPPER_LEFT].velocity_sequence);
-        velocity_calculator(stepper_config[STEPPER_LEFT].velocity_sequence,
-            stepper_config[STEPPER_LEFT].steps_remaining,
-            stepper_config[STEPPER_LEFT].velocity.accSpsps,
-            stepper_config[STEPPER_LEFT].velocity.minimumSps,
-            stepper_config[STEPPER_LEFT].velocity.maximumSps,
-            stepper_config[STEPPER_LEFT].velocity.updatesPerSecond);
+        velocity_calculator_init(&stepper_settings[STEPPER_LEFT].velocity_sequence);
+        velocity_calculator(stepper_settings[STEPPER_LEFT].velocity_sequence,
+            stepper_settings[STEPPER_LEFT].steps_remaining,
+            stepper_settings[STEPPER_LEFT].velocity.accSpsps,
+            stepper_settings[STEPPER_LEFT].velocity.minimumSps,
+            stepper_settings[STEPPER_LEFT].velocity.maximumSps,
+            stepper_settings[STEPPER_LEFT].velocity.updatesPerSecond);
 
-        stepper_config[STEPPER_LEFT].sequence_position = 0;
+        stepper_settings[STEPPER_LEFT].sequence_position = 0;
     }
 
     if (side == STEPPER_RIGHT || side == STEPPER_BOTH) {
-        velocity_calculator_init(&stepper_config[STEPPER_RIGHT].velocity_sequence);
-        velocity_calculator(stepper_config[STEPPER_RIGHT].velocity_sequence,
-            stepper_config[STEPPER_RIGHT].steps_remaining,
-            stepper_config[STEPPER_RIGHT].velocity.accSpsps,
-            stepper_config[STEPPER_RIGHT].velocity.minimumSps,
-            stepper_config[STEPPER_RIGHT].velocity.maximumSps,
-            stepper_config[STEPPER_RIGHT].velocity.updatesPerSecond);
+        velocity_calculator_init(&stepper_settings[STEPPER_RIGHT].velocity_sequence);
+        velocity_calculator(stepper_settings[STEPPER_RIGHT].velocity_sequence,
+            stepper_settings[STEPPER_RIGHT].steps_remaining,
+            stepper_settings[STEPPER_RIGHT].velocity.accSpsps,
+            stepper_settings[STEPPER_RIGHT].velocity.minimumSps,
+            stepper_settings[STEPPER_RIGHT].velocity.maximumSps,
+            stepper_settings[STEPPER_RIGHT].velocity.updatesPerSecond);
 
-        stepper_config[STEPPER_RIGHT].sequence_position = 0;
+        stepper_settings[STEPPER_RIGHT].sequence_position = 0;
     }
 
     // Start the velocity sequence(s)
     if (side == STEPPER_LEFT || side == STEPPER_BOTH) {
-        int32_t pio_delay = pulse_generator_pps_to_pio_delay(velocity_get_sps(stepper_config[STEPPER_LEFT].velocity_sequence,
-            stepper_config[STEPPER_LEFT].sequence_position));
-        int32_t pulse = velocity_get_steps(stepper_config[STEPPER_LEFT].velocity_sequence,
-            stepper_config[STEPPER_LEFT].sequence_position);
+        int32_t pio_delay = pulse_generator_pps_to_pio_delay(velocity_get_sps(stepper_settings[STEPPER_LEFT].velocity_sequence,
+            stepper_settings[STEPPER_LEFT].sequence_position));
+        int32_t pulse = velocity_get_steps(stepper_settings[STEPPER_LEFT].velocity_sequence,
+            stepper_settings[STEPPER_LEFT].sequence_position);
 
-        stepper_config[STEPPER_LEFT].sequence_position++;
-        stepper_config[STEPPER_LEFT].isBusy = true;
+        stepper_settings[STEPPER_LEFT].sequence_position++;
+        stepper_settings[STEPPER_LEFT].isBusy = true;
         pulse_generator_set(0, pio_delay, pulse);
     }
 
     if (side == STEPPER_RIGHT || side == STEPPER_BOTH) {
-        int32_t pio_delay = pulse_generator_pps_to_pio_delay(velocity_get_sps(stepper_config[STEPPER_RIGHT].velocity_sequence,
-            stepper_config[STEPPER_RIGHT].sequence_position));
-        int32_t pulse = velocity_get_steps(stepper_config[STEPPER_RIGHT].velocity_sequence,
-            stepper_config[STEPPER_RIGHT].sequence_position);
+        int32_t pio_delay = pulse_generator_pps_to_pio_delay(velocity_get_sps(stepper_settings[STEPPER_RIGHT].velocity_sequence,
+            stepper_settings[STEPPER_RIGHT].sequence_position));
+        int32_t pulse = velocity_get_steps(stepper_settings[STEPPER_RIGHT].velocity_sequence,
+            stepper_settings[STEPPER_RIGHT].sequence_position);
 
-        stepper_config[STEPPER_RIGHT].sequence_position++;
-        stepper_config[STEPPER_RIGHT].isBusy = true;
+        stepper_settings[STEPPER_RIGHT].sequence_position++;
+        stepper_settings[STEPPER_RIGHT].isBusy = true;
         pulse_generator_set(1, pio_delay, pulse);
     }
 }
 
 // Return the current configuration for a stepper
-stepper_config_t stepper_get_configuration(stepper_side_t side)
+stepper_settings_t stepper_get_configuration(stepper_side_t side)
 {
     if (side == STEPPER_BOTH) {
         debug_printf("stepper_get_configuration(): WARNING - Called with STEPPER_BOTH! Returning STEPPER_RIGHT\n");
     }
 
-    if (side == STEPPER_LEFT) return stepper_config[STEPPER_LEFT];
-    return stepper_config[STEPPER_RIGHT];
+    if (side == STEPPER_LEFT) return stepper_settings[STEPPER_LEFT];
+    return stepper_settings[STEPPER_RIGHT];
 }
 
 // Returns true if the stepper is busy 
@@ -301,29 +315,28 @@ bool stepper_isBusy(stepper_side_t side)
     return false;
 }
 
-
 // Pulse generator SM0 callback (left stepper)
 void stepper_left_callback()
 {
     // Update the remaining steps
-    stepper_config[STEPPER_LEFT].steps_remaining -= velocity_get_steps(stepper_config[STEPPER_LEFT].velocity_sequence,
-        stepper_config[STEPPER_LEFT].sequence_position - 1);
+    stepper_settings[STEPPER_LEFT].steps_remaining -= velocity_get_steps(stepper_settings[STEPPER_LEFT].velocity_sequence,
+        stepper_settings[STEPPER_LEFT].sequence_position - 1);
 
     // Check if we have completed the sequence
-    if (stepper_config[STEPPER_LEFT].sequence_position == velocity_get_size(stepper_config[STEPPER_LEFT].velocity_sequence)) {
+    if (stepper_settings[STEPPER_LEFT].sequence_position == velocity_get_size(stepper_settings[STEPPER_LEFT].velocity_sequence)) {
         // Complete
-        stepper_config[STEPPER_LEFT].isBusy = false;
-        velocity_calculator_free(stepper_config[STEPPER_LEFT].velocity_sequence);
+        stepper_settings[STEPPER_LEFT].isBusy = false;
+        velocity_calculator_free(stepper_settings[STEPPER_LEFT].velocity_sequence);
         return;
     }
 
     // Not complete - load the next velocity in the sequence
-    int32_t pio_delay = pulse_generator_pps_to_pio_delay(velocity_get_sps(stepper_config[STEPPER_LEFT].velocity_sequence,
-        stepper_config[STEPPER_LEFT].sequence_position));
-    int32_t pulse = velocity_get_steps(stepper_config[STEPPER_LEFT].velocity_sequence,
-        stepper_config[STEPPER_LEFT].sequence_position);
+    int32_t pio_delay = pulse_generator_pps_to_pio_delay(velocity_get_sps(stepper_settings[STEPPER_LEFT].velocity_sequence,
+        stepper_settings[STEPPER_LEFT].sequence_position));
+    int32_t pulse = velocity_get_steps(stepper_settings[STEPPER_LEFT].velocity_sequence,
+        stepper_settings[STEPPER_LEFT].sequence_position);
 
-    stepper_config[STEPPER_LEFT].sequence_position++;
+    stepper_settings[STEPPER_LEFT].sequence_position++;
     pulse_generator_set(0, pio_delay, pulse);
 }
 
@@ -331,23 +344,43 @@ void stepper_left_callback()
 void stepper_right_callback()
 {
     // Update the remaining steps
-    stepper_config[STEPPER_RIGHT].steps_remaining -= velocity_get_steps(stepper_config[STEPPER_RIGHT].velocity_sequence,
-        stepper_config[STEPPER_RIGHT].sequence_position - 1);
+    stepper_settings[STEPPER_RIGHT].steps_remaining -= velocity_get_steps(stepper_settings[STEPPER_RIGHT].velocity_sequence,
+        stepper_settings[STEPPER_RIGHT].sequence_position - 1);
 
     // Check if we have completed the sequence
-    if (stepper_config[STEPPER_RIGHT].sequence_position == velocity_get_size(stepper_config[STEPPER_RIGHT].velocity_sequence)) {
+    if (stepper_settings[STEPPER_RIGHT].sequence_position == velocity_get_size(stepper_settings[STEPPER_RIGHT].velocity_sequence)) {
         // Complete
-        stepper_config[STEPPER_RIGHT].isBusy = false;
-        velocity_calculator_free(stepper_config[STEPPER_RIGHT].velocity_sequence);
+        stepper_settings[STEPPER_RIGHT].isBusy = false;
+        velocity_calculator_free(stepper_settings[STEPPER_RIGHT].velocity_sequence);
         return;
     }
 
     // Not complete - load the next velocity in the sequence
-    int32_t pio_delay = pulse_generator_pps_to_pio_delay(velocity_get_sps(stepper_config[STEPPER_RIGHT].velocity_sequence,
-        stepper_config[STEPPER_RIGHT].sequence_position));
-    int32_t pulse = velocity_get_steps(stepper_config[STEPPER_RIGHT].velocity_sequence,
-        stepper_config[STEPPER_RIGHT].sequence_position);
+    int32_t pio_delay = pulse_generator_pps_to_pio_delay(velocity_get_sps(stepper_settings[STEPPER_RIGHT].velocity_sequence,
+        stepper_settings[STEPPER_RIGHT].sequence_position));
+    int32_t pulse = velocity_get_steps(stepper_settings[STEPPER_RIGHT].velocity_sequence,
+        stepper_settings[STEPPER_RIGHT].sequence_position);
 
-    stepper_config[STEPPER_RIGHT].sequence_position++;
+    stepper_settings[STEPPER_RIGHT].sequence_position++;
     pulse_generator_set(1, pio_delay, pulse);
+}
+
+// Update the configuration with the current stepper settings
+void stepper_set_configuration()
+{
+    // Read the stepper configuration
+    configuration_t configuration = configuration_get();
+
+    // Set stepper velocity from configuration
+    configuration.stepper_left.accSpsps = stepper_settings[STEPPER_LEFT].velocity.accSpsps;
+    configuration.stepper_left.minimumSps = stepper_settings[STEPPER_LEFT].velocity.minimumSps;
+    configuration.stepper_left.maximumSps = stepper_settings[STEPPER_LEFT].velocity.maximumSps;
+    configuration.stepper_left.updatesPerSecond = stepper_settings[STEPPER_LEFT].velocity.updatesPerSecond;
+
+    configuration.stepper_right.accSpsps = stepper_settings[STEPPER_RIGHT].velocity.accSpsps;
+    configuration.stepper_right.minimumSps = stepper_settings[STEPPER_RIGHT].velocity.minimumSps;
+    configuration.stepper_right.maximumSps = stepper_settings[STEPPER_RIGHT].velocity.maximumSps;
+    configuration.stepper_right.updatesPerSecond = stepper_settings[STEPPER_RIGHT].velocity.updatesPerSecond;
+
+    configuration_set(configuration);
 }

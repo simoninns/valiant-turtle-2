@@ -31,14 +31,6 @@
 // 8 blocks of 256 bits
 // 256 * 8 = 2048 bits/block
 // 2048 * 8 = 16384 bits
-
-// Address is 1010bbbr
-// bbb = block address 000 -> 111
-// R = R/!W (1=Read, 0=Write)
-//
-// So write to block 2 would be:
-//   10100100 = 0xA4
-
 #define EEPROM_ADDR 0x50
 
 void eeprom_initialise(void);

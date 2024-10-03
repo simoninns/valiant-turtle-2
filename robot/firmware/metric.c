@@ -32,32 +32,36 @@
 
 #include "stepper.h"
 #include "metric.h"
+#include "configuration.h"
 #include "debug.h"
 
 // Globals
-metric_config_t metric_config;
+metric_settings_t metric_settings;
 
 // Initialise the metric to step module
 void metric_initialise()
 {
-    // Set the initial configuration
-    metric_config.wheel_diameter_mm = 55.0;
-    metric_config.axel_distance_mm = 230.0;
-    metric_config.steps_per_revolution = 800;
+    // Read the metric configuration
+    configuration_t configuration = configuration_get();
+
+    // Set the initial settings
+    metric_settings.wheel_diameter_mm = configuration.metric_config.wheel_diameter_mm;
+    metric_settings.axel_distance_mm = configuration.metric_config.axel_distance_mm;
+    metric_settings.steps_per_revolution = configuration.metric_config.steps_per_revolution;
 }
 
-// Return the current configuration
-metric_config_t metric_get_config(void)
+// Return the current settings
+metric_settings_t metric_get_settings(void)
 {
-    return metric_config;
+    return metric_settings;
 }
 
-// Set the current configuration
-void metric_set_config(metric_config_t config)
+// Set the current settings
+void metric_set_settings(metric_settings_t config)
 {
-    metric_config.wheel_diameter_mm = config.wheel_diameter_mm;
-    metric_config.axel_distance_mm = config.axel_distance_mm;
-    metric_config.steps_per_revolution = config.steps_per_revolution;
+    metric_settings.wheel_diameter_mm = config.wheel_diameter_mm;
+    metric_settings.axel_distance_mm = config.axel_distance_mm;
+    metric_settings.steps_per_revolution = config.steps_per_revolution;
 }
 
 // Calculate the stepper settings to move forwards a specified number of millimeters
@@ -128,14 +132,28 @@ metric_result_t metric_right(float degrees)
 
 // Convert millimeters to steps
 int32_t metric_mm_to_steps(float millimeters) {
-    float circumference = (2.0 * M_PI) * (metric_config.wheel_diameter_mm / 2.0); // C = 2pi x r 
-    float mm_per_step = (circumference / metric_config.steps_per_revolution);
+    float circumference = (2.0 * M_PI) * (metric_settings.wheel_diameter_mm / 2.0); // C = 2pi x r 
+    float mm_per_step = (circumference / metric_settings.steps_per_revolution);
     return (int32_t)roundf(millimeters / mm_per_step);
 }
 
 // Convert degrees to steps
 int32_t metric_deg_to_steps(float degrees) {
-    float circumference = (2.0 * M_PI) * (metric_config.axel_distance_mm / 2.0);
+    float circumference = (2.0 * M_PI) * (metric_settings.axel_distance_mm / 2.0);
     float millimeters = (circumference / 360.0) * degrees;
     return metric_mm_to_steps(millimeters);
+}
+
+// Update the configuration with the current metric parameters
+void metric_set_configuration()
+{
+    // Read the stepper configuration
+    configuration_t configuration = configuration_get();
+
+    // Set metric configuration from settings
+    configuration.metric_config.axel_distance_mm = metric_settings.axel_distance_mm;
+    configuration.metric_config.wheel_diameter_mm = metric_settings.wheel_diameter_mm;
+    configuration.metric_config.steps_per_revolution = metric_settings.steps_per_revolution;
+
+    configuration_set(configuration);
 }

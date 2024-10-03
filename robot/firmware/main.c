@@ -33,8 +33,8 @@
 #include "debug.h"
 #include "cli.h"
 #include "i2cbus.h"
+#include "configuration.h"
 #include "ina260.h"
-#include "eeprom.h"
 #include "penservo.h"
 #include "stepper.h"
 #include "metric.h"
@@ -49,8 +49,8 @@ int main() {
     // Initialise modules
     debug_initialise();
     i2c_initialise();
+    configuration_initialise();
     ina260_initialise();
-    eeprom_initialise();
     pen_servo_initialise();
     stepper_initialise();
     metric_initialise();

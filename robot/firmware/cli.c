@@ -41,6 +41,7 @@
 #include "ws2812.h"
 #include "btcomms.h"
 #include "i2cbus.h"
+#include "configuration.h"
 
 #include "cli.h"
 
@@ -283,7 +284,7 @@ void on_stepper_show(EmbeddedCli *cli, char *args, void *context) {
     }
 
     if (stepper_choice == STEPPER_LEFT || stepper_choice == STEPPER_BOTH) {
-        stepper_config_t stepper_config;
+        stepper_settings_t stepper_config;
         stepper_config = stepper_get_configuration(STEPPER_LEFT);
         cli_printf("Left Stepper parameters:\r\n");
         cli_printf("  Acceleration in Steps per Second per Second = %d\r\n", stepper_config.velocity.accSpsps);
@@ -313,7 +314,7 @@ void on_stepper_show(EmbeddedCli *cli, char *args, void *context) {
     }
 
     if (stepper_choice == STEPPER_RIGHT || stepper_choice == STEPPER_BOTH) {
-        stepper_config_t stepper_config;
+        stepper_settings_t stepper_config;
         stepper_config = stepper_get_configuration(STEPPER_RIGHT);
         cli_printf("Right Stepper parameters:\r\n");
         cli_printf("  Acceleration in Steps per Second per Second = %d\r\n", stepper_config.velocity.accSpsps);
@@ -554,7 +555,7 @@ void on_stepper_run(EmbeddedCli *cli, char *args, void *context) {
 // Metric commands
 void on_metric_show(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
-    metric_config_t metric_config = metric_get_config();
+    metric_settings_t metric_config = metric_get_settings();
 
     cli_printf("Metric configuration:\r\n");
     cli_printf("  Wheel diameter = %.2fmm\r\n", metric_config.wheel_diameter_mm);
@@ -573,13 +574,13 @@ void on_metric_set(EmbeddedCli *cli, char *args, void *context) {
     }
 
     // Get the current configuration
-    metric_config_t metric_config = metric_get_config();
+    metric_settings_t metric_config = metric_get_settings();
 
     // Get the rest of the arguments and store as floats
     metric_config.wheel_diameter_mm = atof(embeddedCliGetToken(args, 1));
     metric_config.axel_distance_mm = atof(embeddedCliGetToken(args, 2));
 
-    metric_set_config(metric_config);
+    metric_set_settings(metric_config);
 }
 
 void on_metric_forwards(EmbeddedCli *cli, char *args, void *context) {
@@ -710,6 +711,62 @@ void on_metric_right(EmbeddedCli *cli, char *args, void *context) {
     cli_printf("Steppers configured to rotate left %.2f degrees using %d steps\r\n", degrees, metric_result.left_steps);
 }
 
+// Configuration commands
+void on_config_read(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    configuration_t configuration = configuration_get();
+
+    cli_printf("\n");
+    cli_printf("Metric configuration:\n");
+    cli_printf("  Wheel diameter = %.2f mm\n", configuration.metric_config.wheel_diameter_mm);
+    cli_printf("  Axel distance = %.2f mm\n", configuration.metric_config.axel_distance_mm);
+    cli_printf("  Steps per revolution = %.2f steps\n", configuration.metric_config.steps_per_revolution);
+    cli_printf("\n");
+
+    cli_printf("Stepper configuration:\n");
+    cli_printf("  Stepper Left:\n");
+    cli_printf("    Acceleration in SPSPS = %d steps\n", configuration.stepper_left.accSpsps);
+    cli_printf("    Minimum SPS = %d steps\n", configuration.stepper_left.minimumSps);
+    cli_printf("    Maximum SPS = %d steps\n", configuration.stepper_left.maximumSps);
+    cli_printf("    Updates per second = %d updates\n", configuration.stepper_left.updatesPerSecond);
+
+    cli_printf("  Stepper Right:\n");
+    cli_printf("    Acceleration in SPSPS = %d steps\n", configuration.stepper_right.accSpsps);
+    cli_printf("    Minimum SPS = %d steps\n", configuration.stepper_right.minimumSps);
+    cli_printf("    Maximum SPS = %d steps\n", configuration.stepper_right.maximumSps);
+    cli_printf("    Updates per second = %d updates\n", configuration.stepper_right.updatesPerSecond);
+    cli_printf("\n");
+}
+
+void on_config_write(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+    configuration_store(configuration_get());
+    cli_printf("\nConfiguration stored in EEPROM\n");
+}
+
+// Update the stepper configuration from the current stepper settings
+void on_config_update_stepper(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    stepper_set_configuration();
+    cli_printf("\nConfiguration updated to match current stepper settings (don't forget to config-write)\n");
+}
+
+// Update the metric configuration from the current stepper settings
+void on_config_update_metric(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+    metric_set_configuration();
+    cli_printf("\nConfiguration updated to match current metric settings (don't forget to config-write)\n");
+}
+
+// Revert the configuration back to default
+void on_config_default(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+    configuration_set(configuration_get_default());
+    cli_printf("\nConfiguration reverted to default (don't forget to config-write)\n");
+}
+
 // ------------------------------------------------------------------------
 
 // Function is called every time a CLI command is received
@@ -729,7 +786,7 @@ void cli_initialise() {
     // config->cliBufferSize = 0;
     // config->maxBindingCount = 8;
     // config->enableAutoComplete = true;
-    config->maxBindingCount = 24;
+    config->maxBindingCount = 30;
     config->invitation = "VT2> ";
 
     cli = embeddedCliNew(config);
@@ -820,7 +877,7 @@ void cli_initialise() {
 
     CliCommandBinding stepper_velocity_binding = {
             "stepper-velocity",
-            "Set the velocity parameters for the stepper motors\r\n\tstepper-velocity [left/right/both] [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]",
+            "Set the velocity settings for the stepper motors\r\n\tstepper-velocity [left/right/both] [acceleration SPSPS] [minimum SPS] [maximum SPS] [updates per second]",
             true,
             NULL,
             on_stepper_velocity
@@ -866,7 +923,7 @@ void cli_initialise() {
     // Metric commands
     CliCommandBinding metric_show_binding = {
             "metric-show",
-            "Show the current metric to steps configuration",
+            "Show the current metric to steps settings",
             true,
             NULL,
             on_metric_show
@@ -875,7 +932,7 @@ void cli_initialise() {
 
     CliCommandBinding metric_set_binding = {
             "metric-set",
-            "Set the current metric to steps configuration\r\n\tmetric-set [wheel diameter in mm] [axel distance in mm]",
+            "Set the current metric to steps settings\r\n\tmetric-set [wheel diameter in mm] [axel distance in mm]",
             true,
             NULL,
             on_metric_set
@@ -917,6 +974,51 @@ void cli_initialise() {
             on_metric_right
     };
     embeddedCliAddBinding(cli, metric_right_binding);
+
+    CliCommandBinding config_read_binding = {
+        "config-read",
+        "Read the current configuration of the EEPROM\r\n",
+        true,
+        NULL,
+        on_config_read
+    };
+    embeddedCliAddBinding(cli, config_read_binding);
+
+    CliCommandBinding config_write_binding = {
+        "config-write",
+        "Write the current configuration to the EEPROM\r\n",
+        true,
+        NULL,
+        on_config_write
+    };
+    embeddedCliAddBinding(cli, config_write_binding);
+
+    CliCommandBinding config_update_stepper_binding = {
+        "config-update-stepper",
+        "Update the configuration using the current stepper settings\r\n",
+        true,
+        NULL,
+        on_config_update_stepper
+    };
+    embeddedCliAddBinding(cli, config_update_stepper_binding);
+
+    CliCommandBinding config_update_metric_binding = {
+        "config-update-metric",
+        "Update the configuration using the current metric settings\r\n",
+        true,
+        NULL,
+        on_config_update_metric
+    };
+    embeddedCliAddBinding(cli, config_update_metric_binding);
+
+    CliCommandBinding config_default_binding = {
+        "config-default",
+        "Revert the configuration to the default\r\n",
+        true,
+        NULL,
+        on_config_default
+    };
+    embeddedCliAddBinding(cli, config_default_binding);
 
     // Initialise the LED eyes
     left_led[0] = 0;

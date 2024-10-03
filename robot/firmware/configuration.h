@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    metric.h
+    configuration.h
 
     Valiant Turtle 2 - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,36 +24,39 @@
 
 ************************************************************************/
 
-#ifndef METRIC_H_
-#define METRIC_H_
+#ifndef CONFIGURATION_H_
+#define CONFIGURATION_H_
+
+#define CONFIG_VERSION 2
+
+// Typedef for stepper's velocity configuration
+typedef struct stepper_configuration_t {
+    int32_t accSpsps;
+    int32_t minimumSps;
+    int32_t maximumSps;
+    int32_t updatesPerSecond;
+} stepper_configuration_t;
 
 // Type definition for metric configuration
-typedef struct metric_settings_t {
+typedef struct metric_configuration_t {
     float wheel_diameter_mm;
     float axel_distance_mm;
     float steps_per_revolution;
-} metric_settings_t;
+} metric_configuration_t;
 
-// Type definition for metric calculation result
-typedef struct metric_result_t {
-    int32_t left_steps;
-    int32_t right_steps;
-    stepper_direction_t left_direction;
-    stepper_direction_t right_direction;
-} metric_result_t;
+// Type definition for overall stepper configuration
+typedef struct configuration_t {
+    uint16_t version_number;
+    metric_configuration_t metric_config;
+    stepper_configuration_t stepper_left;
+    stepper_configuration_t stepper_right;
+} configuration_t;
 
-void metric_initialise(void);
-metric_settings_t metric_get_settings(void);
-void metric_set_settings(metric_settings_t config);
+void configuration_initialise(void);
+configuration_t configuration_get_default(void);
+configuration_t configuration_get(void);
+void configuration_set(configuration_t configuration);
+void configuration_store(configuration_t configuration);
+configuration_t configuration_retrieve(void);
 
-metric_result_t metric_forwards(float distance_mm);
-metric_result_t metric_backwards(float distance_mm);
-metric_result_t metric_left(float degrees);
-metric_result_t metric_right(float degrees);
-
-int32_t metric_mm_to_steps(float millimeters);
-int32_t metric_deg_to_steps(float degrees);
-
-void metric_set_configuration(void);
-
-#endif /* METRIC_H_ */
+#endif /* CONFIGURATION_H_ */

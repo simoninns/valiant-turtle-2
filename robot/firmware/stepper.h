@@ -68,7 +68,7 @@ typedef struct stepper_velocity_config_t {
 } stepper_velocity_config_t;
 
 // Type definition for overall stepper configuration
-typedef struct stepper_config_t {
+typedef struct stepper_settings_t {
     stepper_direction_t direction;
     stepper_velocity_config_t velocity;
     velocity_sequence_t *velocity_sequence;
@@ -76,7 +76,7 @@ typedef struct stepper_config_t {
     bool isEnabled;
     bool isBusy;
     int32_t steps_remaining;
-} stepper_config_t;
+} stepper_settings_t;
 
 void stepper_initialise(void);
 void stepper_enable(bool isEnabled);
@@ -87,10 +87,12 @@ int32_t stepper_get_steps(stepper_side_t side);
 void stepper_dryrun(stepper_side_t side);
 void stepper_dryrun_free(stepper_side_t side);
 void stepper_run(stepper_side_t side);
-stepper_config_t stepper_get_configuration(stepper_side_t side);
+stepper_settings_t stepper_get_configuration(stepper_side_t side);
 bool stepper_isBusy(stepper_side_t side);
 
 void stepper_left_callback();
 void stepper_right_callback();
+
+void stepper_set_configuration(void);
 
 #endif /* STEPPER_H_ */
