@@ -977,7 +977,7 @@ void cli_initialise() {
 
     CliCommandBinding config_read_binding = {
         "config-read",
-        "Read the current configuration of the EEPROM\r\n",
+        "Read the current configuration of the EEPROM",
         true,
         NULL,
         on_config_read
@@ -986,7 +986,7 @@ void cli_initialise() {
 
     CliCommandBinding config_write_binding = {
         "config-write",
-        "Write the current configuration to the EEPROM\r\n",
+        "Write the current configuration to the EEPROM",
         true,
         NULL,
         on_config_write
@@ -995,7 +995,7 @@ void cli_initialise() {
 
     CliCommandBinding config_update_stepper_binding = {
         "config-update-stepper",
-        "Update the configuration using the current stepper settings\r\n",
+        "Update the configuration using the current stepper settings",
         true,
         NULL,
         on_config_update_stepper
@@ -1004,7 +1004,7 @@ void cli_initialise() {
 
     CliCommandBinding config_update_metric_binding = {
         "config-update-metric",
-        "Update the configuration using the current metric settings\r\n",
+        "Update the configuration using the current metric settings",
         true,
         NULL,
         on_config_update_metric
@@ -1013,7 +1013,7 @@ void cli_initialise() {
 
     CliCommandBinding config_default_binding = {
         "config-default",
-        "Revert the configuration to the default\r\n",
+        "Revert the configuration to the default",
         true,
         NULL,
         on_config_default
