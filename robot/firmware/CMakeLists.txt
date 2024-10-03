@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME}
     stepper.c
     metric.c
     ws2812.c
+    eeprom.c
     ${CMAKE_CURRENT_LIST_DIR}/embedded-cli/lib/src/embedded_cli.c
     )
 

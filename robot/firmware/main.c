@@ -34,6 +34,7 @@
 #include "cli.h"
 #include "i2cbus.h"
 #include "ina260.h"
+#include "eeprom.h"
 #include "penservo.h"
 #include "stepper.h"
 #include "metric.h"
@@ -49,6 +50,7 @@ int main() {
     debug_initialise();
     i2c_initialise();
     ina260_initialise();
+    eeprom_initialise();
     pen_servo_initialise();
     stepper_initialise();
     metric_initialise();
@@ -60,7 +62,6 @@ int main() {
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
 
     // Loop and process any non-interrupt driven activities
-    int b=0;
     while (true) {
         // Process the CLI
         cli_process();
