@@ -158,7 +158,7 @@ void pulse_generator_register_callback(uint8_t sm, callback_t _registered_callba
         debug_printf("pulse_generator_register_callback(): Callback registered for sm0\n");
         registered_callback_sm0 = _registered_callback;
         callback_set_sm0 = true;
-    } if (sm == 1) {
+    } else if (sm == 1) {
         debug_printf("pulse_generator_register_callback(): Callback registered for sm1\n");
         registered_callback_sm1 = _registered_callback;
         callback_set_sm1 = true;
