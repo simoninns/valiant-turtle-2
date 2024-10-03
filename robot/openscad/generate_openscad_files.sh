@@ -72,8 +72,10 @@ echo "  display_mount.stl"
 openscad -o ./stl/display_mount.stl -D 'for_printing="Printing"' -D 'display_display_mount="Yes"' ./scad/main.scad
 echo "  stand.stl"
 openscad -o ./stl/stand.stl -D 'for_printing="Printing"' -D 'display_stand="Yes"' ./scad/main.scad
-echo "  stand_battery_cover.stl"
-openscad -o ./stl/stand_battery_cover.stl -D 'for_printing="Printing"' -D 'display_stand_battery_cover="Yes"' ./scad/main.scad
+echo "  stand_lower_cover.stl"
+openscad -o ./stl/stand_lower_cover.stl -D 'for_printing="Printing"' -D 'display_stand_lower_cover="Yes"' ./scad/main.scad
+echo "  stand_upper_cover.stl"
+openscad -o ./stl/stand_upper_cover.stl -D 'for_printing="Printing"' -D 'display_stand_upper_cover="Yes"' ./scad/main.scad
 echo "  eye_pcb_jig.stl"
 openscad -o ./stl/eye_pcb_jig.stl -D 'for_printing="Printing"' -D 'display_eye_pcb_jig="Yes"' ./scad/main.scad
 

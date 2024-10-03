@@ -103,7 +103,49 @@ module stand_screw_surround()
     }
 }
 
-module stand_battery_cover()
+module stand_upper_cover()
+{
+    move([0,-12.5,41.5 - 8]) {
+        difference() {
+            union() {
+                cuboid([85.5,49-0.5,3], chamfer=1, edges=EDGES_Z_ALL+EDGES_TOP);
+
+                difference() {
+                    move([0,0,-2]) cuboid([81-0.25,44-0.25,2], chamfer=1, edges=EDGES_Z_ALL);
+                    move([0,0,-2]) cuboid([81-4,44-4,4], chamfer=1, edges=EDGES_Z_ALL);
+                }
+                
+                union() {
+                    hull() {
+                        move([+45.5,18,0]) cyl(h=3,d=8);
+                        move([-45.5,18,0]) cyl(h=3,d=8);
+                    }
+                    hull() {
+                        move([+45.5,-18,0]) cyl(h=3,d=8);
+                        move([-45.5,-18,0]) cyl(h=3,d=8);
+                    }
+                }
+            }
+
+            move([+45.5,18,0]) cyl(h=6,d=3.5);
+            move([+45.5,18,0 + 1]) cyl(h=3,d=5.5);
+
+            move([+45.5,-18,0]) cyl(h=6,d=3.5);
+            move([+45.5,-18,0 + 1]) cyl(h=3,d=5.5);
+
+            move([-45.5,18,0]) cyl(h=6,d=3.5);
+            move([-45.5,18,0 + 1]) cyl(h=3,d=5.5);
+
+            move([-45.5,-18,0]) cyl(h=6,d=3.5);
+            move([-45.5,-18,0 + 1]) cyl(h=3,d=5.5);
+        }
+
+        // Add a little marker to make the part easy to identify
+        move([0,0,-2]) cyl(h=2, d=6);
+    }
+}
+
+module stand_lower_cover()
 {
     difference() {
         move([0,-12.5,-21.5]) {
@@ -170,11 +212,20 @@ module render_stand(toPrint)
     }
 }
 
-module render_stand_battery_cover(toPrint)
+module render_stand_upper_cover(toPrint)
 {
     if (!toPrint) {
-        move([0,0,0]) color([0.9,0.9,0.6,1]) stand_battery_cover();
+        move([0,0,0]) color([0.9,0.9,0.6,1]) stand_upper_cover();
     } else {  
-        move([0,13,23]) stand_battery_cover();
+        move([0,-12,43 -8]) xrot(180) stand_upper_cover();
+    }
+}
+
+module render_stand_lower_cover(toPrint)
+{
+    if (!toPrint) {
+        move([0,0,0]) color([0.9,0.9,0.6,1]) stand_lower_cover();
+    } else {  
+        move([0,13,23]) stand_lower_cover();
     }
 }

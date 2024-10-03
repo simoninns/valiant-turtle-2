@@ -100,7 +100,8 @@ display_battery_clip = "No"; // [Yes, No]
 display_eye_surround = "No"; // [Yes, No]
 display_eye_light_pipe = "No"; // [Yes, No]
 display_stand = "No"; // [Yes, No]
-display_stand_battery_cover = "No"; // [Yes, No]
+display_stand_lower_cover = "No"; // [Yes, No]
+display_stand_upper_cover = "No"; // [Yes, No]
 display_eye_pcb_jig = "No"; // [Yes, No]
 
 /* [Support Enforcers] */
@@ -186,7 +187,8 @@ module main() {
     d_eye_surround = (display_eye_surround == "Yes") ? true:false;
     d_eye_light_pipe = (display_eye_light_pipe == "Yes") ? true:false;
     d_stand = (display_stand == "Yes") ? true:false;
-    d_stand_battery_cover = (display_stand_battery_cover == "Yes") ? true:false;
+    d_stand_lower_cover = (display_stand_lower_cover == "Yes") ? true:false;
+    d_stand_upper_cover = (display_stand_upper_cover == "Yes") ? true:false;
     d_eye_pcb_jig = (display_eye_pcb_jig == "Yes") ? true:false;
 
     // Support enforcers
@@ -263,7 +265,8 @@ module main() {
         if (d_eye_surround) render_eye_surround(toPrint);
         if (d_eye_light_pipe) render_eye_light_pipe(toPrint);
         if (d_stand) render_stand(toPrint);
-        if (d_stand_battery_cover) render_stand_battery_cover(toPrint);
+        if (d_stand_lower_cover) render_stand_lower_cover(toPrint);
+        if (d_stand_upper_cover) render_stand_upper_cover(toPrint);
         if (d_eye_pcb_jig) render_eye_pcb_jig(toPrint);
 
         // Render the support enforcers
