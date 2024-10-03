@@ -71,6 +71,6 @@ void ws2812_pio_stop()
 // Output a pixel of data in RGB format
 void ws2812_put_pixel(uint8_t r, uint8_t g, uint8_t b)
 {
-    uint32_t pixel_grb = ((uint32_t) (g) << 8) | ((uint32_t) (r) << 16) | (uint32_t) (b);
-    pio_sm_put_blocking(ws2812_pio, ws2812_sm, pixel_grb << 8u);
+    uint32_t pixel_rgb = ((uint32_t) (r) << 8) | ((uint32_t) (g) << 16) | (uint32_t) (b);
+    pio_sm_put_blocking(ws2812_pio, ws2812_sm, pixel_rgb << 8u);
 }

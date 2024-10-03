@@ -145,8 +145,8 @@ void on_eye_left(EmbeddedCli *cli, char *args, void *context) {
     left_led[1] = (uint8_t)green;
     left_led[2] = (uint8_t)blue;
 
-    ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
     ws2812_put_pixel(right_led[0], right_led[1], right_led[2]);
+    ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
 }
 
 void on_eye_right(EmbeddedCli *cli, char *args, void *context) {
@@ -180,8 +180,8 @@ void on_eye_right(EmbeddedCli *cli, char *args, void *context) {
     right_led[1] = (uint8_t)green;
     right_led[2] = (uint8_t)blue;
 
-    ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
     ws2812_put_pixel(right_led[0], right_led[1], right_led[2]);
+    ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
 }
 
 void on_i2c_scan(EmbeddedCli *cli, char *args, void *context) {
@@ -1021,15 +1021,15 @@ void cli_initialise() {
     embeddedCliAddBinding(cli, config_default_binding);
 
     // Initialise the LED eyes
-    left_led[0] = 0;
+    left_led[0] = 255;
     left_led[1] = 0;
     left_led[2] = 0;
-    right_led[0] = 0;
+    right_led[0] = 255;
     right_led[1] = 0;
     right_led[2] = 0;
 
-    ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
     ws2812_put_pixel(right_led[0], right_led[1], right_led[2]);
+    ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
 
     // Show initial CLI instructions to user
     bluetooth_open = false;
