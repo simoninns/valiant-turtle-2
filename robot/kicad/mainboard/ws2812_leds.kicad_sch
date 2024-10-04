@@ -2131,7 +2131,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "052d1c94-ea5d-4821-98eb-d860f383035c")
-		(property "Reference" "#PWR017"
+		(property "Reference" "#PWR036"
 			(at 38.1 193.04 0)
 			(effects
 				(font
@@ -2181,7 +2181,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "#PWR017")
+					(reference "#PWR036")
 					(unit 1)
 				)
 			)
@@ -2197,7 +2197,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "23320632-19e3-4546-8e4d-7265b84197c5")
-		(property "Reference" "U7"
+		(property "Reference" "U6"
 			(at 107.95 165.1 0)
 			(effects
 				(font
@@ -2285,7 +2285,7 @@
 		(instances
 			(project ""
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "U7")
+					(reference "U6")
 					(unit 5)
 				)
 			)
@@ -2376,7 +2376,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3a5a4aeb-e96b-454d-9754-8e37da5f54da")
-		(property "Reference" "#PWR01"
+		(property "Reference" "#PWR038"
 			(at 147.32 52.07 0)
 			(effects
 				(font
@@ -2426,7 +2426,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "#PWR01")
+					(reference "#PWR038")
 					(unit 1)
 				)
 			)
@@ -2442,7 +2442,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3a6d964f-2bf2-431f-89c6-dee89b89dc80")
-		(property "Reference" "U7"
+		(property "Reference" "U6"
 			(at 97.79 55.88 0)
 			(effects
 				(font
@@ -2530,7 +2530,7 @@
 		(instances
 			(project ""
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "U7")
+					(reference "U6")
 					(unit 1)
 				)
 			)
@@ -2689,7 +2689,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "59c1a471-9394-4677-b65b-13b33de65c18")
-		(property "Reference" "U7"
+		(property "Reference" "U6"
 			(at 127 165.1 0)
 			(effects
 				(font
@@ -2777,7 +2777,7 @@
 		(instances
 			(project ""
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "U7")
+					(reference "U6")
 					(unit 3)
 				)
 			)
@@ -2793,7 +2793,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5f1f324c-8847-4e9c-b116-8e9eed68eaf3")
-		(property "Reference" "C16"
+		(property "Reference" "C17"
 			(at 171.45 102.8699 0)
 			(effects
 				(font
@@ -2847,7 +2847,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "C16")
+					(reference "C17")
 					(unit 1)
 				)
 			)
@@ -2863,7 +2863,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "62bff94a-3446-4c1a-a5ea-3ef0682fa01a")
-		(property "Reference" "U7"
+		(property "Reference" "U6"
 			(at 116.84 55.88 0)
 			(effects
 				(font
@@ -2951,7 +2951,7 @@
 		(instances
 			(project ""
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "U7")
+					(reference "U6")
 					(unit 6)
 				)
 			)
@@ -2967,7 +2967,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "66f6a5ea-4a32-4a1c-b99c-d9ce59307ce8")
-		(property "Reference" "C14"
+		(property "Reference" "C15"
 			(at 24.13 170.1799 0)
 			(effects
 				(font
@@ -3021,7 +3021,7 @@
 		(instances
 			(project ""
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "C14")
+					(reference "C15")
 					(unit 1)
 				)
 			)
@@ -3037,7 +3037,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7a0c0b6f-3f12-4c3a-8d00-5ed20ca1e089")
-		(property "Reference" "U7"
+		(property "Reference" "U6"
 			(at 146.05 165.1 0)
 			(effects
 				(font
@@ -3125,7 +3125,7 @@
 		(instances
 			(project ""
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "U7")
+					(reference "U6")
 					(unit 4)
 				)
 			)
@@ -3141,7 +3141,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7b11e8bf-949a-4887-aa2b-d802cf92efed")
-		(property "Reference" "#PWR034"
+		(property "Reference" "#PWR040"
 			(at 147.32 100.33 0)
 			(effects
 				(font
@@ -3191,7 +3191,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "#PWR034")
+					(reference "#PWR040")
 					(unit 1)
 				)
 			)
@@ -3207,7 +3207,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "83995e5a-e7d1-4fa1-8333-a73cf149b179")
-		(property "Reference" "#PWR035"
+		(property "Reference" "#PWR039"
 			(at 147.32 83.82 0)
 			(effects
 				(font
@@ -3257,7 +3257,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "#PWR035")
+					(reference "#PWR039")
 					(unit 1)
 				)
 			)
@@ -3273,7 +3273,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8a6a0953-7a69-4ae0-90a8-8b80b834edfa")
-		(property "Reference" "#PWR039"
+		(property "Reference" "#PWR041"
 			(at 147.32 118.11 0)
 			(effects
 				(font
@@ -3323,7 +3323,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "#PWR039")
+					(reference "#PWR041")
 					(unit 1)
 				)
 			)
@@ -3339,7 +3339,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a44a8c69-d24d-4a60-8b00-2b3c0d5242ca")
-		(property "Reference" "U7"
+		(property "Reference" "U6"
 			(at 44.45 170.1799 0)
 			(effects
 				(font
@@ -3429,7 +3429,7 @@
 		(instances
 			(project ""
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "U7")
+					(reference "U6")
 					(unit 7)
 				)
 			)
@@ -3445,7 +3445,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a6a824bb-caef-4c17-a728-66bed0a6b94d")
-		(property "Reference" "#PWR016"
+		(property "Reference" "#PWR037"
 			(at 77.47 185.42 0)
 			(effects
 				(font
@@ -3495,7 +3495,7 @@
 		(instances
 			(project ""
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "#PWR016")
+					(reference "#PWR037")
 					(unit 1)
 				)
 			)
@@ -3511,7 +3511,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b49fdd86-a05e-4c05-9aeb-32c1d6f5ce4a")
-		(property "Reference" "C15"
+		(property "Reference" "C16"
 			(at 151.13 102.8699 0)
 			(effects
 				(font
@@ -3565,7 +3565,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "C15")
+					(reference "C16")
 					(unit 1)
 				)
 			)
@@ -3581,7 +3581,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c7da907a-0c60-4463-bbb5-1f4998d57514")
-		(property "Reference" "J5"
+		(property "Reference" "J10"
 			(at 210.82 63.4999 0)
 			(effects
 				(font
@@ -3638,7 +3638,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "J5")
+					(reference "J10")
 					(unit 1)
 				)
 			)
@@ -3654,7 +3654,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d3c1a94e-cb57-469e-b07c-a5fdbd2b69e5")
-		(property "Reference" "#PWR07"
+		(property "Reference" "#PWR035"
 			(at 38.1 160.02 0)
 			(effects
 				(font
@@ -3704,7 +3704,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "#PWR07")
+					(reference "#PWR035")
 					(unit 1)
 				)
 			)
@@ -3795,7 +3795,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fda786de-2d3d-4af9-8b61-c0b3f9187767")
-		(property "Reference" "U7"
+		(property "Reference" "U6"
 			(at 88.9 165.1 0)
 			(effects
 				(font
@@ -3883,7 +3883,7 @@
 		(instances
 			(project ""
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "U7")
+					(reference "U6")
 					(unit 2)
 				)
 			)
@@ -3899,7 +3899,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fdf279b0-ffc0-40ef-96dd-aca02981c494")
-		(property "Reference" "C17"
+		(property "Reference" "C18"
 			(at 190.5 102.8699 0)
 			(effects
 				(font
@@ -3953,7 +3953,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3101354b-821b-4d72-bb82-9ebd0af47157"
-					(reference "C17")
+					(reference "C18")
 					(unit 1)
 				)
 			)

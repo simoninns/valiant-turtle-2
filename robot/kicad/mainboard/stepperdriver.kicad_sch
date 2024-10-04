@@ -717,151 +717,6 @@
 				)
 			)
 		)
-		(symbol "Jumper:Jumper_2_Open"
-			(pin_numbers hide)
-			(pin_names
-				(offset 0) hide)
-			(exclude_from_sim yes)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "JP"
-				(at 0 2.794 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "Jumper_2_Open"
-				(at 0 -2.286 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Jumper, 2-pole, open"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "Jumper SPST"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Jumper* TestPoint*2Pads* TestPoint*Bridge*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "Jumper_2_Open_0_0"
-				(circle
-					(center -2.032 0)
-					(radius 0.508)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 2.032 0)
-					(radius 0.508)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "Jumper_2_Open_0_1"
-				(arc
-					(start 1.524 1.27)
-					(mid 0 1.778)
-					(end -1.524 1.27)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "Jumper_2_Open_1_1"
-				(pin passive line
-					(at -5.08 0 0)
-					(length 2.54)
-					(name "A"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 5.08 0 180)
-					(length 2.54)
-					(name "B"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-		)
 		(symbol "drv8825:DRV8825_Breakout"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -1211,126 +1066,6 @@
 				)
 			)
 		)
-		(symbol "power:+3V3"
-			(power)
-			(pin_names
-				(offset 0)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "#PWR"
-				(at 0 -3.81 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Value" "+3V3"
-				(at 0 3.556 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"+3V3\""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "+3V3_0_1"
-				(polyline
-					(pts
-						(xy -0.762 1.27) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "+3V3_1_1"
-				(pin power_in line
-					(at 0 0 90)
-					(length 0) hide
-					(name "+3V3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-		)
 		(symbol "power:+BATT"
 			(power)
 			(pin_numbers hide)
@@ -1549,12 +1284,6 @@
 		)
 	)
 	(junction
-		(at 80.01 82.55)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "1e217f71-8299-46dd-aa6b-3c5ffed68716")
-	)
-	(junction
 		(at 129.54 116.84)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1579,7 +1308,7 @@
 		(uuid "5ff9a8e9-e564-46cd-a615-5a6298a71752")
 	)
 	(junction
-		(at 111.76 92.71)
+		(at 111.76 77.47)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "6984c80d-118d-42ff-bb03-b8b0b1f9c342")
@@ -1603,7 +1332,7 @@
 		(uuid "ab0e8198-0b4a-4ca1-ab09-5bc5ba151a47")
 	)
 	(junction
-		(at 109.22 82.55)
+		(at 109.22 74.93)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "c9f3fa86-c7d4-4308-9c42-753ab77c11c2")
@@ -1619,12 +1348,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "d4993869-0d15-4cec-a543-375a2ad71ee9")
-	)
-	(junction
-		(at 80.01 72.39)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f39d8a90-884d-417f-8613-69ac504ecbe8")
 	)
 	(no_connect
 		(at 134.62 107.95)
@@ -1693,16 +1416,6 @@
 			(type default)
 		)
 		(uuid "156289e7-20a8-4c45-8f38-1719306dc79f")
-	)
-	(wire
-		(pts
-			(xy 111.76 77.47) (xy 111.76 92.71)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "18330897-1167-4334-9ffa-219ba63ed03e")
 	)
 	(wire
 		(pts
@@ -1786,7 +1499,7 @@
 	)
 	(wire
 		(pts
-			(xy 95.25 92.71) (xy 111.76 92.71)
+			(xy 95.25 77.47) (xy 111.76 77.47)
 		)
 		(stroke
 			(width 0)
@@ -1826,16 +1539,6 @@
 	)
 	(wire
 		(pts
-			(xy 80.01 63.5) (xy 80.01 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "52e695ef-f96f-4d0e-a2f2-53093ab5d8be")
-	)
-	(wire
-		(pts
 			(xy 156.21 118.11) (xy 161.29 118.11)
 		)
 		(stroke
@@ -1856,16 +1559,6 @@
 	)
 	(wire
 		(pts
-			(xy 80.01 82.55) (xy 80.01 92.71)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5b42e257-6a81-4661-a2d7-edb0c167d1cf")
-	)
-	(wire
-		(pts
 			(xy 195.58 82.55) (xy 195.58 83.82)
 		)
 		(stroke
@@ -1876,7 +1569,7 @@
 	)
 	(wire
 		(pts
-			(xy 111.76 92.71) (xy 111.76 130.81)
+			(xy 111.76 77.47) (xy 111.76 130.81)
 		)
 		(stroke
 			(width 0)
@@ -1926,16 +1619,6 @@
 	)
 	(wire
 		(pts
-			(xy 80.01 82.55) (xy 85.09 82.55)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6452a938-7d2f-4e42-afb4-70db409a4b90")
-	)
-	(wire
-		(pts
 			(xy 163.83 72.39) (xy 163.83 64.77)
 		)
 		(stroke
@@ -1973,16 +1656,6 @@
 			(type default)
 		)
 		(uuid "71791dbb-a92b-4334-a194-fe8e5a7cc45d")
-	)
-	(wire
-		(pts
-			(xy 80.01 72.39) (xy 80.01 82.55)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "71be4ab3-2547-47f5-8393-396441dfca30")
 	)
 	(wire
 		(pts
@@ -2136,16 +1809,6 @@
 	)
 	(wire
 		(pts
-			(xy 109.22 74.93) (xy 109.22 82.55)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b2841a02-a59f-47f3-803e-ee4f5baab3a2")
-	)
-	(wire
-		(pts
 			(xy 156.21 69.85) (xy 166.37 69.85)
 		)
 		(stroke
@@ -2163,16 +1826,6 @@
 			(type default)
 		)
 		(uuid "c1ce3841-2f67-4b0c-bdce-69f7ee73c22e")
-	)
-	(wire
-		(pts
-			(xy 85.09 92.71) (xy 80.01 92.71)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cd8ab32f-ae35-45fc-b121-678d4b28bab2")
 	)
 	(wire
 		(pts
@@ -2196,16 +1849,6 @@
 	)
 	(wire
 		(pts
-			(xy 80.01 72.39) (xy 85.09 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "da0f6306-5268-473a-8866-19389a6ed75d")
-	)
-	(wire
-		(pts
 			(xy 161.29 118.11) (xy 161.29 120.65)
 		)
 		(stroke
@@ -2226,7 +1869,7 @@
 	)
 	(wire
 		(pts
-			(xy 109.22 82.55) (xy 109.22 128.27)
+			(xy 109.22 74.93) (xy 109.22 128.27)
 		)
 		(stroke
 			(width 0)
@@ -2266,7 +1909,7 @@
 	)
 	(wire
 		(pts
-			(xy 95.25 82.55) (xy 109.22 82.55)
+			(xy 95.25 74.93) (xy 109.22 74.93)
 		)
 		(stroke
 			(width 0)
@@ -2395,17 +2038,6 @@
 		)
 		(uuid "0a2f68cc-eeb9-4f55-8733-f9eda94d68aa")
 	)
-	(text "JP2 should be\nclosed by default"
-		(exclude_from_sim no)
-		(at 60.706 82.296 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "996feb88-8409-4ffa-b2ef-93420e48c885")
-	)
 	(hierarchical_label "LM_Step"
 		(shape input)
 		(at 123.19 66.04 180)
@@ -2429,6 +2061,30 @@
 			(justify right)
 		)
 		(uuid "8ed6970c-7d4e-4e01-a9d0-edf2f8ff14ba")
+	)
+	(hierarchical_label "M2"
+		(shape input)
+		(at 95.25 77.47 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "aa84c7a6-f835-4ba9-a991-624f8c1890a7")
+	)
+	(hierarchical_label "M0"
+		(shape input)
+		(at 95.25 72.39 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "af02d203-cd17-4878-bc91-df27c077e318")
 	)
 	(hierarchical_label "RM_Step"
 		(shape input)
@@ -2466,6 +2122,18 @@
 		)
 		(uuid "bf27d55b-9c32-4763-aec3-f9fd8362c5a4")
 	)
+	(hierarchical_label "M1"
+		(shape input)
+		(at 95.25 74.93 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "cafc045e-5e11-4ea6-be38-500f39f4ffdc")
+	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x04")
 		(at 171.45 118.11 0)
@@ -2476,7 +2144,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "11e2577b-8b4c-4bf4-8d37-d14a9672a352")
-		(property "Reference" "J10"
+		(property "Reference" "J8"
 			(at 173.99 118.11 0)
 			(effects
 				(font
@@ -2536,7 +2204,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "J10")
+					(reference "J8")
 					(unit 1)
 				)
 			)
@@ -2552,7 +2220,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "43490a2e-8663-47e3-b928-6634c49704d1")
-		(property "Reference" "#PWR014"
+		(property "Reference" "#PWR018"
 			(at 144.78 144.78 0)
 			(effects
 				(font
@@ -2602,7 +2270,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "#PWR014")
+					(reference "#PWR018")
 					(unit 1)
 				)
 			)
@@ -2722,75 +2390,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Jumper:Jumper_2_Open")
-		(at 90.17 92.71 0)
-		(unit 1)
-		(exclude_from_sim yes)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "7e9a9994-0062-4171-803c-ce94433292ef")
-		(property "Reference" "JP3"
-			(at 90.17 88.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "M2"
-			(at 90.17 88.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" ""
-			(at 90.17 92.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 90.17 92.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Jumper, 2-pole, open"
-			(at 90.17 92.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "5243a4a8-ff24-49ed-a4b6-b713212c6562")
-		)
-		(pin "2"
-			(uuid "0c15c2ad-191e-4b3a-84ef-6ce514237cf3")
-		)
-		(instances
-			(project "valiant-turtle-2"
-				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "JP3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:+BATT")
 		(at 195.58 82.55 0)
 		(unit 1)
@@ -2800,7 +2399,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "88188b9f-c7e7-4e51-b032-db4cfc216a2c")
-		(property "Reference" "#PWR015"
+		(property "Reference" "#PWR021"
 			(at 195.58 86.36 0)
 			(effects
 				(font
@@ -2850,7 +2449,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "#PWR015")
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -2866,7 +2465,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8f655135-028e-4961-a8fd-292f34d25071")
-		(property "Reference" "C4"
+		(property "Reference" "C6"
 			(at 213.36 88.011 0)
 			(effects
 				(font
@@ -2920,7 +2519,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "C4")
+					(reference "C6")
 					(unit 1)
 				)
 			)
@@ -2936,7 +2535,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "9f79b4b7-ff26-47a5-9337-d92bc15aeade")
-		(property "Reference" "#PWR018"
+		(property "Reference" "#PWR022"
 			(at 195.58 104.14 0)
 			(effects
 				(font
@@ -2986,7 +2585,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "#PWR018")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
@@ -3002,7 +2601,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a3f9fbdd-2625-40af-aa9e-5bf6b9ab8212")
-		(property "Reference" "J9"
+		(property "Reference" "J7"
 			(at 173.99 64.77 0)
 			(effects
 				(font
@@ -3062,7 +2661,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "J9")
+					(reference "J7")
 					(unit 1)
 				)
 			)
@@ -3078,7 +2677,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b2075260-f1bb-4652-a814-b7f6ec830885")
-		(property "Reference" "#PWR041"
+		(property "Reference" "#PWR020"
 			(at 146.05 104.14 0)
 			(effects
 				(font
@@ -3128,7 +2727,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "#PWR041")
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -3144,7 +2743,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c1ff5d48-c62a-4107-93df-3d334d2a84be")
-		(property "Reference" "C3"
+		(property "Reference" "C5"
 			(at 199.39 88.011 0)
 			(effects
 				(font
@@ -3198,7 +2797,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "C3")
+					(reference "C5")
 					(unit 1)
 				)
 			)
@@ -3214,7 +2813,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "dd1c44c7-c293-4b68-9daf-83525d479126")
-		(property "Reference" "#PWR013"
+		(property "Reference" "#PWR017"
 			(at 144.78 91.44 0)
 			(effects
 				(font
@@ -3264,76 +2863,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "#PWR013")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Jumper:Jumper_2_Open")
-		(at 90.17 72.39 0)
-		(unit 1)
-		(exclude_from_sim yes)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "e4f18649-a502-4c05-9eb6-666fa6162bec")
-		(property "Reference" "JP1"
-			(at 90.17 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "M0"
-			(at 90.17 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" ""
-			(at 90.17 72.39 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 90.17 72.39 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Jumper, 2-pole, open"
-			(at 90.17 72.39 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "0340ad99-158e-48ce-86f0-b5d2a3765ff6")
-		)
-		(pin "2"
-			(uuid "3726109c-d083-46a1-878c-32d0d30abd7f")
-		)
-		(instances
-			(project "valiant-turtle-2"
-				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "JP1")
+					(reference "#PWR017")
 					(unit 1)
 				)
 			)
@@ -3461,7 +2991,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "e9923c59-9914-4f74-bd4f-6ed552f4a46b")
-		(property "Reference" "#PWR021"
+		(property "Reference" "#PWR019"
 			(at 146.05 50.8 0)
 			(effects
 				(font
@@ -3511,142 +3041,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "#PWR021")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Jumper:Jumper_2_Open")
-		(at 90.17 82.55 0)
-		(unit 1)
-		(exclude_from_sim yes)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "f2861024-004b-461e-850d-db69024ddcdf")
-		(property "Reference" "JP2"
-			(at 90.17 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "M1"
-			(at 90.17 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" ""
-			(at 90.17 82.55 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 90.17 82.55 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Jumper, 2-pole, open"
-			(at 90.17 82.55 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "9ca927d1-bbfe-4508-985c-511ab8768867")
-		)
-		(pin "2"
-			(uuid "628c7793-a7da-422b-9252-f91a922c97a5")
-		)
-		(instances
-			(project "valiant-turtle-2"
-				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "JP2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3V3")
-		(at 80.01 63.5 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "f407a4c5-02b6-4840-ae20-1ec6bd1fc459")
-		(property "Reference" "#PWR038"
-			(at 80.01 67.31 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 80.01 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 80.01 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 80.01 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 80.01 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a339c130-40e5-4a39-9c4e-03d85c8f8060")
-		)
-		(instances
-			(project "valiant-turtle-2"
-				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/3e3711ee-f980-4193-ae36-e2257847eb0e"
-					(reference "#PWR038")
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
