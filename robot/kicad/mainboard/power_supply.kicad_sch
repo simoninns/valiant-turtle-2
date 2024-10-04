@@ -1811,9 +1811,9 @@
 		)
 		(symbol "power:+3V3"
 			(power)
+			(pin_numbers hide)
 			(pin_names
-				(offset 0)
-			)
+				(offset 0) hide)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -1911,8 +1911,8 @@
 			(symbol "+3V3_1_1"
 				(pin power_in line
 					(at 0 0 90)
-					(length 0) hide
-					(name "+3V3"
+					(length 0)
+					(name "~"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1931,9 +1931,9 @@
 		)
 		(symbol "power:+5V"
 			(power)
+			(pin_numbers hide)
 			(pin_names
-				(offset 0)
-			)
+				(offset 0) hide)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -2031,8 +2031,8 @@
 			(symbol "+5V_1_1"
 				(pin power_in line
 					(at 0 0 90)
-					(length 0) hide
-					(name "+5V"
+					(length 0)
+					(name "~"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2171,9 +2171,9 @@
 		)
 		(symbol "power:GND"
 			(power)
+			(pin_numbers hide)
 			(pin_names
-				(offset 0)
-			)
+				(offset 0) hide)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -2247,8 +2247,8 @@
 			(symbol "GND_1_1"
 				(pin power_in line
 					(at 0 0 270)
-					(length 0) hide
-					(name "GND"
+					(length 0)
+					(name "~"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2330,7 +2330,7 @@
 				(pin power_out line
 					(at 0 0 90)
 					(length 0)
-					(name "pwr"
+					(name "~"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3386,7 +3386,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 135.89 57.15 0)
 			(effects
 				(font
@@ -3420,7 +3420,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "25ea51b0-bacc-4b21-adec-313b7467d558")
-		(property "Reference" "U3"
+		(property "Reference" "U2"
 			(at 88.9 37.465 0)
 			(effects
 				(font
@@ -3456,7 +3456,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "5V, 3A SIMPLE SWITCHER® Step-Down Voltage Regulator, TO-263"
 			(at 88.9 46.99 0)
 			(effects
 				(font
@@ -3483,7 +3483,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "U3")
+					(reference "U2")
 					(unit 1)
 				)
 			)
@@ -3499,7 +3499,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "279c2b86-8cb4-47b3-9ea7-f3c64ae02b3d")
-		(property "Reference" "#PWR023"
+		(property "Reference" "#PWR022"
 			(at 63.5 39.37 0)
 			(effects
 				(font
@@ -3549,7 +3549,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR023")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
@@ -3565,7 +3565,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "355aabce-fa5a-4c84-af2e-0deb3071ea58")
-		(property "Reference" "#PWR034"
+		(property "Reference" "#PWR033"
 			(at 208.28 46.99 0)
 			(effects
 				(font
@@ -3600,7 +3600,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
 			(at 208.28 43.18 0)
 			(effects
 				(font
@@ -3615,7 +3615,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR034")
+					(reference "#PWR033")
 					(unit 1)
 				)
 			)
@@ -3667,7 +3667,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Polarized capacitor"
 			(at 182.88 57.15 0)
 			(effects
 				(font
@@ -3701,7 +3701,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3f28b3b4-9ed8-4408-9180-7f9234ea99b0")
-		(property "Reference" "#PWR032"
+		(property "Reference" "#PWR031"
 			(at 201.93 105.41 0)
 			(effects
 				(font
@@ -3736,7 +3736,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
 			(at 201.93 101.6 0)
 			(effects
 				(font
@@ -3751,7 +3751,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR032")
+					(reference "#PWR031")
 					(unit 1)
 				)
 			)
@@ -3767,7 +3767,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "435c7b52-7cee-425d-8652-32fd04870f87")
-		(property "Reference" "U5"
+		(property "Reference" "U4"
 			(at 198.12 42.545 0)
 			(effects
 				(font
@@ -3801,7 +3801,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "800mA Low-Dropout Linear Regulator, 3.3V fixed output, SOT-223"
 			(at 198.12 49.53 0)
 			(effects
 				(font
@@ -3822,7 +3822,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "U5")
+					(reference "U4")
 					(unit 1)
 				)
 			)
@@ -3874,7 +3874,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Polarized capacitor"
 			(at 63.5 54.61 0)
 			(effects
 				(font
@@ -3944,7 +3944,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 48.26 54.61 0)
 			(effects
 				(font
@@ -3978,7 +3978,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6ef07aae-b18d-4e0f-bed3-7a6f4ac713c1")
-		(property "Reference" "#PWR027"
+		(property "Reference" "#PWR026"
 			(at 101.6 106.68 0)
 			(effects
 				(font
@@ -4013,7 +4013,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
 			(at 101.6 102.87 0)
 			(effects
 				(font
@@ -4028,7 +4028,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR027")
+					(reference "#PWR026")
 					(unit 1)
 				)
 			)
@@ -4080,7 +4080,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor"
 			(at 201.93 107.95 0)
 			(effects
 				(font
@@ -4150,7 +4150,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 128.27 120.65 0)
 			(effects
 				(font
@@ -4184,7 +4184,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8d2cba1a-bc96-4ae9-99ee-76ef1b61490d")
-		(property "Reference" "#PWR033"
+		(property "Reference" "#PWR032"
 			(at 201.93 130.81 0)
 			(effects
 				(font
@@ -4219,7 +4219,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 201.93 124.46 0)
 			(effects
 				(font
@@ -4234,7 +4234,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR033")
+					(reference "#PWR032")
 					(unit 1)
 				)
 			)
@@ -4250,7 +4250,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8efa37ae-a8d9-4e45-ad26-1a0fee4c875c")
-		(property "Reference" "#PWR029"
+		(property "Reference" "#PWR028"
 			(at 121.92 39.37 0)
 			(effects
 				(font
@@ -4285,7 +4285,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
 			(at 121.92 35.56 0)
 			(effects
 				(font
@@ -4300,7 +4300,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR029")
+					(reference "#PWR028")
 					(unit 1)
 				)
 			)
@@ -4316,7 +4316,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "936a6cac-97db-4259-a56f-f769e8f50783")
-		(property "Reference" "#PWR030"
+		(property "Reference" "#PWR029"
 			(at 182.88 46.99 0)
 			(effects
 				(font
@@ -4351,7 +4351,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
 			(at 182.88 43.18 0)
 			(effects
 				(font
@@ -4366,7 +4366,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR030")
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
@@ -4382,7 +4382,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "98cfe63f-499e-47c0-80ee-800b97185cf5")
-		(property "Reference" "#PWR028"
+		(property "Reference" "#PWR027"
 			(at 101.6 142.24 0)
 			(effects
 				(font
@@ -4417,7 +4417,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 101.6 135.89 0)
 			(effects
 				(font
@@ -4432,7 +4432,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR028")
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
@@ -4484,7 +4484,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor"
 			(at 226.06 57.15 0)
 			(effects
 				(font
@@ -4554,7 +4554,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Schottky diode"
 			(at 104.14 57.15 0)
 			(effects
 				(font
@@ -4624,7 +4624,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Special symbol for telling ERC where power comes from"
 			(at 67.31 120.65 0)
 			(effects
 				(font
@@ -4691,7 +4691,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Light emitting diode"
 			(at 201.93 118.11 0)
 			(effects
 				(font
@@ -4804,7 +4804,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c9de48d2-4ed1-434e-8881-4bbfd6b6ecdb")
-		(property "Reference" "#PWR025"
+		(property "Reference" "#PWR024"
 			(at 88.9 72.39 0)
 			(effects
 				(font
@@ -4839,7 +4839,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 88.9 66.04 0)
 			(effects
 				(font
@@ -4854,7 +4854,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR025")
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)
@@ -4870,7 +4870,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "cc049ff0-9b5a-46d6-a363-3e624e453bd0")
-		(property "Reference" "#PWR026"
+		(property "Reference" "#PWR025"
 			(at 92.71 109.22 0)
 			(effects
 				(font
@@ -4905,7 +4905,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 92.71 102.87 0)
 			(effects
 				(font
@@ -4920,7 +4920,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR026")
+					(reference "#PWR025")
 					(unit 1)
 				)
 			)
@@ -4936,7 +4936,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d096a267-76e8-4795-8fe7-df0edb30427f")
-		(property "Reference" "#PWR031"
+		(property "Reference" "#PWR030"
 			(at 198.12 71.12 0)
 			(effects
 				(font
@@ -4971,7 +4971,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 198.12 64.77 0)
 			(effects
 				(font
@@ -4986,7 +4986,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR031")
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)
@@ -5002,7 +5002,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "de12e67c-2855-43f8-b185-c88c4dececfe")
-		(property "Reference" "U4"
+		(property "Reference" "U3"
 			(at 103.7941 109.22 0)
 			(effects
 				(font
@@ -5038,7 +5038,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Current/power/voltage monitor with Integrated 2mΩ Shunt Resistor, 2.7V - 5.5V, I2C, TSSOP-16"
 			(at 101.6 121.92 0)
 			(effects
 				(font
@@ -5098,7 +5098,7 @@
 		(instances
 			(project "valiant-turtle-2"
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "U4")
+					(reference "U3")
 					(unit 1)
 				)
 			)
@@ -5150,7 +5150,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Special symbol for telling ERC where power comes from"
 			(at 125.73 41.91 0)
 			(effects
 				(font
@@ -5217,7 +5217,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Polarized capacitor"
 			(at 121.92 57.15 0)
 			(effects
 				(font
@@ -5285,7 +5285,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Inductor"
 			(at 111.76 49.53 0)
 			(effects
 				(font
@@ -5355,7 +5355,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Polarized capacitor"
 			(at 208.28 57.15 0)
 			(effects
 				(font
@@ -5389,7 +5389,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f5b86c43-dd02-4d11-9183-87f3ffb20e14")
-		(property "Reference" "#PWR024"
+		(property "Reference" "#PWR023"
 			(at 72.39 120.65 0)
 			(effects
 				(font
@@ -5439,7 +5439,7 @@
 		(instances
 			(project ""
 				(path "/e9f328a3-a444-4353-b569-ffbeea9f702f/d251cca6-f52b-47da-a52d-90ab44f33b74"
-					(reference "#PWR024")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
