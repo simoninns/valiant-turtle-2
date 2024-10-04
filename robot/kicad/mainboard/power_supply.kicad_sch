@@ -4743,7 +4743,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_JST:JST_XH_B5B-XH-A_1x05_P2.50mm_Vertical"
 			(at 81.28 100.33 0)
 			(effects
 				(font
@@ -5267,7 +5267,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_Bourns_SRP1770TA_16.9x16.9mm"
+		(property "Footprint" "Bourns_Inductor:Inductor_SDR1307"
 			(at 111.76 49.53 0)
 			(effects
 				(font

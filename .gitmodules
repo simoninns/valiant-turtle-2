@@ -1,23 +1,19 @@
 [submodule "robot/openscad/scad/BOSL"]
 	path = robot/openscad/scad/BOSL
 	url = https://github.com/revarbat/BOSL.git
-
 [submodule "robot/firmware/embedded-cli"]
 	path = robot/firmware/embedded-cli
 	url = https://github.com/funbiscuit/embedded-cli.git
-
 [submodule "robot/firmware/pico-ssd1306"]
 	path = robot/firmware/pico-ssd1306
 	url = https://github.com/daschr/pico-ssd1306.git
-
 [submodule "communicator/openscad/scad/BOSL"]
 	path = communicator/openscad/scad/BOSL
 	url = https://github.com/revarbat/BOSL.git
-
 [submodule "charger/openscad/scad/BOSL"]
 	path = charger/openscad/scad/BOSL
 	url = https://github.com/revarbat/BOSL.git
-
 [submodule "ki-lime-pi-pico"]
 	path = robot/kicad/libraries/ki-lime-pi-pico
 	url = https://github.com/recursivenomad/ki-lime-pi-to-go.git
+
