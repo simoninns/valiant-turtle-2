@@ -96,6 +96,8 @@ openscad -o ./stl_support_enforcers/body_right_support_enforcer.stl -D 'for_prin
 echo "Generating 2D DXF files for KiCAD..."
 echo "  main_pcb.dxf"
 openscad -o ./dxf/main_pcb.dxf -D 'for_printing="Printing"' -D 'display_main_pcb="Yes"' ./scad/main.scad
+echo "  aux_pcb.dxf"
+openscad -o ./dxf/aux_pcb.dxf -D 'for_printing="Printing"' -D 'display_aux_pcb="Yes"' ./scad/main.scad
 echo "  eye_pcb.dxf"
 openscad -o ./dxf/eye_pcb.dxf -D 'for_printing="Printing"' -D 'display_eye_pcb="Yes"' ./scad/main.scad
 echo "  logotype_2D.dxf"

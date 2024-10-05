@@ -1,0 +1,21 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "d5c32f5f-f9e1-471b-b0cc-0d5be03922b6")
+	(paper "A4")
+	(title_block
+		(title "Valiant Turtle 2 - Aux Board")
+		(date "2024-10-05")
+		(rev "1_0")
+		(company "https://www.waitingforfriday.com")
+		(comment 1 "(c) 2024 Simon Inns")
+		(comment 2 "License:  Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)")
+	)
+	(lib_symbols)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
