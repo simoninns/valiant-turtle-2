@@ -625,6 +625,7 @@
 		(fp_text user "1"
 			(at -4.15 -1.6 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "50d82834-274f-48d6-b71a-391df49c816c")
 			(effects
 				(font
@@ -1055,7 +1056,7 @@
 		(descr "JST XH series connector, B3B-XH-A (http://www.jst-mfg.com/product/pdf/eng/eXH.pdf), generated with kicad-footprint-generator")
 		(tags "connector JST XH vertical")
 		(property "Reference" "J10"
-			(at 2.5 -3.55 36)
+			(at -4.481989 3.234329 36)
 			(layer "F.SilkS")
 			(uuid "28079353-35f2-4345-bf29-3321c10c5462")
 			(effects
@@ -5457,6 +5458,7 @@
 		(fp_text user "1"
 			(at -4.15 -1.6 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "537c1686-0135-4512-b5ae-1778cbe0164e")
 			(effects
 				(font
@@ -19688,6 +19690,17 @@
 		(uuid "8ea1cb6b-4d63-4014-a82b-b668ac230cc8")
 	)
 	(gr_circle
+		(center 86.28 126.120281)
+		(end 86.69 126.700281)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "0121a643-5c3e-4096-a382-eb7fabbe8258")
+	)
+	(gr_circle
 		(center 150.025 105.475)
 		(end 154.025 105.475)
 		(stroke
@@ -19697,6 +19710,17 @@
 		(fill none)
 		(layer "F.SilkS")
 		(uuid "3ae7a3bc-f9df-41a8-abf9-17515ed450e5")
+	)
+	(gr_circle
+		(center 171.4 126.22)
+		(end 171.81 126.8)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "3dc9177a-b480-408d-a194-59e075ef4ea6")
 	)
 	(gr_poly
 		(pts
@@ -20412,45 +20436,6 @@
 		(layer "Edge.Cuts")
 		(uuid "f15dc7da-903d-4c53-84e7-61cb9d1b0590")
 	)
-	(gr_text "Eyes"
-		(at 167 140.5 0)
-		(layer "F.Paste")
-		(uuid "331edc43-ebb0-4e12-8812-0190661cb207")
-		(effects
-			(font
-				(size 1.5 1.5)
-				(thickness 0.3)
-				(bold yes)
-			)
-			(justify left bottom)
-		)
-	)
-	(gr_text "Left\nMotor"
-		(at 68 104 0)
-		(layer "F.Paste")
-		(uuid "4e193c1c-9667-44bc-8fe4-f2ef911f7569")
-		(effects
-			(font
-				(size 1.5 1.5)
-				(thickness 0.3)
-				(bold yes)
-			)
-			(justify left bottom)
-		)
-	)
-	(gr_text "Expansion"
-		(at 76.5 97 0)
-		(layer "F.Paste")
-		(uuid "c51000b1-54f2-4eca-9f63-16285cbcb194")
-		(effects
-			(font
-				(size 1.5 1.5)
-				(thickness 0.3)
-				(bold yes)
-			)
-			(justify left bottom)
-		)
-	)
 	(gr_text "NF"
 		(at 115 52.5 0)
 		(layer "F.SilkS")
@@ -20490,6 +20475,19 @@
 			(justify left bottom)
 		)
 	)
+	(gr_text "Eyes"
+		(at 157.31 141.56 36)
+		(layer "F.SilkS")
+		(uuid "331edc43-ebb0-4e12-8812-0190661cb207")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+	)
 	(gr_text "Inspired by Dave Catlin's\noriginal Valiant Turtle\ndesign"
 		(at 125 169.5 0)
 		(layer "F.SilkS")
@@ -20501,6 +20499,56 @@
 				(bold yes)
 			)
 			(justify bottom)
+		)
+	)
+	(gr_text "Left\nMotor"
+		(at 66.76 103.65 342)
+		(layer "F.SilkS")
+		(uuid "4e193c1c-9667-44bc-8fe4-f2ef911f7569")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "S\n+\n-"
+		(at 172.77 86.88 18)
+		(layer "F.SilkS")
+		(uuid "7c4e3555-3a68-4ec4-9edb-629365263b2a")
+		(effects
+			(font
+				(size 1.2 1.2)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "UART"
+		(at 137.81 60.03 0)
+		(layer "F.SilkS")
+		(uuid "a82db722-db95-4a36-b36a-d9991ba85e59")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "Expansion"
+		(at 76.5 97 0)
+		(layer "F.SilkS")
+		(uuid "c51000b1-54f2-4eca-9f63-16285cbcb194")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify left bottom)
 		)
 	)
 	(gr_text "I2C0"
@@ -20517,7 +20565,7 @@
 		)
 	)
 	(gr_text "Pen"
-		(at 171 78.5 0)
+		(at 171.2 79.72 18)
 		(layer "F.SilkS")
 		(uuid "cbb21295-6049-42f1-a491-62330099ba05")
 		(effects
@@ -20556,7 +20604,7 @@
 		)
 	)
 	(gr_text "Right\nMotor"
-		(at 182.5 104 0)
+		(at 183.19 103.64 18)
 		(layer "F.SilkS")
 		(uuid "f59ae62c-ec49-4c33-a656-cc5a2c7ce179")
 		(effects
@@ -30997,7 +31045,7 @@
 		(filled_polygon
 			(layer "In1.Cu")
 			(pts
-				(xy 166.182748 48.244185) (xy 166.228503 48.296989) (xy 166.233638 48.310178) (xy 167.321314 51.6577)
+				(xy 166.182748 48.244185) (xy 166.228503 48.296989) (xy 166.233638 48.310178) (xy 167.327428 51.676517)
 				(xy 167.53143 52.304371) (xy 167.531448 52.304427) (xy 191.572218 126.414358) (xy 191.57418 126.4842)
 				(xy 191.538071 126.544016) (xy 191.527166 126.552929) (xy 125.683074 174.40359) (xy 125.683062 174.403599)
 				(xy 125.133684 174.802745) (xy 125.067878 174.826225) (xy 124.999824 174.810399) (xy 124.987914 174.802745)
@@ -32680,7 +32728,7 @@
 		(filled_polygon
 			(layer "In2.Cu")
 			(pts
-				(xy 166.182748 48.244185) (xy 166.228503 48.296989) (xy 166.233638 48.310178) (xy 167.321314 51.6577)
+				(xy 166.182748 48.244185) (xy 166.228503 48.296989) (xy 166.233638 48.310178) (xy 167.327428 51.676517)
 				(xy 167.53143 52.304371) (xy 167.531448 52.304427) (xy 191.572218 126.414358) (xy 191.57418 126.4842)
 				(xy 191.538071 126.544016) (xy 191.527166 126.552929) (xy 125.683074 174.40359) (xy 125.683062 174.403599)
 				(xy 125.133684 174.802745) (xy 125.067878 174.826225) (xy 124.999824 174.810399) (xy 124.987914 174.802745)
@@ -35205,7 +35253,7 @@
 		(filled_polygon
 			(layer "B.Cu")
 			(pts
-				(xy 166.182748 48.244185) (xy 166.228503 48.296989) (xy 166.233638 48.310178) (xy 167.321314 51.6577)
+				(xy 166.182748 48.244185) (xy 166.228503 48.296989) (xy 166.233638 48.310178) (xy 167.327428 51.676517)
 				(xy 167.53143 52.304371) (xy 167.531448 52.304427) (xy 191.572218 126.414358) (xy 191.57418 126.4842)
 				(xy 191.538071 126.544016) (xy 191.527166 126.552929) (xy 125.683074 174.40359) (xy 125.683062 174.403599)
 				(xy 125.133684 174.802745) (xy 125.067878 174.826225) (xy 124.999824 174.810399) (xy 124.987914 174.802745)
