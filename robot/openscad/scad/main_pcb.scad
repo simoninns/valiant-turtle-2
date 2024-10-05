@@ -83,6 +83,7 @@ module main_pcb_complete()
         main_pcb();
         main_pcb_penhole();
         main_pcb_screws();
+        main_pcb_aux_screws();
     }
 }
 
@@ -120,6 +121,17 @@ module main_pcb_screws()
     }
 }
 
+// Screw holes for the aux board
+module main_pcb_aux_screws()
+{
+    move([0,-23,0]) {
+        move([+(50/2),+(45/2),0]) cyl(h=10, d=3.5);
+        move([-(50/2),+(45/2),0]) cyl(h=10, d=3.5);
+        move([+(50/2),-(45/2),0]) cyl(h=10, d=3.5);
+        move([-(50/2),-(45/2),0]) cyl(h=10, d=3.5);
+    }
+}
+
 module render_main_pcb(toPrint)
 {
     if (!toPrint) {
@@ -134,6 +146,7 @@ module render_main_pcb(toPrint)
                 main_pcb();
                 main_pcb_penhole();
                 main_pcb_screws();
+                main_pcb_aux_screws();
             }
         }
     }
