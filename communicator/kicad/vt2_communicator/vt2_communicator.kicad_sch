@@ -1,0 +1,79 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "b885e706-6990-4e04-997b-acbbfde24966")
+	(paper "A4")
+	(title_block
+		(title "VT2 Communicator")
+		(date "2024-10-05")
+		(rev "1_0")
+		(company "https://www.waitingforfriday.com")
+		(comment 1 "(c) 2024 Simon Inns")
+		(comment 2 "License: Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)")
+	)
+	(lib_symbols)
+	(sheet
+		(at 207.01 133.985)
+		(size 25.4 6.35)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "dae46d19-9fd1-46e6-a773-5425b28825da")
+		(property "Sheetname" "Serial Interface"
+			(at 207.01 133.2734 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "serial_interface.kicad_sch"
+			(at 207.01 140.9196 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "RxD" output
+			(at 207.01 138.43 180)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+			(uuid "28d77b70-7b9d-4b2d-bbab-6764da7f36a3")
+		)
+		(pin "TxD" input
+			(at 207.01 135.89 180)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+			(uuid "aa1d8508-57c6-43d8-9b32-247ae3cc285b")
+		)
+		(instances
+			(project "vt2_communicator"
+				(path "/b885e706-6990-4e04-997b-acbbfde24966"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
