@@ -390,6 +390,18 @@
     [
       "dae46d19-9fd1-46e6-a773-5425b28825da",
       "Serial Interface"
+    ],
+    [
+      "a7c42e1f-d809-4e4a-bb50-ba2156f8e189",
+      "IR LEDs"
+    ],
+    [
+      "6a2c6abc-7b81-44c1-b8a4-52661b3305f1",
+      "Power Supply"
+    ],
+    [
+      "d2c87f26-e711-456c-8249-ac2626594fcb",
+      "Userport"
     ]
   ],
   "text_variables": {}
