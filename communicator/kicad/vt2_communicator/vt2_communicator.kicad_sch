@@ -3199,44 +3199,6 @@
 		)
 	)
 	(sheet
-		(at 213.36 57.15)
-		(size 25.4 5.08)
-		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(fill
-			(color 0 0 0 0.0000)
-		)
-		(uuid "d2c87f26-e711-456c-8249-ac2626594fcb")
-		(property "Sheetname" "Userport"
-			(at 213.36 56.4384 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left bottom)
-			)
-		)
-		(property "Sheetfile" "userport.kicad_sch"
-			(at 213.36 62.8146 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-			)
-		)
-		(instances
-			(project "vt2_communicator"
-				(path "/b885e706-6990-4e04-997b-acbbfde24966"
-					(page "5")
-				)
-			)
-		)
-	)
-	(sheet
 		(at 213.36 36.195)
 		(size 25.4 6.35)
 		(fields_autoplaced yes)

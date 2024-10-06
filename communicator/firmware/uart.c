@@ -1,0 +1,47 @@
+/************************************************************************ 
+
+    uart.c
+
+    Valiant Turtle 2 Communicator - Raspberry Pi Pico W Firmware
+    Copyright (C) 2024 Simon Inns
+
+    This file is part of Valiant Turtle 2
+
+    This is free software: you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    Email: simon.inns@gmail.com
+
+************************************************************************/
+
+#include <stdio.h>
+#include <pico/stdlib.h>
+#include <string.h>
+
+#include "uart.h"
+#include "debug.h"
+
+void uart_initialise()
+{
+    // Configure UART0 (default for printf)
+    uart_init(UART0_ID, UART0_BAUD_RATE);
+    gpio_set_function(UART0_TX_PIN, UART_FUNCSEL_NUM(UART0_ID, UART0_TX_PIN));
+    gpio_set_function(UART0_RX_PIN, UART_FUNCSEL_NUM(UART0_ID, UART0_RX_PIN));
+    uart_set_hw_flow(UART0_ID, false, false);
+
+    // Configure UART1
+    uart_init(UART1_ID, UART1_BAUD_RATE);
+    gpio_set_function(UART1_TX_PIN, UART_FUNCSEL_NUM(UART1_ID, UART1_TX_PIN));
+    gpio_set_function(UART1_RX_PIN, UART_FUNCSEL_NUM(UART1_ID, UART1_RX_PIN));
+    uart_set_hw_flow(UART1_ID, false, false);
+}
