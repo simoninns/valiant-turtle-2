@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    uart.h
+    fsm.h
 
     Valiant Turtle 2 Communicator - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,28 +24,32 @@
 
 ************************************************************************/
 
-#ifndef UART_H_
-#define UART_H_
+#ifndef FSM_H_
+#define FSM_H_
 
-#define UART0_ID uart0
-#define UART0_TX_PIN 0
-#define UART0_RX_PIN 1
-#define UART0_BAUD_RATE 115200
-#define UART0_DATA_BITS 8
-#define UART0_STOP_BITS 1
-#define UART0_PARITY UART_PARITY_NONE
+// Enum of possible states
+// ENUM indication which stepper is required
+typedef enum {
+    fsm_state_byte_mode,
+    fsm_state_command_mode,
+    fsm_state_switch_from_byte_mode,
+    fsm_state_switch_from_command_mode,
+    fsm_state_forward_command,
+    fsm_state_backward_command,
+    fsm_state_left_command,
+    fsm_state_right_command,
+    fsm_state_scale_command,
+    fsm_state_error
+} fsm_states_t;
 
-#define UART1_ID uart1
-#define UART1_TX_PIN 4
-#define UART1_RX_PIN 5
-#define UART1_RTS_PIN 6
-#define UART1_CTS_PIN 7
-#define UART1_BAUD_RATE 4800
-#define UART1_DATA_BITS 8
-#define UART1_STOP_BITS 1
-#define UART1_PARITY UART_PARITY_NONE
+void fsm_initialise(void);
+void fsm_process(uint8_t incoming_byte);
+fsm_states_t fsm_byte_mode(uint8_t incoming_byte);
+fsm_states_t fsm_command_mode(uint8_t incoming_byte);
+fsm_states_t fsm_forward_command(uint8_t incoming_byte);
+fsm_states_t fsm_backward_command(uint8_t incoming_byte);
+fsm_states_t fsm_left_command(uint8_t incoming_byte);
+fsm_states_t fsm_right_command(uint8_t incoming_byte);
+fsm_states_t fsm_scale_command(uint8_t incoming_byte);
 
-void uart_initialise(void);
-void uart_rx_callback(void);
-
-#endif /* UART_H_ */
+#endif /* FSM_H_ */

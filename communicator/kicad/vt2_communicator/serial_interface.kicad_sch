@@ -13,22 +13,23 @@
 		(comment 2 "License: Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)")
 	)
 	(lib_symbols
-		(symbol "Connector:DE9_Receptacle"
+		(symbol "Connector:DIN-5_180degree"
 			(pin_names
-				(offset 1.016) hide)
+				(offset 1.016)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
 			(property "Reference" "J"
-				(at 0 13.97 0)
+				(at 3.175 5.715 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Value" "DE9_Receptacle"
-				(at 0 -14.605 0)
+			(property "Value" "DIN-5_180degree"
+				(at 0 -6.35 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -44,7 +45,7 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "~"
+			(property "Datasheet" "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf"
 				(at 0 0 0)
 				(effects
 					(font
@@ -53,7 +54,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "9-pin female receptacle socket D-SUB connector"
+			(property "Description" "5-pin DIN connector (5-pin DIN-5 stereo)"
 				(at 0 0 0)
 				(effects
 					(font
@@ -62,7 +63,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "connector receptacle female D-SUB DB9"
+			(property "ki_keywords" "circular DIN connector stereo audio"
 				(at 0 0 0)
 				(effects
 					(font
@@ -71,7 +72,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "DSUB*Female*"
+			(property "ki_fp_filters" "DIN*"
 				(at 0 0 0)
 				(effects
 					(font
@@ -80,12 +81,13 @@
 					(hide yes)
 				)
 			)
-			(symbol "DE9_Receptacle_0_1"
-				(circle
-					(center -1.778 -10.16)
-					(radius 0.762)
+			(symbol "DIN-5_180degree_0_1"
+				(arc
+					(start -5.08 0)
+					(mid -3.8609 -3.3364)
+					(end -0.762 -5.08)
 					(stroke
-						(width 0)
+						(width 0.254)
 						(type default)
 					)
 					(fill
@@ -93,19 +95,8 @@
 					)
 				)
 				(circle
-					(center -1.778 -5.08)
-					(radius 0.762)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center -1.778 0)
-					(radius 0.762)
+					(center -3.048 0)
+					(radius 0.508)
 					(stroke
 						(width 0)
 						(type default)
@@ -115,19 +106,8 @@
 					)
 				)
 				(circle
-					(center -1.778 5.08)
-					(radius 0.762)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center -1.778 10.16)
-					(radius 0.762)
+					(center -2.286 2.286)
+					(radius 0.508)
 					(stroke
 						(width 0)
 						(type default)
@@ -138,7 +118,7 @@
 				)
 				(polyline
 					(pts
-						(xy -3.81 -10.16) (xy -2.54 -10.16)
+						(xy -5.08 0) (xy -3.556 0)
 					)
 					(stroke
 						(width 0)
@@ -150,7 +130,7 @@
 				)
 				(polyline
 					(pts
-						(xy -3.81 -7.62) (xy 0.508 -7.62)
+						(xy 0 5.08) (xy 0 3.81)
 					)
 					(stroke
 						(width 0)
@@ -162,7 +142,7 @@
 				)
 				(polyline
 					(pts
-						(xy -3.81 -5.08) (xy -2.54 -5.08)
+						(xy 5.08 0) (xy 3.556 0)
 					)
 					(stroke
 						(width 0)
@@ -174,7 +154,7 @@
 				)
 				(polyline
 					(pts
-						(xy -3.81 -2.54) (xy 0.508 -2.54)
+						(xy -5.08 2.54) (xy -4.318 2.54) (xy -2.794 2.286)
 					)
 					(stroke
 						(width 0)
@@ -186,7 +166,7 @@
 				)
 				(polyline
 					(pts
-						(xy -3.81 0) (xy -2.54 0)
+						(xy 5.08 2.54) (xy 4.318 2.54) (xy 2.794 2.286)
 					)
 					(stroke
 						(width 0)
@@ -198,67 +178,42 @@
 				)
 				(polyline
 					(pts
-						(xy -3.81 2.54) (xy 0.508 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -3.81 5.08) (xy -2.54 5.08)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -3.81 7.62) (xy 0.508 7.62)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -3.81 10.16) (xy -2.54 10.16)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -3.81 13.335) (xy -3.81 -13.335) (xy 3.81 -9.525) (xy 3.81 9.525) (xy -3.81 13.335)
+						(xy -0.762 -4.953) (xy -0.762 -4.191) (xy 0.762 -4.191) (xy 0.762 -4.953)
 					)
 					(stroke
 						(width 0.254)
 						(type default)
 					)
 					(fill
-						(type background)
+						(type none)
 					)
 				)
 				(circle
-					(center 1.27 -7.62)
-					(radius 0.762)
+					(center 0 3.302)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.762 -5.08)
+					(mid 3.8685 -3.343)
+					(end 5.08 0)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.286 2.286)
+					(radius 0.508)
 					(stroke
 						(width 0)
 						(type default)
@@ -268,8 +223,8 @@
 					)
 				)
 				(circle
-					(center 1.27 -2.54)
-					(radius 0.762)
+					(center 3.048 0)
+					(radius 0.508)
 					(stroke
 						(width 0)
 						(type default)
@@ -278,22 +233,12 @@
 						(type none)
 					)
 				)
-				(circle
-					(center 1.27 2.54)
-					(radius 0.762)
+				(arc
+					(start 5.08 0)
+					(mid 0 5.0579)
+					(end -5.08 0)
 					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 1.27 7.62)
-					(radius 0.762)
-					(stroke
-						(width 0)
+						(width 0.254)
 						(type default)
 					)
 					(fill
@@ -301,11 +246,11 @@
 					)
 				)
 			)
-			(symbol "DE9_Receptacle_1_1"
+			(symbol "DIN-5_180degree_1_1"
 				(pin passive line
-					(at -7.62 10.16 0)
-					(length 3.81)
-					(name "1"
+					(at -7.62 0 0)
+					(length 2.54)
+					(name "~"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -321,9 +266,9 @@
 					)
 				)
 				(pin passive line
-					(at -7.62 5.08 0)
-					(length 3.81)
-					(name "2"
+					(at 0 7.62 270)
+					(length 2.54)
+					(name "~"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -339,9 +284,9 @@
 					)
 				)
 				(pin passive line
-					(at -7.62 0 0)
-					(length 3.81)
-					(name "3"
+					(at 7.62 0 180)
+					(length 2.54)
+					(name "~"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -357,9 +302,9 @@
 					)
 				)
 				(pin passive line
-					(at -7.62 -5.08 0)
-					(length 3.81)
-					(name "4"
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name "~"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -375,9 +320,9 @@
 					)
 				)
 				(pin passive line
-					(at -7.62 -10.16 0)
-					(length 3.81)
-					(name "5"
+					(at 7.62 2.54 180)
+					(length 2.54)
+					(name "~"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -385,78 +330,6 @@
 						)
 					)
 					(number "5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -7.62 7.62 0)
-					(length 3.81)
-					(name "6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -7.62 2.54 0)
-					(length 3.81)
-					(name "7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -7.62 -2.54 0)
-					(length 3.81)
-					(name "8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -7.62 -7.62 0)
-					(length 3.81)
-					(name "9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "9"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1401,16 +1274,28 @@
 		)
 	)
 	(junction
+		(at 213.36 119.38)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "189e5ba2-3bbb-471d-b46b-eb982400ed39")
+	)
+	(junction
 		(at 127 66.04)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "0a736f73-282a-43c4-bba0-7a16544fafa0")
+		(uuid "228f680c-7a4b-4132-9cba-94996f8e4dce")
 	)
 	(junction
-		(at 151.13 66.04)
+		(at 208.28 109.22)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "3a5ca67e-65de-4d1d-8a06-ca17bdcb183f")
+		(uuid "306e0beb-d29a-45dc-8b89-fda04ca05d4c")
+	)
+	(junction
+		(at 175.26 114.3)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3bbb855d-e241-4a56-b712-465d79983b96")
 	)
 	(junction
 		(at 162.56 91.44)
@@ -1425,10 +1310,10 @@
 		(uuid "65cac9c8-d7a4-4f44-a503-17bbae583953")
 	)
 	(junction
-		(at 158.75 66.04)
+		(at 162.56 76.2)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "c32878a5-1842-439c-8995-f34acf1d28df")
+		(uuid "7e0248ca-6d3b-4e23-9460-5a417584d0fe")
 	)
 	(junction
 		(at 162.56 99.06)
@@ -1436,45 +1321,15 @@
 		(color 0 0 0 0)
 		(uuid "da1d303a-dd2e-49c7-a827-582ac235bb0a")
 	)
-	(no_connect
-		(at 106.68 119.38)
-		(uuid "04d22891-1b39-448a-9317-1429d595eb09")
-	)
-	(no_connect
-		(at 147.32 109.22)
-		(uuid "17cc2748-2e3a-472e-bf74-4441f172cd9f")
-	)
-	(no_connect
-		(at 172.72 101.6)
-		(uuid "24a25eea-4e61-4cfe-9736-b0d8b9468bc6")
-	)
-	(no_connect
-		(at 172.72 99.06)
-		(uuid "7f7be5aa-c3fa-4433-afb7-abd58b12d717")
-	)
-	(no_connect
-		(at 147.32 119.38)
-		(uuid "8ca85bd1-91ea-43ef-b304-f74976c61e10")
-	)
-	(no_connect
-		(at 172.72 114.3)
-		(uuid "957dc08a-e113-4f18-a638-f85a184cd58e")
-	)
-	(no_connect
-		(at 172.72 106.68)
-		(uuid "99f3837a-74f6-4138-aa6a-813cc6efc31f")
-	)
-	(no_connect
-		(at 172.72 116.84)
-		(uuid "9b60ac09-e375-4f7a-810f-56bae09783b5")
-	)
-	(no_connect
-		(at 106.68 109.22)
-		(uuid "b2f1f213-14a1-4582-85ec-657f4e0be6e8")
-	)
-	(no_connect
-		(at 172.72 111.76)
-		(uuid "e669c246-b06b-4586-be40-b39f5d313e63")
+	(wire
+		(pts
+			(xy 208.28 78.74) (xy 208.28 109.22)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "04335391-7ea5-4036-8f62-003eed2d90a2")
 	)
 	(wire
 		(pts
@@ -1508,6 +1363,36 @@
 	)
 	(wire
 		(pts
+			(xy 99.06 109.22) (xy 106.68 109.22)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1b6eab45-4eee-4955-9464-dbac078842ea")
+	)
+	(wire
+		(pts
+			(xy 203.2 78.74) (xy 208.28 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1ea135de-497b-4486-8ccb-58cead979a41")
+	)
+	(wire
+		(pts
+			(xy 127 66.04) (xy 127 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1edd3cf0-4fb0-4d33-9ca6-c2551c7aee93")
+	)
+	(wire
+		(pts
 			(xy 127 132.08) (xy 127 137.16)
 		)
 		(stroke
@@ -1515,26 +1400,6 @@
 			(type default)
 		)
 		(uuid "1f6e86ab-de37-42a5-8a9e-30a52eb57b47")
-	)
-	(wire
-		(pts
-			(xy 127 66.04) (xy 151.13 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "20ea7eb2-1ee7-4db6-9997-4a87e8b218b7")
-	)
-	(wire
-		(pts
-			(xy 170.18 121.92) (xy 170.18 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "227e0dc3-a6a3-498c-837a-80907a02624a")
 	)
 	(wire
 		(pts
@@ -1548,33 +1413,33 @@
 	)
 	(wire
 		(pts
-			(xy 147.32 114.3) (xy 165.1 114.3)
+			(xy 175.26 114.3) (xy 224.79 114.3)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "2a19c730-cee6-499c-8930-c8d873f45eed")
+		(uuid "2eea43ec-1a5c-41cd-8fbc-b120a6b7cbb6")
 	)
 	(wire
 		(pts
-			(xy 165.1 114.3) (xy 165.1 109.22)
+			(xy 127 66.04) (xy 149.86 66.04)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "3418b2cf-13ad-4024-aed2-808bbb5a7f4e")
+		(uuid "3236ae10-8312-499f-b93c-21a3f7d0e33d")
 	)
 	(wire
 		(pts
-			(xy 170.18 119.38) (xy 172.72 119.38)
+			(xy 147.32 109.22) (xy 208.28 109.22)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "42a4bb0d-3592-4085-972e-598c1dfc3722")
+		(uuid "49b65672-caab-4b57-b007-a065b3676f78")
 	)
 	(wire
 		(pts
@@ -1588,13 +1453,13 @@
 	)
 	(wire
 		(pts
-			(xy 147.32 104.14) (xy 172.72 104.14)
+			(xy 99.06 119.38) (xy 106.68 119.38)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "60907b5e-a79f-4ae0-977f-cad0575be43f")
+		(uuid "55afa6c9-8f2d-440d-8476-4ba8e69204f4")
 	)
 	(wire
 		(pts
@@ -1618,16 +1483,6 @@
 	)
 	(wire
 		(pts
-			(xy 158.75 66.04) (xy 162.56 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "77608afd-abde-44ca-8fe7-4455aab4ffea")
-	)
-	(wire
-		(pts
 			(xy 147.32 99.06) (xy 149.86 99.06)
 		)
 		(stroke
@@ -1638,23 +1493,33 @@
 	)
 	(wire
 		(pts
-			(xy 151.13 66.04) (xy 158.75 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "871257b0-b4a9-4ed7-9aea-d942ce4f173d")
-	)
-	(wire
-		(pts
-			(xy 127 71.12) (xy 127 66.04)
+			(xy 127 63.5) (xy 127 66.04)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "898c94bc-63db-4e75-99f3-d7e8436c1c16")
+	)
+	(wire
+		(pts
+			(xy 162.56 76.2) (xy 162.56 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8b6c04fa-903b-4e8b-b487-eaf346369abb")
+	)
+	(wire
+		(pts
+			(xy 147.32 114.3) (xy 175.26 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8c0888a1-c3ba-4d79-bba9-bf54be14e667")
 	)
 	(wire
 		(pts
@@ -1688,6 +1553,16 @@
 	)
 	(wire
 		(pts
+			(xy 213.36 76.2) (xy 213.36 119.38)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9824447a-1f08-4db4-97fd-fe5fac463b01")
+	)
+	(wire
+		(pts
 			(xy 127 137.16) (xy 127 139.7)
 		)
 		(stroke
@@ -1698,6 +1573,16 @@
 	)
 	(wire
 		(pts
+			(xy 187.96 78.74) (xy 175.26 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9d36a446-87ff-44fa-911b-485f4697dce9")
+	)
+	(wire
+		(pts
 			(xy 147.32 78.74) (xy 151.13 78.74)
 		)
 		(stroke
@@ -1705,6 +1590,26 @@
 			(type default)
 		)
 		(uuid "a74a4365-e64f-4b80-9e77-a54fc9c4ed1d")
+	)
+	(wire
+		(pts
+			(xy 213.36 119.38) (xy 224.79 119.38)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a90f8f26-02fe-4343-84c3-8753fb0871f0")
+	)
+	(wire
+		(pts
+			(xy 162.56 76.2) (xy 187.96 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "addd7a07-73b0-4f0f-9cf2-e6f72c084fd2")
 	)
 	(wire
 		(pts
@@ -1728,23 +1633,33 @@
 	)
 	(wire
 		(pts
-			(xy 127 63.5) (xy 127 66.04)
+			(xy 147.32 119.38) (xy 213.36 119.38)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "c0e4be1e-5a20-49ff-8d3c-dea7573e4534")
+		(uuid "c598025b-84e1-4e87-ae67-e827676ce6be")
 	)
 	(wire
 		(pts
-			(xy 165.1 109.22) (xy 172.72 109.22)
+			(xy 208.28 109.22) (xy 224.79 109.22)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "c9305480-bb8e-4b2b-b0eb-82ef3823d037")
+		(uuid "c91c7e88-4a70-4493-a9a4-95b9ee12ae85")
+	)
+	(wire
+		(pts
+			(xy 203.2 76.2) (xy 213.36 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d2116b6c-229e-422d-9fd5-f76a273b08ad")
 	)
 	(wire
 		(pts
@@ -1755,6 +1670,26 @@
 			(type default)
 		)
 		(uuid "d385f4fb-e1dd-4657-b6bf-d1cb9bf13359")
+	)
+	(wire
+		(pts
+			(xy 175.26 78.74) (xy 175.26 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d4c490ee-37da-4c2e-ab96-a895a1d102f7")
+	)
+	(wire
+		(pts
+			(xy 157.48 66.04) (xy 162.56 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d601d146-7850-49a3-8330-098ee695d210")
 	)
 	(wire
 		(pts
@@ -1778,7 +1713,7 @@
 	)
 	(wire
 		(pts
-			(xy 162.56 66.04) (xy 162.56 91.44)
+			(xy 162.56 66.04) (xy 162.56 76.2)
 		)
 		(stroke
 			(width 0)
@@ -1786,16 +1721,87 @@
 		)
 		(uuid "f65604c3-ffd7-4921-a207-85eb1bc1ea57")
 	)
-	(text "1 - CD (Carrier Detect)\n2 - TxD (Transmit Data)\n3 - RxD (Receive Data)\n4 - DTR (Data Terminal Ready)\n5 - GND\n6 - DSR (Data Set Ready)\n7 - CTS (Clear To Send)\n8 - RTS (Ready To Send)\n9 - RI (Ring Indicator)"
+	(wire
+		(pts
+			(xy 147.32 104.14) (xy 224.79 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fcf84d78-4178-4118-b166-1c3558e1dc35")
+	)
+	(text "BBC_MICRO_RTS (output)"
 		(exclude_from_sim no)
-		(at 200.66 110.744 0)
+		(at 237.49 119.634 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
 		)
-		(uuid "21a3f8b6-b81c-49a7-aaf4-9304339a9606")
+		(uuid "07a62176-8f0c-4625-9ca4-fd95ca01d027")
+	)
+	(text "BBC_MICRO_CTS (input)"
+		(exclude_from_sim no)
+		(at 237.236 109.474 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "6a00c290-bccb-4a8e-84f7-5af4ce23343a")
+	)
+	(text "BBC_MICRO_RD (input)"
+		(exclude_from_sim no)
+		(at 236.22 104.394 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "70981f56-7492-4ae5-9b88-14ba71bb9b56")
+	)
+	(text "IROP (pin 2) could be RTS\nIf it's low when IR is busy?"
+		(exclude_from_sim no)
+		(at 194.564 66.548 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "9d604344-59dc-4b1f-adbd-6933267728b2")
+	)
+	(text "Not convinced 5 is needed\n\"Serial DTR\" in old schematic"
+		(exclude_from_sim no)
+		(at 229.108 78.994 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "9d9ddfb6-0672-47cc-82e1-e2540a0ebde9")
+	)
+	(text "BBC_MICRO_TD (output)"
+		(exclude_from_sim no)
+		(at 236.728 114.554 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "eec5640b-d79f-42e2-8ac3-827d2ed712e1")
+	)
+	(hierarchical_label "RTS"
+		(shape input)
+		(at 99.06 109.22 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "0560c28f-d1c1-4689-acea-648496439d0f")
 	)
 	(hierarchical_label "RxD"
 		(shape output)
@@ -1820,6 +1826,18 @@
 			(justify right)
 		)
 		(uuid "d362bb89-2309-4430-a6f1-f0c6bffcb74b")
+	)
+	(hierarchical_label "CTS"
+		(shape output)
+		(at 99.06 119.38 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "f221dc5d-ec73-48f6-96cd-3f33c8b36439")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -1890,74 +1908,8 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at 170.18 121.92 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "2ebeaff6-ab92-4a8d-a451-a2eca768424f")
-		(property "Reference" "#PWR03"
-			(at 170.18 128.27 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 170.18 127 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 170.18 121.92 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 170.18 121.92 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 170.18 121.92 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "b50760ba-479a-4d39-94c3-c9afbd215aa2")
-		)
-		(instances
-			(project "vt2_communicator"
-				(path "/b885e706-6990-4e04-997b-acbbfde24966/dae46d19-9fd1-46e6-a773-5425b28825da"
-					(reference "#PWR03")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C")
-		(at 154.94 66.04 90)
+		(at 153.67 66.04 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1966,7 +1918,7 @@
 		(fields_autoplaced yes)
 		(uuid "615056d4-7969-43de-ba0a-9fa38571f1b0")
 		(property "Reference" "C5"
-			(at 154.94 58.42 90)
+			(at 153.67 58.42 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1974,7 +1926,7 @@
 			)
 		)
 		(property "Value" "100nF"
-			(at 154.94 60.96 90)
+			(at 153.67 60.96 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1982,7 +1934,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 158.75 65.0748 0)
+			(at 157.48 65.0748 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1991,7 +1943,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 154.94 66.04 0)
+			(at 153.67 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2000,7 +1952,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 154.94 66.04 0)
+			(at 153.67 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2219,6 +2171,83 @@
 			(project ""
 				(path "/b885e706-6990-4e04-997b-acbbfde24966/dae46d19-9fd1-46e6-a773-5425b28825da"
 					(reference "#PWR02")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:DIN-5_180degree")
+		(at 195.58 78.74 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c0dc8e7e-814e-46e0-ae17-cfb47b9f27be")
+		(property "Reference" "J1"
+			(at 195.5801 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "DIN-5_180degree"
+			(at 195.5801 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 195.58 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf"
+			(at 195.58 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "5-pin DIN connector (5-pin DIN-5 stereo)"
+			(at 195.58 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d535d4b6-9e5a-4ac2-ad78-8a1f5ad38947")
+		)
+		(pin "2"
+			(uuid "2db0b1af-493d-43db-ae9b-be5980a63f10")
+		)
+		(pin "4"
+			(uuid "3ba92920-911d-4d27-9044-b7c0d6a7978c")
+		)
+		(pin "3"
+			(uuid "dcab34b7-81c2-4ea2-a4fb-881823391534")
+		)
+		(pin "5"
+			(uuid "2922fc77-259e-4390-8df8-688b8ca0ba1c")
+		)
+		(instances
+			(project ""
+				(path "/b885e706-6990-4e04-997b-acbbfde24966/dae46d19-9fd1-46e6-a773-5425b28825da"
+					(reference "J1")
 					(unit 1)
 				)
 			)
@@ -2465,97 +2494,6 @@
 			(project ""
 				(path "/b885e706-6990-4e04-997b-acbbfde24966/dae46d19-9fd1-46e6-a773-5425b28825da"
 					(reference "#PWR01")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:DE9_Receptacle")
-		(at 180.34 109.22 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "fd1b8ab9-2069-4015-99cc-fafaf41ff337")
-		(property "Reference" "J1"
-			(at 185.42 107.9499 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "Serial DCE"
-			(at 185.42 110.4899 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 180.34 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 180.34 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "9-pin female receptacle socket D-SUB connector"
-			(at 180.34 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "8"
-			(uuid "d4013a71-309e-4e32-90ef-7cdb3ec42020")
-		)
-		(pin "1"
-			(uuid "bbf69200-1825-4749-9dba-1cd60966ccc7")
-		)
-		(pin "9"
-			(uuid "182daefc-7111-46db-bb8d-f76a006b3b45")
-		)
-		(pin "5"
-			(uuid "da254e0a-2b34-44dd-bda7-3aa73273a49b")
-		)
-		(pin "3"
-			(uuid "d303f42d-d6ce-41c6-95c7-382dbb5c6ee7")
-		)
-		(pin "2"
-			(uuid "b5409c31-bdfb-4b27-b0eb-249f96e3751e")
-		)
-		(pin "6"
-			(uuid "685447e1-16aa-47aa-a789-430b110578ea")
-		)
-		(pin "7"
-			(uuid "a1be97a6-920d-48cd-8ede-0fe3b46961a4")
-		)
-		(pin "4"
-			(uuid "6b0008c5-7c37-428b-a09a-50d9bf0ca690")
-		)
-		(instances
-			(project ""
-				(path "/b885e706-6990-4e04-997b-acbbfde24966/dae46d19-9fd1-46e6-a773-5425b28825da"
-					(reference "J1")
 					(unit 1)
 				)
 			)

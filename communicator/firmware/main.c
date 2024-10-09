@@ -31,6 +31,7 @@
 
 #include "uart.h"
 #include "debug.h"
+#include "fsm.h"
 
 int main() {
     // Initialise the hardware
@@ -40,6 +41,8 @@ int main() {
     // Initialise modules
     uart_initialise();
     debug_initialise();
+    ir_initialise();
+    fsm_initialise();
 
     // Show some intro text on debug to show we are alive
     debug_printf("Valiant Turtle 2 - Communicator\n");
@@ -50,11 +53,6 @@ int main() {
 
     // Loop and process any non-interrupt driven activities
     while (true) {
-        uart_puts(UART0_ID, "Hello, UART0 on Linux Minicom\r\n");
-        uart_puts(UART1_ID, "Hello, UART1 on the Acorn BBC Master!\r\n");
-
-        // Sleep a bit
-        sleep_ms(1000);
-        sleep_ms(1000);
+        sleep_ms(100);
     }
 }
