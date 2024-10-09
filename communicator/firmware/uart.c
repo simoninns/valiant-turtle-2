@@ -32,9 +32,7 @@
 
 #include "uart.h"
 #include "debug.h"
-#include "fsm.h"
-
-static uint16_t pos = 0;
+#include "ir_uart.h"
 
 void uart_initialise()
 {
@@ -73,7 +71,7 @@ void uart_rx_callback()
         // Get the received byte
         uint8_t ch = uart_getc(UART1_ID);
 
-        // Process the byte
-        fsm_process(ch);
+        // Send the byte over IR to the robot
+        ir_uart_putc(ch);
     }
 }

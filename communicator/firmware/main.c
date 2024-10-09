@@ -31,7 +31,7 @@
 
 #include "uart.h"
 #include "debug.h"
-#include "fsm.h"
+#include "ir_uart.h"
 
 int main() {
     // Initialise the hardware
@@ -41,8 +41,7 @@ int main() {
     // Initialise modules
     uart_initialise();
     debug_initialise();
-    ir_initialise();
-    fsm_initialise();
+    ir_uart_initialise();
 
     // Show some intro text on debug to show we are alive
     debug_printf("Valiant Turtle 2 - Communicator\n");

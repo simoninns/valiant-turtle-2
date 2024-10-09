@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    fsm.h
+    ir_uart.h
 
     Valiant Turtle 2 Communicator - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,32 +24,19 @@
 
 ************************************************************************/
 
-#ifndef FSM_H_
-#define FSM_H_
+#ifndef IR_UART_H_
+#define IR_UART_H_
 
-// Enum of possible states
-// ENUM indication which stepper is required
-typedef enum {
-    fsm_state_byte_mode,
-    fsm_state_command_mode,
-    fsm_state_switch_from_byte_mode,
-    fsm_state_switch_from_command_mode,
-    fsm_state_forward_command,
-    fsm_state_backward_command,
-    fsm_state_left_command,
-    fsm_state_right_command,
-    fsm_state_scale_command,
-    fsm_state_error
-} fsm_states_t;
+// Define the UART output GPIO
+#define IR_GPIO 22
 
-void fsm_initialise(void);
-void fsm_process(uint8_t incoming_byte);
-fsm_states_t fsm_byte_mode(uint8_t incoming_byte);
-fsm_states_t fsm_command_mode(uint8_t incoming_byte);
-fsm_states_t fsm_forward_command(uint8_t incoming_byte);
-fsm_states_t fsm_backward_command(uint8_t incoming_byte);
-fsm_states_t fsm_left_command(uint8_t incoming_byte);
-fsm_states_t fsm_right_command(uint8_t incoming_byte);
-fsm_states_t fsm_scale_command(uint8_t incoming_byte);
+void ir_uart_initialise(void);
+void ir_uart_pulse(int32_t delay_time_us);
+char ir_uart_parity(char x);
+void ir_uart_putc(char c);
+void ir_uart_puts(const char *s);
+uint32_t ir_uart_setbit(uint32_t in_word, uint32_t bit_position);
+bool ir_uart_isBitSet(uint8_t value, uint8_t bitIndex);
+uint32_t ir_uart_encode(uint8_t tx_byte);
 
-#endif /* FSM_H_ */
+#endif /* IR_UART_H_ */
