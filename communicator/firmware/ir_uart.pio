@@ -33,7 +33,7 @@
 
 leadin:
     set pins, 0b1       [ 4] ; Output pin high for 5 clocks
-    set pins, 0b0
+    set pins, 0b0            ; 
     out y, 2            [31] ; Shift 2 bits from OSR into Y wait 31
     jmp !y bitloop           ; IF Y == 0 THEN jump to longdelay (35uS leadin)
     nop                 [24] ; wait another 20 cycles (60 uS leadin)

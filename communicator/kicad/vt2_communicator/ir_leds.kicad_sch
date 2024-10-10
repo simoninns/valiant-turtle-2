@@ -816,26 +816,36 @@
 		)
 	)
 	(junction
-		(at 129.54 106.68)
+		(at 138.43 120.65)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "1c82f83f-9221-4ca3-bc20-9c673ce49324")
+		(uuid "3f7281d9-9b8a-4b01-9f39-73ef3e610c2b")
 	)
 	(junction
-		(at 138.43 119.38)
+		(at 116.84 106.68)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "7bf92874-0537-475f-b742-12b9e5e76af6")
+		(uuid "f4ec173c-9f5b-46eb-a526-f4ffb52bdb1f")
 	)
 	(wire
 		(pts
-			(xy 129.54 118.11) (xy 129.54 119.38)
+			(xy 138.43 120.65) (xy 138.43 123.19)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "0f0e863d-a16e-4e66-8649-f490816030d5")
+		(uuid "0d0ffb6c-073b-44f0-9c8d-d2333166bc09")
+	)
+	(wire
+		(pts
+			(xy 116.84 106.68) (xy 120.65 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0f245aa6-9589-42fe-9682-9e84d4e9a48f")
 	)
 	(wire
 		(pts
@@ -849,33 +859,13 @@
 	)
 	(wire
 		(pts
-			(xy 128.27 106.68) (xy 129.54 106.68)
+			(xy 116.84 118.11) (xy 116.84 120.65)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "47d8da4d-e927-49bc-9df7-5d347d977a0a")
-	)
-	(wire
-		(pts
-			(xy 138.43 119.38) (xy 138.43 111.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4c5b41f9-c68e-4129-a887-e467d4d71dfb")
-	)
-	(wire
-		(pts
-			(xy 129.54 119.38) (xy 138.43 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6a8fa553-7165-4bcb-bf36-24650574e24c")
+		(uuid "a2b7a9ef-1637-42d0-9b5a-3c1a124daf8c")
 	)
 	(wire
 		(pts
@@ -889,7 +879,7 @@
 	)
 	(wire
 		(pts
-			(xy 129.54 106.68) (xy 130.81 106.68)
+			(xy 128.27 106.68) (xy 130.81 106.68)
 		)
 		(stroke
 			(width 0)
@@ -899,7 +889,7 @@
 	)
 	(wire
 		(pts
-			(xy 138.43 119.38) (xy 138.43 123.19)
+			(xy 138.43 111.76) (xy 138.43 120.65)
 		)
 		(stroke
 			(width 0)
@@ -919,17 +909,7 @@
 	)
 	(wire
 		(pts
-			(xy 129.54 106.68) (xy 129.54 110.49)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c25f3d54-2a22-4911-ac43-4a471049bf9c")
-	)
-	(wire
-		(pts
-			(xy 113.03 106.68) (xy 120.65 106.68)
+			(xy 113.03 106.68) (xy 116.84 106.68)
 		)
 		(stroke
 			(width 0)
@@ -937,27 +917,35 @@
 		)
 		(uuid "caafe795-869d-4faa-83cc-7a27eff35eb0")
 	)
-	(text "IR LED rating (blue tinted):\n\nFor. V 1.35V\nFor. C 100mA\nWavelength 925nm"
-		(exclude_from_sim no)
-		(at 156.464 97.536 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
+	(wire
+		(pts
+			(xy 116.84 106.68) (xy 116.84 110.49)
 		)
-		(uuid "06423f1f-ac3d-4370-b4e6-f7c9a1c1888c")
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "facd4ba6-60ac-4b9d-af7e-6a91220664ab")
 	)
-	(text "Current limiting LED\nResistors must be\n0.5W rated"
+	(wire
+		(pts
+			(xy 116.84 120.65) (xy 138.43 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fed8beb1-1288-4a19-940b-c69d89e22e54")
+	)
+	(text "Note: 10% duty cycle maximum"
 		(exclude_from_sim no)
-		(at 156.21 86.106 0)
+		(at 112.014 96.012 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
 		)
-		(uuid "ff22713b-2034-4012-b10f-93522eace3e8")
+		(uuid "fce7423a-a426-466d-8e3c-9ab5f9a20eae")
 	)
 	(hierarchical_label "IR_LED"
 		(shape input)
@@ -1104,6 +1092,82 @@
 		)
 	)
 	(symbol
+		(lib_id "Transistor_FET:BSS138")
+		(at 135.89 106.68 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "466130a1-3f19-427d-a8c9-cb6ace29798a")
+		(property "Reference" "Q1"
+			(at 142.24 105.4099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "BSS138"
+			(at 142.24 107.9499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 140.97 108.585 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.onsemi.com/pub/Collateral/BSS138-D.PDF"
+			(at 140.97 110.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Description" "50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23"
+			(at 135.89 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "ebc7341a-dd4c-4041-bf2a-66f81f446f74")
+		)
+		(pin "2"
+			(uuid "b9942c78-77f2-4221-b138-c823861eaa06")
+		)
+		(pin "1"
+			(uuid "4ae2b4fa-be45-40b1-b7be-acaf4adda3c6")
+		)
+		(instances
+			(project ""
+				(path "/b885e706-6990-4e04-997b-acbbfde24966/a7c42e1f-d809-4e4a-bb50-ba2156f8e189"
+					(reference "Q1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R")
 		(at 124.46 106.68 270)
 		(unit 1)
@@ -1121,7 +1185,7 @@
 				)
 			)
 		)
-		(property "Value" "1K"
+		(property "Value" "100R"
 			(at 124.46 102.87 90)
 			(effects
 				(font
@@ -1190,7 +1254,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "39R"
+		(property "Value" "10R"
 			(at 140.97 86.3599 0)
 			(effects
 				(font
@@ -1312,84 +1376,8 @@
 		)
 	)
 	(symbol
-		(lib_id "Transistor_FET:BSS138")
-		(at 135.89 106.68 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "ad35bf66-e4c3-40cc-a959-aad2a8cc0f11")
-		(property "Reference" "Q1"
-			(at 142.24 105.4099 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "BSS138"
-			(at 142.24 107.9499 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 140.97 108.585 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://www.onsemi.com/pub/Collateral/BSS138-D.PDF"
-			(at 140.97 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Description" "50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23"
-			(at 135.89 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "3"
-			(uuid "9f97f2f9-f811-41e9-b78c-cc38a213baa7")
-		)
-		(pin "1"
-			(uuid "d0d03394-498f-4e9f-b47c-ea4031171f5b")
-		)
-		(pin "2"
-			(uuid "37e8b41f-cae3-407f-a3b4-6199e398ac39")
-		)
-		(instances
-			(project "vt2_communicator"
-				(path "/b885e706-6990-4e04-997b-acbbfde24966/a7c42e1f-d809-4e4a-bb50-ba2156f8e189"
-					(reference "Q1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
-		(at 129.54 114.3 0)
+		(at 116.84 114.3 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1398,7 +1386,7 @@
 		(fields_autoplaced yes)
 		(uuid "f11d243b-e8a1-4a84-b63c-aac3d54f1632")
 		(property "Reference" "R2"
-			(at 132.08 113.0299 0)
+			(at 119.38 113.0299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1406,8 +1394,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100K"
-			(at 132.08 115.5699 0)
+		(property "Value" "10K"
+			(at 119.38 115.5699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1416,7 +1404,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 127.762 114.3 90)
+			(at 115.062 114.3 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1425,7 +1413,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 129.54 114.3 0)
+			(at 116.84 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1434,7 +1422,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 129.54 114.3 0)
+			(at 116.84 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
