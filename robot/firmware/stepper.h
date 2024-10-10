@@ -42,6 +42,11 @@
 #define SM_LDIR_GPIO 4
 #define SM_RDIR_GPIO 5
 
+// Stepper drive microstep configuration pins
+#define SM_M0_GPIO 12
+#define SM_M1_GPIO 13
+#define SM_M2_GPIO 14
+
 // Enumerations
 typedef struct velocity_sequence velocity_sequence_t; // Forward declaration from velocity.h
 

@@ -1028,6 +1028,9 @@ void cli_initialise() {
     right_led[1] = 0;
     right_led[2] = 0;
 
+    ws2812_put_pixel(0, 0, 50); // Status
+    ws2812_put_pixel(0, 50, 0); // Left motor
+    ws2812_put_pixel(50, 0, 0); // Right motor
     ws2812_put_pixel(right_led[0], right_led[1], right_led[2]);
     ws2812_put_pixel(left_led[0], left_led[1], left_led[2]);
 

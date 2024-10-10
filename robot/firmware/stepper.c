@@ -46,6 +46,9 @@ void stepper_initialise()
     gpio_init(SM_RSTEP_GPIO);
     gpio_init(SM_LDIR_GPIO);
     gpio_init(SM_RDIR_GPIO);
+    gpio_init(SM_M0_GPIO);
+    gpio_init(SM_M1_GPIO);
+    gpio_init(SM_M2_GPIO);
 
     // GPIO directions
     gpio_set_dir(SM_ENABLE_GPIO, GPIO_OUT);
@@ -53,13 +56,21 @@ void stepper_initialise()
     gpio_set_dir(SM_RSTEP_GPIO, GPIO_OUT);
     gpio_set_dir(SM_LDIR_GPIO, GPIO_OUT);
     gpio_set_dir(SM_RDIR_GPIO, GPIO_OUT);
+    gpio_set_dir(SM_M0_GPIO, GPIO_OUT);
+    gpio_set_dir(SM_M1_GPIO, GPIO_OUT);
+    gpio_set_dir(SM_M2_GPIO, GPIO_OUT);
+
+    // Set micro-stepping mode to 1/4 step (800ppr)
+    gpio_put(SM_M0_GPIO, 0);
+    gpio_put(SM_M1_GPIO, 1);
+    gpio_put(SM_M2_GPIO, 0);
 
     // Disable steppers
     stepper_enable(false);
 
     // Set stepper direction
     stepper_set_direction(STEPPER_LEFT, STEPPER_FORWARDS);
-    stepper_set_direction(STEPPER_LEFT, STEPPER_FORWARDS);
+    stepper_set_direction(STEPPER_RIGHT, STEPPER_FORWARDS);
 
     // Set the steppers as not busy
     stepper_settings[STEPPER_LEFT].isBusy = false;

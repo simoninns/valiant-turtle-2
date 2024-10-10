@@ -28,8 +28,8 @@
 #define PENSERVO_H_
 
 // Hardware mapping
-// GPIO 28 (pin 34)
-#define PENSERVO_GPIO 28
+// GPIO 16 (pin 21)
+#define PENSERVO_GPIO 16
 
 // Function prototypes
 void pen_servo_initialise(void);
