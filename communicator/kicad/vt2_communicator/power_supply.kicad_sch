@@ -1076,6 +1076,16 @@
 		)
 		(uuid "e3a88657-8d8c-42c2-b157-9c8e1f17dcff")
 	)
+	(text "This won't provide enough mA to \npower the LED Tx stage which is\n2x950mA pulsing... we need a 3A\nswitching supply like the robot"
+		(exclude_from_sim no)
+		(at 145.796 75.692 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "de2cf02b-65f4-4957-be16-ae24597f6b49")
+	)
 	(symbol
 		(lib_id "Connector:Barrel_Jack")
 		(at 116.84 97.79 0)
