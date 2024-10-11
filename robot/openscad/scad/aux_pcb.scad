@@ -43,7 +43,7 @@ module aux_screws()
 // having to redesign the main control board.
 module aux_pcb() 
 {
-    move([0,-23,1.5+25]) {
+    move([0,-23,1.5+20]) {
         difference() {
              color([0.0,0.6,0.0,1]) move([0,5,0]) cuboid([55+10,50+20,1.5]);
             aux_screws();
@@ -55,30 +55,18 @@ module aux_pcb_mount_pillar()
 {
     difference() {
         // Pillar
-        cyl(h=25, d=8);
+        cyl(h=20, d=8, $fn=6);
 
         // Threaded insert slot
-        move([0,0,12.5]) xrot(180) cyl(h=8,d=4);
-        move([0,0,-12.5]) xrot(180) cyl(h=8,d=4);
+        move([0,0,14 - 6]) xrot(180) cyl(h=8,d=4);
+        move([0,0,-14 + 6]) xrot(180) cyl(h=8,d=4);
         move([0,0,0]) xrot(180) cyl(h=28,d=3);
     }
 }
 
 module aux_pcb_mount()
 {
-    move([0,0,2.75]) {
-        difference() {
-            cuboid([50+2,45+2,4]);
-            cuboid([50-2,45-2,8]);
-
-            move([+(50/2),+(45/2),0]) cyl(h=25, d=8);
-            move([-(50/2),+(45/2),0]) cyl(h=25, d=8);
-            move([+(50/2),-(45/2),0]) cyl(h=25, d=8);
-            move([-(50/2),-(45/2),0]) cyl(h=25, d=8);
-        }
-    }
-
-    move([0,0,13.25]) {
+    move([0,0,10.75]) {
         move([+(50/2),+(45/2),0]) aux_pcb_mount_pillar();
         move([-(50/2),+(45/2),0]) aux_pcb_mount_pillar();
         move([+(50/2),-(45/2),0]) aux_pcb_mount_pillar();
@@ -122,7 +110,7 @@ module render_aux_pcb_mount(toPrint)
     if (!toPrint) {
             move([0,-23,50.75]) color([0.2,0.2,0.2,1]) aux_pcb_mount();
     } else {
-        move([0,0,-0.75]) aux_pcb_mount();
+        move([0,0,10]) aux_pcb_mount_pillar();
     }
 }
 
@@ -130,7 +118,7 @@ module render_aux_pcb_screw_washer(toPrint)
 {
     if (!toPrint) {
         move([0,-23,50.75]) color([0.2,0.2,0.2,1]) {
-            move([0,0,29.25]) aux_pcb_screw_washers();
+            move([0,0,24.25]) aux_pcb_screw_washers();
             zflip() move([0,0,2.75]) aux_pcb_screw_washers();
         }
     }
@@ -140,7 +128,7 @@ module render_aux_pcb_screws(toPrint)
 {
     if (!toPrint) {
         // Top screws
-        move([0,-23,79.5]) {
+        move([0,-23,74.5]) {
             move([+(50/2),+(45/2),0]) m3x10_screw();
             move([-(50/2),+(45/2),0]) m3x10_screw();
             move([+(50/2),-(45/2),0]) m3x10_screw();
