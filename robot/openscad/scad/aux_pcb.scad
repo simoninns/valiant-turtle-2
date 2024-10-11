@@ -129,16 +129,17 @@ module render_aux_pcb_mount(toPrint)
 module render_aux_pcb_screw_washer(toPrint)
 {
     if (!toPrint) {
-            move([0,-23,50.75]) color([0.2,0.2,0.2,1]) {
-                move([0,0,29.25]) aux_pcb_screw_washers();
-                zflip() move([0,0,2.75]) aux_pcb_screw_washers();
-            }
+        move([0,-23,50.75]) color([0.2,0.2,0.2,1]) {
+            move([0,0,29.25]) aux_pcb_screw_washers();
+            zflip() move([0,0,2.75]) aux_pcb_screw_washers();
+        }
     }
 }
 
 module render_aux_pcb_screws(toPrint)
 {
     if (!toPrint) {
+        // Top screws
         move([0,-23,79.5]) {
             move([+(50/2),+(45/2),0]) m3x10_screw();
             move([-(50/2),+(45/2),0]) m3x10_screw();
@@ -146,16 +147,12 @@ module render_aux_pcb_screws(toPrint)
             move([-(50/2),-(45/2),0]) m3x10_screw();
         }
 
+        // Bottom screws
         move([0,-23,48.5]) {
             move([+(50/2),+(45/2),0]) xrot(180) m3x10_screw();
             move([-(50/2),+(45/2),0]) xrot(180) m3x10_screw();
             move([+(50/2),-(45/2),0]) xrot(180) m3x10_screw();
             move([-(50/2),-(45/2),0]) xrot(180) m3x10_screw();
         }
-        // move([60,-20,-3]) xrot(180) m3x10_screw();
-        // move([-60,-20,-3]) xrot(180) m3x10_screw();
-
-        // move([60,-20,53]) m3x10_screw();
-        // move([-60,-20,53]) m3x10_screw();
     }
 }
