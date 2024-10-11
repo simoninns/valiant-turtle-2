@@ -78,6 +78,8 @@ echo "  stand_upper_cover.stl"
 openscad -o ./stl/stand_upper_cover.stl -D 'for_printing="Printing"' -D 'display_stand_upper_cover="Yes"' ./scad/main.scad
 echo "  eye_pcb_jig.stl"
 openscad -o ./stl/eye_pcb_jig.stl -D 'for_printing="Printing"' -D 'display_eye_pcb_jig="Yes"' ./scad/main.scad
+echo "  aux_pcb_mount.stl"
+openscad -o ./stl/aux_pcb_mount.stl -D 'for_printing="Printing"' -D 'display_aux_pcb_mount="Yes"' ./scad/main.scad
 
 echo "Generating 3D STL support enforcer files..."
 echo "  shell_support_enforcer.stl"

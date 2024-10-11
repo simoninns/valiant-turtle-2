@@ -29,18 +29,18 @@ use <BOSL/shapes.scad>
 module eye_light_pipe()
 {
     move([0,-120,0]) {
-        move([-1,0,1.5]) zrot(-45) yrot(-22) move([10,0,0]) yrot(90) {
+        move([-1,0,1.5]) zrot(-43) yrot(-21) move([10,0,0]) yrot(90) {
             move([0,0,4.5]) {
                 // Eyeball
                 hull() {
-                    move([0,0,(8.6/2) - (4.9/2)]) staggered_sphere(d=4.9, $fn=16);
+                    move([0,0,(8.6/2) - (4.9/2)+2]) staggered_sphere(d=4.9, $fn=16);
                     move([0,0,-0.4]) cyl(h=4, d=4.9);
                 }
             }
         }
 
         hull() {
-            move([-1,0,-3.5 + 5]) zrot(-45) yrot(-22) move([10,0,0]) yrot(90) {
+            move([-1,0,-3.5 + 5]) zrot(-43) yrot(-21) move([10,0,0]) yrot(90) {
                 move([0,0,2]) cyl(h=0.25, d=4.9);
             }
             move([6,-4.5 + 2,5.5]) cuboid([8,1,6]);
@@ -214,10 +214,10 @@ module render_eye_surround(toPrint)
 {
     if(!toPrint) {
         color([0.2,0.2,0.2,1]) {
-            move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([16.5,0,0]) yrot(270) {
+            move([-1,-120,-3.5 + 5]) zrot(-43) yrot(-21) move([17.25,0,0]) yrot(270) {
                 eye_surround();
             }
-            xflip() move([-1,-120,-3.5 + 5]) zrot(-45) yrot(-22) move([16.5,0,0]) yrot(270) {
+            xflip() move([-1,-120,-3.5 + 5]) zrot(-43) yrot(-21) move([17.25,0,0]) yrot(270) {
                 eye_surround();
             }
         }

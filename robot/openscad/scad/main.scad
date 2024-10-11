@@ -104,6 +104,8 @@ display_stand = "No"; // [Yes, No]
 display_stand_lower_cover = "No"; // [Yes, No]
 display_stand_upper_cover = "No"; // [Yes, No]
 display_eye_pcb_jig = "No"; // [Yes, No]
+display_aux_pcb_mount = "No"; // [Yes, No]
+display_aux_pcb_screw_washer = "No"; // [Yes, No]
 
 /* [Support Enforcers] */
 display_shell_supports = "No"; // [Yes, No]
@@ -142,6 +144,7 @@ display_main_pcb_mounts_front_screws = "No"; // [Yes, No]
 display_main_pcb_mounts_back_screws = "No"; // [Yes, No]
 display_shell_screws = "No"; // [Yes, No]
 display_battery_screws = "No"; // [Yes, No]
+display_aux_pcb_screws = "No"; // [Yes, No]
 
 module main() {
     // Rendering parameters
@@ -192,6 +195,8 @@ module main() {
     d_stand_lower_cover = (display_stand_lower_cover == "Yes") ? true:false;
     d_stand_upper_cover = (display_stand_upper_cover == "Yes") ? true:false;
     d_eye_pcb_jig = (display_eye_pcb_jig == "Yes") ? true:false;
+    d_aux_pcb_mount = (display_aux_pcb_mount == "Yes") ? true:false;
+    d_aux_pcb_screw_washer = (display_aux_pcb_screw_washer == "Yes") ? true:false;
 
     // Support enforcers
     d_shell_supports = (display_shell_supports == "Yes") ? true:false;
@@ -230,6 +235,7 @@ module main() {
     d_main_pcb_mounts_back_screws = (display_main_pcb_mounts_back_screws == "Yes") ? true:false;
     d_shell_screws = (display_shell_screws == "Yes") ? true:false;
     d_battery_screws = (display_battery_screws == "Yes") ? true:false;
+    d_aux_pcb_screws = (display_aux_pcb_screws == "Yes") ? true:false;
 
     move([originX,originY,originZ]) {
         // Render the printable parts
@@ -271,6 +277,8 @@ module main() {
         if (d_stand_lower_cover) render_stand_lower_cover(toPrint);
         if (d_stand_upper_cover) render_stand_upper_cover(toPrint);
         if (d_eye_pcb_jig) render_eye_pcb_jig(toPrint);
+        if (d_aux_pcb_mount) render_aux_pcb_mount(toPrint);
+        if (d_aux_pcb_screw_washer) render_aux_pcb_screw_washer(toPrint);
 
         // Render the support enforcers
         if (d_shell_supports) render_shell_supports(toPrint);
@@ -309,6 +317,7 @@ module main() {
         if (d_main_pcb_mounts_back_screws) render_main_pcb_mounts_back_screws(toPrint);
         if (d_shell_screws) render_shell_screws(toPrint);
         if (d_battery_screws) render_battery_screws(toPrint);
+        if (d_aux_pcb_screws) render_aux_pcb_screws(toPrint);
     }
 }
 

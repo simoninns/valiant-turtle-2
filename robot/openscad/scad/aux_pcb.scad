@@ -26,6 +26,8 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
+include <main_pcb.scad>
+
 // Screw holes for the aux board
 module aux_screws()
 {
@@ -49,6 +51,57 @@ module aux_pcb()
     }
 }
 
+module aux_pcb_mount_pillar()
+{
+    difference() {
+        // Pillar
+        cyl(h=25, d=8);
+
+        // Threaded insert slot
+        move([0,0,12.5]) xrot(180) cyl(h=8,d=4);
+        move([0,0,-12.5]) xrot(180) cyl(h=8,d=4);
+        move([0,0,0]) xrot(180) cyl(h=28,d=3);
+    }
+}
+
+module aux_pcb_mount()
+{
+    move([0,0,2.75]) {
+        difference() {
+            cuboid([50+2,45+2,4]);
+            cuboid([50-2,45-2,8]);
+
+            move([+(50/2),+(45/2),0]) cyl(h=25, d=8);
+            move([-(50/2),+(45/2),0]) cyl(h=25, d=8);
+            move([+(50/2),-(45/2),0]) cyl(h=25, d=8);
+            move([-(50/2),-(45/2),0]) cyl(h=25, d=8);
+        }
+    }
+
+    move([0,0,13.25]) {
+        move([+(50/2),+(45/2),0]) aux_pcb_mount_pillar();
+        move([-(50/2),+(45/2),0]) aux_pcb_mount_pillar();
+        move([+(50/2),-(45/2),0]) aux_pcb_mount_pillar();
+        move([-(50/2),-(45/2),0]) aux_pcb_mount_pillar();
+    }
+}
+
+module aux_pcb_screw_washer()
+{
+    // Use the same part as the main PCB
+    main_pcb_screw_washer();
+}
+
+module aux_pcb_screw_washers()
+{
+    move([0,0,0]) {
+        move([+(50/2),+(45/2),0]) aux_pcb_screw_washer();
+        move([-(50/2),+(45/2),0]) aux_pcb_screw_washer();
+        move([+(50/2),-(45/2),0]) aux_pcb_screw_washer();
+        move([-(50/2),-(45/2),0]) aux_pcb_screw_washer();
+    }
+}
+
 module render_aux_pcb(toPrint)
 {
     if (!toPrint) {
@@ -61,5 +114,48 @@ module render_aux_pcb(toPrint)
         projection() {
             aux_pcb();
         }
+    }
+}
+
+module render_aux_pcb_mount(toPrint)
+{
+    if (!toPrint) {
+            move([0,-23,50.75]) color([0.2,0.2,0.2,1]) aux_pcb_mount();
+    } else {
+        move([0,0,-0.75]) aux_pcb_mount();
+    }
+}
+
+module render_aux_pcb_screw_washer(toPrint)
+{
+    if (!toPrint) {
+            move([0,-23,50.75]) color([0.2,0.2,0.2,1]) {
+                move([0,0,29.25]) aux_pcb_screw_washers();
+                zflip() move([0,0,2.75]) aux_pcb_screw_washers();
+            }
+    }
+}
+
+module render_aux_pcb_screws(toPrint)
+{
+    if (!toPrint) {
+        move([0,-23,79.5]) {
+            move([+(50/2),+(45/2),0]) m3x10_screw();
+            move([-(50/2),+(45/2),0]) m3x10_screw();
+            move([+(50/2),-(45/2),0]) m3x10_screw();
+            move([-(50/2),-(45/2),0]) m3x10_screw();
+        }
+
+        move([0,-23,48.5]) {
+            move([+(50/2),+(45/2),0]) xrot(180) m3x10_screw();
+            move([-(50/2),+(45/2),0]) xrot(180) m3x10_screw();
+            move([+(50/2),-(45/2),0]) xrot(180) m3x10_screw();
+            move([-(50/2),-(45/2),0]) xrot(180) m3x10_screw();
+        }
+        // move([60,-20,-3]) xrot(180) m3x10_screw();
+        // move([-60,-20,-3]) xrot(180) m3x10_screw();
+
+        // move([60,-20,53]) m3x10_screw();
+        // move([-60,-20,53]) m3x10_screw();
     }
 }

@@ -182,13 +182,13 @@ module headCutout()
     move([0,-1,-14]) {
         hull() {
             move([0,119.5 - 210,0]) {
-                cuboid([43.5,65,10]);
+                cuboid([43.5+1,65,10]);
                 move([0,-32.5,-(10/2)]) xrot(90) right_triangle([21.5,10,21.5]);
                 yrot(180) move([0,-32.5,-(10/2)]) xrot(90) right_triangle([21.5,10,21.5]);
             }
 
             move([0,119.5 - 210,13]) {
-                cuboid([22.5,65,20]);
+                cuboid([22.5+2,65,20]);
                 move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
                 yrot(180) move([0,-32.5,-(20/2)]) xrot(90) right_triangle([21.5/2,20,21.5/2]);
             }
@@ -211,8 +211,8 @@ module front_panels()
                     xflip() zrot((360/5) * 3) move([-12.5,62,-8.25]) cuboid([66,2,1.5], chamfer=0.5);
 
                     // Reenforce the head cutout
-                    move([15.75,-73 - 1.5,12 - 9]) yrot(-30) xrot(48.5) cuboid([2,1.75,39], chamfer=0.5);
-                    xflip() move([15.75,-73 - 1.5,12 - 9]) yrot(-30) xrot(48.5) cuboid([2,1.75,39], chamfer=0.5);
+                    move([15.75+0.5,-73 - 1.5,12 - 9]) yrot(-29) xrot(48.5) cuboid([2,1.75,39], chamfer=0.5);
+                    xflip() move([15.75+0.5,-73 - 1.5,12 - 9]) yrot(-29) xrot(48.5) cuboid([2,1.75,39], chamfer=0.5);
                 }
 
                 // Hole for threaded insert
