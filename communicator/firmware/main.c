@@ -30,8 +30,7 @@
 #include "hardware/uart.h"
 
 #include "uart.h"
-#include "debug.h"
-#include "ir_uart.h"
+#include "leds.h"
 
 int main() {
     // Initialise the hardware
@@ -40,18 +39,24 @@ int main() {
 
     // Initialise modules
     uart_initialise();
-    debug_initialise();
-    ir_uart_initialise();
+    leds_initialise();
 
     // Show some intro text on debug to show we are alive
-    debug_printf("Valiant Turtle 2 - Communicator\n");
-    debug_printf("Debug console\n\n");
+    uart_puts(UART1_ID, "Valiant Turtle 2 - Communicator UART 1\r\n");
+    printf("This is the USB serial stream\r\n");
 
     // Turn on the PICO W system LED
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+    leds_state(0, true);
+    leds_state(1, false);
 
     // Loop and process any non-interrupt driven activities
     while (true) {
-        sleep_ms(100);
+        leds_state(1, true);
+        printf("Nooooogars from UART0\r\n");
+        uart_puts(UART1_ID, "Booooogers from UART1\r\n");
+        sleep_ms(750);
+        leds_state(1, false);
+        sleep_ms(250);
     }
 }

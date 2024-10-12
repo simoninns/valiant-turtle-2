@@ -27,13 +27,13 @@
 #ifndef UART_H_
 #define UART_H_
 
-#define UART0_ID uart0
-#define UART0_TX_PIN 0
-#define UART0_RX_PIN 1
-#define UART0_BAUD_RATE 115200
-#define UART0_DATA_BITS 8
-#define UART0_STOP_BITS 1
-#define UART0_PARITY UART_PARITY_NONE
+// #define UART0_ID uart0
+// #define UART0_TX_PIN 0
+// #define UART0_RX_PIN 1
+// #define UART0_BAUD_RATE 115200
+// #define UART0_DATA_BITS 8
+// #define UART0_STOP_BITS 1
+// #define UART0_PARITY UART_PARITY_NONE
 
 #define UART1_ID uart1
 #define UART1_TX_PIN 4
@@ -46,6 +46,5 @@
 #define UART1_PARITY UART_PARITY_NONE
 
 void uart_initialise(void);
-void uart_rx_callback(void);
 
 #endif /* UART_H_ */

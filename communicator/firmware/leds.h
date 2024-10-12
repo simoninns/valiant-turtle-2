@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    ir_uart.h
+    leds.h
 
     Valiant Turtle 2 Communicator - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,19 +24,13 @@
 
 ************************************************************************/
 
-#ifndef IR_UART_H_
-#define IR_UART_H_
+#ifndef LEDS_H_
+#define LEDS_H_
 
-// Define the UART output GPIO
-#define IR_GPIO 22
+#define LED0_GPIO 16
+#define LED1_GPIO 18
 
-void ir_uart_initialise(void);
-void ir_uart_pulse(int32_t delay_time_us);
-char ir_uart_parity(char x);
-void ir_uart_putc(char c);
-void ir_uart_puts(const char *s);
-uint32_t ir_uart_setbit(uint32_t in_word, uint32_t bit_position);
-bool ir_uart_isBitSet(uint8_t value, uint8_t bitIndex);
-uint32_t ir_uart_encode(uint8_t tx_byte);
+void leds_initialise(void);
+void leds_state(int32_t led_number, bool state);
 
-#endif /* IR_UART_H_ */
+#endif /* LEDS_H_ */

@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    debug.c
+    leds.c
 
     Valiant Turtle 2 Communicator - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -26,22 +26,26 @@
 
 #include <stdio.h>
 #include <pico/stdlib.h>
-#include <string.h>
 
-#include "debug.h"
+#include "leds.h"
 
-void debug_initialise() {
-    // Nothing to do at the moment
+void leds_initialise(void)
+{
+    gpio_init(LED0_GPIO);
+    gpio_init(LED1_GPIO);
+    gpio_set_dir(LED0_GPIO, GPIO_OUT);
+    gpio_set_dir(LED1_GPIO, GPIO_OUT);
+
+    leds_state(0, false);
+    leds_state(1, false);
 }
 
-int debug_printf(const char *fmt, ...) {
-    va_list args;
-    int ret = 0;
+void leds_state(int32_t led_number, bool state)
+{
+    // LED output is inverted
+    if (state) state = false; else state = true;
 
-    // Send debug to stderr
-    va_start(args, fmt);
-    ret = vfprintf(stderr, fmt, args);
-    va_end(args);
-
-    return ret;
+    // Control the LEDs
+    if (led_number == 0) gpio_put(LED0_GPIO, state);
+    if (led_number == 1) gpio_put(LED1_GPIO, state);
 }
