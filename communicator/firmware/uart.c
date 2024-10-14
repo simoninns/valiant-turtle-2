@@ -34,6 +34,7 @@
 #include "hardware/irq.h"
 
 #include "uart.h"
+#include "btcomms.h"
 
 void uart_initialise()
 {
@@ -55,6 +56,24 @@ void uart_initialise()
 
     uart_set_hw_flow(UART1_ID, false, false);
     uart_set_format(UART1_ID, UART1_DATA_BITS, UART1_STOP_BITS, UART1_PARITY);
+
+    // Enable receive interrupt on UART1
+    irq_set_exclusive_handler(UART1_IRQ, uart_rx_callback);
+    irq_set_enabled(UART1_IRQ, true);
+
+}
+
+void uart_rx_callback()
+{
+    while (uart_is_readable(UART1_ID)) {
+        // Get the received byte
+        uint8_t ch = uart_getc(UART1_ID);
+
+        // Send the byte over Bluetooth to the robot
+        if (!btcomms_is_channel_open(0)) {
+          btcomms_putchar(0, ch);
+        }
+    }
 }
 
 int printf_usb(const char *format, ...) {

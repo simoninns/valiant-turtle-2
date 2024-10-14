@@ -88,7 +88,6 @@ void btcomms_initialise(void)
     // Set state to disconnected
     for (int i = 0; i < SPP_PORTS; i++) {
         current_bt_state[i] = BTCOMMS_DISCONNECTED;
-        current_bt_state[i] = BTCOMMS_DISCONNECTED;
     }
 
     // Start the BT processing timer
@@ -170,7 +169,7 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
                         sendBuffer[rfcomm_server_channel] = malloc(sizeof(char*) * mtu);
 
                         if (!sendBuffer[rfcomm_server_channel]) {
-                            debug_printf("btcomms_initialise(): Send buffer memory allocation failed for server channel %u\n", rfcomm_server_channel+1); 
+                            debug_printf("btcomms_packet_handler(): Send buffer memory allocation failed for server channel %u\n", rfcomm_server_channel+1); 
                             panic("Ran out of memory when allocating send buffer in btcomms_packet_handler()!\n");
                         }
                     }

@@ -46,6 +46,7 @@
 #define UART1_PARITY UART_PARITY_NONE
 
 void uart_initialise(void);
+void uart_rx_callback(void);
 int printf_usb(const char *format, ...);
 int printf_debug(const char *format, ...);
 int printf_uart1(const char *format, ...);

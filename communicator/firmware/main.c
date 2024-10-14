@@ -55,7 +55,7 @@ int main() {
     // Loop and process any non-interrupt driven activities
     while (true) {
         for (int i=0; i<50; i++) {
-            printf_debug("C %d Heartbeat\r\n", i);
+            //printf_debug("C %d Heartbeat\r\n", i);
 
             for (int a=0; a<5; a++) {
                 leds_state(1, true);

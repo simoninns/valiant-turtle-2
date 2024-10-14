@@ -33,49 +33,52 @@
 #define NUM_ROWS 25
 #define NUM_COLS 40
 
+#define SPP_PROCESS_PERIOD_MS 10
+
+// Define the required number of virtual serial port connections
+#define SPP_PORTS 1
+
 // Class Of Device
 // Service Class: Networking
 // Major Device Class: Toy
 // Minor Device Class: Robot
 #define BT_CLASS_OF_DEVICE 0x020804
 
-#define TEST_MODE_SEND      1
-#define TEST_MODE_RECEIVE   2
-#define TEST_MODE_DUPLEX    3
-
-// configure test mode: send only, receive only, full duplex
-#define TEST_MODE TEST_MODE_SEND
-
 // Interval between scanning for SPP servers (in seconds)
 #define SCAN_INQUIRY_INTERVAL 5
 
-// Throughput tracking report interval
-#define REPORT_INTERVAL_MS 3000
-
+// State enum
 typedef enum {
     // SPP
+    BTCOMMS_OFF,
+    BTCOMMS_DISCONNECTED,
     W4_PEER_COD,
     W4_SCAN_COMPLETE,
     W4_SDP_RESULT,
     W2_SEND_SDP_QUERY,
     W4_RFCOMM_CHANNEL,
-    SENDING,
+    BTCOMMS_CONNECTED,
     DONE
-} state_t;
+} btcomms_state_t;
 
+struct btstack_timer_source;
+
+// Prototypes
 void btcomms_initialise(void);
 
 static void btcomms_start_scan(void);
 static void btcomms_stop_scan(void);
 
-static void btcomms_test_reset(void);
-static void btcomms_test_track_transferred(int bytes_sent);
-
-static void btcomms_spp_create_test_data(void);
-static void btcomms_spp_send_packet(void);
-
 static void btcomms_handle_query_rfcomm_event(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
 static void btcomms_handle_start_sdp_client_query(void * context);
 static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size);
+
+static void btcomms_one_shot_timer_setup(void);
+static void btcomms_process_handler(struct btstack_timer_source *ts);
+
+bool btcomms_is_channel_open(int8_t channel);
+
+int btcomms_getchar(int8_t channel);
+int btcomms_putchar(int8_t channel, char c);
 
 #endif /* BTCOMMS_H_ */
