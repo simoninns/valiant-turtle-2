@@ -25,8 +25,11 @@
 ************************************************************************/
 
 #include <stdio.h>
-#include <pico/stdlib.h>
 #include <string.h>
+#include <stdarg.h>
+#include "pico/printf.h"
+#include "pico/stdlib.h"
+#include "pico/stdio/driver.h"
 #include "hardware/uart.h"
 #include "hardware/irq.h"
 
@@ -34,12 +37,13 @@
 
 void uart_initialise()
 {
-    // // Configure UART0 (USB)
-    // uart_init(UART0_ID, UART0_BAUD_RATE);
-    // gpio_set_function(UART0_TX_PIN, UART_FUNCSEL_NUM(UART0_ID, UART0_TX_PIN));
-    // gpio_set_function(UART0_RX_PIN, UART_FUNCSEL_NUM(UART0_ID, UART0_RX_PIN));
-    // uart_set_hw_flow(UART0_ID, false, false);
-    // uart_set_format(UART0_ID, UART0_DATA_BITS, UART0_STOP_BITS, UART0_PARITY);
+    // Configure UART0 (TTL)
+    uart_init(UART0_ID, UART0_BAUD_RATE);
+    gpio_set_function(UART0_TX_PIN, UART_FUNCSEL_NUM(UART0_ID, UART0_TX_PIN));
+    gpio_set_function(UART0_RX_PIN, UART_FUNCSEL_NUM(UART0_ID, UART0_RX_PIN));
+
+    uart_set_hw_flow(UART0_ID, false, false);
+    uart_set_format(UART0_ID, UART0_DATA_BITS, UART0_STOP_BITS, UART0_PARITY);
 
     // Configure UART1 (RS232 DB9)
     uart_init(UART1_ID, UART1_BAUD_RATE);
@@ -51,4 +55,43 @@ void uart_initialise()
 
     uart_set_hw_flow(UART1_ID, false, false);
     uart_set_format(UART1_ID, UART1_DATA_BITS, UART1_STOP_BITS, UART1_PARITY);
+}
+
+int printf_usb(const char *format, ...) {
+
+  char buffer[256];
+  
+  va_list va;
+  va_start(va, format);
+  const int ret = vsnprintf(buffer, sizeof(buffer), format, va);
+  va_end(va);
+
+  // Send to USB
+  printf(buffer);
+}
+
+int printf_debug(const char *format, ...) {
+
+  char buffer[256];
+  
+  va_list va;
+  va_start(va, format);
+  const int ret = vsnprintf(buffer, sizeof(buffer), format, va);
+  va_end(va);
+
+  // Send to UART0
+  uart_puts(UART0_ID, buffer);
+}
+
+int printf_uart1(const char *format, ...) {
+
+  char buffer[256];
+  
+  va_list va;
+  va_start(va, format);
+  const int ret = vsnprintf(buffer, sizeof(buffer), format, va);
+  va_end(va);
+
+  // Send to UART1
+  uart_puts(UART1_ID, buffer);
 }

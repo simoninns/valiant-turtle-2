@@ -31,6 +31,7 @@
 
 #include "uart.h"
 #include "leds.h"
+#include "btcomms.h"
 
 int main() {
     // Initialise the hardware
@@ -40,10 +41,11 @@ int main() {
     // Initialise modules
     uart_initialise();
     leds_initialise();
+    btcomms_initialise();
 
     // Show some intro text on debug to show we are alive
-    uart_puts(UART1_ID, "Valiant Turtle 2 - Communicator UART 1\r\n");
-    printf("This is the USB serial stream\r\n");
+    printf_debug("Valiant Turtle 2 - Communicator\r\n");
+    printf_debug("Debug Console\r\n");
 
     // Turn on the PICO W system LED
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
@@ -52,11 +54,15 @@ int main() {
 
     // Loop and process any non-interrupt driven activities
     while (true) {
-        leds_state(1, true);
-        printf("Nooooogars from UART0\r\n");
-        uart_puts(UART1_ID, "Booooogers from UART1\r\n");
-        sleep_ms(750);
-        leds_state(1, false);
-        sleep_ms(250);
+        for (int i=0; i<50; i++) {
+            printf_debug("C %d Heartbeat\r\n", i);
+
+            for (int a=0; a<5; a++) {
+                leds_state(1, true);
+                sleep_ms(750);
+                leds_state(1, false);
+                sleep_ms(250);
+            }
+        }
     }
 }

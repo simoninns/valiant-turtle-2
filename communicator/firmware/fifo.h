@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    uart.h
+    fifo.h
 
     Valiant Turtle 2 Communicator - Raspberry Pi Pico W Firmware
     Copyright (C) 2024 Simon Inns
@@ -24,30 +24,31 @@
 
 ************************************************************************/
 
-#ifndef UART_H_
-#define UART_H_
+#ifndef FIFO_H_
+#define FIFO_H_
 
-#define UART0_ID uart0
-#define UART0_TX_PIN 0
-#define UART0_RX_PIN 1
-#define UART0_BAUD_RATE 115200
-#define UART0_DATA_BITS 8
-#define UART0_STOP_BITS 1
-#define UART0_PARITY UART_PARITY_NONE
+// Define FIFO buffer sizes in KBytes
+#define IN_BUFFER_KSIZE 1
+#define OUT_BUFFER_KSIZE 4
 
-#define UART1_ID uart1
-#define UART1_TX_PIN 4
-#define UART1_RX_PIN 5
-#define UART1_RTS_PIN 6
-#define UART1_CTS_PIN 7
-#define UART1_BAUD_RATE 4800
-#define UART1_DATA_BITS 8
-#define UART1_STOP_BITS 1
-#define UART1_PARITY UART_PARITY_NONE
+// Define the required number of buffers
+#define NUMBER_OF_BUFFERS 2
 
-void uart_initialise(void);
-int printf_usb(const char *format, ...);
-int printf_debug(const char *format, ...);
-int printf_uart1(const char *format, ...);
+typedef struct {
+    int16_t head;
+    int16_t tail;
+    char* data;
+} fifoBuffer_t;
 
-#endif /* UART_H_ */
+void fifo_initialise(void);
+
+char fifo_in_read(uint16_t buffer_number);
+bool fifo_in_write(uint16_t buffer_number,char val);
+
+char fifo_out_read(uint16_t buffer_number);
+bool fifo_out_write(uint16_t buffer_number, char val);
+
+bool fifo_is_in_empty(uint16_t buffer_number);
+bool fifo_is_out_empty(uint16_t buffer_number);
+
+#endif /* FIFO_H_ */

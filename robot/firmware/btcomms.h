@@ -40,6 +40,12 @@ typedef enum {
     BTCOMMS_PAIRING
 } btcomms_state_t;
 
+// Class Of Device
+// Service Class: Networking
+// Major Device Class: Toy
+// Minor Device Class: Robot
+#define BT_CLASS_OF_DEVICE 0x020804
+
 struct btstack_timer_source;
 
 static void btcomms_spp_service_setup(void);

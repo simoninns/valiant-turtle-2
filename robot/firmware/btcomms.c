@@ -79,6 +79,9 @@ void btcomms_initialise(void)
     // Use the following to include the HW Address in the device name
     gap_set_local_name("Valiant Turtle 2 00:00:00:00:00:00");
 
+    // Set the Class Of Device
+    gap_set_class_of_device(BT_CLASS_OF_DEVICE);
+
     // Power on the Bluetooth device
     hci_power_control(HCI_POWER_ON);
 
@@ -110,7 +113,7 @@ static void btcomms_spp_service_setup(void)
     // Note: Channel numbering must start from 1
     for (int i = 0; i < SPP_PORTS; i++) {
         // Reserve channel i+1, MTU maximum is limited by l2cap
-        rfcomm_register_service(btcomms_packet_handler, i+1, 0xffff);  // Reserve channel 1, mtu limited by l2cap
+        rfcomm_register_service(btcomms_packet_handler, i+1, 0xffff);  // Reserve channel 1, mtu (0xffff) limited by l2cap
     }
 
     // Initialise SDP
