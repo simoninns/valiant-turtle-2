@@ -46,17 +46,17 @@ static btstack_timer_source_t btcomms_process_timer;
 static btstack_packet_callback_registration_t hci_event_callback_registration;
 static btstack_context_callback_registration_t handle_sdp_client_query_request;
 
-static bd_addr_t peer_addr[SPP_PORTS];
-static btcomms_state_t current_bt_state[SPP_PORTS];
-static bool channel_open[SPP_PORTS];
-static uint16_t rfcomm_channel_id[SPP_PORTS];
+static bd_addr_t peer_addr[BTCOMMS_MAX_CLIENTS];
+static btcomms_state_t current_bt_state[BTCOMMS_MAX_CLIENTS];
+static bool channel_open[BTCOMMS_MAX_CLIENTS];
+static uint16_t rfcomm_channel_id[BTCOMMS_MAX_CLIENTS];
 
-char *sendBuffer[SPP_PORTS];
+char *sendBuffer[BTCOMMS_MAX_CLIENTS];
 
 void btcomms_initialise(void)
 {
      // Set initial state
-    for (int i = 0; i < SPP_PORTS; i++) {
+    for (int i = 0; i < BTCOMMS_MAX_CLIENTS; i++) {
         channel_open[i] = false;
         current_bt_state[i] = BTCOMMS_OFF;
         rfcomm_channel_id[i] = 0;
@@ -80,7 +80,7 @@ void btcomms_initialise(void)
     hci_power_control(HCI_POWER_ON);
 
     // Set state to disconnected
-    for (int i = 0; i < SPP_PORTS; i++) {
+    for (int i = 0; i < BTCOMMS_MAX_CLIENTS; i++) {
         current_bt_state[i] = BTCOMMS_DISCONNECTED;
     }
 
@@ -158,13 +158,13 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
     UNUSED(channel);
 
     bd_addr_t event_addr;
-    uint32_t  class_of_device;
-    uint16_t  requesting_cid;
+    uint32_t class_of_device;
+    uint16_t requesting_cid;
     uint8_t rfcomm_server_channel;
 
     // SPP
-    uint16_t  rfcomm_mtu;
-    uint16_t  rfcomm_cid = 0;
+    uint16_t rfcomm_mtu;
+    uint16_t rfcomm_cid = 0;
 
 	switch (packet_type) {
 		case HCI_EVENT_PACKET:
@@ -325,7 +325,7 @@ static void btcomms_one_shot_timer_setup(void)
 static void btcomms_process_handler(struct btstack_timer_source *ts)
 {
     // Process any open channels
-    for (int i = 0; i < SPP_PORTS; i++) {
+    for (int i = 0; i < BTCOMMS_MAX_CLIENTS; i++) {
         if (channel_open[i]) {
             // Check the output FIFO buffer for waiting data
             if (!fifo_is_out_empty(i)) {

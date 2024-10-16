@@ -27,7 +27,7 @@
 #ifndef BTCOMMS_H_
 #define BTCOMMS_H_
 
-#define SPP_PORTS 4
+#define BTCOMMS_MAX_CLIENTS 4
 
 // Processing timer period
 #define SPP_PROCESS_PERIOD_MS 10
