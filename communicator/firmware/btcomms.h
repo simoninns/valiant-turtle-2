@@ -27,16 +27,10 @@
 #ifndef BTCOMMS_H_
 #define BTCOMMS_H_
 
-#define BT_MODE_GPIO 14
+#define SPP_PORTS 4
 
-// BK example defines...
-#define NUM_ROWS 25
-#define NUM_COLS 40
-
+// Processing timer period
 #define SPP_PROCESS_PERIOD_MS 10
-
-// Define the required number of virtual serial port connections
-#define SPP_PORTS 1
 
 // Class Of Device
 // Service Class: Networking
@@ -79,5 +73,7 @@ bool btcomms_is_channel_open(int8_t channel);
 
 int btcomms_getchar(int8_t channel);
 int btcomms_putchar(int8_t channel, char c);
+
+void btcomms_show_error(int32_t error_code);
 
 #endif /* BTCOMMS_H_ */

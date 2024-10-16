@@ -737,6 +737,11 @@ void on_config_read(EmbeddedCli *cli, char *args, void *context) {
     cli_printf("    Maximum SPS = %d steps\r\n", configuration.stepper_right.maximumSps);
     cli_printf("    Updates per second = %d updates\r\n", configuration.stepper_right.updatesPerSecond);
     cli_printf("\n");
+    
+    cli_printf("Misc:\r\n");
+    cli_printf("  Turtle ID: %d\r\n", configuration.turtle_id);
+
+    cli_printf("\n");
 }
 
 void on_config_write(EmbeddedCli *cli, char *args, void *context) {
@@ -765,6 +770,39 @@ void on_config_default(EmbeddedCli *cli, char *args, void *context) {
     (void)cli;
     configuration_set(configuration_get_default());
     cli_printf("\nConfiguration reverted to default (don't forget to config-write)\n");
+}
+
+// Turtle ID commands
+void on_turtle_id(EmbeddedCli *cli, char *args, void *context) {
+    (void)cli;
+
+    // Ensure we have 1 argument...
+    if (embeddedCliGetTokenCount(args) != 1) {
+        // Missing argument
+        cli_printf("turtle-id command missing argument(s)\r\n");
+        cli_printf("  Usage: turtle-id [ID number]\r\n");
+        return;
+    }
+
+    // get the argument and store as float
+    int32_t turtleid = atoi(embeddedCliGetToken(args, 1));
+
+    if (turtleid < 0 || turtleid > 4) {
+        // Invalid argument
+        cli_printf("turtle-id command invalid argument - Turtle ID must be 0-3\r\n");
+        return;
+    }
+
+    // Read the current configuration
+    configuration_t configuration = configuration_get();
+
+    // Set the Turtle ID
+    configuration.turtle_id = (uint8_t)turtleid;
+
+    // Write the current configuration
+    configuration_set(configuration);
+
+    cli_printf("\nTurtle ID configuration updated (don't forget to config-write)\n");
 }
 
 // ------------------------------------------------------------------------
@@ -1019,6 +1057,15 @@ void cli_initialise() {
         on_config_default
     };
     embeddedCliAddBinding(cli, config_default_binding);
+
+    CliCommandBinding turtle_id_binding = {
+        "turtle-id",
+        "Set the turtle ID number",
+        true,
+        NULL,
+        on_turtle_id
+    };
+    embeddedCliAddBinding(cli, turtle_id_binding);
 
     // Initialise the LED eyes
     left_led[0] = 255;

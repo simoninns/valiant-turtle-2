@@ -49,7 +49,6 @@ void uart_initialise()
     // Turn off UART0 FIFO (required for the IRQ to work)
     uart_set_fifo_enabled(UART0_ID, false);
 
-
     // Configure UART1 (RS232 DB9)
     uart_init(UART1_ID, UART1_BAUD_RATE);
 

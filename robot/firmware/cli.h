@@ -51,6 +51,8 @@ void on_metric_set(EmbeddedCli *cli, char *args, void *context);
 void on_metric_forwards(EmbeddedCli *cli, char *args, void *context);
 void on_metric_backwards(EmbeddedCli *cli, char *args, void *context);
 
+void on_turtle_id(EmbeddedCli *cli, char *args, void *context);
+
 void cli_initial_prompt(void);
 static void write_char_fn(EmbeddedCli *embeddedCli, char c);
 int cli_printf(const char *fmt, ...);

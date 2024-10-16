@@ -53,17 +53,13 @@ static uint16_t rfcomm_channel_id[SPP_PORTS];
 
 char *sendBuffer[SPP_PORTS];
 
-// SPP
-static uint16_t  rfcomm_mtu;
-static uint16_t  rfcomm_cid = 0;
-
 void btcomms_initialise(void)
 {
      // Set initial state
     for (int i = 0; i < SPP_PORTS; i++) {
         channel_open[i] = false;
         current_bt_state[i] = BTCOMMS_OFF;
-        rfcomm_channel_id[0] = 0;
+        rfcomm_channel_id[i] = 0;
     }
 
     // Set up the FIFO buffers for incoming and outgoing characters
@@ -126,6 +122,7 @@ static void btcomms_handle_query_rfcomm_event(uint8_t packet_type, uint16_t chan
             // Did the event query fail?
             if (sdp_event_query_complete_get_status(packet)){
                 printf_debug("btcomms_handle_query_rfcomm_event(): SDP query failed, status 0x%02x\r\n", sdp_event_query_complete_get_status(packet));
+                btcomms_show_error(sdp_event_query_complete_get_status(packet));
                 btcomms_start_scan();
                 break;
             }
@@ -165,6 +162,10 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
     uint16_t  requesting_cid;
     uint8_t rfcomm_server_channel;
 
+    // SPP
+    uint16_t  rfcomm_mtu;
+    uint16_t  rfcomm_cid = 0;
+
 	switch (packet_type) {
 		case HCI_EVENT_PACKET:
 			switch (hci_event_packet_get_type(packet)) {
@@ -180,7 +181,7 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
                     gap_event_inquiry_result_get_bd_addr(packet, event_addr);
                     if (class_of_device == BT_CLASS_OF_DEVICE){
                         memcpy(peer_addr[0], event_addr, 6);
-                        printf_debug("btcomms_packet_handler(): COD Peer found with MAC: %s\r\n", bd_addr_to_str(peer_addr[0]));
+                        printf_debug("btcomms_packet_handler(): COD matched peer found with BT MAC: %s\r\n", bd_addr_to_str(peer_addr[0]));
                         btcomms_stop_scan();
                     } else {
                         printf_debug("btcomms_packet_handler(): Device found: %s with incorrect COD: 0x%06x\r\n",
@@ -260,6 +261,7 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
                     // Set the channel state to disconnected and free the send buffer memory
                     current_bt_state[0] = BTCOMMS_DISCONNECTED;
                     channel_open[0] = false;
+                    rfcomm_channel_id[0] = 0;
                     free(sendBuffer[0]);
 
                     // Start scanning again
@@ -327,14 +329,12 @@ static void btcomms_process_handler(struct btstack_timer_source *ts)
         if (channel_open[i]) {
             // Check the output FIFO buffer for waiting data
             if (!fifo_is_out_empty(i)) {
-                //printf_debug("btcomms_process_handler(): FIFO out not empty\r\n");
                 // Ask for a send event on the specified channel
                 rfcomm_request_can_send_now_event(rfcomm_channel_id[i]);
             }
 
             // Check the input FIFO buffer for waiting data
             if (!fifo_is_in_empty(i)) {
-                //printf_debug("btcomms_process_handler(): FIFO in not empty\r\n");
                 while (!fifo_is_in_empty(i)) {
                     char c = (int)fifo_in_read(i);
                     uart_putc(UART0_ID, c);
@@ -369,4 +369,72 @@ int btcomms_getchar(int8_t channel)
 int btcomms_putchar(int8_t channel, char c)
 {
     return fifo_out_write(channel, c);
+}
+
+// Taken from https://github.com/bluekitchen/btstack/blob/master/src/bluetooth.h#L211
+void btcomms_show_error(int32_t error_code)
+{
+    if (error_code == ERROR_CODE_SUCCESS) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_SUCCESS\r\n", error_code);
+    if (error_code == ERROR_CODE_UNKNOWN_HCI_COMMAND) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_UNKNOWN_HCI_COMMAND\r\n", error_code);
+    if (error_code == ERROR_CODE_UNKNOWN_CONNECTION_IDENTIFIER) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_UNKNOWN_CONNECTION_IDENTIFIER\r\n", error_code);
+    if (error_code == ERROR_CODE_HARDWARE_FAILURE) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_HARDWARE_FAILURE\r\n", error_code);
+    if (error_code == ERROR_CODE_PAGE_TIMEOUT) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_PAGE_TIMEOUT\r\n", error_code);
+    if (error_code == ERROR_CODE_AUTHENTICATION_FAILURE) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_AUTHENTICATION_FAILURE\r\n", error_code);
+    if (error_code == ERROR_CODE_PIN_OR_KEY_MISSING) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_PIN_OR_KEY_MISSING\r\n", error_code);
+    if (error_code == ERROR_CODE_MEMORY_CAPACITY_EXCEEDED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_MEMORY_CAPACITY_EXCEEDED\r\n", error_code);
+    if (error_code == ERROR_CODE_CONNECTION_TIMEOUT) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONNECTION_TIMEOUT\r\n", error_code);
+    if (error_code == ERROR_CODE_CONNECTION_LIMIT_EXCEEDED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONNECTION_LIMIT_EXCEEDED\r\n", error_code);
+    if (error_code == ERROR_CODE_SYNCHRONOUS_CONNECTION_LIMIT_TO_A_DEVICE_EXCEEDED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_SYNCHRONOUS_CONNECTION_LIMIT_TO_A_DEVICE_EXCEEDED\r\n", error_code);
+    if (error_code == ERROR_CODE_ACL_CONNECTION_ALREADY_EXISTS) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_ACL_CONNECTION_ALREADY_EXISTS\r\n", error_code);
+    if (error_code == ERROR_CODE_COMMAND_DISALLOWED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_COMMAND_DISALLOWED\r\n", error_code);
+    if (error_code == ERROR_CODE_CONNECTION_REJECTED_DUE_TO_LIMITED_RESOURCES) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONNECTION_REJECTED_DUE_TO_LIMITED_RESOURCES\r\n", error_code);
+    if (error_code == ERROR_CODE_CONNECTION_REJECTED_DUE_TO_SECURITY_REASONS) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONNECTION_REJECTED_DUE_TO_SECURITY_REASONS\r\n", error_code);
+    if (error_code == ERROR_CODE_CONNECTION_REJECTED_DUE_TO_UNACCEPTABLE_BD_ADDR) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONNECTION_REJECTED_DUE_TO_UNACCEPTABLE_BD_ADDR\r\n", error_code);
+    if (error_code == ERROR_CODE_CONNECTION_ACCEPT_TIMEOUT_EXCEEDED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONNECTION_ACCEPT_TIMEOUT_EXCEEDED\r\n", error_code);
+    if (error_code == ERROR_CODE_UNSUPPORTED_FEATURE_OR_PARAMETER_VALUE) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_UNSUPPORTED_FEATURE_OR_PARAMETER_VALUE\r\n", error_code);
+    if (error_code == ERROR_CODE_INVALID_HCI_COMMAND_PARAMETERS) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_INVALID_HCI_COMMAND_PARAMETERS\r\n", error_code);
+    if (error_code == ERROR_CODE_REMOTE_USER_TERMINATED_CONNECTION) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_REMOTE_USER_TERMINATED_CONNECTION\r\n", error_code);
+    if (error_code == ERROR_CODE_REMOTE_DEVICE_TERMINATED_CONNECTION_DUE_TO_LOW_RESOURCES) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_REMOTE_DEVICE_TERMINATED_CONNECTION_DUE_TO_LOW_RESOURCES\r\n", error_code); 
+    if (error_code == ERROR_CODE_REMOTE_DEVICE_TERMINATED_CONNECTION_DUE_TO_POWER_OFF) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_REMOTE_DEVICE_TERMINATED_CONNECTION_DUE_TO_POWER_OFF\r\n", error_code);
+    if (error_code == ERROR_CODE_CONNECTION_TERMINATED_BY_LOCAL_HOST) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONNECTION_TERMINATED_BY_LOCAL_HOST\r\n", error_code);
+    if (error_code == ERROR_CODE_REPEATED_ATTEMPTS) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_REPEATED_ATTEMPTS\r\n", error_code);
+    if (error_code == ERROR_CODE_PAIRING_NOT_ALLOWED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_PAIRING_NOT_ALLOWED\r\n", error_code);
+    if (error_code == ERROR_CODE_UNKNOWN_LMP_PDU) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_UNKNOWN_LMP_PDU\r\n", error_code);                  
+    if (error_code == ERROR_CODE_UNSUPPORTED_REMOTE_FEATURE_UNSUPPORTED_LMP_FEATURE ) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_UNSUPPORTED_REMOTE_FEATURE_UNSUPPORTED_LMP_FEATURE\r\n", error_code);
+    if (error_code == ERROR_CODE_SCO_OFFSET_REJECTED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_SCO_OFFSET_REJECTED\r\n", error_code);
+    if (error_code == ERROR_CODE_SCO_INTERVAL_REJECTED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_SCO_INTERVAL_REJECTED\r\n", error_code);
+    if (error_code == ERROR_CODE_SCO_AIR_MODE_REJECTED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_SCO_AIR_MODE_REJECTED\r\n", error_code);
+    if (error_code == ERROR_CODE_INVALID_LMP_PARAMETERS_INVALID_LL_PARAMETERS ) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_INVALID_LMP_PARAMETERS_INVALID_LL_PARAMETERS\r\n", error_code);
+    if (error_code == ERROR_CODE_UNSPECIFIED_ERROR) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_UNSPECIFIED_ERROR\r\n", error_code);
+    if (error_code == ERROR_CODE_UNSUPPORTED_LMP_PARAMETER_VALUE_UNSUPPORTED_LL_PARAMETER_VALUE) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_UNSUPPORTED_LMP_PARAMETER_VALUE_UNSUPPORTED_LL_PARAMETER_VALUE\r\n", error_code);
+    if (error_code == ERROR_CODE_ROLE_CHANGE_NOT_ALLOWED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_ROLE_CHANGE_NOT_ALLOWED\r\n", error_code);
+    if (error_code == ERROR_CODE_LMP_RESPONSE_TIMEOUT_LL_RESPONSE_TIMEOUT) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_LMP_RESPONSE_TIMEOUT_LL_RESPONSE_TIMEOUT\r\n", error_code);
+    if (error_code == ERROR_CODE_LMP_ERROR_TRANSACTION_COLLISION) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_LMP_ERROR_TRANSACTION_COLLISION\r\n", error_code);
+    if (error_code == ERROR_CODE_LMP_PDU_NOT_ALLOWED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_LMP_PDU_NOT_ALLOWED\r\n", error_code);
+    if (error_code == ERROR_CODE_ENCRYPTION_MODE_NOT_ACCEPTABLE) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_ENCRYPTION_MODE_NOT_ACCEPTABLE\r\n", error_code);
+    if (error_code == ERROR_CODE_LINK_KEY_CANNOT_BE_CHANGED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_LINK_KEY_CANNOT_BE_CHANGED\r\n", error_code);
+    if (error_code == ERROR_CODE_REQUESTED_QOS_NOT_SUPPORTED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_REQUESTED_QOS_NOT_SUPPORTED\r\n", error_code);
+    if (error_code == ERROR_CODE_INSTANT_PASSED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_INSTANT_PASSED\r\n", error_code);
+    if (error_code == ERROR_CODE_PAIRING_WITH_UNIT_KEY_NOT_SUPPORTED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_PAIRING_WITH_UNIT_KEY_NOT_SUPPORTED\r\n", error_code);
+    if (error_code == ERROR_CODE_DIFFERENT_TRANSACTION_COLLISION) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_DIFFERENT_TRANSACTION_COLLISION\r\n", error_code);
+    if (error_code == ERROR_CODE_RESERVED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_RESERVED\r\n", error_code);
+    if (error_code == ERROR_CODE_QOS_UNACCEPTABLE_PARAMETER) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_QOS_UNACCEPTABLE_PARAMETER\r\n", error_code);
+    if (error_code == ERROR_CODE_QOS_REJECTED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_QOS_REJECTED\r\n", error_code);
+    if (error_code == ERROR_CODE_CHANNEL_CLASSIFICATION_NOT_SUPPORTED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CHANNEL_CLASSIFICATION_NOT_SUPPORTED\r\n", error_code);
+    if (error_code == ERROR_CODE_INSUFFICIENT_SECURITY) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_INSUFFICIENT_SECURITY\r\n", error_code);
+    if (error_code == ERROR_CODE_PARAMETER_OUT_OF_MANDATORY_RANGE) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_PARAMETER_OUT_OF_MANDATORY_RANGE\r\n", error_code);
+    if (error_code == ERROR_CODE_ROLE_SWITCH_PENDING) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_ROLE_SWITCH_PENDING\r\n", error_code);
+    if (error_code == ERROR_CODE_RESERVED_SLOT_VIOLATION) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_RESERVED_SLOT_VIOLATION\r\n", error_code);
+    if (error_code == ERROR_CODE_ROLE_SWITCH_FAILED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_ROLE_SWITCH_FAILED\r\n", error_code);
+    if (error_code == ERROR_CODE_EXTENDED_INQUIRY_RESPONSE_TOO_LARGE) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_EXTENDED_INQUIRY_RESPONSE_TOO_LARGE\r\n", error_code);
+    if (error_code == ERROR_CODE_SECURE_SIMPLE_PAIRING_NOT_SUPPORTED_BY_HOST) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_SECURE_SIMPLE_PAIRING_NOT_SUPPORTED_BY_HOST\r\n", error_code);
+    if (error_code == ERROR_CODE_HOST_BUSY_PAIRING) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_HOST_BUSY_PAIRING\r\n", error_code);
+    if (error_code == ERROR_CODE_CONNECTION_REJECTED_DUE_TO_NO_SUITABLE_CHANNEL_FOUND) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONNECTION_REJECTED_DUE_TO_NO_SUITABLE_CHANNEL_FOUND\r\n", error_code);
+    if (error_code == ERROR_CODE_CONTROLLER_BUSY) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONTROLLER_BUSY\r\n", error_code);
+    if (error_code == ERROR_CODE_UNACCEPTABLE_CONNECTION_PARAMETERS) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_UNACCEPTABLE_CONNECTION_PARAMETERS\r\n", error_code);
+    if (error_code == ERROR_CODE_DIRECTED_ADVERTISING_TIMEOUT) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_DIRECTED_ADVERTISING_TIMEOUT\r\n", error_code);
+    if (error_code == ERROR_CODE_CONNECTION_TERMINATED_DUE_TO_MIC_FAILURE) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONNECTION_TERMINATED_DUE_TO_MIC_FAILURE\r\n", error_code);
+    if (error_code == ERROR_CODE_CONNECTION_FAILED_TO_BE_ESTABLISHED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_CONNECTION_FAILED_TO_BE_ESTABLISHED\r\n", error_code);
+    if (error_code == ERROR_CODE_MAC_CONNECTION_FAILED) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_MAC_CONNECTION_FAILED\r\n", error_code);
+    if (error_code == ERROR_CODE_COARSE_CLOCK_ADJUSTMENT_REJECTED_BUT_WILL_TRY_TO_ADJUST_USING_CLOCK_DRAGGING) printf_debug("btcomms_show_error(): Error code %d - ERROR_CODE_COARSE_CLOCK_ADJUSTMENT_REJECTED_BUT_WILL_TRY_TO_ADJUST_USING_CLOCK_DRAGGING\r\n", error_code);
 }

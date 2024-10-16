@@ -27,7 +27,7 @@
 #ifndef CONFIGURATION_H_
 #define CONFIGURATION_H_
 
-#define CONFIG_VERSION 2
+#define CONFIG_VERSION 3
 
 // Typedef for stepper's velocity configuration
 typedef struct stepper_configuration_t {
@@ -50,6 +50,7 @@ typedef struct configuration_t {
     metric_configuration_t metric_config;
     stepper_configuration_t stepper_left;
     stepper_configuration_t stepper_right;
+    uint8_t turtle_id;
 } configuration_t;
 
 void configuration_initialise(void);

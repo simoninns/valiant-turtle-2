@@ -44,6 +44,7 @@ void configuration_initialise()
     // Read the current configuration from EEPROM
     debug_printf("configuration_initialise(): Retrieving current configuration from EEPROM\n");
     current_configuration = configuration_retrieve();
+    debug_printf("configuration_initialise(): Turtle ID is %d\r\n", current_configuration.turtle_id);
 }
 
 // This returns a configuration object with default parameters
@@ -70,6 +71,9 @@ configuration_t configuration_get_default()
     configuration.stepper_right.minimumSps = 2;
     configuration.stepper_right.maximumSps = 800;
     configuration.stepper_right.updatesPerSecond = 8;
+
+    // Default turtle ID
+    configuration.turtle_id = 0;
 
     return configuration;
 }
