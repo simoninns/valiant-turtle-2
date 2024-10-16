@@ -53,9 +53,6 @@ static uint16_t rfcomm_channel_id[SPP_PORTS];
 
 char *sendBuffer[SPP_PORTS];
 
-// Do something about this global - it shouldn't be needed
-static uint8_t rfcomm_server_channel;
-
 // SPP
 static uint16_t  rfcomm_mtu;
 static uint16_t  rfcomm_cid = 0;
@@ -65,9 +62,8 @@ void btcomms_initialise(void)
      // Set initial state
     for (int i = 0; i < SPP_PORTS; i++) {
         channel_open[i] = false;
-        channel_open[i] = false;
         current_bt_state[i] = BTCOMMS_OFF;
-        current_bt_state[i] = BTCOMMS_OFF;
+        rfcomm_channel_id[0] = 0;
     }
 
     // Set up the FIFO buffers for incoming and outgoing characters
@@ -95,14 +91,14 @@ void btcomms_initialise(void)
     // Start the BT processing timer
     btcomms_one_shot_timer_setup();
 
-    printf_debug("btcomms_initialise(): BT powered on\r\n");
+    printf_debug("btcomms_initialise(): Bluetooth is powered on\r\n");
 }
 
 // Start scanning for a server using COD
 static void btcomms_start_scan()
 {
     printf_debug("btcomms_start_scan(): Starting inquiry scan...\r\n");
-    current_bt_state[0] = W4_PEER_COD;
+    current_bt_state[0] = BTCOMMS_COD_SCANNING;
     gap_inquiry_start(SCAN_INQUIRY_INTERVAL);
 }
 
@@ -110,7 +106,7 @@ static void btcomms_start_scan()
 static void btcomms_stop_scan()
 {
     printf_debug("btcomms_stop_scan(): Stopping inquiry scan...\r\n");
-    current_bt_state[0] = W4_SCAN_COMPLETE;
+    current_bt_state[0] = BTCOMMS_COD_SCAN_COMPLETE;
     gap_inquiry_stop();
 }
 
@@ -123,19 +119,26 @@ static void btcomms_handle_query_rfcomm_event(uint8_t packet_type, uint16_t chan
 
     switch (hci_event_packet_get_type(packet)){
         case SDP_EVENT_QUERY_RFCOMM_SERVICE:
-            rfcomm_server_channel = sdp_event_query_rfcomm_service_get_rfcomm_channel(packet);
+            printf_debug("btcomms_handle_query_rfcomm_event(): SDP_EVENT_QUERY_RFCOMM_SERVICE\r\n");
+            rfcomm_channel_id[0] = sdp_event_query_rfcomm_service_get_rfcomm_channel(packet);
             break;
         case SDP_EVENT_QUERY_COMPLETE:
+            // Did the event query fail?
             if (sdp_event_query_complete_get_status(packet)){
                 printf_debug("btcomms_handle_query_rfcomm_event(): SDP query failed, status 0x%02x\r\n", sdp_event_query_complete_get_status(packet));
+                btcomms_start_scan();
                 break;
-            } 
-            if (rfcomm_server_channel == 0){
+            }
+
+            // Did we get a valid RFCOMM channel ID?
+            if (rfcomm_channel_id[0] == 0){
                 printf_debug("btcomms_handle_query_rfcomm_event(): No SPP service found\r\n");
                 break;
             }
-            printf_debug("btcomms_handle_query_rfcomm_event(): SDP query done, found RFCOMM server channel 0x%02x.\r\n", rfcomm_server_channel);
-            rfcomm_create_channel(btcomms_packet_handler, peer_addr[0], rfcomm_server_channel, NULL); 
+
+            // Query successful
+            printf_debug("btcomms_handle_query_rfcomm_event(): SDP query done, found RFCOMM server channel 0x%02x.\r\n", rfcomm_channel_id[0]);
+            rfcomm_create_channel(btcomms_packet_handler, peer_addr[0], rfcomm_channel_id[0], NULL); 
             break;
         default:
             break;
@@ -146,9 +149,10 @@ static void btcomms_handle_query_rfcomm_event(uint8_t packet_type, uint16_t chan
 static void btcomms_handle_start_sdp_client_query(void * context)
 {
     UNUSED(context);
-    if (current_bt_state[0] != W2_SEND_SDP_QUERY) return;
-    current_bt_state[0] = W4_RFCOMM_CHANNEL;
-    sdp_client_query_rfcomm_channel_and_name_for_uuid(&btcomms_handle_query_rfcomm_event, peer_addr[0], BLUETOOTH_ATTRIBUTE_PUBLIC_BROWSE_ROOT);               
+    if (current_bt_state[0] != BTCOMMS_SEND_SDP_QUERY) return;
+    current_bt_state[0] = BTCOMMS_SDP_QUERY_SENT;
+    sdp_client_query_rfcomm_channel_and_name_for_uuid(&btcomms_handle_query_rfcomm_event, peer_addr[0], BLUETOOTH_ATTRIBUTE_PUBLIC_BROWSE_ROOT);
+    printf_debug("btcomms_handle_start_sdp_client_query(): Started SDP client query for channel and uuid\r\n");            
 }
 
 // General communications packet handler
@@ -157,9 +161,9 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
     UNUSED(channel);
 
     bd_addr_t event_addr;
-    uint8_t   rfcomm_server_channel;
     uint32_t  class_of_device;
     uint16_t  requesting_cid;
+    uint8_t rfcomm_server_channel;
 
 	switch (packet_type) {
 		case HCI_EVENT_PACKET:
@@ -171,7 +175,7 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
                     break;
 
                 case GAP_EVENT_INQUIRY_RESULT:
-                    if (current_bt_state[0] != W4_PEER_COD) break;
+                    if (current_bt_state[0] != BTCOMMS_COD_SCANNING) break;
                     class_of_device = gap_event_inquiry_result_get_class_of_device(packet);
                     gap_event_inquiry_result_get_bd_addr(packet, event_addr);
                     if (class_of_device == BT_CLASS_OF_DEVICE){
@@ -186,15 +190,15 @@ static void btcomms_packet_handler(uint8_t packet_type, uint16_t channel, uint8_
                     
                 case GAP_EVENT_INQUIRY_COMPLETE:
                     switch (current_bt_state[0]){
-                        case W4_PEER_COD:
+                        case BTCOMMS_COD_SCANNING:
                             // The inquiry time period has elapsed and we didn't find a suitable peer...                    
                             printf_debug("btcomms_packet_handler(): Inquiry complete - Peer not found, restarting scan\r\n");
                             btcomms_start_scan();
                             break;                        
-                        case W4_SCAN_COMPLETE:
+                        case BTCOMMS_COD_SCAN_COMPLETE:
                             // The inquiry found a suitable peer with the correct COD
                             printf_debug("btcomms_packet_handler(): Peer with correct COD found. Now starting to connect and query for available SPP services\r\n");
-                            current_bt_state[0] = W2_SEND_SDP_QUERY;
+                            current_bt_state[0] = BTCOMMS_SEND_SDP_QUERY;
                             handle_sdp_client_query_request.callback = &btcomms_handle_start_sdp_client_query;
                             (void) sdp_client_register_query_callback(&handle_sdp_client_query_request);
                             break;
@@ -323,14 +327,18 @@ static void btcomms_process_handler(struct btstack_timer_source *ts)
         if (channel_open[i]) {
             // Check the output FIFO buffer for waiting data
             if (!fifo_is_out_empty(i)) {
+                //printf_debug("btcomms_process_handler(): FIFO out not empty\r\n");
                 // Ask for a send event on the specified channel
                 rfcomm_request_can_send_now_event(rfcomm_channel_id[i]);
             }
 
-            // Check the input FIFO buffer
-            while (!fifo_is_in_empty(i)) {
-                char c = (int)fifo_in_read(i);
-                uart_putc(UART1_ID, c);
+            // Check the input FIFO buffer for waiting data
+            if (!fifo_is_in_empty(i)) {
+                //printf_debug("btcomms_process_handler(): FIFO in not empty\r\n");
+                while (!fifo_is_in_empty(i)) {
+                    char c = (int)fifo_in_read(i);
+                    uart_putc(UART0_ID, c);
+                }
             }
         }
     }
@@ -360,5 +368,5 @@ int btcomms_getchar(int8_t channel)
 // Write a character to a channel's FIFO output buffer
 int btcomms_putchar(int8_t channel, char c)
 {
-    return fifo_out_write(channel, c);;
+    return fifo_out_write(channel, c);
 }

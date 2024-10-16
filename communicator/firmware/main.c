@@ -47,6 +47,10 @@ int main() {
     printf_debug("Valiant Turtle 2 - Communicator\r\n");
     printf_debug("Debug Console\r\n");
 
+    printf_debug("This is USB\r\n");
+    printf_uart0("This is UART0\r\n");
+    printf_uart1("This is UART1\r\n");
+
     // Turn on the PICO W system LED
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
     leds_state(0, true);

@@ -717,25 +717,25 @@ void on_config_read(EmbeddedCli *cli, char *args, void *context) {
 
     configuration_t configuration = configuration_get();
 
-    cli_printf("\n");
-    cli_printf("Metric configuration:\n");
-    cli_printf("  Wheel diameter = %.2f mm\n", configuration.metric_config.wheel_diameter_mm);
-    cli_printf("  Axel distance = %.2f mm\n", configuration.metric_config.axel_distance_mm);
-    cli_printf("  Steps per revolution = %.2f steps\n", configuration.metric_config.steps_per_revolution);
+    cli_printf("\r\n");
+    cli_printf("Metric configuration:\r\n");
+    cli_printf("  Wheel diameter = %.2f mm\r\n", configuration.metric_config.wheel_diameter_mm);
+    cli_printf("  Axel distance = %.2f mm\r\n", configuration.metric_config.axel_distance_mm);
+    cli_printf("  Steps per revolution = %.2f steps\r\n", configuration.metric_config.steps_per_revolution);
     cli_printf("\n");
 
-    cli_printf("Stepper configuration:\n");
-    cli_printf("  Stepper Left:\n");
-    cli_printf("    Acceleration in SPSPS = %d steps\n", configuration.stepper_left.accSpsps);
-    cli_printf("    Minimum SPS = %d steps\n", configuration.stepper_left.minimumSps);
-    cli_printf("    Maximum SPS = %d steps\n", configuration.stepper_left.maximumSps);
-    cli_printf("    Updates per second = %d updates\n", configuration.stepper_left.updatesPerSecond);
+    cli_printf("Stepper configuration:\r\n");
+    cli_printf("  Stepper Left:\r\n");
+    cli_printf("    Acceleration in SPSPS = %d steps\r\n", configuration.stepper_left.accSpsps);
+    cli_printf("    Minimum SPS = %d steps\r\n", configuration.stepper_left.minimumSps);
+    cli_printf("    Maximum SPS = %d steps\r\n", configuration.stepper_left.maximumSps);
+    cli_printf("    Updates per second = %d updates\r\n", configuration.stepper_left.updatesPerSecond);
 
-    cli_printf("  Stepper Right:\n");
-    cli_printf("    Acceleration in SPSPS = %d steps\n", configuration.stepper_right.accSpsps);
-    cli_printf("    Minimum SPS = %d steps\n", configuration.stepper_right.minimumSps);
-    cli_printf("    Maximum SPS = %d steps\n", configuration.stepper_right.maximumSps);
-    cli_printf("    Updates per second = %d updates\n", configuration.stepper_right.updatesPerSecond);
+    cli_printf("  Stepper Right:\r\n");
+    cli_printf("    Acceleration in SPSPS = %d steps\r\n", configuration.stepper_right.accSpsps);
+    cli_printf("    Minimum SPS = %d steps\r\n", configuration.stepper_right.minimumSps);
+    cli_printf("    Maximum SPS = %d steps\r\n", configuration.stepper_right.maximumSps);
+    cli_printf("    Updates per second = %d updates\r\n", configuration.stepper_right.updatesPerSecond);
     cli_printf("\n");
 }
 

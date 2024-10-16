@@ -46,6 +46,10 @@ void uart_initialise()
     uart_set_hw_flow(UART0_ID, false, false);
     uart_set_format(UART0_ID, UART0_DATA_BITS, UART0_STOP_BITS, UART0_PARITY);
 
+    // Turn off UART0 FIFO (required for the IRQ to work)
+    uart_set_fifo_enabled(UART0_ID, false);
+
+
     // Configure UART1 (RS232 DB9)
     uart_init(UART1_ID, UART1_BAUD_RATE);
 
@@ -57,26 +61,28 @@ void uart_initialise()
     uart_set_hw_flow(UART1_ID, false, false);
     uart_set_format(UART1_ID, UART1_DATA_BITS, UART1_STOP_BITS, UART1_PARITY);
 
-    // Enable receive interrupt on UART1
-    irq_set_exclusive_handler(UART1_IRQ, uart_rx_callback);
-    irq_set_enabled(UART1_IRQ, true);
+    // Enable receive interrupt on UART0
+    irq_set_exclusive_handler(UART0_IRQ, uart_rx_callback);
+    irq_set_enabled(UART0_IRQ, true);
 
+    // static void uart_set_irqs_enabled (uart_inst_t *uart, bool rx_has_data, bool tx_needs_data)
+    uart_set_irq_enables(UART0_ID, true, false);
 }
 
 void uart_rx_callback()
 {
-    while (uart_is_readable(UART1_ID)) {
+    while (uart_is_readable(UART0_ID)) {
         // Get the received byte
-        uint8_t ch = uart_getc(UART1_ID);
+        uint8_t ch = uart_getc(UART0_ID);
 
         // Send the byte over Bluetooth to the robot
-        if (!btcomms_is_channel_open(0)) {
+        if (btcomms_is_channel_open(0)) {
           btcomms_putchar(0, ch);
         }
     }
 }
 
-int printf_usb(const char *format, ...) {
+int printf_debug(const char *format, ...) {
 
   char buffer[256];
   
@@ -89,7 +95,7 @@ int printf_usb(const char *format, ...) {
   printf(buffer);
 }
 
-int printf_debug(const char *format, ...) {
+int printf_uart0(const char *format, ...) {
 
   char buffer[256];
   

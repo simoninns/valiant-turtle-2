@@ -47,8 +47,8 @@
 
 void uart_initialise(void);
 void uart_rx_callback(void);
-int printf_usb(const char *format, ...);
 int printf_debug(const char *format, ...);
+int printf_uart0(const char *format, ...);
 int printf_uart1(const char *format, ...);
 
 #endif /* UART_H_ */

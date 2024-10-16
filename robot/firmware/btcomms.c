@@ -62,8 +62,6 @@ void btcomms_initialise(void)
     // Set initial state
     for (int i = 0; i < SPP_PORTS; i++) {
         channel_open[i] = false;
-        channel_open[i] = false;
-        current_bt_state[i] = BTCOMMS_OFF;
         current_bt_state[i] = BTCOMMS_OFF;
     }
 
@@ -313,5 +311,5 @@ int btcomms_getchar(int8_t channel)
 // Write a character to a channel's FIFO output buffer
 int btcomms_putchar(int8_t channel, char c)
 {
-    return fifo_out_write(channel, c);;
+    return fifo_out_write(channel, c);
 }
