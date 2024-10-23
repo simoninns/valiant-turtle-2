@@ -239,7 +239,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "vt2_communicator.kicad_pro",
+    "filename": "communicator.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -386,6 +386,18 @@
     [
       "b885e706-6990-4e04-997b-acbbfde24966",
       "Root"
+    ],
+    [
+      "dae46d19-9fd1-46e6-a773-5425b28825da",
+      "Serial Interface"
+    ],
+    [
+      "a7c42e1f-d809-4e4a-bb50-ba2156f8e189",
+      "IR LEDs"
+    ],
+    [
+      "baa4a185-abe7-44d5-9ef9-fa563048b64e",
+      "Parallel Interface"
     ]
   ],
   "text_variables": {}

@@ -3,7 +3,7 @@
     case.scad
     
     Valiant Turtle Communicator 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -108,12 +108,12 @@ module case_base()
         }
 
         // Back M3 through-holes
-        move([+(105/2) - 7,+(130/2) - 7,9]) cyl(h=22, d=6.5);
-        move([-(105/2) + 7,+(130/2) - 7,9]) cyl(h=22, d=6.5);
+        move([+(105/2) - 7,+(130/2) - 7,9]) cyl(h=22, d=6);
+        move([-(105/2) + 7,+(130/2) - 7,9]) cyl(h=22, d=6);
 
         // Front M2 through-holes
-        move([+(105/2) - 7,-(130/2) + 7,9]) cyl(h=22, d=6.5);
-        move([-(105/2) + 7,-(130/2) + 7,9]) cyl(h=22, d=6.5);
+        move([+(105/2) - 7,-(130/2) + 7,9]) cyl(h=22, d=6);
+        move([-(105/2) + 7,-(130/2) + 7,9]) cyl(h=22, d=6);
 
         // Markers to show where the stick-on feet should be placed
         move([0,0,-0.25]) {
@@ -207,33 +207,31 @@ module case_top()
     }
 }
 
-// M3x10mm Philips head screw
+// M3x10mm DIN912 head screw (hex bolt)
 module m3x10_screw()
 {
     // Generic quick screw render (the BOSL version was really slow)
     color([0.8, 0.8, 0.8]) difference() {
         union() {
-            move([0,0,1]) cyl(h=2,d=6, chamfer2=0.5);
-            move([0,0,-5]) cyl(h=10,d=3);
+            move([0,0,1]) cyl(h=3,d=5.5, chamfer2=0.125);
+            move([0,0,-5.5]) cyl(h=10,d=3);
         }
 
-        move([0,0,2]) cuboid([1,3,1], chamfer=0.25);
-        move([0,0,2]) cuboid([3,1,1], chamfer=0.25);
+        move([0,0,2]) cyl(h=2,d=2.5, $fn=6);
     }
 }
 
-// M3x10mm Philips head screw
+// M3x6mm DIN912 head screw (hex bolt)
 module m3x6_screw()
 {
     // Generic quick screw render (the BOSL version was really slow)
     color([0.8, 0.8, 0.8]) difference() {
         union() {
-            move([0,0,1]) cyl(h=2,d=6, chamfer2=0.5);
-            move([0,0,-3]) cyl(h=6,d=3);
+            move([0,0,1]) cyl(h=3,d=5.5, chamfer2=0.125);
+            move([0,0,-3.5]) cyl(h=6,d=3);
         }
 
-        move([0,0,2]) cuboid([1,3,1], chamfer=0.25);
-        move([0,0,2]) cuboid([3,1,1], chamfer=0.25);
+        move([0,0,2]) cyl(h=2,d=2.5, $fn=6);
     }
 }
 
