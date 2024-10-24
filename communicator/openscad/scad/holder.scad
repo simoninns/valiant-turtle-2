@@ -29,23 +29,34 @@ use <BOSL/shapes.scad>
 module led()
 {
     move([-2.54/2,0,-10.5]) {
-        move([0,0,0]) cyl(h=21,d=1);
-        move([2.54,0,1]) cyl(h=19,d=1);
+        // Legs
+        color([0.8,0.8,0.8]) move([0,0,9.25]) {
+            move([0,0,0]) cyl(h=7,d=1);
+            move([2.54,0,0]) cyl(h=7,d=1);
+        }
 
-        move([0,0,11]) {
+        color([0.8,0.8,0.8]) move([0,-6,6]) {
+            move([0,0,0]) ycyl(h=12,d=1);
+            move([2.54,1,0]) ycyl(h=10,d=1);
+        }
+
+        // Body
+        color([0.4,0.0,0.0]) move([0,0,11]) {
             move([2.54/2,0,0]) cyl(h=1, d=6);
             move([2.54/2,0,3.5]) cyl(h=6, d=5);
         }
     }
 }
 
-module four_leds()
+module six_leds()
 {
-    move([-2.54*4.5,0,6]) {
+    move([-2.54*7.5,0,6]) {
         move([0,0,0]) led();
         move([2.54*3,0,0]) led();
         move([2.54*6,0,0]) led();
         move([2.54*9,0,0]) led();
+        move([2.54*12,0,0]) led();
+        move([2.54*15,0,0]) led();
     }
 }
 
@@ -62,13 +73,15 @@ module led_mask()
     }
 }
 
-module four_leds_mask()
+module six_leds_mask()
 {
-    move([-2.54*4.5,0,0]) {
+    move([-2.54*7.5,0,0]) {
         move([0,0,0]) led_mask();
         move([2.54*3,0,0]) led_mask();
         move([2.54*6,0,0]) led_mask();
         move([2.54*9,0,0]) led_mask();
+        move([2.54*12,0,0]) led_mask();
+        move([2.54*15,0,0]) led_mask();
     }
 }
 
@@ -76,15 +89,17 @@ module four_leds_mask()
 module holder()
 {
     move([0,0,6]) difference() {
-        move([0,-1.5 - 3,-1]) cuboid([33,13+6,10], chamfer=2, edges=EDGES_Z_BK+EDGES_Y_BOT+EDGE_BOT_BK);
-        move([0,0,1]) four_leds_mask();
+        move([0,-0.5,-1]) cuboid([50,12,10], chamfer=2, edges=EDGES_Z_BK+EDGES_Y_BOT+EDGE_BOT_BK);
+        move([0,0,1]) six_leds_mask();
 
-        move([0,-9.25,-3]) {
+        move([-2.54*3,-9.25,-3]) {
             move([-2.54*5,0,0]) {
                 move([0,0,-4]) cuboid([1.5,20,8]);
                 move([2.54*3,0,-4]) cuboid([1.5,20,8]);
                 move([2.54*6,0,-4]) cuboid([1.5,20,8]);
                 move([2.54*9,0,-4]) cuboid([1.5,20,8]);
+                move([2.54*12,0,-4]) cuboid([1.5,20,8]);
+                move([2.54*15,0,-4]) cuboid([1.5,20,8]);
             }
 
             move([-2.54*4,0,0]) {
@@ -92,18 +107,20 @@ module holder()
                 move([2.54*3,0,-4]) cuboid([1.5,20,8]);
                 move([2.54*6,0,-4]) cuboid([1.5,20,8]);
                 move([2.54*9,0,-4]) cuboid([1.5,20,8]);
+                move([2.54*12,0,-4]) cuboid([1.5,20,8]);
+                move([2.54*15,0,-4]) cuboid([1.5,20,8]);
             }
         }
 
-        move([0,-1.5 - 3-10,4]) cuboid([33-4,13+6,10], chamfer=2, edges=EDGES_Z_BK+EDGE_BOT_BK);
+        move([0,-1.5 - 3-10,4]) cuboid([40,13+6,10], chamfer=2, edges=EDGES_Z_BK+EDGE_BOT_BK);
     }
 }
 
 module render_holder(toPrint)
 {
     if (!toPrint) {
-        move([0,-45,16]) xrot(90) {
-            color([0.4,0.0,0.0])four_leds();
+        move([0,-46,16]) xrot(90) {
+            six_leds();
             color([0.2,0.2,0.2]) holder();
         }
     } else {

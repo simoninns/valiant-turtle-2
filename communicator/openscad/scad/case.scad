@@ -111,7 +111,7 @@ module case_base()
         move([+(105/2) - 7,+(130/2) - 7,9]) cyl(h=22, d=6);
         move([-(105/2) + 7,+(130/2) - 7,9]) cyl(h=22, d=6);
 
-        // Front M2 through-holes
+        // Front M3 through-holes
         move([+(105/2) - 7,-(130/2) + 7,9]) cyl(h=22, d=6);
         move([-(105/2) + 7,-(130/2) + 7,9]) cyl(h=22, d=6);
 

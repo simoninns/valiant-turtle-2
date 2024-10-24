@@ -33,6 +33,7 @@ include <panel.scad>
 include <label.scad>
 include <logotype.scad>
 include <holder.scad>
+include <pcb.scad>
 
 // Rendering resolution
 $fn=100;
@@ -56,6 +57,7 @@ display_led_holder = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
 display_ir_cover = "No"; // [Yes, No]
+display_pcb = "No"; // [Yes, No]
 
 /* [Screws] */
 display_case_screws = "No"; // [Yes, No]
@@ -80,6 +82,7 @@ module main() {
     // Support enforcers
     // Non-printable parts
     d_ir_cover = (display_ir_cover == "Yes") ? true:false;
+    d_pcb = (display_pcb == "Yes") ? true:false;
 
     // Screws
     d_case_screws = (display_case_screws == "Yes") ? true:false;
@@ -99,6 +102,7 @@ module main() {
     // Render the support enforcers
     // Render the non-printable parts
     if (d_ir_cover) render_ircover(toPrint);
+    if (d_pcb) render_pcb(toPrint);
 
      // Render screws
     if (d_case_screws) render_case_screws(toPrint);

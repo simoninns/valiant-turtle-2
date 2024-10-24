@@ -2,7 +2,7 @@
 
     logotype.scad
     
-    Valiant Turtle 2
+    Valiant Turtle Communicator 2
     Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
