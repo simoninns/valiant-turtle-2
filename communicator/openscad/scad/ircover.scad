@@ -28,13 +28,15 @@ use <BOSL/shapes.scad>
 
 module ircover()
 {
-    move([0,-(130/2) + 2.51,(25/2) + 5 - 1.5]) cuboid([50,1,20]);
+    move([-50,0,(25/2) + 5 - 1.5]) cuboid([1,50,20]);
 }
 
 module ircover_mask()
 {
-    move([0,-(130/2) + 2.5,(25/2) + 5 - 1.5]) cuboid([51,2,21]);
-    move([0,-(130/2) + 1,(25/2) + 5 - 1.5]) cuboid([50-4,5,20-4], fillet=1, edges=EDGES_Y_ALL);
+    move([-50,0,0]) {
+        move([0,0,(25/2) + 5 - 1.5]) cuboid([2,51,21]);
+        move([-2,0,(25/2) + 5 - 1.5]) cuboid([5,50-4,20-4], fillet=1, edges=EDGES_X_ALL);
+    }
 }
 
 module render_ircover(toPrint)

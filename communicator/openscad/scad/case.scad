@@ -167,17 +167,17 @@ module case_base()
     }
 
     // PCB pegs
-    move([0,-24.5 + 12,0]) {
-        move([+(65/2),+(75/2),0]) pcb_peg();
-        move([-(65/2),+(75/2),0]) pcb_peg();
-        move([+(65/2),-(75/2),0]) pcb_peg();
-        move([-(65/2),-(75/2),0]) pcb_peg();
+    move([1,0,0]) {
+        move([+(86/2)-20,+(90/2),0]) pcb_peg();
+        move([-(86/2),+(90/2),0]) pcb_peg();
+        move([+(86/2)-20,-(90/2),0]) pcb_peg();
+        move([-(86/2),-(90/2),0]) pcb_peg();
     }
 }
 
 module case_top()
 {
-    move([0,0,31]) zflip() {
+    move([0,0,32]) zflip() {
         difference() {
             case_common();
 
@@ -246,17 +246,6 @@ module case_screws()
     move([-(105/2) + 7,-(130/2) + 7,11]) xrot(180) m3x10_screw();
 }
 
-module pcb_screws()
-{
-    // Standard PCB thickness is 1.6mm
-    move([0,-24.5 + 12,8 + 1.6]) {
-        move([+(65/2),+(75/2),0]) m3x6_screw();
-        move([-(65/2),+(75/2),0]) m3x6_screw();
-        move([+(65/2),-(75/2),0]) m3x6_screw();
-        move([-(65/2),-(75/2),0]) m3x6_screw();
-    }
-}
-
 module render_case_base(toPrint)
 {
     if (!toPrint) {
@@ -279,12 +268,5 @@ module render_case_screws(toPrint)
 {
     if (!toPrint) {
         case_screws();
-    }
-}
-
-module render_pcb_screws(toPrint)
-{
-    if (!toPrint) {
-        pcb_screws();
     }
 }

@@ -119,7 +119,7 @@ module holder()
 module render_holder(toPrint)
 {
     if (!toPrint) {
-        move([0,-46,16]) xrot(90) {
+        move([-34,0,16]) xrot(90) yrot(-90) {
             six_leds();
             color([0.2,0.2,0.2]) holder();
         }

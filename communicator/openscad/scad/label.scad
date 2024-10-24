@@ -28,10 +28,12 @@ use <BOSL/shapes.scad>
 
 include <logotype.scad>
 
+// 130x105
+
 module label()
 {
     difference() {
-        move([0,0,-0.5]) cuboid([30,50,1], fillet=1, edges=EDGES_Z_ALL);
+        move([0,0,-0.5]) cuboid([37,50,1], fillet=1, edges=EDGES_Z_ALL);
         move([0,0,31]) zflip() logotype();
     }
 

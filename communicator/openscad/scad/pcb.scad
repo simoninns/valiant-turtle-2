@@ -28,32 +28,41 @@ use <BOSL/shapes.scad>
 
 include <holder.scad>
 
-// Screw holes for the aux board
+// Screw holes
 module pcb_screw_holes()
 {
-    move([0,10.25,0]) {
-        move([+(65/2),+(75/2),0]) cyl(h=10, d=3.5);
-        move([-(65/2),+(75/2),0]) cyl(h=10, d=3.5);
-        move([+(65/2),-(75/2),0]) cyl(h=10, d=3.5);
-        move([-(65/2),-(75/2),0]) cyl(h=10, d=3.5);
-    }
+    move([+(86/2)-20,+(90/2),0]) cyl(h=10, d=3.5);
+    move([-(86/2),+(90/2),0]) cyl(h=10, d=3.5);
+    move([+(86/2)-20,-(90/2),0]) cyl(h=10, d=3.5);
+    move([-(86/2),-(90/2),0]) cyl(h=10, d=3.5);
 }
 
 module pcb() 
 {
     difference() {
-        move([0,-23,8.75]) {
-            color([0.0,0.6,0.0,1]) move([0,25,0]) cuboid([80,119,1.5]);
+        move([0,0,8.75]) {
+            //color([0.0,0.6,0.0,1]) cuboid([95,99,1.5]); // Keep to 100x100 max
+            color([0.0,0.6,0.0,1]) cuboid([93,99,1.5]); // Keep to 100x100 max
         }
 
-        move([0,-23,8.75]) {
+        move([0,0,8.75]) {
             pcb_screw_holes();
         }
 
         // Add holes for the LEDs
-        move([0,-46,16]) xrot(90) {
+        move([-35,0,16]) xrot(90) yrot(-90) {
             six_leds();
         }
+    }
+}
+
+module pcb_screws()
+{
+    move([1,0,8 + 1.6]) {
+        move([+(86/2)-20,+(90/2),0]) m3x6_screw();
+        move([-(86/2),+(90/2),0]) m3x6_screw();
+        move([+(86/2)-20,-(90/2),0]) m3x6_screw();
+        move([-(86/2),-(90/2),0]) m3x6_screw();
     }
 }
 
@@ -61,7 +70,7 @@ module render_pcb(toPrint)
 {
     if (!toPrint) {
         difference() {
-            move([0,0,0]) pcb();
+            move([1,0,0]) pcb();
         }
     } else {
         // This will allow you to render and export a DXF file that
@@ -69,5 +78,12 @@ module render_pcb(toPrint)
         projection() {
             pcb();
         }
+    }
+}
+
+module render_pcb_screws(toPrint)
+{
+    if (!toPrint) {
+        pcb_screws();
     }
 }

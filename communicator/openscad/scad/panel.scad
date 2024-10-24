@@ -28,47 +28,47 @@ use <BOSL/shapes.scad>
 
 include <ircover.scad>
 
-module panel_left()
-{
-    move([-50.5,0,16]) cuboid([2,111,26], fillet=1, edges=EDGES_X_ALL); // Left
-}
-
-module panel_mask_left()
-{
-    move([-50.5,0,16]) cuboid([2.25,111.25,26]); // Left
-}
-
-module panel_right()
-{
-    move([50.5,0,16]) cuboid([2,111,26], fillet=1, edges=EDGES_X_ALL); // Right
-}
-
-module panel_mask_right()
-{
-    move([50.5,0,16]) cuboid([2.25,111.25,26]); // Right
-}
-
-module panel_back()
-{
-    move([0,64 - 1,16]) cuboid([86,2,26], fillet=1, edges=EDGES_Y_ALL); // Back
-}
-
-module panel_mask_back()
-{
-    move([0,64 - 1,16]) cuboid([86,2.25,26]); // Back
-}
-
-module panel_front()
+module panel_front() // front
 {
     difference() {
-        move([0,-(64 - 1),16]) cuboid([86,2,26], fillet=1, edges=EDGES_Y_ALL); // Front
+        move([-50.5,0,16]) cuboid([2,111,26], fillet=1, edges=EDGES_X_ALL);
         ircover_mask();
     }
 }
 
 module panel_mask_front()
 {
-    move([0,-(64 - 1),16]) cuboid([86,2.25,26]); // Front
+    move([-50.5,0,16]) cuboid([2.25,111.25,26]); // Left
+}
+
+module panel_back() // back
+{
+    move([50.5,0,16]) cuboid([2,111,26], fillet=1, edges=EDGES_X_ALL);
+}
+
+module panel_mask_back()
+{
+    move([50.5,0,16]) cuboid([2.25,111.25,26]); // Right
+}
+
+module panel_left() // left
+{
+    move([0,64 - 1,16]) cuboid([86,2,26], fillet=1, edges=EDGES_Y_ALL);
+}
+
+module panel_mask_left()
+{
+    move([0,64 - 1,16]) cuboid([86,2.25,26]);
+}
+
+module panel_right() // right
+{
+    move([0,-(64 - 1),16]) cuboid([86,2,26], fillet=1, edges=EDGES_Y_ALL);
+}
+
+module panel_mask_right()
+{
+    move([0,-(64 - 1),16]) cuboid([86,2.25,26]);
 }
 
 module render_panel_left(toPrint)
@@ -76,7 +76,7 @@ module render_panel_left(toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2]) panel_left();
     } else {
-        move([16,0,51.5]) yrot(-90) panel_left();
+        zrot(90) move([0,-16,64]) xrot(-90) panel_left();
     }
 }
 
@@ -85,7 +85,7 @@ module render_panel_right(toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2]) panel_right();
     } else {
-        move([-16,0,51.5]) yrot(90) panel_right();
+        zrot(90) move([0,16,64]) xrot(90) panel_right();
     }
 }
 
@@ -94,7 +94,7 @@ module render_panel_back(toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2]) panel_back();
     } else {
-        zrot(90) move([0,-16,64]) xrot(-90) panel_back();
+        move([-16,0,51.5]) yrot(90) panel_back();
     }
 }
 
@@ -103,6 +103,6 @@ module render_panel_front(toPrint)
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) panel_front();
     } else {
-        zrot(90) move([0,16,64]) xrot(90) panel_front();
+        move([16,0,51.5]) yrot(-90) panel_front();
     }
 }

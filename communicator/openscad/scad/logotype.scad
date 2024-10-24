@@ -88,7 +88,7 @@ module logotype()
 
 module logotype_scaled()
 {
-    move([0,0,31.51]) zrot(90) scale([0.9,0.9,1]) {
+    move([2,0,31.51]) scale([0.9,0.9,1]) {
         logotype();
     }
 }
