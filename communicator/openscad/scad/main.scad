@@ -3,7 +3,7 @@
     main.scad
     
     Valiant Turtle Communicator 2
-    Copyright (C) 2023 Simon Inns
+    Copyright (C) 2024 Simon Inns
     
     This is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
