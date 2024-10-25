@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    led.cpp
+    logging.h
 
     Valiant Turtle Communicator 2
     Copyright (C) 2024 Simon Inns
@@ -24,25 +24,39 @@
 
 ************************************************************************/
 
-#include <cstdio>
-#include <iostream>
-#include "pico/stdlib.h"
+#ifndef LOGGING_H_
+#define LOGGING_H_
 
-#include "led.h"
-#include "logging.h"
+#include <sstream>
 
-// Initialise the LED
-Led::Led(uint8_t _led_gpio) {
-    led_gpio = _led_gpio;
-    gpio_init(led_gpio);
-    gpio_set_dir(led_gpio, GPIO_OUT);
-    set_state(false);
+// Enumeration of logging levels
+enum log_level_e {
+    log_error,
+    log_warning,
+    log_info,
+    log_debug};
 
-    log(log_debug) << "Led::Led(): LED on GPIO " << static_cast<int32_t>(led_gpio) << " initialised";
-}
+class Logging
+{
+public:
+    Logging(log_level_e _log_level);
+    ~Logging();
 
-// Set the state of the LED (true = on, false = off)
-void Led::set_state(bool _led_state) {
-    led_state = _led_state;
-    gpio_put(led_gpio, !led_state);
-}
+    template <typename T>
+    Logging & operator<<(T const & value)
+    {
+        _buffer << value;
+        return *this;
+    }
+
+private:
+    std::ostringstream _buffer;
+};
+
+extern log_level_e log_level;
+
+#define log(level) \
+if (level > log_level) ; \
+else Logging(level)
+
+#endif /* LOGGING_H_ */

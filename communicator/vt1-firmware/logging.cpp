@@ -1,6 +1,6 @@
 /************************************************************************ 
 
-    eeprom.h
+    logging.c
 
     Valiant Turtle Communicator 2
     Copyright (C) 2024 Simon Inns
@@ -24,22 +24,30 @@
 
 ************************************************************************/
 
-#ifndef EEPROM_H_
-#define EEPROM_H_
+#include <cstdio>
+#include <iostream>
+#include <sstream>
+#include "pico/stdlib.h"
 
-class Eeprom {
-    public:
-        Eeprom(i2c_inst_t *_i2c, uint8_t _eeprom_address);
+#include "logging.h"
 
-        uint8_t read_byte(uint16_t address);
-        void write_byte(uint16_t address, uint8_t data);
+Logging::Logging(log_level_e _log_level = log_error) {
+    std::string log_type = "Unknown";
+    if (_log_level == log_error) log_type = "ERROR";
+    if (_log_level == log_warning) log_type = "Warning";
+    if (_log_level == log_info) log_type = "Info";
+    if (_log_level == log_debug) log_type = "Debug";
 
-        void read(uint16_t address, uint8_t *data, uint16_t data_length);
-        void write(uint16_t address, uint8_t *data, uint16_t data_length);
+    _buffer << log_type << ":" 
+        << std::string(
+            _log_level > log_debug 
+            ? (_log_level - log_debug) * 4 
+            : 1
+            , ' ');
+}
 
-    private:
-        i2c_inst_t *i2c;
-	    const uint8_t eeprom_address;
-};
-
-#endif /* EEPROM_H_ */
+Logging::~Logging()
+{
+    _buffer << std::endl;
+    std::cerr << _buffer.str();
+}

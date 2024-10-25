@@ -31,6 +31,7 @@
 
 #include "mcp23017.h"
 #include "i2c.h"
+#include "logging.h"
 
 Mcp23017::Mcp23017(i2c_inst_t *_i2c, uint8_t _address) : i2c(_i2c), address(_address) {
     // Default our local flag representations
@@ -56,6 +57,9 @@ Mcp23017::Mcp23017(i2c_inst_t *_i2c, uint8_t _address) : i2c(_i2c), address(_add
 		mgpio_put(gp, false);
         interrupt_enable(gp, false);
 	}
+
+    int32_t temp = static_cast<int32_t>(address);
+    log(log_debug) << "Mcp23017::Mcp23017(): MCP23017 with I2C address 0x" << std::hex << temp << " initialised";
 }
 
 // Public configuration methods ---------------------------------------------------------------------------------------
@@ -154,7 +158,7 @@ bool Mcp23017::set_interrupt_callback(callback_t _interrupt_callback) {
     // Flag that a callback is set
     interrupt_callback_set = true;
 
-    std::cerr << "Mcp23017::set_interrupt_callback(): Interrupt Callback registered" << std::endl;
+    log(log_debug) << "Mcp23017::set_interrupt_callback(): Interrupt Callback registered";
 
     return true;
 }

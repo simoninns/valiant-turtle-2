@@ -1,22 +1,88 @@
+/************************************************************************ 
+
+    config.c
+
+    Valiant Turtle Communicator 2
+    Copyright (C) 2024 Simon Inns
+
+    This file is part of Valiant Turtle 2
+
+    This is free software: you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    Email: simon.inns@gmail.com
+
+************************************************************************/
 
 #include <cstdio>
 #include <iostream>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
-#include "eeprom.h"
+#include "config.h"
 #include "i2c.h"
+#include "logging.h"
 
-// Initialise the EEPROM
-Eeprom::Eeprom(i2c_inst_t *_i2c, uint8_t _eeprom_address) : i2c(_i2c), eeprom_address(_eeprom_address) {
-    // Nothing to do here
+// Initialise the configuration
+Config::Config(i2c_inst_t *_i2c, uint8_t _eeprom_address) : i2c(_i2c), eeprom_address(_eeprom_address) {
+    int32_t temp = static_cast<int32_t>(eeprom_address);
+    log(log_debug) << "Config::Config(): EEPROM with I2C address 0x" << std::hex << temp << " initialised";
+
+    config = read_config_from_eeprom();
 }
 
+Config::config_t Config::read_config_from_eeprom() {
+    unsigned char* ptr = (unsigned char*)&config;
+    read(0, ptr, sizeof(config));
+
+    if (config.version_number != CONFIG_VERSION)
+        log(log_warning) << "Config::read_config_from_eeprom(): Configuration version mismatch - defaulting configuration";
+        config = default_config();
+
+    return config;
+}
+
+void Config::write_config_to_eeprom() {
+    log(log_debug) << "Config::Config(): Writing configuration to EEPROM with address " << eeprom_address;
+    unsigned char* ptr = (unsigned char*)&config;
+    write(0, ptr, sizeof(config));
+}
+
+Config::config_t Config::get_config() {
+    return config;
+}
+
+void Config::set_config(Config::config_t _config) {
+    config = _config;
+}
+
+Config::config_t Config::default_config() {
+    config_t local_config;
+    local_config.version_number = CONFIG_VERSION;
+    local_config.number_of_turtles = 1;
+    local_config.turtle_config[0].turtle_id = 0;
+    local_config.turtle_config[0].is_version_two = true;
+
+    return local_config;
+}
+
+// Private methods ----------------------------------------------------------------------------------------------------
+
 // Read a byte from the 24LC16 I2C EEPROM
-uint8_t Eeprom::read_byte(uint16_t address) {
+uint8_t Config::read_byte(uint16_t address) {
     // Ensure the address is not out of bounds
     if ((address) > (256*8)) {
-        std::cerr << "Eeprom::read_byte(): Requested address is out of bounds!" << std::endl;
+        log(log_error) <<  "Config::read_byte(): Requested address is out of bounds!";
         return 0;
     }
 
@@ -34,10 +100,10 @@ uint8_t Eeprom::read_byte(uint16_t address) {
 }
 
 // Write a byte to the 24LC16 I2C EEPROM
-void Eeprom::write_byte(uint16_t address, uint8_t data) {
+void Config::write_byte(uint16_t address, uint8_t data) {
     // Ensure the address is not out of bounds
     if ((address) > (256*8)) {
-        std::cerr << "Eeprom::write_byte(): Requested address is out of bounds!" << std::endl;
+        log(log_error) <<  "Config::write_byte(): Requested address is out of bounds!";
         return;
     }
 
@@ -54,10 +120,10 @@ void Eeprom::write_byte(uint16_t address, uint8_t data) {
 }
 
 // Read one or more bytes from the 24LC16 I2C EEPROM
-void Eeprom::read(uint16_t address, uint8_t *data, uint16_t data_length) {
+void Config::read(uint16_t address, uint8_t *data, uint16_t data_length) {
         // Ensure the address is not out of bounds
     if ((address+data_length) > (256*8)) {
-        std::cerr << "Eeprom::read(): Requested address is out of bounds!" << std::endl;
+        log(log_error) <<  "Config::read(): Requested address is out of bounds!";
         return;
     }
 
@@ -73,10 +139,10 @@ void Eeprom::read(uint16_t address, uint8_t *data, uint16_t data_length) {
 }
 
 // Write one or more bytes to the 24LC16 I2C EEPROM
-void Eeprom::write(uint16_t address, uint8_t *data, uint16_t data_length) {
+void Config::write(uint16_t address, uint8_t *data, uint16_t data_length) {
     // Ensure the address is not out of bounds
     if ((address+data_length) > (256*8)) {
-        std::cerr << "Eeprom::write(): Requested address is out of bounds!" << std::endl;
+        log(log_error) <<  "Config::write(): Requested address is out of bounds!";
         return;
     }
 

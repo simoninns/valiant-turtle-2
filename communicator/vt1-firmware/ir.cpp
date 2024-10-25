@@ -32,6 +32,7 @@
 
 #include "ir.h"
 #include "ir_uart.pio.h"
+#include "logging.h"
 
 // Initialise the IR
 Ir::Ir(uint8_t _ir_gpio) {
@@ -45,6 +46,8 @@ Ir::Ir(uint8_t _ir_gpio) {
     sm = 0;
     offset = pio_add_program(pio, &ir_uart_program);
     ir_uart_program_init(pio, sm, offset, ir_gpio);
+
+    log(log_debug) << "Ir::Ir(): IR on GPIO " << static_cast<int32_t>(ir_gpio) << " initialised";
 }
 
 // Put a character to the IR

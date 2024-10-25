@@ -29,6 +29,7 @@
 #include "pico/stdlib.h"
 
 #include "uart.h"
+#include "logging.h"
 
 // Initialise the UART
 Uart::Uart(uart_inst_t* _uart_id, int8_t _tx_gpio, int8_t _rx_gpio, int32_t _baud_rate) {
@@ -57,6 +58,12 @@ Uart::Uart(uart_inst_t* _uart_id, int8_t _tx_gpio, int8_t _rx_gpio, int32_t _bau
     if (parity == PARITY_EVEN) uart_parity = UART_PARITY_EVEN;
     if (parity == PARITY_ODD) uart_parity = UART_PARITY_ODD;
     uart_set_format(uart_id, data_bits, stop_bits, uart_parity);
+
+    std::string uart_name = "Unknown";
+    if (uart_id == uart0) uart_name = "uart0";
+    if (uart_id == uart0) uart_name = "uart1";
+
+    log(log_debug) << "Uart::Uart(): UART with ID " << uart_name << " initialised";
 }
 
 // Define CTS/RTS and enable hardware flow control
@@ -90,7 +97,7 @@ bool Uart::set_rx_callback(callback_t _rx_callback) {
     if (uart_id == uart0) irq = UART0_IRQ;
     else if (uart_id == uart1) irq = UART1_IRQ;
     else {
-        std::cerr << "Uart::set_rx_callback(): Cannot set IRQ for UART - UART isn't 0 or 1?" << std::endl;
+        log(log_error) << "Uart::set_rx_callback(): Cannot set IRQ for UART - UART isn't 0 or 1?";
         return false;
     }
 
@@ -105,7 +112,7 @@ bool Uart::set_rx_callback(callback_t _rx_callback) {
     irq_set_enabled(irq, true);
     uart_set_irq_enables(uart_id, true, false);
 
-    std::cerr << "Uart::set_rx_callback(): Rx Callback registered" << std::endl;
+    log(log_debug) << "Uart::set_rx_callback(): Rx Callback registered";
 
     return true;
 }

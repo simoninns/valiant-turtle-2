@@ -27,12 +27,16 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
+#include "logging.h"
 #include "led.h"
 #include "uart.h"
 #include "ir.h"
 #include "i2c.h"
 #include "parallel.h"
-#include "eeprom.h"
+#include "config.h"
+
+// Initialise logging
+log_level_e log_level = log_error;
 
 // Initialise UART 0
 Uart uart_debug(uart0, 0, 1, 115200);
@@ -57,9 +61,6 @@ void uart_rx_callback() {
 
         // Send the byte over IR to the robot
         ir.putc(ch);
-
-        // Show some debug
-        //std::cerr << "IR = " << static_cast<int32_t>(ch) << std::endl;
     }
 }
 
@@ -76,16 +77,19 @@ void parallel_rx_callback() {
     
     // ACK the IRQ and return
     gpio_acknowledge_irq(MCP23017_INT_GPIO, GPIO_IRQ_EDGE_FALL);
-
-    // Show some debug
-    //std::cerr << "IR = " << static_cast<int32_t>(ch) << std::endl;
 }
 
 int main() {
     stdio_init_all(); // Initialize standard IO
 
-    // Initialise the EEPROM
-    Eeprom eeprom(i2c0, 0x50);
+    // Set the maximum overall log level
+    //log_level = log_info;
+    log_level = log_debug;
+
+    log(log_info) << "";
+    log(log_info) << "";
+    log(log_info) << "Valiant Turtle 2 - Communicator debug active";
+    log(log_info) << "";
 
     // Initialise the status LEDs
     Led green_led(16); // Green LED on GPIO 16
@@ -105,6 +109,9 @@ int main() {
     // Register an Rx callback on the parallel port
     parallel.set_rx_callback(parallel_rx_callback);
 
+    // Test configuration class
+    Config config(i2c0, 0x50);
+
     int hb = 0;
     while (true) {
         blue_led.set_state(true);
@@ -114,5 +121,6 @@ int main() {
 
         hb++;
         if (hb == 50) hb = 0;
+        //log(log_info) << "main(): Heatbeat = " << hb;
     }
 }

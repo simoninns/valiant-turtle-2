@@ -31,6 +31,7 @@
 
 #include "parallel.h"
 #include "mcp23017.h"
+#include "logging.h"
 
 // Initialise the parallel port interface
 Parallel::Parallel(void) {
@@ -79,6 +80,8 @@ Parallel::Parallel(void) {
     mcp23017->interrupt_set_default_value(PARALLEL_NDATASTROBE, true); // Set default to high
     mcp23017->interrupt_set_type(PARALLEL_NDATASTROBE, true); // Interrupt type is 'compare to default'
     mcp23017->interrupt_enable(PARALLEL_NDATASTROBE, true); // Enable interrupt
+
+    log(log_debug) << "Parallel::Parallel(): Parallel port initialised";
 }
 
 // Get the current 8-bit data value from the parallel port
@@ -100,7 +103,7 @@ bool Parallel::set_rx_callback(callback_t _rx_callback) {
     // Flag that a callback is set
     rx_callback_set = true;
 
-    std::cerr << "Parallel::set_rx_callback(): Rx Callback registered" << std::endl;
+    log(log_debug) << "Parallel::set_rx_callback(): Rx Callback registered";
 
     return true;
 }
