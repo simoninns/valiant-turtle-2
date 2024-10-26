@@ -37,7 +37,7 @@ _INA260_REG_ALERT = const(0x07)
 _INA260_REG_MANU = const(0xFE)
 _INA260_REG_DIE = const(0xFF)
 
-# Expected manufacturer and die values
+# Expected manufacturer ID and die ID values
 _TEXAS_INSTRUMENTS_ID = const(0x5449)
 _INA260_ID = const(0x2270)
 
@@ -52,9 +52,9 @@ class Ina260:
 
         # Verify we are communicating with a valid device
         if (self.manu_id != _TEXAS_INSTRUMENTS_ID):
-            raise RuntimeError("INA260: INA260 Manufacturer's ID is incorrect - check IC")
+            raise RuntimeError("INA260::__init__ - INA260 Manufacturer's ID is incorrect - check IC")
         if (self.die_id != _INA260_ID):
-            raise RuntimeError("INA260 Die ID is incorrect - check IC")
+            raise RuntimeError("INA260::__init__ - Die ID is incorrect - check IC")
 
     # Read the current (between V+ and V-) in mA
     @property

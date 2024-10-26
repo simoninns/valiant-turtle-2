@@ -33,7 +33,7 @@ from machine import I2C
 from machine import Pin
 
 # Initialise the LEDs and show some colour
-leds = Ws2812b(3, 0, 7, delay=0)
+leds = Ws2812b(5, 0, 7, delay=0)
 
 # Initialise the pen control
 pen = Pen(16)
@@ -62,6 +62,8 @@ while True:
     leds.set_pixel(0, 255, 0, 0)
     leds.set_pixel(1, 0, 255, 0)
     leds.set_pixel(2, 0, 0, 255)
+    leds.set_pixel(3, 255, 0, 0)
+    leds.set_pixel(4, 0, 255, 0)
     leds.show()
     #pen.off()
 
@@ -74,6 +76,8 @@ while True:
     leds.set_pixel(0, 0, 255, 0)
     leds.set_pixel(1, 0, 0, 255)
     leds.set_pixel(2, 255, 0, 0)
+    leds.set_pixel(3, 0, 255, 0)
+    leds.set_pixel(4, 0, 0, 255)
     leds.show()
     #pen.up()
     sleep(1.0)
@@ -81,6 +85,8 @@ while True:
     leds.set_pixel(0, 0, 0, 255)
     leds.set_pixel(1, 255, 0, 0)
     leds.set_pixel(2, 0, 255, 0)
+    leds.set_pixel(3, 0, 0, 255)
+    leds.set_pixel(4, 255, 0, 0)
     leds.show()
     #pen.down()
     sleep(1.0)

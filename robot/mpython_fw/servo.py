@@ -37,7 +37,7 @@ class Servo:
         self.pwm.freq(50)
         self.pwm.duty_u16(int(self.duty_cycle))
 
-    def set_power(self, is_on):
+    def set_power(self, is_on: bool):
         self.is_on = is_on
         if (self.is_on):
             self.pwm.duty_u16(int(self.duty_cycle))

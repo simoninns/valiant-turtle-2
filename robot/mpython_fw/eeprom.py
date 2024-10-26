@@ -34,10 +34,10 @@ class Eeprom:
         self.i2c = i2c_bus
         self.i2c_address = i2c_address
 
-    def read(self, address, number_of_bytes) -> bytes:
+    def read(self, address: int, number_of_bytes: int) -> bytes:
         # Ensure the address is not out of bounds
         if ((address + number_of_bytes) > (256*8)):
-            raise RuntimeError("Eeprom read: Requested address is out of bounds!")
+            raise RuntimeError("Eeprom::read - Requested address is out of bounds!")
 
         # Determine the device address (including the block) and intra-block address
         self._devaddr = bytearray(1)
@@ -51,10 +51,10 @@ class Eeprom:
 
         return buffer
 
-    def write(self, address, buffer: bytearray):
+    def write(self, address: int, buffer: bytearray):
          # Ensure the address is not out of bounds
         if ((address + len(buffer)) > (256*8)):
-            raise RuntimeError("Eeprom write: Requested address is out of bounds!")
+            raise RuntimeError("Eeprom::write - Requested address is out of bounds!")
     
         remaining_data = len(buffer)
         data_pointer = 0
