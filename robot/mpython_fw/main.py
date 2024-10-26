@@ -27,6 +27,7 @@
 from ws2812b import Ws2812b
 from pen import Pen
 from ina260 import Ina260
+from eeprom import Eeprom
 from time import sleep
 from machine import I2C
 from machine import Pin
@@ -44,6 +45,18 @@ i2c_external = I2C(1, scl=Pin(11), sda=Pin(10), freq=100000)
 
 # Initialise the INA260 power monitoring chip
 ina260 = Ina260(i2c_internal, 0x40)
+
+# Initialise the EEPROM
+eeprom = Eeprom(i2c_internal, 0x50)
+
+wbuffer = bytearray([0,1,2,3,4,5,6,7,8,9])
+eeprom.write(0x0, wbuffer)
+print("Write Buffer = ", "".join("0x%02x " % b for b in wbuffer))
+print("Read Length = ", len(wbuffer))
+
+rbuffer = eeprom.read(0x0, 10)
+print("Read Buffer = ", "".join("0x%02x " % b for b in rbuffer))
+print("Read Length = ", len(rbuffer))
 
 while True:
     leds.set_pixel(0, 255, 0, 0)

@@ -52,9 +52,9 @@ class Ina260:
 
         # Verify we are communicating with a valid device
         if (self.manu_id != _TEXAS_INSTRUMENTS_ID):
-            print("Warning: INA260 Manufacturer's ID is incorrect - check IC")
+            raise RuntimeError("INA260: INA260 Manufacturer's ID is incorrect - check IC")
         if (self.die_id != _INA260_ID):
-            print("Warning: INA260 Die ID is incorrect - check IC")
+            raise RuntimeError("INA260 Die ID is incorrect - check IC")
 
     # Read the current (between V+ and V-) in mA
     @property
