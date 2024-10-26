@@ -26,32 +26,48 @@
 
 from ws2812b import Ws2812b
 from pen import Pen
+from ina260 import Ina260
 from time import sleep
+from machine import I2C
+from machine import Pin
 
 # Initialise the LEDs and show some colour
 leds = Ws2812b(3, 0, 7, delay=0)
 
 # Initialise the pen control
 pen = Pen(16)
+pen.off()
+
+# Initialise the I2C buses
+i2c_internal = I2C(0, scl=Pin(9), sda=Pin(8), freq=100000)
+i2c_external = I2C(1, scl=Pin(11), sda=Pin(10), freq=100000)
+
+# Initialise the INA260 power monitoring chip
+ina260 = Ina260(i2c_internal, 0x40)
 
 while True:
     leds.set_pixel(0, 255, 0, 0)
     leds.set_pixel(1, 0, 255, 0)
     leds.set_pixel(2, 0, 0, 255)
     leds.show()
-    pen.off()
+    #pen.off()
+
+    print("INA260:")
+    print("  mA = ", ina260.current)
+    print("  mV = ", ina260.bus_voltage)
+    print("  mW = ", ina260.power)
     sleep(1.0)
 
     leds.set_pixel(0, 0, 255, 0)
     leds.set_pixel(1, 0, 0, 255)
     leds.set_pixel(2, 255, 0, 0)
     leds.show()
-    pen.up()
+    #pen.up()
     sleep(1.0)
 
     leds.set_pixel(0, 0, 0, 255)
     leds.set_pixel(1, 255, 0, 0)
     leds.set_pixel(2, 0, 255, 0)
     leds.show()
-    pen.down()
+    #pen.down()
     sleep(1.0)
