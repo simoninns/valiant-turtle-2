@@ -112,4 +112,4 @@ eeprom = Eeprom(i2c_internal, 0x50)
 pulse_generator = Pulse_generator(0, 2) # GPIO 2 = LM_step
 while True:
     pulse_generator.set(100, 20)
-    sleep(0.6)
+    sleep(2)
