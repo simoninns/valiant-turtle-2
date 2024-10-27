@@ -28,6 +28,8 @@ from ws2812b import Ws2812b
 from pen import Pen
 from ina260 import Ina260
 from eeprom import Eeprom
+from velocity import Velocity
+
 from time import sleep
 from machine import I2C
 from machine import Pin
@@ -49,44 +51,48 @@ ina260 = Ina260(i2c_internal, 0x40)
 # Initialise the EEPROM
 eeprom = Eeprom(i2c_internal, 0x50)
 
-wbuffer = bytearray([0,1,2,3,4,5,6,7,8,9])
-eeprom.write(0x0, wbuffer)
-print("Write Buffer = ", "".join("0x%02x " % b for b in wbuffer))
-print("Read Length = ", len(wbuffer))
+# wbuffer = bytearray([0,1,2,3,4,5,6,7,8,9])
+# eeprom.write(0x0, wbuffer)
+# print("Write Buffer = ", "".join("0x%02x " % b for b in wbuffer))
+# print("Read Length = ", len(wbuffer))
 
 rbuffer = eeprom.read(0x0, 10)
 print("Read Buffer = ", "".join("0x%02x " % b for b in rbuffer))
 print("Read Length = ", len(rbuffer))
+print("")
 
-while True:
-    leds.set_pixel(0, 255, 0, 0)
-    leds.set_pixel(1, 0, 255, 0)
-    leds.set_pixel(2, 0, 0, 255)
-    leds.set_pixel(3, 255, 0, 0)
-    leds.set_pixel(4, 0, 255, 0)
-    leds.show()
-    #pen.off()
+# Test the velocity class
+velocity = Velocity(4, 4, 2, 4, 8)
 
-    print("INA260:")
-    print("  mA = ", ina260.current)
-    print("  mV = ", ina260.bus_voltage)
-    print("  mW = ", ina260.power)
-    sleep(1.0)
+#while True:
+leds.set_pixel(0, 255, 0, 0)
+leds.set_pixel(1, 0, 255, 0)
+leds.set_pixel(2, 0, 0, 255)
+leds.set_pixel(3, 255, 0, 0)
+leds.set_pixel(4, 0, 255, 0)
+leds.show()
+#pen.off()
 
-    leds.set_pixel(0, 0, 255, 0)
-    leds.set_pixel(1, 0, 0, 255)
-    leds.set_pixel(2, 255, 0, 0)
-    leds.set_pixel(3, 0, 255, 0)
-    leds.set_pixel(4, 0, 0, 255)
-    leds.show()
-    #pen.up()
-    sleep(1.0)
+print("INA260:")
+print("  mA = ", ina260.current)
+print("  mV = ", ina260.bus_voltage)
+print("  mW = ", ina260.power)
+sleep(1.0)
 
-    leds.set_pixel(0, 0, 0, 255)
-    leds.set_pixel(1, 255, 0, 0)
-    leds.set_pixel(2, 0, 255, 0)
-    leds.set_pixel(3, 0, 0, 255)
-    leds.set_pixel(4, 255, 0, 0)
-    leds.show()
-    #pen.down()
-    sleep(1.0)
+leds.set_pixel(0, 0, 255, 0)
+leds.set_pixel(1, 0, 0, 255)
+leds.set_pixel(2, 255, 0, 0)
+leds.set_pixel(3, 0, 255, 0)
+leds.set_pixel(4, 0, 0, 255)
+leds.show()
+#pen.up()
+sleep(1.0)
+
+leds.set_pixel(0, 0, 0, 255)
+leds.set_pixel(1, 255, 0, 0)
+leds.set_pixel(2, 0, 255, 0)
+leds.set_pixel(3, 0, 0, 255)
+leds.set_pixel(4, 255, 0, 0)
+leds.show()
+#pen.down()
+sleep(1.0)
