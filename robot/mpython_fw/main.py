@@ -33,6 +33,7 @@ from pen import Pen
 from ina260 import Ina260
 from eeprom import Eeprom
 from velocity import Velocity
+from drv8825 import Drv8825
 
 from time import sleep
 from machine import I2C
@@ -67,6 +68,11 @@ log_info("")
 
 # Test the velocity class
 velocity = Velocity(4, 4, 2, 4, 8)
+
+# Test the DRV8825 class
+drv8825 = Drv8825(6, 12, 13, 14)
+drv8825.set_steps_per_revolution(800)
+drv8825.set_enable(False)
 
 #while True:
 leds.set_pixel(0, 255, 0, 0)
