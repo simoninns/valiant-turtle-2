@@ -34,13 +34,14 @@ from ina260 import Ina260
 from eeprom import Eeprom
 from velocity import Velocity
 from drv8825 import Drv8825
+from pulse_generator import Pulse_generator
 
 from time import sleep
 from machine import I2C
 from machine import Pin
 
 # Initialise the LEDs and show some colour
-leds = Ws2812b(5, 0, 7, delay=0)
+#leds = Ws2812b(5, 0, 7, delay=0)
 
 # Initialise the pen control
 pen = Pen(16)
@@ -61,48 +62,54 @@ eeprom = Eeprom(i2c_internal, 0x50)
 # print("Write Buffer = ", "".join("0x%02x " % b for b in wbuffer))
 # print("Read Length = ", len(wbuffer))
 
-rbuffer = eeprom.read(0x0, 10)
-log_info("Read Buffer = ", "".join("0x%02x " % b for b in rbuffer))
-log_info("Read Length = ", len(rbuffer))
-log_info("")
+# rbuffer = eeprom.read(0x0, 10)
+# log_info("Read Buffer = ", "".join("0x%02x " % b for b in rbuffer))
+# log_info("Read Length = ", len(rbuffer))
+# log_info("")
 
-# Test the velocity class
-velocity = Velocity(4, 4, 2, 4, 8)
+# # Test the velocity class
+# velocity = Velocity(4, 4, 2, 4, 8)
 
 # Test the DRV8825 class
-drv8825 = Drv8825(6, 12, 13, 14)
-drv8825.set_steps_per_revolution(800)
-drv8825.set_enable(False)
+# drv8825 = Drv8825(6, 12, 13, 14)
+# drv8825.set_steps_per_revolution(800)
+# drv8825.set_enable(False)
 
-#while True:
-leds.set_pixel(0, 255, 0, 0)
-leds.set_pixel(1, 0, 255, 0)
-leds.set_pixel(2, 0, 0, 255)
-leds.set_pixel(3, 255, 0, 0)
-leds.set_pixel(4, 0, 255, 0)
-leds.show()
-#pen.off()
+# #while True:
+# leds.set_pixel(0, 255, 0, 0)
+# leds.set_pixel(1, 0, 255, 0)
+# leds.set_pixel(2, 0, 0, 255)
+# leds.set_pixel(3, 255, 0, 0)
+# leds.set_pixel(4, 0, 255, 0)
+# leds.show()
+# #pen.off()
 
-log_info("INA260:")
-log_info("  mA = ", ina260.current)
-log_info("  mV = ", ina260.bus_voltage)
-log_info("  mW = ", ina260.power)
-sleep(1.0)
+# log_info("INA260:")
+# log_info("  mA = ", ina260.current)
+# log_info("  mV = ", ina260.bus_voltage)
+# log_info("  mW = ", ina260.power)
+# sleep(1.0)
 
-leds.set_pixel(0, 0, 255, 0)
-leds.set_pixel(1, 0, 0, 255)
-leds.set_pixel(2, 255, 0, 0)
-leds.set_pixel(3, 0, 255, 0)
-leds.set_pixel(4, 0, 0, 255)
-leds.show()
-#pen.up()
-sleep(1.0)
+# leds.set_pixel(0, 0, 255, 0)
+# leds.set_pixel(1, 0, 0, 255)
+# leds.set_pixel(2, 255, 0, 0)
+# leds.set_pixel(3, 0, 255, 0)
+# leds.set_pixel(4, 0, 0, 255)
+# leds.show()
+# #pen.up()
+# sleep(1.0)
 
-leds.set_pixel(0, 0, 0, 255)
-leds.set_pixel(1, 255, 0, 0)
-leds.set_pixel(2, 0, 255, 0)
-leds.set_pixel(3, 0, 0, 255)
-leds.set_pixel(4, 255, 0, 0)
-leds.show()
-#pen.down()
-sleep(1.0)
+# leds.set_pixel(0, 0, 0, 255)
+# leds.set_pixel(1, 255, 0, 0)
+# leds.set_pixel(2, 0, 255, 0)
+# leds.set_pixel(3, 0, 0, 255)
+# leds.set_pixel(4, 255, 0, 0)
+# leds.show()
+# #pen.down()
+# sleep(1.0)
+
+# Test the pulse generator
+pulse_generator = Pulse_generator(0, 2) # GPIO 2 = LM_step
+while True:
+    pulse_generator.set(100, 20)
+    sleep(0.6)

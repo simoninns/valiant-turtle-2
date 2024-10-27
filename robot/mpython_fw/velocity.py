@@ -190,3 +190,16 @@ class Velocity:
             finalTotal += self.sequence_steps[i]
         log_debug("Velocity::__init__ - Total number of steps = ", finalTotal)
         log_debug("")
+
+    # Return the total number of steps in the velocity sequence
+    @property
+    def total_steps(self) -> int:
+        step_count = 0
+        for i in range(0, len(self.sequence_steps)):
+            step_count += self.sequence_steps[i]
+        return step_count
+    
+    # Return the length of the velocity sequence
+    @property
+    def length(self) -> int:
+        return len(self.sequence_steps) # Both steps and spp are the same length

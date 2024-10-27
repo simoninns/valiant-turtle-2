@@ -2,7 +2,7 @@
 #
 #   drv8825.py
 #
-#   Stepper motor control (DRV8825)
+#   DRV8825 shared stepper controls
 #   Valiant Turtle 2 - Raspberry Pi Pico W Firmware
 #   Copyright (C) 2024 Simon Inns
 #
