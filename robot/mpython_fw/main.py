@@ -24,6 +24,10 @@
 #
 #************************************************************************
 
+from log import log_debug
+from log import log_info
+from log import log_warn
+
 from ws2812b import Ws2812b
 from pen import Pen
 from ina260 import Ina260
@@ -57,9 +61,9 @@ eeprom = Eeprom(i2c_internal, 0x50)
 # print("Read Length = ", len(wbuffer))
 
 rbuffer = eeprom.read(0x0, 10)
-print("Read Buffer = ", "".join("0x%02x " % b for b in rbuffer))
-print("Read Length = ", len(rbuffer))
-print("")
+log_info("Read Buffer = ", "".join("0x%02x " % b for b in rbuffer))
+log_info("Read Length = ", len(rbuffer))
+log_info("")
 
 # Test the velocity class
 velocity = Velocity(4, 4, 2, 4, 8)
@@ -73,10 +77,10 @@ leds.set_pixel(4, 0, 255, 0)
 leds.show()
 #pen.off()
 
-print("INA260:")
-print("  mA = ", ina260.current)
-print("  mV = ", ina260.bus_voltage)
-print("  mW = ", ina260.power)
+log_info("INA260:")
+log_info("  mA = ", ina260.current)
+log_info("  mV = ", ina260.bus_voltage)
+log_info("  mW = ", ina260.power)
 sleep(1.0)
 
 leds.set_pixel(0, 0, 255, 0)
