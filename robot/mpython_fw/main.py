@@ -34,22 +34,40 @@ from ina260 import Ina260
 from eeprom import Eeprom
 from velocity import Velocity
 from drv8825 import Drv8825
-from pulse_generator import Pulse_generator
+from stepper import Stepper
 
 from time import sleep
 from machine import I2C
 from machine import Pin
 
+# GPIO hardware mapping
+_GPIO_LEDS = const(7)
+_GPIO_PEN = const(16)
+
+_GPIO_SDA0 = const(8)
+_GPIO_SCL0 = const(9)
+_GPIO_SDA1 = const(10)
+_GPIO_SCL1 = const(11)
+
+_GPIO_LM_STEP = const(2)
+_GPIO_RM_STEP = const(3)
+_GPIO_LM_DIR = const(4)
+_GPIO_RM_DIR = const(5)
+_GPIO_ENABLE = const(6)
+_GPIO_M0 = const(12)
+_GPIO_M1 = const(13)
+_GPIO_M2 = const(14)
+
 # Initialise the LEDs and show some colour
-#leds = Ws2812b(5, 0, 7, delay=0)
+leds = Ws2812b(5, 0, _GPIO_LEDS, delay=0)
 
 # Initialise the pen control
-pen = Pen(16)
+pen = Pen(_GPIO_PEN)
 pen.off()
 
 # Initialise the I2C buses
-i2c_internal = I2C(0, scl=Pin(9), sda=Pin(8), freq=100000)
-i2c_external = I2C(1, scl=Pin(11), sda=Pin(10), freq=100000)
+i2c_internal = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=100000)
+i2c_external = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000)
 
 # Initialise the INA260 power monitoring chip
 ina260 = Ina260(i2c_internal, 0x40)
@@ -67,22 +85,13 @@ eeprom = Eeprom(i2c_internal, 0x50)
 # log_info("Read Length = ", len(rbuffer))
 # log_info("")
 
-# # Test the velocity class
-# velocity = Velocity(4, 4, 2, 4, 8)
-
-# Test the DRV8825 class
-# drv8825 = Drv8825(6, 12, 13, 14)
-# drv8825.set_steps_per_revolution(800)
-# drv8825.set_enable(False)
-
-# #while True:
-# leds.set_pixel(0, 255, 0, 0)
-# leds.set_pixel(1, 0, 255, 0)
-# leds.set_pixel(2, 0, 0, 255)
-# leds.set_pixel(3, 255, 0, 0)
-# leds.set_pixel(4, 0, 255, 0)
-# leds.show()
-# #pen.off()
+# LED test
+leds.set_pixel(0, 255, 0, 0)
+leds.set_pixel(1, 0, 255, 0)
+leds.set_pixel(2, 0, 0, 255)
+leds.set_pixel(3, 255, 0, 0)
+leds.set_pixel(4, 0, 255, 0)
+leds.show()
 
 # log_info("INA260:")
 # log_info("  mA = ", ina260.current)
@@ -90,26 +99,30 @@ eeprom = Eeprom(i2c_internal, 0x50)
 # log_info("  mW = ", ina260.power)
 # sleep(1.0)
 
-# leds.set_pixel(0, 0, 255, 0)
-# leds.set_pixel(1, 0, 0, 255)
-# leds.set_pixel(2, 255, 0, 0)
-# leds.set_pixel(3, 0, 255, 0)
-# leds.set_pixel(4, 0, 0, 255)
-# leds.show()
-# #pen.up()
-# sleep(1.0)
+# Configure the DRV8825
+drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
+drv8825.set_steps_per_revolution(800)
+drv8825.set_enable(False)
 
-# leds.set_pixel(0, 0, 0, 255)
-# leds.set_pixel(1, 255, 0, 0)
-# leds.set_pixel(2, 0, 255, 0)
-# leds.set_pixel(3, 0, 0, 255)
-# leds.set_pixel(4, 255, 0, 0)
-# leds.show()
-# #pen.down()
-# sleep(1.0)
+# Configure the steppers
+left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
+left_stepper.set_forwards()
+right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
+right_stepper.set_forwards()
 
-# Test the pulse generator
-pulse_generator = Pulse_generator(0, 2) # GPIO 2 = LM_step
+# Define a velocity sequence
+velocity = Velocity(3200, 8, 2, 1600, 8)
+
 while True:
-    pulse_generator.set(100, 20)
-    sleep(2)
+    drv8825.set_enable(True)
+    left_stepper.set_velocity(velocity)
+    right_stepper.set_velocity(velocity)
+    print("Stepper sequence running")
+
+    # Wait for the stepper to finish
+    while left_stepper.is_busy or right_stepper.is_busy:
+        sleep(0.01)
+    drv8825.set_enable(False)
+    print("Stepper sequence complete")
+
+    sleep(5)

@@ -30,39 +30,71 @@ from log import log_info
 from log import log_warn
 
 from velocity import Velocity
+from pulse_generator import Pulse_generator
 
 from machine import Pin
 
 class Stepper:
     def __init__(self, direction_pin, step_pin, is_left: bool):
-        # Configure the GPIOs
+        # Configure the direction GPIO
         self.direction = Pin(direction_pin, Pin.OUT)
-        self.step = Pin(step_pin, Pin.OUT)
         self.direction.value(0)
-        self.step.value(0)
 
         # Orientation of stepper
         self.is_left = is_left
 
         # Tracking progress
         self.steps_remaining = 0
-        self.is_busy = False
+        self.is_busy_flag = False
+        self.sequence_index = 0
+
+        # Initialise the pulse generator
+        # Note: This controls the step GPIO
+        self.pulse_generator = Pulse_generator(step_pin)
+
+        # Set up the pulse generator callback
+        self.pulse_generator.callback_subscribe(self.callback)
 
     def set_forwards(self):
+        if self.is_left: self.direction.value(1)
+        else: self.direction.value(0)
+
+    def set_backwards(self):
         if self.is_left: self.direction.value(0)
         else: self.direction.value(1)
 
-    def set_backwards(self):
-        if self.is_left: self.direction.value(1)
-        else: self.direction.value(0)
+    @property
+    def is_busy(self) -> bool:
+        return self.is_busy_flag
 
     def set_velocity(self, velocity: Velocity) -> bool:
         if self.is_busy:
             log_debug("Stepper::set_velocity - Failed... Stepper is busy")
             return False
         
+        self.velocity = velocity
+        self.sequence_index = 0
+        
         # Set the remaining steps
-        self.steps_remaining = velocity.total_steps
+        self.steps_remaining = self.velocity.total_steps
+
+        # Start the pulse generator (updates are via callback)
+        self.is_busy_flag = True
+        self.pulse_generator.set(self.velocity.sequence_spp[self.sequence_index] * self.velocity.intervals_per_second, self.velocity.sequence_steps[self.sequence_index])
+        self.steps_remaining -= self.velocity.sequence_steps[self.sequence_index]
 
         return True
-        
+    
+    # Callback when pulse generator needs more sequence information
+    def callback(self):
+        # Only process the callback if the stepper is currently busy
+        if self.is_busy_flag:
+            #print("Stepper callback - Steps remaining =", self.steps_remaining)
+            self.sequence_index += 1
+            if self.sequence_index < len(self.velocity.sequence_steps):
+                # Sequence in progress
+                self.pulse_generator.set(self.velocity.sequence_spp[self.sequence_index] * self.velocity.intervals_per_second, self.velocity.sequence_steps[self.sequence_index])
+                self.steps_remaining -= self.velocity.sequence_steps[self.sequence_index]
+            else:
+                # Sequence completed
+                self.is_busy_flag = False

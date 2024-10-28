@@ -43,6 +43,7 @@ class Velocity:
         # Initialise lists to hold the velocity sequence
         self.sequence_steps = [] # Number of steps in this period
         self.sequence_spp = [] # Rotational speed in steps per period (for this period)
+        self._intervals_per_second = intervalsPerSecond
 
         # Range check input parameters
         if totalSteps < 1:
@@ -203,3 +204,8 @@ class Velocity:
     @property
     def length(self) -> int:
         return len(self.sequence_steps) # Both steps and spp are the same length
+    
+    # Return the intervals per second for the velocity sequence
+    @property
+    def intervals_per_second(self) -> int:
+        return self._intervals_per_second
