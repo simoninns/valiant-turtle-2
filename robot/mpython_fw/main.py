@@ -35,6 +35,7 @@ from eeprom import Eeprom
 from velocity import Velocity
 from drv8825 import Drv8825
 from stepper import Stepper
+from metric import Metric
 
 from time import sleep
 from machine import I2C
@@ -112,6 +113,11 @@ right_stepper.set_forwards()
 
 # Define a velocity sequence
 velocity = Velocity(6400, 32, 2, 1600, 16)
+
+# Test metric methods
+metric = Metric()
+print("100mm to steps =", metric.mm_to_steps(100))
+print("360 degrees to steps =", metric.degrees_to_steps(360))
 
 while True:
     drv8825.set_enable(True)
