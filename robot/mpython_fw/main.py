@@ -111,7 +111,7 @@ right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
 right_stepper.set_forwards()
 
 # Define a velocity sequence
-velocity = Velocity(3200, 8, 2, 1600, 8)
+velocity = Velocity(6400, 32, 2, 1600, 16)
 
 while True:
     drv8825.set_enable(True)

@@ -39,150 +39,150 @@ from log import log_warn
 # minimum_sps is the minimum allowed rotational speed in steps per second
 # intervals_per_second is the number of intervals per second (which sets the period of each update)
 class Velocity:
-    def __init__(self, totalSteps: int, accSpsps: int, minimumSps: int, maximumSps: int, intervalsPerSecond: int):
+    def __init__(self, total_steps: int, acc_spsps: int, minimum_sps: int, maximum_sps: int, intervals_per_second: int):
         # Initialise lists to hold the velocity sequence
         self.sequence_steps = [] # Number of steps in this period
         self.sequence_spp = [] # Rotational speed in steps per period (for this period)
-        self._intervals_per_second = intervalsPerSecond
+        self._intervals_per_second = intervals_per_second
 
         # Range check input parameters
-        if totalSteps < 1:
+        if total_steps < 1:
             raise RuntimeError("Velocity::__init__ - ERROR - The number of required steps must be greater than 0")
 
-        if accSpsps < 1:
+        if acc_spsps < 1:
             raise RuntimeError("Velocity::__init__ - ERROR - acceleration in Steps Per Second Per Second must be greater than 0")
 
-        if minimumSps < 1:
+        if minimum_sps < 1:
             raise RuntimeError("Velocity::__init__ - ERROR - Minimum Steps Per Second must be greater than 0")
 
-        if maximumSps < 1:
+        if maximum_sps < 1:
             raise RuntimeError("Velocity::__init__ - ERROR - Maximum Steps Per Second must be greater than 0")
 
-        if maximumSps < accSpsps:
+        if maximum_sps < acc_spsps:
             raise RuntimeError("Velocity::__init__ - ERROR - Maximum Steps Per Second less than acceleration in Steps Per Second Per Second")
 
-        if maximumSps < minimumSps:
+        if maximum_sps < minimum_sps:
             raise RuntimeError("Velocity::__init__ - ERROR - Maximum Steps Per Second must be greater than minimum Steps Per Second")
 
         # Show some debug
-        log_debug("Velocity::__init__ - Total steps = ", totalSteps)
-        log_debug("Velocity::__init__ - Acceleration in steps per second per second = ", accSpsps)
-        log_debug("Velocity::__init__ - Minimum steps per second = ", minimumSps)
-        log_debug("Velocity::__init__ - Maximum steps per second = ", maximumSps)
-        log_debug("Velocity::__init__ - Intervals per second = ", intervalsPerSecond)
+        log_debug("Velocity::__init__ - Total steps = ", total_steps)
+        log_debug("Velocity::__init__ - Acceleration in steps per second per second = ", acc_spsps)
+        log_debug("Velocity::__init__ - Minimum steps per second = ", minimum_sps)
+        log_debug("Velocity::__init__ - Maximum steps per second = ", maximum_sps)
+        log_debug("Velocity::__init__ - Intervals per second = ", intervals_per_second)
         log_debug("")
 
-        accSpppp: int = int(accSpsps / intervalsPerSecond) # acceleration in steps per period per period
-        maximumSpp: int = int(maximumSps / intervalsPerSecond) # maximum speed in steps per period
-        minimumSpp: int = int(minimumSps / intervalsPerSecond) # minimum speed in steps per period
-        if accSpppp < 1: accSpppp = 1
-        if maximumSpp < 1: maximumSpp = 1
-        if minimumSpp < 1: minimumSpp = 1
+        acc_spppp: int = int(acc_spsps / intervals_per_second) # acceleration in steps per period per period
+        maximum_spp: int = int(maximum_sps / intervals_per_second) # maximum speed in steps per period
+        minimum_spp: int = int(minimum_sps / intervals_per_second) # minimum speed in steps per period
+        if acc_spppp < 1: acc_spppp = 1
+        if maximum_spp < 1: maximum_spp = 1
+        if minimum_spp < 1: minimum_spp = 1
 
-        log_debug("Velocity::__init__ - Acceleration in steps per period per period = ", accSpppp)
-        log_debug("Velocity::__init__ - Minimum steps per period = ", minimumSpp)
-        log_debug("Velocity::__init__ - Maximum steps per period = ", maximumSpp)
+        log_debug("Velocity::__init__ - Acceleration in steps per period per period = ", acc_spppp)
+        log_debug("Velocity::__init__ - Minimum steps per period = ", minimum_spp)
+        log_debug("Velocity::__init__ - Maximum steps per period = ", maximum_spp)
         log_debug("")
 
         # Before calculating the actual sequence, we make a base assumption
         # that acceleration can use a maximum of 40% of the total required steps
         # (and that deceleration is a mirror of acceleration):
-        accStepsf: float = (float(totalSteps) / 100.0) * 40.0 # 40%
-        runStepsf: float = (float(totalSteps) / 100.0) * 20.0 # 20%
-        decStepsf: float = (float(totalSteps) / 100.0) * 40.0 # 40%
-        accSteps: int = int(accStepsf)
-        runSteps: int = int(runStepsf)
-        decSteps: int = int(decStepsf)
+        acc_stepsf: float = (float(total_steps) / 100.0) * 40.0 # 40%
+        run_stepsf: float = (float(total_steps) / 100.0) * 20.0 # 20%
+        dec_stepsf: float = (float(total_steps) / 100.0) * 40.0 # 40%
+        acc_steps: int = int(acc_stepsf)
+        run_steps: int = int(run_stepsf)
+        dec_steps: int = int(dec_stepsf)
 
         log_debug("Velocity::__init__ - Steps per stage prediction:")
-        log_debug("Velocity::__init__ -  ACC steps = ", accSteps)
-        log_debug("Velocity::__init__ -  RUN steps = ", runSteps)
-        log_debug("Velocity::__init__ -  DEC steps = ", decSteps)
+        log_debug("Velocity::__init__ -  ACC steps = ", acc_steps)
+        log_debug("Velocity::__init__ -  RUN steps = ", run_steps)
+        log_debug("Velocity::__init__ -  DEC steps = ", dec_steps)
         log_debug("")
 
         # Calculate any error due to division rounding and add it to the runSteps
-        difSteps: int = totalSteps - accSteps - runSteps - decSteps
-        runSteps += difSteps
+        diff_steps: int = total_steps - acc_steps - run_steps - dec_steps
+        run_steps += diff_steps
         
         # Track the current overall step position
-        currentStepPosition: int = 0
+        current_step_position: int = 0
 
         # Accelerate stepper
-        if accSteps > 0:
-            while currentStepPosition < accSteps:
-                tempSteps: int = 0
-                tempSpp: int = 0
+        if acc_steps > 0:
+            while current_step_position < acc_steps:
+                temp_steps: int = 0
+                temp_spp: int = 0
 
                 # Accelerate and check for overflow
-                if len(self.sequence_steps) == 0: tempSpp = minimumSpp
-                else: tempSpp = self.sequence_spp[-1] + accSpppp
-                if tempSpp > maximumSpp: tempSpp = maximumSpp
-                tempSteps = tempSpp # When accelerating Steps and SPP are the same
+                if len(self.sequence_steps) == 0: temp_spp = minimum_spp
+                else: temp_spp = self.sequence_spp[-1] + acc_spppp
+                if temp_spp > maximum_spp: temp_spp = maximum_spp
+                temp_steps = temp_spp # When accelerating Steps and SPP are the same
 
                 # Store the result in the dynamic sequence array
-                self.sequence_spp.append(tempSpp)
-                self.sequence_steps.append(tempSteps)
-                currentStepPosition += tempSteps
+                self.sequence_spp.append(temp_spp)
+                self.sequence_steps.append(temp_steps)
+                current_step_position += temp_steps
 
                 # Show the result for this sequence part
-                log_debug("Velocity::__init__ - ACC [", len(self.sequence_steps), "] (", currentStepPosition, ") Steps =",
+                log_debug("Velocity::__init__ - ACC [", len(self.sequence_steps), "] (", current_step_position, ") Steps =",
                       self.sequence_steps[-1], "- SPP =", self.sequence_spp[-1])
 
             # Count the number of steps in the generated acceleration sequence
-            accSteps = 0
+            acc_steps = 0
             for i in range(0, len(self.sequence_steps)):
-                accSteps += self.sequence_steps[i]
-            decSteps = accSteps
-            runSteps = totalSteps - accSteps - decSteps       
+                acc_steps += self.sequence_steps[i]
+            dec_steps = acc_steps
+            run_steps = total_steps - acc_steps - dec_steps       
 
             log_debug("Velocity::__init__ - Steps per stage actual:")
-            log_debug("Velocity::__init__ -  ACC steps = ", accSteps)
-            log_debug("Velocity::__init__ -  RUN steps = ", runSteps)
-            log_debug("Velocity::__init__ -  DEC steps = ", decSteps)
+            log_debug("Velocity::__init__ -  ACC steps = ", acc_steps)
+            log_debug("Velocity::__init__ -  RUN steps = ", run_steps)
+            log_debug("Velocity::__init__ -  DEC steps = ", dec_steps)
             log_debug("")
 
         # Run stepper
-        tempSteps: int = 0
-        tempSpp: int = 0
+        temp_steps: int = 0
+        temp_spp: int = 0
 
         # This is a single sequence part to perform the all the run steps
-        tempSteps = runSteps
-        currentStepPosition += runSteps
+        temp_steps = run_steps
+        current_step_position += run_steps
 
         # Check that the sequence has contents
         if len(self.sequence_spp) > 0:
             # If we have headroom, we can accelerate once more for the run steps
-            if (self.sequence_spp[-1] + accSpsps) < maximumSps:
-                tempSpp = self.sequence_spp[-1] + accSpsps
-                if tempSpp > maximumSps: tempSpp = maximumSps
+            if (self.sequence_spp[-1] + acc_spsps) < maximum_sps:
+                temp_spp = self.sequence_spp[-1] + acc_spsps
+                if temp_spp > maximum_sps: temp_spp = maximum_sps
             else:
                 # Run at full speed
-                tempSpp = maximumSps
+                temp_spp = maximum_sps
         else:
             # There were no acceleration steps... use minimum speed
-            tempSpp = accSpsps
+            temp_spp = acc_spsps
         
         # Store the RUN result in the dynamic sequence array
-        self.sequence_spp.append(tempSpp)
-        self.sequence_steps.append(tempSteps)
+        self.sequence_spp.append(temp_spp)
+        self.sequence_steps.append(temp_steps)
 
         # Show the result for this sequence part
-        log_debug("Velocity::__init__ - RUN [", len(self.sequence_steps), "] (", currentStepPosition, ") Steps =",
+        log_debug("Velocity::__init__ - RUN [", len(self.sequence_steps), "] (", current_step_position, ") Steps =",
                       self.sequence_steps[-1], "- SPP =", self.sequence_spp[-1])
-        log_debug("Velocity::__init__ - Maximum achieved RUN speed =",self.sequence_spp[-1] * intervalsPerSecond,"Steps per second")
+        log_debug("Velocity::__init__ - Maximum achieved RUN speed =",self.sequence_spp[-1] * intervals_per_second,"Steps per second")
 
         # Decelerate stepper
         # (This simply copies the acceleration sequence in reverse)
-        if decSteps > 0:
+        if dec_steps > 0:
             for i in range(len(self.sequence_steps) - 1, 0, -1):
                 self.sequence_spp.append(self.sequence_spp[i-1])
                 self.sequence_steps.append(self.sequence_steps[i-1])
 
                 # Keep track of our current position
-                currentStepPosition += self.sequence_steps[i-1]
+                current_step_position += self.sequence_steps[i-1]
 
                 # Show the result for this sequence part
-                log_debug("Velocity::__init__ - DEC [", len(self.sequence_steps), "] (", currentStepPosition, ") Steps =",
+                log_debug("Velocity::__init__ - DEC [", len(self.sequence_steps), "] (", current_step_position, ") Steps =",
                       self.sequence_steps[-1], "- SPP =", self.sequence_spp[-1])
                 
         # Count the number of steps in the generated acceleration sequence
