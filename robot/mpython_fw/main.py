@@ -36,6 +36,7 @@ from velocity import Velocity
 from drv8825 import Drv8825
 from stepper import Stepper
 from metric import Metric
+from ble_peripheral import demo
 
 from time import sleep
 from machine import I2C
@@ -105,30 +106,33 @@ drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
 drv8825.set_steps_per_revolution(800)
 drv8825.set_enable(False)
 
-# Configure the steppers
-left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
-left_stepper.set_forwards()
-right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
-right_stepper.set_forwards()
+# # Configure the steppers
+# left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
+# left_stepper.set_forwards()
+# right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
+# right_stepper.set_forwards()
 
-# Define a velocity sequence
-velocity = Velocity(6400, 32, 2, 1600, 16)
+# # Define a velocity sequence
+# velocity = Velocity(6400, 32, 2, 1600, 16)
 
-# Test metric methods
-metric = Metric()
-print("100mm to steps =", metric.mm_to_steps(100))
-print("360 degrees to steps =", metric.degrees_to_steps(360))
+# # Test metric methods
+# metric = Metric()
+# print("100mm to steps =", metric.mm_to_steps(100))
+# print("360 degrees to steps =", metric.degrees_to_steps(360))
 
-while True:
-    drv8825.set_enable(True)
-    left_stepper.set_velocity(velocity)
-    right_stepper.set_velocity(velocity)
-    print("Stepper sequence running")
+# while True:
+#     drv8825.set_enable(True)
+#     left_stepper.set_velocity(velocity)
+#     right_stepper.set_velocity(velocity)
+#     print("Stepper sequence running")
 
-    # Wait for the stepper to finish
-    while left_stepper.is_busy or right_stepper.is_busy:
-        sleep(0.01)
-    drv8825.set_enable(False)
-    print("Stepper sequence complete")
+#     # Wait for the stepper to finish
+#     while left_stepper.is_busy or right_stepper.is_busy:
+#         sleep(0.01)
+#     drv8825.set_enable(False)
+#     print("Stepper sequence complete")
 
-    sleep(5)
+#     sleep(5)
+
+# BLE test
+demo()
