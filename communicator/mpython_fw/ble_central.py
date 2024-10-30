@@ -1,11 +1,7 @@
 import bluetooth
-import random
-import struct
 import time
-import micropython
 
 from ble_advertising import decode_services, decode_name
-
 from micropython import const
 
 _IRQ_CENTRAL_CONNECT = const(1)
@@ -34,10 +30,10 @@ _ADV_SCAN_IND = const(0x02)
 _ADV_NONCONN_IND = const(0x03)
 
 _UART_SERVICE_UUID = bluetooth.UUID("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
-_UART_RX_CHAR_UUID = bluetooth.UUID("6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
-_UART_TX_CHAR_UUID = bluetooth.UUID("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
+_UART_RX_UUID      = bluetooth.UUID("6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
+_UART_TX_UUID      = bluetooth.UUID("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
 
-class BLESimpleCentral:
+class BLE_central:
     def __init__(self, ble):
         self._ble = ble
         self._ble.active(True)
@@ -124,9 +120,9 @@ class BLESimpleCentral:
         elif event == _IRQ_GATTC_CHARACTERISTIC_RESULT:
             # Connected device returned a characteristic.
             conn_handle, def_handle, value_handle, properties, uuid = data
-            if conn_handle == self._conn_handle and uuid == _UART_RX_CHAR_UUID:
+            if conn_handle == self._conn_handle and uuid == _UART_RX_UUID:
                 self._rx_handle = value_handle
-            if conn_handle == self._conn_handle and uuid == _UART_TX_CHAR_UUID:
+            if conn_handle == self._conn_handle and uuid == _UART_TX_UUID:
                 self._tx_handle = value_handle
 
         elif event == _IRQ_GATTC_CHARACTERISTIC_DONE:
@@ -192,7 +188,7 @@ class BLESimpleCentral:
 
 def demo():
     ble = bluetooth.BLE()
-    central = BLESimpleCentral(ble)
+    central = BLE_central(ble)
 
     not_found = False
 
