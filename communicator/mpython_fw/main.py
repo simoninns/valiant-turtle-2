@@ -28,10 +28,11 @@ from log import log_debug
 from log import log_info
 from log import log_warn
 
-from machine import Pin, UART
+from machine import Pin, UART, I2C
 from ble_central import demo
 from status_led import Status_led
 from ir_uart import Ir_uart
+from parallel import Parallel
 
 from time import sleep
 
@@ -72,6 +73,13 @@ uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
 
 # Configure IR UART
 ir_uart = Ir_uart(_GPIO_IR_LED)
+
+# Configure I2C interfaces
+i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000) # Internal
+i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000) # External
+
+# Configure parallel port
+parallel = Parallel(i2c0, _GPIO_INT0)
 
 while True:
     rxData = bytes()
