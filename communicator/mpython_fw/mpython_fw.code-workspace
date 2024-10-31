@@ -2,13 +2,10 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"name": "Mpy Remote Workspace",
-			"uri": "pico:"
 		}
 	],
 	"settings": {
-		"python.languageServer": "Pylance"
+		"python.languageServer": "Pylance",
+		"micropico.manualComDevice": "/dev/ttyACM0"
 	}
 }

@@ -19,7 +19,6 @@ _ADV_TYPE_UUID32_MORE = const(0x4)
 _ADV_TYPE_UUID128_MORE = const(0x6)
 _ADV_TYPE_APPEARANCE = const(0x19)
 
-
 # Generate a payload to be passed to gap_advertise(adv_data=...).
 def advertising_payload(limited_disc=False, br_edr=False, name=None, services=None, appearance=0):
     payload = bytearray()
@@ -52,7 +51,6 @@ def advertising_payload(limited_disc=False, br_edr=False, name=None, services=No
 
     return payload
 
-
 def decode_field(payload, adv_type):
     i = 0
     result = []
@@ -62,11 +60,9 @@ def decode_field(payload, adv_type):
         i += 1 + payload[i]
     return result
 
-
 def decode_name(payload):
     n = decode_field(payload, _ADV_TYPE_NAME)
     return str(n[0], "utf-8") if n else ""
-
 
 def decode_services(payload):
     services = []
@@ -77,17 +73,3 @@ def decode_services(payload):
     for u in decode_field(payload, _ADV_TYPE_UUID128_COMPLETE):
         services.append(bluetooth.UUID(u))
     return services
-
-
-def demo():
-    payload = advertising_payload(
-        name="micropython",
-        services=[bluetooth.UUID(0x181A), bluetooth.UUID("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")],
-    )
-    print(payload)
-    print(decode_name(payload))
-    print(decode_services(payload))
-
-
-if __name__ == "__main__":
-    demo()

@@ -1,8 +1,6 @@
 # This example demonstrates a UART periperhal.
 
 import bluetooth
-import random
-import struct
 import time
 from ble_advertising import advertising_payload
 
@@ -17,21 +15,24 @@ _FLAG_WRITE_NO_RESPONSE = const(0x0004)
 _FLAG_WRITE = const(0x0008)
 _FLAG_NOTIFY = const(0x0010)
 
-_UART_UUID = bluetooth.UUID("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
+_UART_SERVICE_UUID = bluetooth.UUID("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
+_UART_RX_UUID      = bluetooth.UUID("6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
+_UART_TX_UUID      = bluetooth.UUID("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
+
 _UART_TX = (
-    bluetooth.UUID("6E400003-B5A3-F393-E0A9-E50E24DCCA9E"),
+    _UART_TX_UUID,
     _FLAG_READ | _FLAG_NOTIFY,
 )
 _UART_RX = (
-    bluetooth.UUID("6E400002-B5A3-F393-E0A9-E50E24DCCA9E"),
+    _UART_RX_UUID,
     _FLAG_WRITE | _FLAG_WRITE_NO_RESPONSE,
 )
 _UART_SERVICE = (
-    _UART_UUID,
+    _UART_SERVICE_UUID,
     (_UART_TX, _UART_RX),
 )
 
-class BLESimplePeripheral:
+class BLE_peripheral:
     def __init__(self, ble, name="mpy-uart"):
         self._ble = ble
         self._ble.active(True)
@@ -39,7 +40,7 @@ class BLESimplePeripheral:
         ((self._handle_tx, self._handle_rx),) = self._ble.gatts_register_services((_UART_SERVICE,))
         self._connections = set()
         self._write_callback = None
-        self._payload = advertising_payload(name=name, services=[_UART_UUID])
+        self._payload = advertising_payload(name=name, services=[_UART_SERVICE_UUID])
         self._advertise()
 
     def _irq(self, event, data):
@@ -77,7 +78,7 @@ class BLESimplePeripheral:
 
 def demo():
     ble = bluetooth.BLE()
-    p = BLESimplePeripheral(ble)
+    p = BLE_peripheral(ble)
 
     def on_rx(v):
         print("RX", v)
