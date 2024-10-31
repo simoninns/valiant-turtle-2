@@ -2825,6 +2825,16 @@
 	)
 	(wire
 		(pts
+			(xy 113.03 95.25) (xy 118.11 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "42da92ba-1f13-4ec4-900e-2d86d2293547")
+	)
+	(wire
+		(pts
 			(xy 135.89 55.88) (xy 135.89 59.69)
 		)
 		(stroke
@@ -2955,16 +2965,6 @@
 	)
 	(wire
 		(pts
-			(xy 113.03 92.71) (xy 118.11 92.71)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "69e65d15-ce35-44ca-867e-04bc9fca8e75")
-	)
-	(wire
-		(pts
 			(xy 227.33 48.26) (xy 232.41 48.26)
 		)
 		(stroke
@@ -2992,6 +2992,16 @@
 			(type default)
 		)
 		(uuid "73baf0ac-4271-4f8f-93ab-84874dd98786")
+	)
+	(wire
+		(pts
+			(xy 113.03 92.71) (xy 118.11 92.71)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "73fb185e-9900-48c0-9b39-436bc339ec75")
 	)
 	(wire
 		(pts
@@ -3332,16 +3342,6 @@
 			(type default)
 		)
 		(uuid "b6b4e481-70b3-4db9-9ba2-619fe0c10297")
-	)
-	(wire
-		(pts
-			(xy 113.03 95.25) (xy 118.11 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b70a5926-68d3-4a57-9fb5-13cbc0cad8d5")
 	)
 	(wire
 		(pts
@@ -3755,7 +3755,7 @@
 	)
 	(global_label "CTS1"
 		(shape input)
-		(at 113.03 95.25 180)
+		(at 113.03 92.71 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3765,7 +3765,7 @@
 		)
 		(uuid "93cde7c0-7503-40aa-908d-d77ee65f6e84")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 105.3882 95.25 0)
+			(at 105.3882 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3777,7 +3777,7 @@
 	)
 	(global_label "RTS1"
 		(shape output)
-		(at 113.03 92.71 180)
+		(at 113.03 95.25 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3787,7 +3787,7 @@
 		)
 		(uuid "9cde3cd8-1106-4b70-b4cb-59245b85f3c1")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 105.3882 92.71 0)
+			(at 105.3882 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
