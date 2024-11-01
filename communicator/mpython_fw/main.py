@@ -32,7 +32,7 @@ from machine import Pin, UART, I2C
 from ble_central import demo
 from status_led import Status_led
 from ir_uart import Ir_uart
-from parallel import Parallel
+from parallel_port import Parallel_port
 
 from time import sleep
 
@@ -75,20 +75,32 @@ uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
 ir_uart = Ir_uart(_GPIO_IR_LED)
 
 # Configure I2C interfaces
-i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000) # Internal
+i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=100000) # Internal
 i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000) # External
 
 # Configure parallel port
-parallel = Parallel(i2c0, _GPIO_INT0)
+parallel_port = Parallel_port(i2c0, _GPIO_INT0)
+
+# while True:
+#     rxData = bytes()
+#     while uart.any() > 0:
+#         blue_led.set(True)
+#         rxData += uart.read(1)
+
+#     if len(rxData) >0:
+#         #log_debug("main: ", rxData.decode('utf-8'))
+#         ir_uart.ir_print(rxData)
+
+#     blue_led.set(False)
 
 while True:
-    rxData = bytes()
-    while uart.any() > 0:
-        blue_led.set(True)
-        rxData += uart.read(1)
-
-    if len(rxData) >0:
-        #log_debug("main: ", rxData.decode('utf-8'))
-        ir_uart.ir_print(rxData)
-
+    # rxData = parallel_port.get_data()
+    # print(rxData[0], rxData[1])
+    print("1 GPIOA4 =", parallel_port.test1(), "Last INT gpio =", parallel_port.test2())
+    parallel_port.test3() # Clear INT
+    print("2 GPIOA4 =", parallel_port.test1(), "Last INT gpio =", parallel_port.test2())
+    sleep(5)
     blue_led.set(False)
+
+# while True:
+#     print(bin(parallel_port.get_data()))
