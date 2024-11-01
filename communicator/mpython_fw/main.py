@@ -81,26 +81,10 @@ i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000) # External
 # Configure parallel port
 parallel_port = Parallel_port(i2c0, _GPIO_INT0)
 
-# while True:
-#     rxData = bytes()
-#     while uart.any() > 0:
-#         blue_led.set(True)
-#         rxData += uart.read(1)
-
-#     if len(rxData) >0:
-#         #log_debug("main: ", rxData.decode('utf-8'))
-#         ir_uart.ir_print(rxData)
-
-#     blue_led.set(False)
-
 while True:
-    # rxData = parallel_port.get_data()
-    # print(rxData[0], rxData[1])
-    print("1 GPIOA4 =", parallel_port.test1(), "Last INT gpio =", parallel_port.test2())
-    parallel_port.test3() # Clear INT
-    print("2 GPIOA4 =", parallel_port.test1(), "Last INT gpio =", parallel_port.test2())
-    sleep(5)
-    blue_led.set(False)
+    print("GPIOs =", '{0:016b}'.format(parallel_port.get_all_gpios()))
 
-# while True:
-#     print(bin(parallel_port.get_data()))
+    blue_led.set(True)
+    sleep(2)
+    blue_led.set(False)
+    sleep(2)

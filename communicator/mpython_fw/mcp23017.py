@@ -195,19 +195,14 @@ class Mcp23017:
         return self.gpio_input_ab
 
     # Private methods
-    # def __write_register(self, reg, value):
-    #     self.i2c.writeto_mem(self.address, reg, self.__to_bytes(value))
-
-    # def __read_register(self, reg):
-    #     return self.i2c.readfrom_mem(self.address, reg, 1)
-
     # Write both A and B registers
-    def __write_dual_registers(self, reg, value):
-        self.i2c.writeto_mem(self.address, reg, self.__to_bytes(value))
+    def __write_dual_registers(self, reg, value: int):
+        bvalue = value.to_bytes(2, "little")
+        self.i2c.writeto_mem(self.address, reg, bvalue)
 
     # Read both A and B registers
-    def __read_dual_registers(self, reg):
-        return self.i2c.readfrom_mem(self.address, reg, 2)
+    def __read_dual_registers(self, reg) -> int:
+        return int.from_bytes(self.i2c.readfrom_mem(self.address, reg, 2), "little")
 
     # Set a bit at a bit position
     def __set_bit(self, value, bit_position, set: bool):
@@ -219,7 +214,7 @@ class Mcp23017:
         return value
 
     # Check if a bit is set at a bit position
-    def __is_bit_set(self, value: bytes, bit_position: int) -> bool:
+    def __is_bit_set(self, value, bit_position) -> bool:
         if bit_position < 8:
             if (value[0] & (1 << bit_position)):
                 return True
@@ -229,7 +224,3 @@ class Mcp23017:
                 return True
 
         return False
-
-    # Convert int to array of bytes
-    def __to_bytes(self, x):
-     return bytes((x & 0xff, (x >> 8) & 0xff, (x >> 16) & 0xff))

@@ -101,10 +101,10 @@ class Parallel_port:
         self.mcp.interrupt_enable(_PARALLEL_NDATASTROBE, True) # Enable interrupt
         self.mcp.interrupt_get_values() # Read INTCAP to clear any pending IRQs
 
-        # # Configure Interrupt detection GPIO on RP2040
-        # self.interrupt_pin = Pin(interrupt_pin, Pin.IN, Pin.PULL_UP)
-        # self.interrupt_pin.irq(handler=self._callback, trigger=self.interrupt_pin.IRQ_FALLING)
-        # self.mcp.interrupt_get_values()
+        # Configure Interrupt detection GPIO on RP2040
+        self.interrupt_pin = Pin(interrupt_pin, Pin.IN, Pin.PULL_UP)
+        self.interrupt_pin.irq(handler=self.__callback, trigger=self.interrupt_pin.IRQ_FALLING)
+        self.mcp.interrupt_get_values()
 
         log_debug("Parallel::__init__ - Parallel port initialised")
 
@@ -121,26 +121,10 @@ class Parallel_port:
         self.mcp.mgpio_put(_PARALLEL_BUSY, False)
         self.mcp.mgpio_put(_PARALLEL_BUSY, True)
 
-    # MCP23017 interrupt callback
-    def _callback(self, p):
-         print("PP CB")
-         # Get the byte from the parallel port
-         #self.rx_fifo.put(self.get_data())
+    # MCP23017 INTB pin callback
+    def __callback(self, p):
+         log_debug("Parallel::_callback - Parallel Port Callback")
 
-         self.mcp.interrupt_get_values()
-
-    def any(self):
-         return self.rx_fifo.any()
-    
-    def read(self, size):
-         return self.rx_fifo.get(size)
-    
-    def test1(self):
-         return self.mcp.mgpio_get(_PARALLEL_NDATASTROBE)
-    
-    def test2(self):
-         return self.mcp.interrupt_get_last_gpio()
-    
-    def test3(self):
-        self.mcp.interrupt_get_values()
-        #self.mcp.mgpio_get_all()
+    # TEST ONLY METHODS
+    def get_all_gpios(self):
+         return self.mcp.mgpio_get_all()
