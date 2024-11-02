@@ -87,6 +87,10 @@ class Ir_uart:
         for c in range(0, len(ch)):
             self._sm.put(self.__encode(ch[c]))
 
+    # Output a single character via the IR
+    def ir_putc(self, ch):
+        self._sm.put(self.__encode(ch))
+
     # Calculate the parity bit for x
     # Returns 0 = EVEN or 1 = ODD
     def __parity(self, x):

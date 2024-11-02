@@ -82,9 +82,10 @@ i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000) # External
 parallel_port = Parallel_port(i2c0, _GPIO_INT0)
 
 while True:
-    #print("GPIOs =", '{0:016b}'.format(parallel_port.get_all_gpios()))
+    while(parallel_port.any()):
+        blue_led.set(True)
+        ch = parallel_port.get()
+        ir_uart.ir_putc(ch)
+        print("Parallel Rx = ", ch)
 
-    blue_led.set(True)
-    sleep(2)
     blue_led.set(False)
-    sleep(2)

@@ -24,31 +24,33 @@
 #
 #************************************************************************
 
-# This needs some sort of run-time limit on size?
 class Byte_fifo:
-    def __init__(self):
-        self._buf = bytearray()
-
-    # Put data into the FIFO
-    def put(self, data):
-        self._buf.extend(data)
-
-    # Remove data from the FIFO
-    def get(self, size):
-        data = self._buf[:size]
-        # The fast delete syntax
-        self._buf[:size] = b''
-        return data
-
-    # Get data from the FIFO without removing it
-    def peek(self, size):
-        return self._buf[:size]
-
-    # Get data from the FIFO without removing it
-    def get_value(self):
-        # peek with no copy
-        return self._buf
-
-    # Return the current buffer size
-    def any(self):
-        return len(self._buf)
+    def __init__(self, size):
+        self.data = bytearray(size)
+        self.size = size
+        self.index_put = 0
+        self.index_get = 0
+        
+    def put(self, value):
+        next_index = (self.index_put + 1) % self.size
+        # check for overflow
+        if self.index_get != next_index: 
+            self.data[self.index_put] = value
+            self.index_put = next_index
+            return value
+        else:
+            return None
+        
+    def get(self):
+        if self.index_get == self.index_put:
+            return None  # Buffer empty
+        else:
+            value = self.data[self.index_get]
+            self.index_get = (self.index_get + 1) % self.size
+            return value
+        
+    # Returns False if FIFO is empty
+    def any(self) -> bool:
+        if self.index_get == self.index_put:
+            return False
+        return True

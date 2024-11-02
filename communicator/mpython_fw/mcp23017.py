@@ -166,17 +166,11 @@ class Mcp23017:
         self.__write_dual_registers(_MCP23017_IODIRA, self.iodir_ab) # Also writes IODIRB
         log_debug("Mcp23017::mgpio_set_dir - IODIR =", '{0:016b}'.format(self.iodir_ab))
 
-    def mgpio_pull_up(self, gpio):
+    def mgpio_pull_up(self, gpio, is_on: bool):
         if gpio > 15: gpio = 15
-        self.gppub_ab = self.__set_bit(self.gppub_ab, gpio, True)
+        self.gppub_ab = self.__set_bit(self.gppub_ab, gpio, is_on)
         self.__write_dual_registers(_MCP23017_GPPUA, self.gppub_ab) # Also writes GPPUB
         log_debug("Mcp23017::mgpio_pull_up - GPPU =", '{0:016b}'.format(self.gppub_ab))
-
-    def mgpio_disable_pulls(self, gpio):
-        if gpio > 15: gpio = 15
-        self.gppub_ab = self.__set_bit(self.gppub_ab, gpio, False)
-        self.__write_dual_registers(_MCP23017_GPPUA, self.gppub_ab) # Also writes GPPUB
-        log_debug("Mcp23017::mgpio_disable_pulls - GPPU =", '{0:016b}'.format(self.gppub_ab))
 
     def mgpio_get(self, gpio):
         if gpio > 15: gpio = 15

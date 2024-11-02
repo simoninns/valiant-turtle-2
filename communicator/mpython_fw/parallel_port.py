@@ -55,7 +55,7 @@ class Parallel_port:
         self.mcp = Mcp23017(i2c, 0x20)
 
         # Define an Rx FIFO for storing incoming data
-        self.rx_fifo = Byte_fifo()
+        self.rx_fifo = Byte_fifo(1024)
 
         # Set pin directions (True = input, False = output)
         self.mcp.mgpio_set_dir(_PARALLEL_UN0, True)
@@ -76,20 +76,20 @@ class Parallel_port:
         self.mcp.mgpio_set_dir(_PARALLEL_DAT7, True)
 
         # Set pull ups on inputs
-        self.mcp.mgpio_pull_up(_PARALLEL_UN0)
-        self.mcp.mgpio_pull_up(_PARALLEL_UN1)
-        self.mcp.mgpio_pull_up(_PARALLEL_NDATASTROBE)
-        self.mcp.mgpio_pull_up(_PARALLEL_5)
-        self.mcp.mgpio_pull_up(_PARALLEL_6)
-        self.mcp.mgpio_pull_up(_PARALLEL_7)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT0)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT1)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT2)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT3)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT4)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT5)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT6)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT7)
+        self.mcp.mgpio_pull_up(_PARALLEL_UN0, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_UN1, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_NDATASTROBE, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_5, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_6, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_7, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_DAT0, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_DAT1, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_DAT2, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_DAT3, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_DAT4, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_DAT5, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_DAT6, True)
+        self.mcp.mgpio_pull_up(_PARALLEL_DAT7, True)
 
         # Set outputs to default
         self.mcp.mgpio_put(_PARALLEL_NACK, False)
@@ -104,32 +104,23 @@ class Parallel_port:
         # Configure Interrupt detection GPIO on RP2040
         self.interrupt_pin = Pin(interrupt_pin, Pin.IN, Pin.PULL_UP)
         self.interrupt_pin.irq(handler=self.__callback, trigger=self.interrupt_pin.IRQ_FALLING)
-        self.mcp.interrupt_get_values()
 
         log_debug("Parallel::__init__ - Parallel port initialised")
-
-    # Get the current 8-bit data value from the parallel port
-    def get_data(self):
-            # Get all 16 bits of the GPIO and shift to retain only the upper byte
-            # Note: This assumes _PARALLEL_DAT0 to _PARALLEL_DAT7 are GPIOs 8-15
-            rx_data = self.mcp.mgpio_get_all()
-            #self.__ack()
-            return rx_data
-    
-    # ACK a received byte (M6522 VIA Handshake output mode, pull CB1 low)
-    def __ack(self):
-        self.mcp.mgpio_put(_PARALLEL_BUSY, False)
-        self.mcp.mgpio_put(_PARALLEL_BUSY, True)
 
     # MCP23017 INTB pin callback
     def __callback(self, p):
         # Get the databus value
-        rx_data = self.mcp.mgpio_get_all()
-        rx_data = rx_data >> 8
-
-        print("Callback: DB =", rx_data)
-        #self.rx_fifo.put(rx_data)
+        rx_data = self.mcp.mgpio_get_all() >> 8
+        self.rx_fifo.put(rx_data)
         
-        # ACK
+        # ACK a received byte (M6522 VIA Handshake output mode, pull CB1 low)
         self.mcp.mgpio_put(_PARALLEL_BUSY, False)
         self.mcp.mgpio_put(_PARALLEL_BUSY, True)
+
+    # Get a byte from the FIFO
+    def get(self):
+        return self.rx_fifo.get()
+    
+    # Returns False if fifo is empty
+    def any(self) -> bool:
+        return self.rx_fifo.any()
