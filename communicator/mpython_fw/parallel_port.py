@@ -123,8 +123,13 @@ class Parallel_port:
 
     # MCP23017 INTB pin callback
     def __callback(self, p):
-         log_debug("Parallel::_callback - Parallel Port Callback")
+        # Get the databus value
+        rx_data = self.mcp.mgpio_get_all()
+        rx_data = rx_data >> 8
 
-    # TEST ONLY METHODS
-    def get_all_gpios(self):
-         return self.mcp.mgpio_get_all()
+        print("Callback: DB =", rx_data)
+        #self.rx_fifo.put(rx_data)
+        
+        # ACK
+        self.mcp.mgpio_put(_PARALLEL_BUSY, False)
+        self.mcp.mgpio_put(_PARALLEL_BUSY, True)

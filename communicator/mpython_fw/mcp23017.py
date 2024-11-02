@@ -71,6 +71,7 @@ class Mcp23017:
         self.gppub_ab = 0
         self.gpio_input_ab = 0
         self.gpio_output_ab = 0
+        self.ipol_ab = 0
 
         self.gpinten_ab = 0
         self.defval_ab = 0
@@ -79,10 +80,11 @@ class Mcp23017:
         # Configure IO Control
         self.configuration(True, False)
 
-        # Set all pins to output, turn off, turn off all pulls
+        # Set all pins to output, turn off, turn off all pulls, input polarity same
         self.__write_dual_registers(_MCP23017_IODIRA, self.iodir_ab) # Also writes IODIRB
         self.__write_dual_registers(_MCP23017_GPPUA, self.gppub_ab) # Also writes GPPUB
         self.__write_dual_registers(_MCP23017_GPIOA, self.gpio_output_ab) # Also writes GPIOB
+        self.__write_dual_registers(_MCP23017_IPOLA, self.ipol_ab) # Also writes IPOLB
         
         # Default interrupts to 0 default, previous value compare, disabled 
         self.__write_dual_registers(_MCP23017_DEFVALA, self.defval_ab) # Also writes DEFVALB
@@ -197,7 +199,17 @@ class Mcp23017:
     # Private methods
     # Write both A and B registers
     def __write_dual_registers(self, reg, value: int):
-        bvalue = value.to_bytes(2, "little")
+        if (value > 65535):
+            RuntimeError("mcp23017::__write_dual_registers - Value is more than 16-bits!")
+
+        # Ensure we are always writing 2 bytes
+        if (value > 255):
+            bvalue = value.to_bytes(2, "little")
+        elif (value < 255 and value > 0):
+            bvalue = bytes([value,0])
+        else:
+            bvalue = bytes([0,0])
+
         self.i2c.writeto_mem(self.address, reg, bvalue)
 
     # Read both A and B registers
