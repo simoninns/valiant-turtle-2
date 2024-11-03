@@ -24,9 +24,7 @@
 #
 #************************************************************************
 
-from log import log_debug
-from log import log_info
-from log import log_warn
+from log import log_debug, log_info, log_warn
 
 from machine import I2C, Pin
 
@@ -91,7 +89,7 @@ class Mcp23017:
         self.__write_dual_registers(_MCP23017_INTCONA, self.intcon_ab) # Also writes INTCONB
         self.__write_dual_registers(_MCP23017_GPINTENA, self.gpinten_ab) # Also writes GPINTENB
 
-        log_debug("Mcp23017::__int__ - MCP23017 initialised")
+        log_info("Mcp23017::__init__ - MCP23017 initialised")
 
     # Set the mirroring and polarity configuration flags
     #

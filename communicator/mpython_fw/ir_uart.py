@@ -24,9 +24,7 @@
 #
 #************************************************************************
 
-from log import log_debug
-from log import log_info
-from log import log_warn
+from log import log_debug, log_info, log_warn
 
 from machine import Pin
 import rp2
@@ -71,7 +69,7 @@ class Ir_uart:
         # Note: This SM counter is a little rough... it assumes that only this class will
         # consume SMs...
         if Ir_uart._sm_counter < 4:
-            log_debug("Ir_uart::__init__ - Using SM", Ir_uart._sm_counter)
+            log_info("Ir_uart::__init__ - Initialised using state-machine ", Ir_uart._sm_counter)
         else:
             raise RuntimeError("Pulse_generator::__init__ - No more state machines available!")
         

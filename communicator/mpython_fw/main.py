@@ -24,9 +24,7 @@
 #
 #************************************************************************
 
-from log import log_debug
-from log import log_info
-from log import log_warn
+from log import log_debug, log_info, log_warn, log_control
 
 from machine import Pin, UART, I2C
 from ble_central import demo
@@ -48,6 +46,8 @@ _GPIO_SCL1 = const(11)
 
 _GPIO_INT0 = const(12)
 
+_GPIO_UART0_TX = const(0)
+_GPIO_UART0_RX = const(1)
 _GPIO_UART1_TX = const(4)
 _GPIO_UART1_RX = const(5)
 _GPIO_UART1_RTS = const(7)
@@ -67,18 +67,22 @@ green_led.set(True)
 blue_led.set(False)
 ir_led.value(0)
 
-# Configure serial UART
-uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
-    txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
-
 # Configure IR UART
 ir_uart = Ir_uart(_GPIO_IR_LED)
+
+# Configure log output to serial UART0
+uart0 = UART(0, baudrate=115200, tx=Pin(_GPIO_UART0_TX), rx=Pin(_GPIO_UART0_RX))
+log_control(uart0, True, True, True)
+
+# Configure Valiant communication serial UART1
+uart1 = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
+    txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
 
 # Configure I2C interfaces
 i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=100000) # Internal
 i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000) # External
 
-# Configure parallel port
+# Configure Valiant communication parallel port
 parallel_port = Parallel_port(i2c0, _GPIO_INT0)
 
 while True:
@@ -86,6 +90,6 @@ while True:
         blue_led.set(True)
         ch = parallel_port.get()
         ir_uart.ir_putc(ch)
-        print("Parallel Rx = ", ch)
+        log_debug("Parallel Rx = ", ch)
 
     blue_led.set(False)
