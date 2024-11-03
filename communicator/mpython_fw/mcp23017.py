@@ -63,6 +63,7 @@ class Mcp23017:
     def __init__(self, i2c: I2C, address):
         self.i2c = i2c
         self.address = address
+        self._is_present = False
 
         # Default our local register representations
         self.iodir_ab = 0
@@ -74,6 +75,17 @@ class Mcp23017:
         self.gpinten_ab = 0
         self.defval_ab = 0
         self.intcon_ab = 0
+
+        # Check that MCP23017 is present
+        devices = i2c.scan()
+        for idx in range(len(devices)):
+            if devices[idx] == self.address: self._is_present = True
+
+        if self._is_present:
+            log_info("Mcp23017::__init__ - MCP23017 detected at address ", hex(self.address))
+        else:
+            log_info("Mcp23017::__init__ - MCP23017 is not present... Cannot initialise!")
+            return
 
         # Configure IO Control
         self.configuration(True, False)
@@ -90,6 +102,11 @@ class Mcp23017:
         self.__write_dual_registers(_MCP23017_GPINTENA, self.gpinten_ab) # Also writes GPINTENB
 
         log_info("Mcp23017::__init__ - MCP23017 initialised")
+
+    # Return True is MCP23017 was detected and initialised
+    @property
+    def is_present(self):
+        return self._is_present
 
     # Set the mirroring and polarity configuration flags
     #

@@ -50,60 +50,64 @@ _PARALLEL_DAT7 = const(15)
 
 class Parallel_port:
     def __init__(self, i2c: I2C, interrupt_pin):
-        self.mcp = Mcp23017(i2c, 0x20)
+        self.mcp = Mcp23017(i2c, 0x21)
+        self._is_present = self.mcp.is_present
 
-        # Define an Rx FIFO for storing incoming data
-        self.rx_fifo = Byte_fifo(1024)
+        if (self._is_present):
+            # Define an Rx FIFO for storing incoming data
+            self.rx_fifo = Byte_fifo(1024)
 
-        # Set pin directions (True = input, False = output)
-        self.mcp.mgpio_set_dir(_PARALLEL_UN0, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_UN1, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_NACK, False)
-        self.mcp.mgpio_set_dir(_PARALLEL_BUSY, False)
-        self.mcp.mgpio_set_dir(_PARALLEL_NDATASTROBE, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_5, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_6, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_7, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_DAT0, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_DAT1, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_DAT2, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_DAT3, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_DAT4, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_DAT5, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_DAT6, True)
-        self.mcp.mgpio_set_dir(_PARALLEL_DAT7, True)
+            # Set pin directions (True = input, False = output)
+            self.mcp.mgpio_set_dir(_PARALLEL_UN0, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_UN1, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_NACK, False)
+            self.mcp.mgpio_set_dir(_PARALLEL_BUSY, False)
+            self.mcp.mgpio_set_dir(_PARALLEL_NDATASTROBE, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_5, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_6, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_7, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_DAT0, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_DAT1, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_DAT2, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_DAT3, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_DAT4, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_DAT5, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_DAT6, True)
+            self.mcp.mgpio_set_dir(_PARALLEL_DAT7, True)
 
-        # Set pull ups on inputs
-        self.mcp.mgpio_pull_up(_PARALLEL_UN0, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_UN1, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_NDATASTROBE, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_5, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_6, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_7, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT0, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT1, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT2, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT3, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT4, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT5, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT6, True)
-        self.mcp.mgpio_pull_up(_PARALLEL_DAT7, True)
+            # Set pull ups on inputs
+            self.mcp.mgpio_pull_up(_PARALLEL_UN0, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_UN1, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_NDATASTROBE, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_5, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_6, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_7, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_DAT0, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_DAT1, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_DAT2, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_DAT3, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_DAT4, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_DAT5, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_DAT6, True)
+            self.mcp.mgpio_pull_up(_PARALLEL_DAT7, True)
 
-        # Set outputs to default
-        self.mcp.mgpio_put(_PARALLEL_NACK, False)
-        self.mcp.mgpio_put(_PARALLEL_BUSY, True)
+            # Set outputs to default
+            self.mcp.mgpio_put(_PARALLEL_NACK, False)
+            self.mcp.mgpio_put(_PARALLEL_BUSY, True)
 
-        # Set up interrupt on MCP23017 _PARALLEL_NDATASTROBE signal
-        self.mcp.interrupt_set_default_value(_PARALLEL_NDATASTROBE, True) # Set default to high
-        self.mcp.interrupt_set_type(_PARALLEL_NDATASTROBE, True) # Interrupt type is 'compare to default'
-        self.mcp.interrupt_enable(_PARALLEL_NDATASTROBE, True) # Enable interrupt
-        self.mcp.interrupt_get_values() # Read INTCAP to clear any pending IRQs
+            # Set up interrupt on MCP23017 _PARALLEL_NDATASTROBE signal
+            self.mcp.interrupt_set_default_value(_PARALLEL_NDATASTROBE, True) # Set default to high
+            self.mcp.interrupt_set_type(_PARALLEL_NDATASTROBE, True) # Interrupt type is 'compare to default'
+            self.mcp.interrupt_enable(_PARALLEL_NDATASTROBE, True) # Enable interrupt
+            self.mcp.interrupt_get_values() # Read INTCAP to clear any pending IRQs
 
-        # Configure Interrupt detection GPIO on RP2040
-        self.interrupt_pin = Pin(interrupt_pin, Pin.IN, Pin.PULL_UP)
-        self.interrupt_pin.irq(handler=self.__callback, trigger=self.interrupt_pin.IRQ_FALLING)
+            # Configure Interrupt detection GPIO on RP2040
+            self.interrupt_pin = Pin(interrupt_pin, Pin.IN, Pin.PULL_UP)
+            self.interrupt_pin.irq(handler=self.__callback, trigger=self.interrupt_pin.IRQ_FALLING)
 
-        log_info("Parallel::__init__ - Parallel port initialised")
+            log_info("Parallel::__init__ - Parallel port initialised")
+        else:
+            log_info("Parallel::__init__ - MCP23017 not detected - Parallel port NOT initialised")
 
     # MCP23017 INTB pin callback
     def __callback(self, p):
@@ -117,8 +121,10 @@ class Parallel_port:
 
     # Get a byte from the FIFO
     def read(self):
-        return self.rx_fifo.read()
+        if (self._is_present): return self.rx_fifo.read()
+        return 0
     
     # Returns False if fifo is empty
     def any(self) -> bool:
-        return self.rx_fifo.any()
+        if (self._is_present): return self.rx_fifo.any()
+        return False
