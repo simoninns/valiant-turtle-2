@@ -31,7 +31,7 @@ class Byte_fifo:
         self.index_put = 0
         self.index_get = 0
         
-    def put(self, value):
+    def write(self, value):
         next_index = (self.index_put + 1) % self.size
         # check for overflow
         if self.index_get != next_index: 
@@ -41,7 +41,7 @@ class Byte_fifo:
         else:
             return None
         
-    def get(self):
+    def read(self):
         if self.index_get == self.index_put:
             return None  # Buffer empty
         else:

@@ -109,15 +109,15 @@ class Parallel_port:
     def __callback(self, p):
         # Get the databus value
         rx_data = self.mcp.mgpio_get_all() >> 8
-        self.rx_fifo.put(rx_data)
+        self.rx_fifo.write(rx_data)
         
         # ACK a received byte (M6522 VIA Handshake output mode, pull CB1 low)
         self.mcp.mgpio_put(_PARALLEL_BUSY, False)
         self.mcp.mgpio_put(_PARALLEL_BUSY, True)
 
     # Get a byte from the FIFO
-    def get(self):
-        return self.rx_fifo.get()
+    def read(self):
+        return self.rx_fifo.read()
     
     # Returns False if fifo is empty
     def any(self) -> bool:

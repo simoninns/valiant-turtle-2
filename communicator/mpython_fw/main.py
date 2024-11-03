@@ -86,10 +86,18 @@ i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000) # External
 parallel_port = Parallel_port(i2c0, _GPIO_INT0)
 
 while True:
+    # Send any received parallel port data via IR
     while(parallel_port.any()):
         blue_led.set(True)
-        ch = parallel_port.get()
+        ch = parallel_port.read()
         ir_uart.ir_putc(ch)
-        log_debug("Parallel Rx = ", ch)
+        log_debug("Parallel Rx =", ch)
+
+    # Send any received serial data via IR
+    while(uart1.any()):
+        blue_led.set(True)
+        ch = int(uart1.read(1)[0]) # Get 1 byte, store as int
+        ir_uart.ir_putc(ch)
+        log_debug("Serial Rx =", ch)
 
     blue_led.set(False)
