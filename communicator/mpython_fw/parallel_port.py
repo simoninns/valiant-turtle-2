@@ -50,7 +50,7 @@ _PARALLEL_DAT7 = const(15)
 
 class Parallel_port:
     def __init__(self, i2c: I2C, interrupt_pin):
-        self.mcp = Mcp23017(i2c, 0x21)
+        self.mcp = Mcp23017(i2c, 0x20)
         self._is_present = self.mcp.is_present
 
         if (self._is_present):

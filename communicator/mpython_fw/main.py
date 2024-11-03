@@ -31,6 +31,7 @@ from ble_central import demo
 from status_led import Status_led
 from ir_uart import Ir_uart
 from parallel_port import Parallel_port
+from process_timer import Process_timer
 
 from time import sleep
 
@@ -57,18 +58,15 @@ _GPIO_BUTTON0 = const(21)
 _GPIO_BUTTON1 = const(20)
 _GPIO_BUTTON2 = const(19)
 
-# Make sure the LEDs and IR LEDs are off
-green_led = Status_led(_GPIO_GREEN_LED)
-blue_led = Status_led(_GPIO_BLUE_LED)
-ir_led = Pin(_GPIO_IR_LED, Pin.OUT)
-
-# Green and blue are inverted logic - IR is not
-green_led.set(True)
-blue_led.set(False)
-ir_led.value(0)
-
-# Configure IR UART
-ir_uart = Ir_uart(_GPIO_IR_LED)
+ticker = 0
+def power_led():
+    global ticker
+    if ticker == 0: green_led.set_brightness(255)
+    if ticker == 75: green_led.set_brightness(10)
+    if ticker == 100:
+        ticker = 0
+    else:
+        ticker += 1
 
 # Configure log output to serial UART0
 uart0 = UART(0, baudrate=115200, tx=Pin(_GPIO_UART0_TX), rx=Pin(_GPIO_UART0_RX))
@@ -78,6 +76,13 @@ log_control(uart0, True, True, True)
 uart1 = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
     txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
 
+# Ensure IR LED is off
+ir_led = Pin(_GPIO_IR_LED, Pin.OUT)
+ir_led.value(0)
+
+# Configure IR UART
+ir_uart = Ir_uart(_GPIO_IR_LED)
+
 # Configure I2C interfaces
 i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=100000) # Internal
 i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000) # External
@@ -85,19 +90,31 @@ i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000) # External
 # Configure Valiant communication parallel port
 parallel_port = Parallel_port(i2c0, _GPIO_INT0)
 
+# Initialise status LEDs
+green_led = Status_led(_GPIO_GREEN_LED, 255, 20)
+blue_led = Status_led(_GPIO_BLUE_LED, 0, 10)
+
+# Set up a process timer
+process_timer = Process_timer()
+
+# Use the process timer for LED control
+process_timer.register_callback(green_led.led_process)
+process_timer.register_callback(blue_led.led_process)
+process_timer.register_callback(power_led)
+
 while True:
     # Send any received parallel port data via IR
     while(parallel_port.any()):
-        blue_led.set(True)
+        blue_led.set_brightness(255)
         ch = parallel_port.read()
         ir_uart.ir_putc(ch)
         log_debug("Parallel Rx =", ch)
+        blue_led.set_brightness(0)
 
     # Send any received serial data via IR
     while(uart1.any()):
-        blue_led.set(True)
+        blue_led.set_brightness(255)
         ch = int(uart1.read(1)[0]) # Get 1 byte, store as int
         ir_uart.ir_putc(ch)
         log_debug("Serial Rx =", ch)
-
-    blue_led.set(False)
+        blue_led.set_brightness(0)

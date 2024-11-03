@@ -24,13 +24,41 @@
 #
 #************************************************************************
 
-from machine import Pin
+from log import log_debug, log_info, log_warn
+from machine import PWM
 
 class Status_led:
-    def __init__(self, led_pin):
-        self.led = Pin(led_pin, Pin.OUT)
-        self.led.value(1) # LEDs are inverted logic 1=OFF
+    def __init__(self, led_pin, brightness = 0, fade_speed = 10):
+        self.led_pin = led_pin
+        self.led = PWM(self.led_pin)
+        self.led.freq(5000)
+        self.led.duty_u16(0)
 
-    def set(self, state: bool):
-        if state: self.led.value(0) # True = ON
-        else: self.led.value(1) # False = OFF
+        self.current_brightness = 0
+        self.target_brightness = brightness
+        self.fade_speed = fade_speed # 1-255
+        log_debug("Status_led::__init__ - Initialised LED on pin", self.led_pin)
+
+    # Set brightness from 0 to 255
+    def set_brightness(self, brightness: int):
+        if (brightness < 0): brightness = 0
+        if (brightness > 255): brightness = 255
+        self.target_brightness = brightness
+
+    def set_fade_speed(self, fade_speed):
+        if (fade_speed < 1): fade_speed = 1
+        if (fade_speed > 255): fade_speed = 255
+        self.fade_speed = fade_speed
+
+    # This should be called by a timer to process the LED fading
+    def led_process(self):
+        if (self.target_brightness > self.current_brightness):
+            self.current_brightness += self.fade_speed
+        elif (self.target_brightness < self.current_brightness):
+            self.current_brightness -= self.fade_speed
+
+        if (self.current_brightness < 0): self.current_brightness = 0
+        if (self.current_brightness > 255): self.current_brightness = 255
+
+        invert = int((255 - self.current_brightness) * 257)
+        self.led.duty_u16(invert)
