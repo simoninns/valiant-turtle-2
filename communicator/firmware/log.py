@@ -2,6 +2,7 @@
 #
 #   log.py
 #
+#   Logging methods
 #   Valiant Turtle 2 - Communicator firmware
 #   Copyright (C) 2024 Simon Inns
 #

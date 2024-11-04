@@ -29,7 +29,6 @@ from log import log_debug, log_info, log_warn
 from machine import I2C
 from time import sleep
 
-# 24LC16 I2C EEPROM Communication
 class Eeprom:
     def __init__(self, i2c_bus: I2C, address: int = 0x50):
         self.i2c = i2c_bus

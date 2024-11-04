@@ -2,6 +2,7 @@
 #
 #   process_timer.py
 #
+#   Centralised process timer for repetitive tasks
 #   Valiant Turtle 2 - Communicator firmware
 #   Copyright (C) 2024 Simon Inns
 #

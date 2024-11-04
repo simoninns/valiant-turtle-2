@@ -2,6 +2,7 @@
 #
 #   ir_uart.py
 #
+#   Original Valiant IR protocol communication class
 #   Valiant Turtle 2 - Communicator firmware
 #   Copyright (C) 2024 Simon Inns
 #

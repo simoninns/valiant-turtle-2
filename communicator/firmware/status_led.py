@@ -2,6 +2,7 @@
 #
 #   status_led.py
 #
+#   Status LED control class with PWM brightness control
 #   Valiant Turtle 2 - Communicator firmware
 #   Copyright (C) 2024 Simon Inns
 #

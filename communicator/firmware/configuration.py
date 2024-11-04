@@ -2,6 +2,7 @@
 #
 #   configuration.py
 #
+#   System configuration class with serialization
 #   Valiant Turtle 2 - Communicator firmware
 #   Copyright (C) 2024 Simon Inns
 #

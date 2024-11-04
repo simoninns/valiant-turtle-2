@@ -2,6 +2,7 @@
 #
 #   byte_fifo.py
 #
+#   Byte FIFO for use with communication ISRs
 #   Valiant Turtle 2 - Communicator firmware
 #   Copyright (C) 2024 Simon Inns
 #

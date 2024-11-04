@@ -2,6 +2,7 @@
 #
 #   parallel_port.py
 #
+#   Original Valiant parallel port implementation
 #   Valiant Turtle 2 - Communicator firmware
 #   Copyright (C) 2024 Simon Inns
 #

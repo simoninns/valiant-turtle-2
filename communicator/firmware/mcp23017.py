@@ -2,6 +2,7 @@
 #
 #   mcp23017.py
 #
+#   MCP23017 I2C I/O Expander communication class
 #   Valiant Turtle 2 - Communicator firmware
 #   Copyright (C) 2024 Simon Inns
 #
