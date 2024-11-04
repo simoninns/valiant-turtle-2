@@ -32,8 +32,11 @@ from status_led import Status_led
 from ir_uart import Ir_uart
 from parallel_port import Parallel_port
 from process_timer import Process_timer
+from configuration import Configuration
+from eeprom import Eeprom
 
 from time import sleep
+import pickle
 
 # GPIO Hardware mapping
 _GPIO_GREEN_LED = const(16)
@@ -58,6 +61,7 @@ _GPIO_BUTTON0 = const(21)
 _GPIO_BUTTON1 = const(20)
 _GPIO_BUTTON2 = const(19)
 
+# Fade the power LED on and off...
 ticker = 0
 def power_led():
     global ticker
@@ -87,17 +91,41 @@ ir_uart = Ir_uart(_GPIO_IR_LED)
 i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=100000) # Internal
 i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000) # External
 
+# EEPROM
+eeprom = Eeprom(i2c0, 0x50)
+
+# Configuration object
+configuration = Configuration()
+
+# Save configuration to EEPROM
+#conf_stream = pickle.dumps(configuration)
+conf_stream = bytes([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,21,22,23,24,25,26,66,67,68,69,70,71,72,100,101,102,103,104])
+conf_size = len(conf_stream)
+
+log_debug("Writing:", conf_stream)
+eeprom.write(0, conf_stream)
+configuration.is_legacy_mode = False
+
+conf_stream = eeprom.read(0,conf_size)
+log_debug("Read:", conf_stream)
+#configuration = pickle.loads(conf_stream)
+
+if configuration.is_legacy_mode == True:
+    log_info("Communicator is running in legacy mode")
+else:
+    log_info("Communicator is running in Valiant Turtle 2 mode")
+
 # Configure Valiant communication parallel port
 parallel_port = Parallel_port(i2c0, _GPIO_INT0)
 
 # Initialise status LEDs
 green_led = Status_led(_GPIO_GREEN_LED, 255, 20)
-blue_led = Status_led(_GPIO_BLUE_LED, 0, 10)
+blue_led = Status_led(_GPIO_BLUE_LED, 0, 20)
 
 # Set up a process timer
 process_timer = Process_timer()
 
-# Use the process timer for LED control
+# Use the process timer for all timer based activities:
 process_timer.register_callback(green_led.led_process)
 process_timer.register_callback(blue_led.led_process)
 process_timer.register_callback(power_led)

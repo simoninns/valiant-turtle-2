@@ -82,7 +82,7 @@ class Mcp23017:
             if devices[idx] == self.address: self._is_present = True
 
         if self._is_present:
-            log_info("Mcp23017::__init__ - MCP23017 detected at address ", hex(self.address))
+            log_info("Mcp23017::__init__ - MCP23017 detected at address", hex(self.address))
         else:
             log_info("Mcp23017::__init__ - MCP23017 is not present... Cannot initialise!")
             return
