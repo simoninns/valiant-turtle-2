@@ -2,7 +2,7 @@
 #
 #   main.py
 #
-#   Valiant Turtle 2 - Raspberry Pi Pico W Firmware
+#   Valiant Turtle 2 - Robot firmware
 #   Copyright (C) 2024 Simon Inns
 #
 #   This file is part of Valiant Turtle 2
@@ -24,18 +24,18 @@
 #
 #************************************************************************
 
-from log import log_debug
-from log import log_info
-from log import log_warn
+from log import log_debug, log_info, log_warn, log_control
 
 from ws2812b import Ws2812b
 from pen import Pen
 from ina260 import Ina260
 from eeprom import Eeprom
+from configuration import Configuration
 from velocity import Velocity
 from drv8825 import Drv8825
 from stepper import Stepper
 from metric import Metric
+from process_timer import Process_timer
 from ble_peripheral import demo
 
 from time import sleep
@@ -60,6 +60,29 @@ _GPIO_M0 = const(12)
 _GPIO_M1 = const(13)
 _GPIO_M2 = const(14)
 
+# Fade the power LED on and off...
+ticker = 0
+def power_led():
+    global ticker
+    # if ticker == 0: green_led.set_brightness(255)
+    # if ticker == 75: green_led.set_brightness(10)
+    # if ticker == 100:
+    #     ticker = 0
+    # else:
+    #     ticker += 1
+
+# Output power monitoring information periodically
+ina260_ticker = 0
+def ina260_info():
+    global ina260_ticker
+    if ina260_ticker == 0:
+        log_info("INA260: mA =", ina260.current, "/ mV =" , ina260.bus_voltage, "/ mW =", ina260.power)
+    ina260_ticker += 1
+    if ina260_ticker == 2000: ina260_ticker = 0
+
+# Turn on logging
+log_control(True, True, True)
+
 # Initialise the LEDs and show some colour
 leds = Ws2812b(5, 0, _GPIO_LEDS, delay=0)
 
@@ -68,8 +91,8 @@ pen = Pen(_GPIO_PEN)
 pen.off()
 
 # Initialise the I2C buses
-i2c_internal = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=100000)
-i2c_external = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000)
+i2c_internal = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000)
+i2c_external = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=400000)
 
 # Initialise the INA260 power monitoring chip
 ina260 = Ina260(i2c_internal, 0x40)
@@ -77,15 +100,11 @@ ina260 = Ina260(i2c_internal, 0x40)
 # Initialise the EEPROM
 eeprom = Eeprom(i2c_internal, 0x50)
 
-# wbuffer = bytearray([0,1,2,3,4,5,6,7,8,9])
-# eeprom.write(0x0, wbuffer)
-# print("Write Buffer = ", "".join("0x%02x " % b for b in wbuffer))
-# print("Read Length = ", len(wbuffer))
-
-# rbuffer = eeprom.read(0x0, 10)
-# log_info("Read Buffer = ", "".join("0x%02x " % b for b in rbuffer))
-# log_info("Read Length = ", len(rbuffer))
-# log_info("")
+# Read the configuration from EEPROM
+configuration = Configuration()
+if not configuration.unpack(eeprom.read(0, configuration.pack_size)):
+    # Current EEPROM image is invalid, write the default
+    eeprom.write(0, configuration.pack())
 
 # LED test
 leds.set_pixel(0, 255, 0, 0)
@@ -95,16 +114,23 @@ leds.set_pixel(3, 255, 0, 0)
 leds.set_pixel(4, 0, 255, 0)
 leds.show()
 
+# Set up a process timer
+process_timer = Process_timer()
+
+# Use the process timer for all timer based activities:
+process_timer.register_callback(power_led)
+process_timer.register_callback(ina260_info)
+
 # log_info("INA260:")
 # log_info("  mA = ", ina260.current)
 # log_info("  mV = ", ina260.bus_voltage)
 # log_info("  mW = ", ina260.power)
 # sleep(1.0)
 
-# Configure the DRV8825
-drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
-drv8825.set_steps_per_revolution(800)
-drv8825.set_enable(False)
+# # Configure the DRV8825
+# drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
+# drv8825.set_steps_per_revolution(800)
+# drv8825.set_enable(False)
 
 # # Configure the steppers
 # left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)

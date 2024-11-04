@@ -71,6 +71,29 @@ def power_led():
     else:
         ticker += 1
 
+# Process serial and parallel data to IR
+# using the original Valiant Turtle communication
+def legacy_mode():
+    # Send any received parallel port data via IR
+        while(parallel_port.any()):
+            blue_led.set_brightness(255)
+            ch = parallel_port.read()
+            ir_uart.ir_putc(ch)
+            #log_debug("Parallel Rx =", ch)
+            blue_led.set_brightness(0)
+
+        # Send any received serial data via IR
+        while(uart1.any()):
+            blue_led.set_brightness(255)
+            ch = int(uart1.read(1)[0]) # Get 1 byte, store as int
+            ir_uart.ir_putc(ch)
+            #log_debug("Serial Rx =", ch)
+            blue_led.set_brightness(0)
+
+# Communicate with Valiant Turtle 2 robots
+def vt2_mode():
+    sleep(1)
+
 # Configure log output to serial UART0
 uart0 = UART(0, baudrate=115200, tx=Pin(_GPIO_UART0_TX), rx=Pin(_GPIO_UART0_RX))
 log_control(uart0, True, True, True)
@@ -101,12 +124,6 @@ if not configuration.unpack(eeprom.read(0, configuration.pack_size)):
     # Current EEPROM image is invalid, write the default
     eeprom.write(0, configuration.pack())
 
-# Which mode are we in?
-if configuration.is_legacy_mode == True:
-    log_info("Communicator is running in legacy mode")
-else:
-    log_info("Communicator is running in Valiant Turtle 2 mode")
-
 # Configure Valiant communication parallel port
 parallel_port = Parallel_port(i2c0, _GPIO_INT0)
 
@@ -122,19 +139,13 @@ process_timer.register_callback(green_led.led_process)
 process_timer.register_callback(blue_led.led_process)
 process_timer.register_callback(power_led)
 
-while True:
-    # Send any received parallel port data via IR
-    while(parallel_port.any()):
-        blue_led.set_brightness(255)
-        ch = parallel_port.read()
-        ir_uart.ir_putc(ch)
-        log_debug("Parallel Rx =", ch)
-        blue_led.set_brightness(0)
-
-    # Send any received serial data via IR
-    while(uart1.any()):
-        blue_led.set_brightness(255)
-        ch = int(uart1.read(1)[0]) # Get 1 byte, store as int
-        ir_uart.ir_putc(ch)
-        log_debug("Serial Rx =", ch)
-        blue_led.set_brightness(0)
+# Which mode are we in?
+if configuration.is_legacy_mode == True:
+    log_info("Communicator is running in legacy mode")
+    while configuration.is_legacy_mode:
+        legacy_mode()
+        
+else:
+    log_info("Communicator is running in Valiant Turtle 2 mode")
+    while not configuration.is_legacy_mode:
+        vt2_mode()

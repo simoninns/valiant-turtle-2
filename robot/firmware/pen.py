@@ -3,7 +3,7 @@
 #   pen.py
 #
 #   Control the pen lift mechanism
-#   Valiant Turtle 2 - Raspberry Pi Pico W Firmware
+#   Valiant Turtle 2 - Robot firmware
 #   Copyright (C) 2024 Simon Inns
 #
 #   This file is part of Valiant Turtle 2

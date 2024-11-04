@@ -2,8 +2,8 @@
 #
 #   log.py
 #
-#   Logging method for debug etc
-#   Valiant Turtle 2 - Raspberry Pi Pico W Firmware
+#   Logging methods
+#   Valiant Turtle 2 - Robot firmware
 #   Copyright (C) 2024 Simon Inns
 #
 #   This file is part of Valiant Turtle 2
@@ -25,13 +25,35 @@
 #
 #************************************************************************
 
-from machine import RTC
+from machine import RTC, UART
+
+debug_uart = None
+is_logging_debug = False
+is_logging_info = False
+is_logging_warn = False
+
+def log_control(debug: bool, info: bool, warn: bool):
+    global is_logging_debug
+    global is_logging_info
+    global is_logging_warn
+    is_logging_debug = debug
+    is_logging_info = info
+    is_logging_warn = warn
+
+    # Output some whitespace and a header
+    if (debug or info or warn):
+        print("\r")
+        print("\r")
+        print("Valiant Turtle 2 - Communicator - Debug output\r")
 
 def log_debug(*args, **kwargs):
-    print( "Debug: "+" ".join(map(str,args)), **kwargs)
+    global is_logging_debug
+    if is_logging_debug: print("Debug: "+" ".join(map(str,args))+"\r", **kwargs)
 
 def log_info(*args, **kwargs):
-    print( "Info: "+" ".join(map(str,args)), **kwargs)
+    global is_logging_info
+    if is_logging_debug: print("Info: "+" ".join(map(str,args))+"\r", **kwargs)
 
 def log_warn(*args, **kwargs):
-    print( "Warn: "+" ".join(map(str,args)), **kwargs)
+    global is_logging_warn
+    if is_logging_debug: print("Warn: "+" ".join(map(str,args))+"\r", **kwargs)

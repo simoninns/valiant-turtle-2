@@ -3,7 +3,7 @@
 #   ina260.py
 #
 #   INA260 I2C Power Monitor Communication
-#   Valiant Turtle 2 - Raspberry Pi Pico W Firmware
+#   Valiant Turtle 2 - Robot firmware
 #   Copyright (C) 2024 Simon Inns
 #
 #   This file is part of Valiant Turtle 2

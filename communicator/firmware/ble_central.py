@@ -3,6 +3,7 @@ import time
 
 from ble_advertising import decode_services, decode_name
 from micropython import const
+from log import log_debug, log_info, log_warn
 
 _IRQ_CENTRAL_CONNECT = const(1)
 _IRQ_CENTRAL_DISCONNECT = const(2)
@@ -115,7 +116,7 @@ class BLE_central:
                     self._conn_handle, self._start_handle, self._end_handle
                 )
             else:
-                print("Failed to find UART service.")
+                log_debug("BLE_Central::_irq - Service query complete but failed to find UART service.")
 
         elif event == _IRQ_GATTC_CHARACTERISTIC_RESULT:
             # Connected device returned a characteristic.
@@ -132,11 +133,11 @@ class BLE_central:
                 if self._conn_callback:
                     self._conn_callback()
             else:
-                print("Failed to find UART rx characteristic.")
+                log_debug("BLE_Central::_irq - Characteristic query complete but failed to find UART Rx characteristic.")
 
         elif event == _IRQ_GATTC_WRITE_DONE:
             conn_handle, value_handle, status = data
-            print("TX complete")
+            log_debug("BLE_Central::_irq - Tx complete")
 
         elif event == _IRQ_GATTC_NOTIFY:
             conn_handle, value_handle, notify_data = data
@@ -194,12 +195,12 @@ def demo():
 
     def on_scan(addr_type, addr, name):
         if addr_type is not None:
-            print("Found peripheral:", addr_type, addr, name)
+            log_debug("BLE_Central::on_scan - Found peripheral. addr_type=", addr_type, "addr=", addr, "name=", name)
             central.connect()
         else:
             nonlocal not_found
             not_found = True
-            print("No peripheral found.")
+            log_debug("BLE_Central::on_scan - No peripheral found")
 
     central.scan(callback=on_scan)
 
@@ -210,9 +211,10 @@ def demo():
             return
 
     print("Connected")
+    log_debug("BLE_Central::demo - Connected")
 
     def on_rx(v):
-        print("RX", v)
+        log_debug("BLE_Central::on_rx - Rx'd", v)
 
     central.on_notify(on_rx)
 
@@ -222,11 +224,11 @@ def demo():
     while central.is_connected():
         try:
             v = str(i) + "_"
-            print("TX", v)
+            log_debug("BLE_Central::demo - Tx'd", v)
             central.write(v, with_response)
         except:
-            print("TX failed")
+            log_debug("BLE_Central::demo - Tx failed!")
         i += 1
         time.sleep_ms(400 if with_response else 30)
 
-    print("Disconnected")
+    log_debug("BLE_Central::demo - Disconnected")

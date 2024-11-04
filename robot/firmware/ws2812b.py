@@ -3,7 +3,7 @@
 #   ws2812b.py
 #
 #   Control WS2812B RGB LEDs using PIO
-#   Valiant Turtle 2 - Raspberry Pi Pico W Firmware
+#   Valiant Turtle 2 - Robot firmware
 #   Copyright (C) 2024 Simon Inns
 #
 #   This file is part of Valiant Turtle 2
