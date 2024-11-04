@@ -36,7 +36,6 @@ from configuration import Configuration
 from eeprom import Eeprom
 
 from time import sleep
-import pickle
 
 # GPIO Hardware mapping
 _GPIO_GREEN_LED = const(16)
@@ -97,19 +96,12 @@ eeprom = Eeprom(i2c0, 0x50)
 # Configuration object
 configuration = Configuration()
 
-# Save configuration to EEPROM
-#conf_stream = pickle.dumps(configuration)
-conf_stream = bytes([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,21,22,23,24,25,26,66,67,68,69,70,71,72,100,101,102,103,104])
-conf_size = len(conf_stream)
+# Read the configuration from EEPROM
+if not configuration.unpack(eeprom.read(0, configuration.pack_size)):
+    # Current EEPROM image is invalid, write the default
+    eeprom.write(0, configuration.pack())
 
-log_debug("Writing:", conf_stream)
-eeprom.write(0, conf_stream)
-configuration.is_legacy_mode = False
-
-conf_stream = eeprom.read(0,conf_size)
-log_debug("Read:", conf_stream)
-#configuration = pickle.loads(conf_stream)
-
+# Which mode are we in?
 if configuration.is_legacy_mode == True:
     log_info("Communicator is running in legacy mode")
 else:
