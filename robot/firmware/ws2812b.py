@@ -25,6 +25,7 @@
 #
 #************************************************************************
 
+from log import log_debug, log_info, log_warn
 import array, time
 from machine import Pin
 import rp2
@@ -44,17 +45,71 @@ def ws2812():
     wrap()
 
 class Ws2812b:
-    def __init__(self, num_leds, state_machine, pin, delay=0.001):
-        self.pixels = array.array("I", [0 for _ in range(num_leds)])
-        self.sm = rp2.StateMachine(state_machine, ws2812, freq=8000000, sideset_base=Pin(pin))
+    def __init__(self, num_pixels, _pio, _state_machine, pin, fade_speed = 10):
+        if _pio > 1 or _pio < 0:
+            ValueError("Ws2812b::__init__ - PIO ID must be 0 or 1")
+        if _state_machine > 3 or _state_machine < 0:
+            ValueError("Ws2812b::__init__ - State-machine ID must be 0-3")
+
+        log_info("Ws2812b::__init__ - Ws2812b initialising on PIO", _pio, "state-machine", _state_machine, "with", num_pixels, "pixels")
+        if _pio == 1: _state_machine += 4 # PIO 0 is SM 0-3 and PIO 1 is SM 4-7
+
+        self.pixels = array.array("I", [0 for _ in range(num_pixels)])
+        self.sm = rp2.StateMachine(_state_machine, ws2812, freq=8000000, sideset_base=Pin(pin))
         self.sm.active(1)
-        self.num_leds = num_leds
-        self.delay = delay
+        self.num_pixels = num_pixels
+
+        # Set up pixel values
+        self.current_red = []
+        self.current_green = []
+        self.current_blue = []
+        self.target_red = []
+        self.target_green = []
+        self.target_blue = []
+        self.fade_speed = []
+
+        for idx in range(self.num_pixels):
+            self.current_red.append(0)
+            self.current_green.append(0)
+            self.current_blue.append(0)
+            self.target_red.append(0)
+            self.target_green.append(0)
+            self.target_blue.append(0)
+            self.fade_speed.append(fade_speed)
 
     def set_pixel(self, pixel_num, red, green, blue):
-        self.pixels[pixel_num] = blue | red << 8 | green << 16
+        if pixel_num > self.num_pixels:
+            ValueError("Ws2812b::set_pixel - Pixel number exceeds the number of available LEDs")
+        self.target_red[pixel_num] = red
+        self.target_green[pixel_num] = green
+        self.target_blue[pixel_num] = blue
 
-    def show(self):
-        for i in range(self.num_leds):
-            self.sm.put(self.pixels[i],8)
-        time.sleep(self.delay)
+    def set_fade_speed(self, pixel_num, fade_speed):
+        if pixel_num > self.num_pixels:
+            ValueError("Ws2812b::set_pixel - Pixel number exceeds the number of available LEDs")
+        self.fade_speed[pixel_num] = fade_speed
+
+    # This should be called by a timer to process the LED fading
+    def process_pixels(self):
+        for idx in range(self.num_pixels):
+            if (self.target_red[idx] > self.current_red[idx]): self.current_red[idx] += self.fade_speed[idx]
+            elif (self.target_red[idx] < self.current_red[idx]): self.current_red[idx] -= self.fade_speed[idx]
+            if (self.target_green[idx] > self.current_green[idx]): self.current_green[idx] += self.fade_speed[idx]
+            elif (self.target_green[idx] < self.current_green[idx]): self.current_green[idx] -= self.fade_speed[idx]
+            if (self.target_blue[idx] > self.current_blue[idx]): self.current_blue[idx] += self.fade_speed[idx]
+            elif (self.target_blue[idx] < self.current_blue[idx]): self.current_blue[idx] -= self.fade_speed[idx]
+
+            if (self.current_red[idx] < 0): self.current_red[idx] = 0
+            if (self.current_red[idx] > 255): self.current_red[idx] = 255
+            if (self.current_green[idx] < 0): self.current_green[idx] = 0
+            if (self.current_green[idx] > 255): self.current_green[idx] = 255
+            if (self.current_blue[idx] < 0): self.current_blue[idx] = 0
+            if (self.current_blue[idx] > 255): self.current_blue[idx] = 255
+
+        self.__update_pixels()
+
+    # Update the pixels using the PIO state-machine
+    def __update_pixels(self):
+        for idx in range(self.num_pixels):
+            enc_value =  self.current_blue[idx] | self.current_red[idx] << 8 | self.current_green[idx] << 16
+            self.sm.put(enc_value,8)

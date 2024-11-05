@@ -25,9 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug
-from log import log_info
-from log import log_warn
+from log import log_debug, log_info, log_warn
 
 from velocity import Velocity
 from pulse_generator import Pulse_generator
@@ -35,6 +33,8 @@ from pulse_generator import Pulse_generator
 from machine import Pin
 
 class Stepper:
+    _sm_counter = 0 # Keep track of the next free state-machine
+
     def __init__(self, direction_pin, step_pin, is_left: bool):
         # Configure the direction GPIO
         self.direction = Pin(direction_pin, Pin.OUT)
@@ -48,9 +48,16 @@ class Stepper:
         self.is_busy_flag = False
         self.sequence_index = 0
 
-        # Initialise the pulse generator
+        # Ensure we have a free state-machine
+        if Stepper._sm_counter < 4:
+            log_info("Stepper::__init__ - Using SM", Stepper._sm_counter)
+        else:
+            raise RuntimeError("Stepper::__init__ - No more state machines available!")
+
+        # Initialise the pulse generator on PIO 1
         # Note: This controls the step GPIO
-        self.pulse_generator = Pulse_generator(step_pin)
+        self.pulse_generator = Pulse_generator(1, Stepper._sm_counter, step_pin)
+        Stepper._sm_counter += 1
 
         # Set up the pulse generator callback
         self.pulse_generator.callback_subscribe(self.callback)

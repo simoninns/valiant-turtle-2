@@ -25,9 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug
-from log import log_info
-from log import log_warn
+from log import log_debug, log_info, log_warn
 
 from machine import Pin
 import rp2
@@ -68,18 +66,15 @@ def pulse_generator():
     wrap()
 
 class Pulse_generator:
-    _sm_counter = 0
+    def __init__(self, _pio, _state_machine, pin):
+        if _pio > 1 or _pio < 0:
+            ValueError("Pulse_generator::__init__ - PIO ID must be 0 or 1")
+        if _state_machine > 3 or _state_machine < 0:
+            ValueError("Pulse_generator::__init__ - State-machine ID must be 0-3")
 
-    def __init__(self, pin):
-        # Note: This SM counter is a little rough... it assumes that only this class will
-        # consume SMs...
-        if Pulse_generator._sm_counter < 4:
-            log_debug("Pulse_generator::__init__ - Using SM", Pulse_generator._sm_counter)
-        else:
-            raise RuntimeError("Pulse_generator::__init__ - No more state machines available!")
-        
-        self._sm = rp2.StateMachine(Pulse_generator._sm_counter, pulse_generator, freq=2500000, set_base=Pin(pin))
-        Pulse_generator._sm_counter += 1
+        log_info("Pulse_generator::__init__ - Pulse generator initialising on PIO", _pio, "state-machine", _state_machine)
+        if _pio == 1: _state_machine += 4 # PIO 0 is SM 0-3 and PIO 1 is SM 4-7
+        self._sm = rp2.StateMachine(_state_machine, pulse_generator, freq=2500000, set_base=Pin(pin))
         
         # Set interrupt for SM on IRQ 0
         self._sm.irq(handler = self.__interrupt_handler)

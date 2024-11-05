@@ -60,16 +60,23 @@ _GPIO_M0 = const(12)
 _GPIO_M1 = const(13)
 _GPIO_M2 = const(14)
 
+# WS2812b pixel number mapping
+_WS2812B_power = const(0)
+_WS2812B_left_motor = const(1)
+_WS2812B_right_motor = const(2)
+_WS2812B_left_eye = const(3)
+_WS2812B_right_eye = const(4)
+
 # Fade the power LED on and off...
 ticker = 0
 def power_led():
     global ticker
-    # if ticker == 0: green_led.set_brightness(255)
-    # if ticker == 75: green_led.set_brightness(10)
-    # if ticker == 100:
-    #     ticker = 0
-    # else:
-    #     ticker += 1
+    if ticker == 0: ws2812b.set_pixel(_WS2812B_power, 0, 64, 0)
+    if ticker == 75: ws2812b.set_pixel(_WS2812B_power, 0, 0, 0)
+    if ticker == 100:
+        ticker = 0
+    else:
+        ticker += 1
 
 # Output power monitoring information periodically
 ina260_ticker = 0
@@ -83,8 +90,9 @@ def ina260_info():
 # Turn on logging
 log_control(True, True, True)
 
-# Initialise the LEDs and show some colour
-leds = Ws2812b(5, 0, _GPIO_LEDS, delay=0)
+# Initialise the Ws2812b driver on PIO 0, SM 0
+ws2812b = Ws2812b(5, 0, 0, _GPIO_LEDS, 10)
+ws2812b.set_fade_speed(_WS2812B_power, 5)
 
 # Initialise the pen control
 pen = Pen(_GPIO_PEN)
@@ -106,48 +114,32 @@ if not configuration.unpack(eeprom.read(0, configuration.pack_size)):
     # Current EEPROM image is invalid, write the default
     eeprom.write(0, configuration.pack())
 
-# LED test
-leds.set_pixel(0, 255, 0, 0)
-leds.set_pixel(1, 0, 255, 0)
-leds.set_pixel(2, 0, 0, 255)
-leds.set_pixel(3, 255, 0, 0)
-leds.set_pixel(4, 0, 255, 0)
-leds.show()
-
 # Set up a process timer
 process_timer = Process_timer()
 
 # Use the process timer for all timer based activities:
-process_timer.register_callback(power_led)
-process_timer.register_callback(ina260_info)
+process_timer.register_callback(power_led) # For fading on and off the power LED
+process_timer.register_callback(ina260_info) # Periodic power usage output to debug
+process_timer.register_callback(ws2812b.process_pixels) # WS2812 fading process
 
-# log_info("INA260:")
-# log_info("  mA = ", ina260.current)
-# log_info("  mV = ", ina260.bus_voltage)
-# log_info("  mW = ", ina260.power)
-# sleep(1.0)
+# Configure the DRV8825
+drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
+drv8825.set_steps_per_revolution(800)
+drv8825.set_enable(False)
 
-# # Configure the DRV8825
-# drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
-# drv8825.set_steps_per_revolution(800)
-# drv8825.set_enable(False)
+# Configure the steppers
+left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
+left_stepper.set_forwards()
+right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
+right_stepper.set_forwards()
 
-# # Configure the steppers
-# left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
-# left_stepper.set_forwards()
-# right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
-# right_stepper.set_forwards()
-
-# # Define a velocity sequence
+# Define a velocity sequence
 # velocity = Velocity(6400, 32, 2, 1600, 16)
-
-# # Test metric methods
-# metric = Metric()
-# print("100mm to steps =", metric.mm_to_steps(100))
-# print("360 degrees to steps =", metric.degrees_to_steps(360))
 
 # while True:
 #     drv8825.set_enable(True)
+#     ws2812b.set_pixel(_WS2812B_left_motor, 0, 64, 0)
+#     ws2812b.set_pixel(_WS2812B_right_motor, 0, 64, 0)
 #     left_stepper.set_velocity(velocity)
 #     right_stepper.set_velocity(velocity)
 #     print("Stepper sequence running")
@@ -156,9 +148,23 @@ process_timer.register_callback(ina260_info)
 #     while left_stepper.is_busy or right_stepper.is_busy:
 #         sleep(0.01)
 #     drv8825.set_enable(False)
+#     ws2812b.set_pixel(_WS2812B_left_motor, 64, 0, 0)
+#     ws2812b.set_pixel(_WS2812B_right_motor, 64, 0, 0)
 #     print("Stepper sequence complete")
 
 #     sleep(5)
+
+while True:
+    ws2812b.set_pixel(_WS2812B_left_motor, 0, 64, 0)
+    ws2812b.set_pixel(_WS2812B_right_motor, 0, 64, 0)
+    ws2812b.set_pixel(_WS2812B_left_eye, 64, 0, 0)
+    ws2812b.set_pixel(_WS2812B_right_eye, 64, 0, 0)
+    sleep(1)
+    ws2812b.set_pixel(_WS2812B_left_motor, 64, 0, 0)
+    ws2812b.set_pixel(_WS2812B_right_motor, 64, 0, 0)
+    ws2812b.set_pixel(_WS2812B_left_eye, 0, 0, 0)
+    ws2812b.set_pixel(_WS2812B_right_eye, 0, 0, 0)
+    sleep(1)
 
 # BLE test
 demo()

@@ -25,9 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug
-from log import log_info
-from log import log_warn
+from log import log_debug, log_info, log_warn
 
 from machine import Pin
 
