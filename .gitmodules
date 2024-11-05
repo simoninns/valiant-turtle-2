@@ -17,3 +17,6 @@
 	path = robot/kicad/libraries/ki-lime-pi-pico
 	url = https://github.com/recursivenomad/ki-lime-pi-to-go.git
 
+[submodule "BOSL"]
+	path = acorn_userport_adapter/openscad/scad/BOSL
+	url = https://github.com/revarbat/BOSL.git
