@@ -41,6 +41,7 @@ display_case_bottom = "No"; // [Yes, No]
 display_case_top = "No"; // [Yes, No]
 
 /* [Support Enforcers] */
+display_support_enforcers = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
 
@@ -57,6 +58,8 @@ module main() {
     d_case_top = (display_case_top == "Yes") ? true:false;
 
     // Support enforcers
+    d_support_enforcers = (display_support_enforcers == "Yes") ? true:false;
+
     // Non-printable parts
 
     // Screws
@@ -67,6 +70,7 @@ module main() {
     if (d_case_top) render_case_top(toPrint);
 
     // Render the support enforcers
+    if (d_support_enforcers) render_support_enforcers(toPrint);
     // Render the non-printable parts
 
      // Render screws

@@ -185,3 +185,11 @@ module render_case_top(toPrint)
         move([0,0,19]) xrot(180) case_top();
     }
 }
+
+module render_support_enforcers(toPrint)
+{
+    if (toPrint) {
+        move([+(33/2),0,2]) cyl(h=4, d=6);
+        move([-(33/2),0,2]) cyl(h=4, d=6);
+    }
+}
