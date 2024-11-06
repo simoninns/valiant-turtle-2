@@ -36,7 +36,7 @@ from drv8825 import Drv8825
 from stepper import Stepper
 from metric import Metric
 from process_timer import Process_timer
-from ble_peripheral import demo
+from ble_peripheral import ble_peripheral_process
 
 from time import sleep
 from machine import I2C
@@ -154,17 +154,17 @@ right_stepper.set_forwards()
 
 #     sleep(5)
 
-while True:
-    ws2812b.set_pixel(_WS2812B_left_motor, 0, 64, 0)
-    ws2812b.set_pixel(_WS2812B_right_motor, 0, 64, 0)
-    ws2812b.set_pixel(_WS2812B_left_eye, 64, 0, 0)
-    ws2812b.set_pixel(_WS2812B_right_eye, 64, 0, 0)
-    sleep(1)
-    ws2812b.set_pixel(_WS2812B_left_motor, 64, 0, 0)
-    ws2812b.set_pixel(_WS2812B_right_motor, 64, 0, 0)
-    ws2812b.set_pixel(_WS2812B_left_eye, 0, 0, 0)
-    ws2812b.set_pixel(_WS2812B_right_eye, 0, 0, 0)
-    sleep(1)
+# while True:
+#     ws2812b.set_pixel(_WS2812B_left_motor, 0, 64, 0)
+#     ws2812b.set_pixel(_WS2812B_right_motor, 0, 64, 0)
+#     ws2812b.set_pixel(_WS2812B_left_eye, 64, 0, 0)
+#     ws2812b.set_pixel(_WS2812B_right_eye, 64, 0, 0)
+#     sleep(1)
+#     ws2812b.set_pixel(_WS2812B_left_motor, 64, 0, 0)
+#     ws2812b.set_pixel(_WS2812B_right_motor, 64, 0, 0)
+#     ws2812b.set_pixel(_WS2812B_left_eye, 0, 0, 0)
+#     ws2812b.set_pixel(_WS2812B_right_eye, 0, 0, 0)
+#     sleep(1)
 
 # BLE test
-demo()
+ble_peripheral_process()

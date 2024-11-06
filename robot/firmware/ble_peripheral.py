@@ -1,4 +1,31 @@
-# This example demonstrates a UART periperhal.
+#************************************************************************ 
+#
+#   ble_peripheral.py
+#
+#   Raspberry Pico W BLE Peripheral 
+#   Valiant Turtle 2 - Robot firmware
+#   Copyright (C) 2024 Simon Inns
+#
+#   This file is part of Valiant Turtle 2
+#
+#   This is free software: you can redistribute it and/or
+#   modify it under the terms of the GNU General Public License as
+#   published by the Free Software Foundation, either version 3 of the
+#   License, or (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#   Email: simon.inns@gmail.com
+#
+#************************************************************************
+
+from log import log_debug, log_info, log_warn
 
 import bluetooth
 import time
@@ -47,13 +74,13 @@ class BLE_peripheral:
         # Track connections so we can send notifications.
         if event == _IRQ_CENTRAL_CONNECT:
             conn_handle, _, _ = data
-            print("New connection", conn_handle)
+            log_debug("BLE_peripheral::_irq - New connection", conn_handle)
             self._connections.add(conn_handle)
         elif event == _IRQ_CENTRAL_DISCONNECT:
             conn_handle, _, _ = data
-            print("Disconnected", conn_handle)
+            log_debug("BLE_peripheral::_irq - Disconnected", conn_handle)
             self._connections.remove(conn_handle)
-            # Start advertising again to allow a new connection. Alsways connects when there is an available node.
+            # Start advertising again to allow a new connection. Always connects when there is an available node.
             self._advertise()
         elif event == _IRQ_GATTS_WRITE:
             conn_handle, value_handle = data
@@ -69,19 +96,19 @@ class BLE_peripheral:
         return len(self._connections) > 0
 
     def _advertise(self, interval_us=500000):
-        print("Starting advertising")
+        log_debug("BLE_peripheral::_advertise - Starting advertising")
         self._ble.gap_advertise(interval_us, adv_data=self._payload)
 
     def on_write(self, callback):
         self._write_callback = callback
 
 
-def demo():
+def ble_peripheral_process():
     ble = bluetooth.BLE()
     p = BLE_peripheral(ble)
 
     def on_rx(v):
-        print("RX", v)
+        log_debug("BLE_peripheral::ble_peripheral_process - RX", v)
 
     p.on_write(on_rx)
 
@@ -91,7 +118,7 @@ def demo():
             # Short burst of queued notifications.
             for _ in range(3):
                 data = str(i) + "_"
-                print("TX", data)
+                log_debug("BLE_peripheral::ble_peripheral_process - TX", data)
                 p.send(data)
                 i += 1
         time.sleep_ms(100)
