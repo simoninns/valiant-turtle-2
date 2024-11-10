@@ -44,7 +44,7 @@ def log_control(debug: bool, info: bool, warn: bool):
     if (debug or info or warn):
         print("\r")
         print("\r")
-        print("Valiant Turtle 2 - Communicator - Debug output\r")
+        print("Valiant Turtle 2 - Robot - Debug output\r")
 
 def log_debug(*args, **kwargs):
     global is_logging_debug

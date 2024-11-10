@@ -26,6 +26,7 @@
 #************************************************************************
 
 from machine import I2C
+from log import log_debug, log_info, log_warn
 
 # INA260 Registers
 _INA260_REG_CONFIG = const(0x00)
@@ -42,19 +43,32 @@ _TEXAS_INSTRUMENTS_ID = const(0x5449)
 _INA260_ID = const(0x2270)
 
 class Ina260:
-    def __init__(self, i2c_bus: I2C, address: int = 0x40):
-        self.i2c = i2c_bus
+    def __init__(self, i2c: I2C, address: int = 0x40):
+        self.i2c = i2c
         self.address = address
 
-        # Reg: Config - 16 bit - Set bit 15 = reset
-        buffer = bytearray([_INA260_REG_CONFIG, 128, 0])
-        self.i2c.writeto(self.address, buffer, True)
+        # Check that the EEPROM is present
+        self._is_present = False
 
-        # Verify we are communicating with a valid device
-        if (self.manu_id != _TEXAS_INSTRUMENTS_ID):
-            raise RuntimeError("INA260::__init__ - INA260 Manufacturer's ID is incorrect - check IC")
-        if (self.die_id != _INA260_ID):
-            raise RuntimeError("INA260::__init__ - Die ID is incorrect - check IC")
+        devices = self.i2c.scan()
+        for idx in range(len(devices)):
+            if devices[idx] == self.address: self._is_present = True
+
+        if self._is_present:
+            log_info("Ina260::__init__ - INA260 detected at address", hex(self.address))
+        else:
+            log_info("Ina260::__init__ - INA260 is not present... Cannot initialise!")
+
+        if self._is_present:
+            # Reg: Config - 16 bit - Set bit 15 = reset
+            buffer = bytearray([_INA260_REG_CONFIG, 128, 0])
+            self.i2c.writeto(self.address, buffer, True)
+
+            # Verify we are communicating with a valid device
+            if (self.manu_id != _TEXAS_INSTRUMENTS_ID):
+                raise RuntimeError("INA260::__init__ - INA260 Manufacturer's ID is incorrect - check IC")
+            if (self.die_id != _INA260_ID):
+                raise RuntimeError("INA260::__init__ - Die ID is incorrect - check IC")
 
     # Read the current (between V+ and V-) in mA
     @property
