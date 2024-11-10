@@ -27,7 +27,6 @@
 from log import log_debug, log_info, log_warn, log_control
 
 from machine import Pin, UART, I2C
-from ble_central import demo
 from status_led import Status_led
 from ir_uart import Ir_uart
 from parallel_port import Parallel_port
@@ -35,7 +34,12 @@ from process_timer import Process_timer
 from configuration import Configuration
 from eeprom import Eeprom
 
+import ble_central
+
 from time import sleep
+from micropython import const
+
+import asyncio
 
 # GPIO Hardware mapping
 _GPIO_GREEN_LED = const(16)
@@ -90,13 +94,22 @@ def legacy_mode():
             #log_debug("Serial Rx =", ch)
             blue_led.set_brightness(0)
 
-# Communicate with Valiant Turtle 2 robots
-def vt2_mode():
-    sleep(1)
+# Async I/O task generation and launch
+async def aio_main():
+    tasks = [
+        asyncio.create_task(ble_central.ble_peripheral_task()),
+        asyncio.create_task(ble_central.connection_status_task(blue_led)),
+        asyncio.create_task(ble_central.process_commands_task()),
+    ]
+    await asyncio.gather(*tasks)
 
-# Configure log output to serial UART0
+# Main set up ---------------------------------------------------------------------------------------------------------
+
+# Turn on logging
+log_control(True, True, True)
+
+# Configure serial UART0
 uart0 = UART(0, baudrate=115200, tx=Pin(_GPIO_UART0_TX), rx=Pin(_GPIO_UART0_RX))
-log_control(uart0, True, True, True)
 
 # Configure Valiant communication serial UART1
 uart1 = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
@@ -110,8 +123,8 @@ ir_led.value(0)
 ir_uart = Ir_uart(_GPIO_IR_LED)
 
 # Configure I2C interfaces
-i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=100000) # Internal
-i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=100000) # External
+i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000) # Internal
+i2c1 = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=400000) # External
 
 # EEPROM
 eeprom = Eeprom(i2c0, 0x50)
@@ -139,13 +152,6 @@ process_timer.register_callback(green_led.led_process)
 process_timer.register_callback(blue_led.led_process)
 process_timer.register_callback(power_led)
 
-# Which mode are we in?
-if configuration.is_legacy_mode == True:
-    log_info("Communicator is running in legacy mode")
-    while configuration.is_legacy_mode:
-        legacy_mode()
-        
-else:
-    log_info("Communicator is running in Valiant Turtle 2 mode")
-    while not configuration.is_legacy_mode:
-        vt2_mode()
+log_info("main - Launching asynchronous tasks...")
+asyncio.run(aio_main())
+log_info("main - All done")

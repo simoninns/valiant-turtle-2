@@ -1,234 +1,157 @@
-import bluetooth
-import time
+#************************************************************************ 
+#
+#   ble_central.py
+#
+#   BLE Central role
+#   Valiant Turtle 2 - Communicator firmware
+#   Copyright (C) 2024 Simon Inns
+#
+#   This file is part of Valiant Turtle 2
+#
+#   This is free software: you can redistribute it and/or
+#   modify it under the terms of the GNU General Public License as
+#   published by the Free Software Foundation, either version 3 of the
+#   License, or (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#   Email: simon.inns@gmail.com
+#
+#************************************************************************
 
-from ble_advertising import decode_services, decode_name
-from micropython import const
 from log import log_debug, log_info, log_warn
 
-_IRQ_CENTRAL_CONNECT = const(1)
-_IRQ_CENTRAL_DISCONNECT = const(2)
-_IRQ_GATTS_WRITE = const(3)
-_IRQ_GATTS_READ_REQUEST = const(4)
-_IRQ_SCAN_RESULT = const(5)
-_IRQ_SCAN_DONE = const(6)
-_IRQ_PERIPHERAL_CONNECT = const(7)
-_IRQ_PERIPHERAL_DISCONNECT = const(8)
-_IRQ_GATTC_SERVICE_RESULT = const(9)
-_IRQ_GATTC_SERVICE_DONE = const(10)
-_IRQ_GATTC_CHARACTERISTIC_RESULT = const(11)
-_IRQ_GATTC_CHARACTERISTIC_DONE = const(12)
-_IRQ_GATTC_DESCRIPTOR_RESULT = const(13)
-_IRQ_GATTC_DESCRIPTOR_DONE = const(14)
-_IRQ_GATTC_READ_RESULT = const(15)
-_IRQ_GATTC_READ_DONE = const(16)
-_IRQ_GATTC_WRITE_DONE = const(17)
-_IRQ_GATTC_NOTIFY = const(18)
-_IRQ_GATTC_INDICATE = const(19)
+from machine import Pin, unique_id
+from micropython import const
 
-_ADV_IND = const(0x00)
-_ADV_DIRECT_IND = const(0x01)
-_ADV_SCAN_IND = const(0x02)
-_ADV_NONCONN_IND = const(0x03)
+from status_led import Status_led
 
-_UART_SERVICE_UUID = bluetooth.UUID("6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
-_UART_RX_UUID      = bluetooth.UUID("6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
-_UART_TX_UUID      = bluetooth.UUID("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
+import sys
+import aioble
+import bluetooth
+import asyncio
 
-class BLE_central:
-    def __init__(self, ble):
-        self._ble = ble
-        self._ble.active(True)
-        self._ble.irq(self._irq)
+_GPIO_BUTTON2 = const(19)
 
-        self._reset()
+# Get this device's UID - Used as BLE serial number to ensure it's unique
+def uid():
+    return "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(
+        *unique_id())
 
-    def _reset(self):
-        # Cached name and address from a successful scan.
-        self._name = None
-        self._addr_type = None
-        self._addr = None
+# Button on GPIO19 only...
+button_a = Pin(_GPIO_BUTTON2, Pin.IN, Pin.PULL_UP)
 
-        # Callbacks for completion of various operations.
-        # These reset back to None after being invoked.
-        self._scan_callback = None
-        self._conn_callback = None
-        self._read_callback = None
+_ENV_SENSE_UUID = bluetooth.UUID(0x180A)
+_GENERIC = bluetooth.UUID(0x1848)
+_ENV_SENSE_TEMP_UUID = bluetooth.UUID(0x1800)
+_BUTTON_UUID = bluetooth.UUID(0x2A6E)
 
-        # Persistent callback for when new data is notified from the device.
-        self._notify_callback = None
+_BLE_APPEARANCE_GENERIC_REMOTE_CONTROL = const(384)
 
-        # Connected device.
-        self._conn_handle = None
-        self._start_handle = None
-        self._end_handle = None
-        self._tx_handle = None
-        self._rx_handle = None
+# BLE Advertising frequency
+_ADV_INTERVAL_US = const(250000)
 
-    def _irq(self, event, data):
-        if event == _IRQ_SCAN_RESULT:
-            addr_type, addr, adv_type, rssi, adv_data = data
-            if adv_type in (_ADV_IND, _ADV_DIRECT_IND) and _UART_SERVICE_UUID in decode_services(
-                adv_data
-            ):
-                # Found a potential device, remember it and stop scanning.
-                self._addr_type = addr_type
-                self._addr = bytes(
-                    addr
-                )  # Note: addr buffer is owned by caller so need to copy it.
-                self._name = decode_name(adv_data) or "?"
-                self._ble.gap_scan(None)
+# Device service definitions
+device_info = aioble.Service(_ENV_SENSE_UUID)
 
-        elif event == _IRQ_SCAN_DONE:
-            if self._scan_callback:
-                if self._addr:
-                    # Found a device during the scan (and the scan was explicitly stopped).
-                    self._scan_callback(self._addr_type, self._addr, self._name)
-                    self._scan_callback = None
-                else:
-                    # Scan timed out.
-                    self._scan_callback(None, None, None)
+# Global connection flag
+connection = None
 
-        elif event == _IRQ_PERIPHERAL_CONNECT:
-            # Connect successful.
-            conn_handle, addr_type, addr = data
-            if addr_type == self._addr_type and addr == self._addr:
-                self._conn_handle = conn_handle
-                self._ble.gattc_discover_services(self._conn_handle)
+# Create characteristics for device info
+MANUFACTURER_ID = const(0x02A29)
+MODEL_NUMBER_ID = const(0x2A24)
+SERIAL_NUMBER_ID = const(0x2A25)
+HARDWARE_REVISION_ID = const(0x2A26)
+BLE_VERSION_ID = const(0x2A28)
+aioble.Characteristic(device_info, bluetooth.UUID(MANUFACTURER_ID), read=True, initial="waitingforfriday.com")
+aioble.Characteristic(device_info, bluetooth.UUID(MODEL_NUMBER_ID), read=True, initial="1.0")
+aioble.Characteristic(device_info, bluetooth.UUID(SERIAL_NUMBER_ID), read=True, initial=uid())
+aioble.Characteristic(device_info, bluetooth.UUID(HARDWARE_REVISION_ID), read=True, initial=sys.version)
+aioble.Characteristic(device_info, bluetooth.UUID(BLE_VERSION_ID), read=True, initial="1.0")
 
-        elif event == _IRQ_PERIPHERAL_DISCONNECT:
-            # Disconnect (either initiated by us or the remote end).
-            conn_handle, _, _ = data
-            if conn_handle == self._conn_handle:
-                # If it was initiated by us, it'll already be reset.
-                self._reset()
+remote_service = aioble.Service(_GENERIC)
 
-        elif event == _IRQ_GATTC_SERVICE_RESULT:
-            # Connected device returned a service.
-            conn_handle, start_handle, end_handle, uuid = data
-            print("service", data)
-            if conn_handle == self._conn_handle and uuid == _UART_SERVICE_UUID:
-                self._start_handle, self._end_handle = start_handle, end_handle
+button_characteristic = aioble.Characteristic(
+    remote_service, _BUTTON_UUID, read=True, notify=True
+)
 
-        elif event == _IRQ_GATTC_SERVICE_DONE:
-            # Service query complete.
-            if self._start_handle and self._end_handle:
-                self._ble.gattc_discover_characteristics(
-                    self._conn_handle, self._start_handle, self._end_handle
-                )
-            else:
-                log_debug("BLE_Central::_irq - Service query complete but failed to find UART service.")
+aioble.register_services(remote_service, device_info)
 
-        elif event == _IRQ_GATTC_CHARACTERISTIC_RESULT:
-            # Connected device returned a characteristic.
-            conn_handle, def_handle, value_handle, properties, uuid = data
-            if conn_handle == self._conn_handle and uuid == _UART_RX_UUID:
-                self._rx_handle = value_handle
-            if conn_handle == self._conn_handle and uuid == _UART_TX_UUID:
-                self._tx_handle = value_handle
+# Global connected flag
+connected = False
 
-        elif event == _IRQ_GATTC_CHARACTERISTIC_DONE:
-            # Characteristic query complete.
-            if self._tx_handle is not None and self._rx_handle is not None:
-                # We've finished connecting and discovering device, fire the connect callback.
-                if self._conn_callback:
-                    self._conn_callback()
-            else:
-                log_debug("BLE_Central::_irq - Characteristic query complete but failed to find UART Rx characteristic.")
+# Process commands task
+async def process_commands_task():
+    while True:
+        if not connected:
+            # Not connected - wait a second and try again
+            await asyncio.sleep_ms(1000)
+            continue
 
-        elif event == _IRQ_GATTC_WRITE_DONE:
-            conn_handle, value_handle, status = data
-            log_debug("BLE_Central::_irq - Tx complete")
+        if button_a.value() == 0:
+            print(f'Button A pressed')
+            #only need to write OR notify, not both!
+            # button_characteristic.write(b"a")    
+            button_characteristic.notify(connection,b"a")
+        # elif button_b.read():
+        #     print('Button B pressed')
+        #     # button_characteristic.write(b"b")
+        #     button_characteristic.notify(connection,b"b")
+        # elif button_x.read():
+        #     print('Button X pressed')
+        #     # button_characteristic.write(b"x")
+        #     button_characteristic.notify(connection,b"x")
+        # elif button_y.read():
+        #     print('Button Y pressed')
+        #     # button_characteristic.write(b"y")
+        #     button_characteristic.notify(connection,b"x")
+        # else:
+        #     button_characteristic.notify(connection,b"!")
 
-        elif event == _IRQ_GATTC_NOTIFY:
-            conn_handle, value_handle, notify_data = data
-            if conn_handle == self._conn_handle and value_handle == self._tx_handle:
-                if self._notify_callback:
-                    self._notify_callback(notify_data)
+        await asyncio.sleep_ms(10)
+            
+# Serially wait for connections. Don't advertise while a central is connected.    
+async def ble_peripheral_task():
+    log_debug("ble_central::peripheral_task - Task started")
+    global connected, connection
 
-    # Returns true if we've successfully connected and discovered characteristics.
-    def is_connected(self):
-        return (
-            self._conn_handle is not None
-            and self._tx_handle is not None
-            and self._rx_handle is not None
-        )
+    while True:
+        # Wait for something to connect
+        log_debug("ble_central::peripheral_task - Waiting for connection...")
+        connection = await aioble.advertise(
+                _ADV_INTERVAL_US,
+                name="vt2-robot",
+                services=[_ENV_SENSE_TEMP_UUID],
+                appearance=_BLE_APPEARANCE_GENERIC_REMOTE_CONTROL,
+                manufacturer=(0xabcd, b"1234"),
+            )
+        log_info("ble_central::peripheral_task - BLE connection from", connection.device)
+        connected = True
 
-    # Find a device advertising the environmental sensor service.
-    def scan(self, callback=None):
-        self._addr_type = None
-        self._addr = None
-        self._scan_callback = callback
-        self._ble.gap_scan(2000, 30000, 30000)
+        # Wait for the connected device to disconnect
+        await connection.disconnected()
+        connected = False
+        connection = None
+        log_info("ble_central::peripheral_task - BLE disconnected")
+        
+# Task to blink the blue status LED
+# 1 second blink = connected
+# 1/4 second blink = not connected
+async def connection_status_task(status_led: Status_led):
+    log_debug("ble_central::connection_status_task - Task started")
+    llevel = 255
+    while True:
+        status_led.set_brightness(llevel)
+        if llevel == 255: llevel = 10
+        else: llevel = 255
 
-    # Connect to the specified device (otherwise use cached address from a scan).
-    def connect(self, addr_type=None, addr=None, callback=None):
-        self._addr_type = addr_type or self._addr_type
-        self._addr = addr or self._addr
-        self._conn_callback = callback
-        if self._addr_type is None or self._addr is None:
-            return False
-        self._ble.gap_connect(self._addr_type, self._addr)
-        return True
+        blink = 1000
+        if not connected: blink = 250
 
-    # Disconnect from current device.
-    def disconnect(self):
-        if self._conn_handle is None:
-            return
-        self._ble.gap_disconnect(self._conn_handle)
-        self._reset()
-
-    # Send data over the UART
-    def write(self, v, response=False):
-        if not self.is_connected():
-            return
-        self._ble.gattc_write(self._conn_handle, self._rx_handle, v, 1 if response else 0)
-
-    # Set handler for when data is received over the UART.
-    def on_notify(self, callback):
-        self._notify_callback = callback
-
-def demo():
-    ble = bluetooth.BLE()
-    central = BLE_central(ble)
-
-    not_found = False
-
-    def on_scan(addr_type, addr, name):
-        if addr_type is not None:
-            log_debug("BLE_Central::on_scan - Found peripheral. addr_type=", addr_type, "addr=", addr, "name=", name)
-            central.connect()
-        else:
-            nonlocal not_found
-            not_found = True
-            log_debug("BLE_Central::on_scan - No peripheral found")
-
-    central.scan(callback=on_scan)
-
-    # Wait for connection...
-    while not central.is_connected():
-        time.sleep_ms(100)
-        if not_found:
-            return
-
-    print("Connected")
-    log_debug("BLE_Central::demo - Connected")
-
-    def on_rx(v):
-        log_debug("BLE_Central::on_rx - Rx'd", v)
-
-    central.on_notify(on_rx)
-
-    with_response = False
-
-    i = 0
-    while central.is_connected():
-        try:
-            v = str(i) + "_"
-            log_debug("BLE_Central::demo - Tx'd", v)
-            central.write(v, with_response)
-        except:
-            log_debug("BLE_Central::demo - Tx failed!")
-        i += 1
-        time.sleep_ms(400 if with_response else 30)
-
-    log_debug("BLE_Central::demo - Disconnected")
+        await asyncio.sleep_ms(blink)

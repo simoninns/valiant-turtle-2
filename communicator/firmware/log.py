@@ -25,37 +25,32 @@
 #
 #************************************************************************
 
-from machine import RTC, UART
-
-debug_uart = None
 is_logging_debug = False
 is_logging_info = False
 is_logging_warn = False
 
-def log_control(uart: UART, debug: bool, info: bool, warn: bool):
-    global debug_uart
+def log_control(debug: bool, info: bool, warn: bool):
     global is_logging_debug
     global is_logging_info
     global is_logging_warn
-    debug_uart = uart
     is_logging_debug = debug
     is_logging_info = info
     is_logging_warn = warn
 
     # Output some whitespace and a header
     if (debug or info or warn):
-        print("\r", file=debug_uart)
-        print("\r", file=debug_uart)
-        print("Valiant Turtle 2 - Communicator - Debug output\r", file=debug_uart)
+        print("\r")
+        print("\r")
+        print("Valiant Turtle 2 - Communicator - Debug output\r")
 
 def log_debug(*args, **kwargs):
     global is_logging_debug
-    if is_logging_debug: print("Debug: "+" ".join(map(str,args))+"\r", **kwargs, file=debug_uart)
+    if is_logging_debug: print("Debug: "+" ".join(map(str,args))+"\r", **kwargs)
 
 def log_info(*args, **kwargs):
     global is_logging_info
-    if is_logging_debug: print("Info: "+" ".join(map(str,args))+"\r", **kwargs, file=debug_uart)
+    if is_logging_debug: print("Info: "+" ".join(map(str,args))+"\r", **kwargs)
 
 def log_warn(*args, **kwargs):
     global is_logging_warn
-    if is_logging_debug: print("Warn: "+" ".join(map(str,args))+"\r", **kwargs, file=debug_uart)
+    if is_logging_debug: print("Warn: "+" ".join(map(str,args))+"\r", **kwargs)
