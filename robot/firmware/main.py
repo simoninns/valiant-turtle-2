@@ -102,7 +102,7 @@ async def status_led_task():
         if interval == 0: 
             led_fx.set_led_colour(_LED_power, 0, 64, 0)
         if interval == 5: 
-            led_fx.set_led_colour(_LED_power, 0, 0, 0)
+            led_fx.set_led_colour(_LED_power, 64, 0, 64)
 
         interval += 1
         if interval == 6: interval = 0
@@ -123,7 +123,7 @@ def ina260_info():
 async def aio_main():
     tasks = [
         # BLE tasks
-        #asyncio.create_task(ble_peripheral.ble_peripheral_task()),
+        asyncio.create_task(ble_peripheral.ble_peripheral_task()),
 
         # General background tasks
         asyncio.create_task(status_led_task()),
@@ -178,8 +178,6 @@ led_fx = Led_fx(5, _GPIO_LEDS)
 
 # while True:
 #     drv8825.set_enable(True)
-#     ws2812b.set_pixel(_WS2812B_left_motor, 0, 64, 0)
-#     ws2812b.set_pixel(_WS2812B_right_motor, 0, 64, 0)
 #     left_stepper.set_velocity(velocity)
 #     right_stepper.set_velocity(velocity)
 #     print("Stepper sequence running")
@@ -188,8 +186,6 @@ led_fx = Led_fx(5, _GPIO_LEDS)
 #     while left_stepper.is_busy or right_stepper.is_busy:
 #         sleep(0.01)
 #     drv8825.set_enable(False)
-#     ws2812b.set_pixel(_WS2812B_left_motor, 64, 0, 0)
-#     ws2812b.set_pixel(_WS2812B_right_motor, 64, 0, 0)
 #     print("Stepper sequence complete")
 
 log_info("main - Launching asynchronous tasks...")

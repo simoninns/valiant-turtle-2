@@ -26,7 +26,8 @@
 #************************************************************************
 
 from log import log_debug, log_info, log_warn
-from ws2812b import Ws2812b
+#from ws2812b import Ws2812b
+import machine, neopixel
 
 import asyncio
 
@@ -34,8 +35,8 @@ class Led_fx:
     def __init__(self, number_of_leds, data_gpio_pin):
         self.number_of_leds = number_of_leds
 
-        # Initialise the Ws2812b driver on PIO 0, SM 0
-        self.ws2812b = Ws2812b(self.number_of_leds, 0, 0, data_gpio_pin)
+        # Initialise the neopixel driver
+        self.neopixel = neopixel.NeoPixel(machine.Pin(data_gpio_pin), 5)
 
         # Set up pixel values
         self.current_red = []
@@ -53,7 +54,10 @@ class Led_fx:
             self.target_red.append(0)
             self.target_green.append(0)
             self.target_blue.append(0)
-            self.fade_speed.append(10)
+            self.fade_speed.append(5)
+
+        self.neopixel.fill((0,0,0))
+        self.neopixel.write()
 
     def set_led_colour(self, led_number, red, green, blue):
         if led_number > self.number_of_leds:
@@ -86,8 +90,9 @@ class Led_fx:
                 if (self.current_blue[idx] < 0): self.current_blue[idx] = 0
                 if (self.current_blue[idx] > 255): self.current_blue[idx] = 255
 
-                self.ws2812b.set_pixel(idx, self.current_red[idx], self.current_green[idx], self.current_blue[idx])
+                #self.ws2812b.set_pixel(idx, self.current_red[idx], self.current_green[idx], self.current_blue[idx])
+                self.neopixel[idx] = (self.current_red[idx], self.current_green[idx], self.current_blue[idx])
 
             # Perform the actual update
-            self.ws2812b.update_pixels()
+            self.neopixel.write()
             await asyncio.sleep_ms(10)
