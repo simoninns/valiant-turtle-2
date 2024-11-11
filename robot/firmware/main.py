@@ -26,7 +26,6 @@
 
 from log import log_debug, log_info, log_warn, log_control
 
-from ws2812b import Ws2812b
 from pen import Pen
 from ina260 import Ina260
 from eeprom import Eeprom
@@ -36,6 +35,7 @@ from drv8825 import Drv8825
 from stepper import Stepper
 from metric import Metric
 from ble_peripheral import Ble_peripheral
+from led_fx import Led_fx
 
 from time import sleep
 from machine import I2C, Pin
@@ -60,46 +60,55 @@ _GPIO_M0 = const(12)
 _GPIO_M1 = const(13)
 _GPIO_M2 = const(14)
 
-# WS2812b pixel number mapping
-_WS2812B_power = const(0)
-_WS2812B_left_motor = const(1)
-_WS2812B_right_motor = const(2)
-_WS2812B_left_eye = const(3)
-_WS2812B_right_eye = const(4)
+# WS2812b led number mapping
+_LED_power = const(0)
+_LED_left_motor = const(1)
+_LED_right_motor = const(2)
+_LED_left_eye = const(3)
+_LED_right_eye = const(4)
 
-# Async task to fade the power LED on and off
-async def power_led_task():
-    log_debug("main::power_led_task - Task started")
-    while True:
-         ws2812b.set_pixel(_WS2812B_power, 0, 64, 0)
-         await asyncio.sleep_ms(1000)
-         ws2812b.set_pixel(_WS2812B_power, 0, 0, 0)
-         await asyncio.sleep_ms(250)
-
-# Async task to update status LEDs depending on various states
+# Async task to update status LEDs depending on various states and times
 async def status_led_task():
+    interval = 0
+
     while True:
+        # interval 0 =    0
+        # interval 1 =  250
+        # interval 2 =  500
+        # interval 3 =  750
+        # interval 4 = 1000
+        # interval 5 = 1250
+
         # Stepper motor status
         if left_stepper.is_busy:
-            ws2812b.set_pixel(_WS2812B_left_motor, 64, 0, 0)
+            led_fx.set_led_colour(_LED_left_motor, 64, 0, 0)
         else:
-            ws2812b.set_pixel(_WS2812B_left_motor, 0, 64, 0)
+            led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
 
         if right_stepper.is_busy:
-            ws2812b.set_pixel(_WS2812B_right_motor, 64, 0, 0)
+            led_fx.set_led_colour(_LED_right_motor, 64, 0, 0)
         else:
-            ws2812b.set_pixel(_WS2812B_right_motor, 0, 64, 0)
+            led_fx.set_led_colour(_LED_right_motor, 0, 64, 0)
 
         # Eyes
         if ble_peripheral.is_connected:
-            ws2812b.set_pixel(_WS2812B_left_eye, 0, 0, 64)
-            ws2812b.set_pixel(_WS2812B_right_eye, 0, 0, 64)
+            led_fx.set_led_colour(_LED_left_eye, 0, 0, 64)
+            led_fx.set_led_colour(_LED_right_eye, 0, 0, 64)
         else:
-            ws2812b.set_pixel(_WS2812B_left_eye, 0, 64, 0)
-            ws2812b.set_pixel(_WS2812B_right_eye, 0, 64, 0)
+            led_fx.set_led_colour(_LED_left_eye, 0, 64, 0)
+            led_fx.set_led_colour(_LED_right_eye, 0, 64, 0)
 
-        # Wait before next update
-        await asyncio.sleep_ms(500)
+        # Power LED
+        if interval == 0: 
+            led_fx.set_led_colour(_LED_power, 0, 64, 0)
+        if interval == 5: 
+            led_fx.set_led_colour(_LED_power, 0, 0, 0)
+
+        interval += 1
+        if interval == 6: interval = 0
+
+        # Wait before next interval
+        await asyncio.sleep_ms(250)
 
 # Output power monitoring information periodically
 ina260_ticker = 0
@@ -114,12 +123,11 @@ def ina260_info():
 async def aio_main():
     tasks = [
         # BLE tasks
-        asyncio.create_task(ble_peripheral.ble_peripheral_task()),
+        #asyncio.create_task(ble_peripheral.ble_peripheral_task()),
 
         # General background tasks
-        asyncio.create_task(power_led_task()),
         asyncio.create_task(status_led_task()),
-        asyncio.create_task(ws2812b.process_pixels_task()),
+        asyncio.create_task(led_fx.process_leds_task()),
     ]
     await asyncio.gather(*tasks)
 
@@ -127,10 +135,6 @@ async def aio_main():
 
 # Turn on logging
 log_control(True, True, True)
-
-# Initialise the Ws2812b driver on PIO 0, SM 0
-ws2812b = Ws2812b(5, 0, 0, _GPIO_LEDS, 10)
-ws2812b.set_fade_speed(_WS2812B_power, 5)
 
 # Initialise the pen control
 pen = Pen(_GPIO_PEN)
@@ -165,6 +169,9 @@ left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
 left_stepper.set_forwards()
 right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
 right_stepper.set_forwards()
+
+# Configure the LEDs
+led_fx = Led_fx(5, _GPIO_LEDS)
 
 # Define a velocity sequence
 # velocity = Velocity(6400, 32, 2, 1600, 16)
