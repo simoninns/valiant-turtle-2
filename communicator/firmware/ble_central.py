@@ -37,121 +37,114 @@ import aioble
 import bluetooth
 import asyncio
 
-_GPIO_BUTTON2 = const(19)
+class Ble_central:
+    def __init__(self, button_pin):
+        # Define command buttons
+        self.button_a = Pin(button_pin, Pin.IN, Pin.PULL_UP)
 
-# Get this device's UID - Used as BLE serial number to ensure it's unique
-def uid():
-    return "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(
-        *unique_id())
+        # Get the local device's Unique ID
+        self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
 
-# Button on GPIO19 only...
-button_a = Pin(_GPIO_BUTTON2, Pin.IN, Pin.PULL_UP)
+        # Flags to show connected status
+        self.connection = None
+        self.connected = False
 
-_ENV_SENSE_UUID = bluetooth.UUID(0x180A)
-_GENERIC = bluetooth.UUID(0x1848)
-_ENV_SENSE_TEMP_UUID = bluetooth.UUID(0x1800)
-_BUTTON_UUID = bluetooth.UUID(0x2A6E)
+        # Device service definitions
+        env_sense_uuid = bluetooth.UUID(0x180A)
+        self.local_device_info = aioble.Service(env_sense_uuid)
 
-_BLE_APPEARANCE_GENERIC_REMOTE_CONTROL = const(384)
+        # Create characteristics for local device info
+        manufacturer_id = const(0x02A29)
+        model_number_id = const(0x2A24)
+        serial_number_id = const(0x2A25)
+        hardware_revision_id = const(0x2A26)
+        ble_version_id = const(0x2A28)
+        aioble.Characteristic(self.local_device_info, bluetooth.UUID(manufacturer_id), read = True, initial = "waitingforfriday.com")
+        aioble.Characteristic(self.local_device_info, bluetooth.UUID(model_number_id), read = True, initial = "1.0")
+        aioble.Characteristic(self.local_device_info, bluetooth.UUID(serial_number_id), read = True, initial = self.uid)
+        aioble.Characteristic(self.local_device_info, bluetooth.UUID(hardware_revision_id), read = True, initial = sys.version)
+        aioble.Characteristic(self.local_device_info, bluetooth.UUID(ble_version_id), read = True, initial = "1.0")
 
-# BLE Advertising frequency
-_ADV_INTERVAL_US = const(250000)
+        # Create characteristics for remote device info
+        generic_uuid = bluetooth.UUID(0x1848)
+        button_uuid = bluetooth.UUID(0x2A6E)
+        self.remote_service_info = aioble.Service(generic_uuid)
+        self.button_characteristic = aioble.Characteristic(self.remote_service_info, button_uuid, read=True, notify=True) # Subscribe
 
-# Device service definitions
-device_info = aioble.Service(_ENV_SENSE_UUID)
+        # Register our services
+        aioble.register_services(self.remote_service_info, self.local_device_info)
 
-# Global connection flag
-connection = None
+    # Process commands task
+    async def process_commands_task(self):
+        while True:
+            if not self.connected:
+                # Not connected - wait a second and try again
+                await asyncio.sleep_ms(1000)
+                continue
 
-# Create characteristics for device info
-MANUFACTURER_ID = const(0x02A29)
-MODEL_NUMBER_ID = const(0x2A24)
-SERIAL_NUMBER_ID = const(0x2A25)
-HARDWARE_REVISION_ID = const(0x2A26)
-BLE_VERSION_ID = const(0x2A28)
-aioble.Characteristic(device_info, bluetooth.UUID(MANUFACTURER_ID), read=True, initial="waitingforfriday.com")
-aioble.Characteristic(device_info, bluetooth.UUID(MODEL_NUMBER_ID), read=True, initial="1.0")
-aioble.Characteristic(device_info, bluetooth.UUID(SERIAL_NUMBER_ID), read=True, initial=uid())
-aioble.Characteristic(device_info, bluetooth.UUID(HARDWARE_REVISION_ID), read=True, initial=sys.version)
-aioble.Characteristic(device_info, bluetooth.UUID(BLE_VERSION_ID), read=True, initial="1.0")
+            if self.button_a.value() == 0:
+                log_info("Ble_central::process_commands_task - Button A pressed")
+                #only need to write OR notify, not both!
+                # button_characteristic.write(b"a")    
+                self.button_characteristic.notify(self.connection,b"a")
+            # elif button_b.read():
+            #     print('Button B pressed')
+            #     # button_characteristic.write(b"b")
+            #     button_characteristic.notify(connection,b"b")
+            # elif button_x.read():
+            #     print('Button X pressed')
+            #     # button_characteristic.write(b"x")
+            #     button_characteristic.notify(connection,b"x")
+            # elif button_y.read():
+            #     print('Button Y pressed')
+            #     # button_characteristic.write(b"y")
+            #     button_characteristic.notify(connection,b"x")
+            # else:
+            #     button_characteristic.notify(connection,b"!")
 
-remote_service = aioble.Service(_GENERIC)
+            await asyncio.sleep_ms(10)
+                
+    # Serially wait for connections. Don't advertise while a central is connected.    
+    async def ble_peripheral_task(self):
+        log_debug("Ble_central::peripheral_task - Task started")
 
-button_characteristic = aioble.Characteristic(
-    remote_service, _BUTTON_UUID, read=True, notify=True
-)
+        env_sense_temp_uuid = bluetooth.UUID(0x1800)
+        ble_appearance_generic_remote_control = const(384)
 
-aioble.register_services(remote_service, device_info)
+        # BLE Advertising frequency
+        ble_advertising_frequency_us = const(250000)
 
-# Global connected flag
-connected = False
+        while True:
+            # Wait for something to connect
+            log_debug("Ble_central::peripheral_task - Waiting for connection...")
+            self.connection = await aioble.advertise(
+                    ble_advertising_frequency_us,
+                    name = "vt2-robot",
+                    services = [env_sense_temp_uuid],
+                    appearance = ble_appearance_generic_remote_control,
+                    manufacturer = (0xabcd, b"1234"),
+                )
+            log_info("Ble_central::peripheral_task - BLE connection from", self.connection.device)
+            self.connected = True
 
-# Process commands task
-async def process_commands_task():
-    while True:
-        if not connected:
-            # Not connected - wait a second and try again
-            await asyncio.sleep_ms(1000)
-            continue
-
-        if button_a.value() == 0:
-            print(f'Button A pressed')
-            #only need to write OR notify, not both!
-            # button_characteristic.write(b"a")    
-            button_characteristic.notify(connection,b"a")
-        # elif button_b.read():
-        #     print('Button B pressed')
-        #     # button_characteristic.write(b"b")
-        #     button_characteristic.notify(connection,b"b")
-        # elif button_x.read():
-        #     print('Button X pressed')
-        #     # button_characteristic.write(b"x")
-        #     button_characteristic.notify(connection,b"x")
-        # elif button_y.read():
-        #     print('Button Y pressed')
-        #     # button_characteristic.write(b"y")
-        #     button_characteristic.notify(connection,b"x")
-        # else:
-        #     button_characteristic.notify(connection,b"!")
-
-        await asyncio.sleep_ms(10)
+            # Wait for the connected device to disconnect
+            await self.connection.disconnected()
+            self.connected = False
+            self.connection = None
+            log_info("Ble_central::peripheral_task - BLE disconnected")
             
-# Serially wait for connections. Don't advertise while a central is connected.    
-async def ble_peripheral_task():
-    log_debug("ble_central::peripheral_task - Task started")
-    global connected, connection
+    # Task to blink the blue status LED
+    # 1 second blink = connected
+    # 1/4 second blink = not connected
+    async def connection_status_task(self, status_led: Status_led):
+        log_debug("Ble_central::connection_status_task - Task started")
+        led_level = 255
+        while True:
+            status_led.set_brightness(led_level)
+            if led_level == 255: led_level = 10
+            else: led_level = 255
 
-    while True:
-        # Wait for something to connect
-        log_debug("ble_central::peripheral_task - Waiting for connection...")
-        connection = await aioble.advertise(
-                _ADV_INTERVAL_US,
-                name="vt2-robot",
-                services=[_ENV_SENSE_TEMP_UUID],
-                appearance=_BLE_APPEARANCE_GENERIC_REMOTE_CONTROL,
-                manufacturer=(0xabcd, b"1234"),
-            )
-        log_info("ble_central::peripheral_task - BLE connection from", connection.device)
-        connected = True
+            blink_delay_ms = 1000
+            if not self.connected: blink_delay_ms = 250
 
-        # Wait for the connected device to disconnect
-        await connection.disconnected()
-        connected = False
-        connection = None
-        log_info("ble_central::peripheral_task - BLE disconnected")
-        
-# Task to blink the blue status LED
-# 1 second blink = connected
-# 1/4 second blink = not connected
-async def connection_status_task(status_led: Status_led):
-    log_debug("ble_central::connection_status_task - Task started")
-    llevel = 255
-    while True:
-        status_led.set_brightness(llevel)
-        if llevel == 255: llevel = 10
-        else: llevel = 255
-
-        blink = 1000
-        if not connected: blink = 250
-
-        await asyncio.sleep_ms(blink)
+            await asyncio.sleep_ms(blink_delay_ms)

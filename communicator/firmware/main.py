@@ -34,7 +34,7 @@ from process_timer import Process_timer
 from configuration import Configuration
 from eeprom import Eeprom
 
-import ble_central
+from ble_central import Ble_central
 
 from time import sleep
 from micropython import const
@@ -64,42 +64,46 @@ _GPIO_BUTTON0 = const(21)
 _GPIO_BUTTON1 = const(20)
 _GPIO_BUTTON2 = const(19)
 
-# Fade the power LED on and off...
-ticker = 0
-def power_led():
-    global ticker
-    if ticker == 0: green_led.set_brightness(255)
-    if ticker == 75: green_led.set_brightness(10)
-    if ticker == 100:
-        ticker = 0
-    else:
-        ticker += 1
+# # Process serial and parallel data to IR
+# # using the original Valiant Turtle communication
+# def legacy_mode():
+#     # Send any received parallel port data via IR
+#         while(parallel_port.any()):
+#             blue_led.set_brightness(255)
+#             ch = parallel_port.read()
+#             ir_uart.ir_putc(ch)
+#             #log_debug("Parallel Rx =", ch)
+#             blue_led.set_brightness(0)
 
-# Process serial and parallel data to IR
-# using the original Valiant Turtle communication
-def legacy_mode():
-    # Send any received parallel port data via IR
-        while(parallel_port.any()):
-            blue_led.set_brightness(255)
-            ch = parallel_port.read()
-            ir_uart.ir_putc(ch)
-            #log_debug("Parallel Rx =", ch)
-            blue_led.set_brightness(0)
+#         # Send any received serial data via IR
+#         while(uart1.any()):
+#             blue_led.set_brightness(255)
+#             ch = int(uart1.read(1)[0]) # Get 1 byte, store as int
+#             ir_uart.ir_putc(ch)
+#             #log_debug("Serial Rx =", ch)
+#             blue_led.set_brightness(0)
 
-        # Send any received serial data via IR
-        while(uart1.any()):
-            blue_led.set_brightness(255)
-            ch = int(uart1.read(1)[0]) # Get 1 byte, store as int
-            ir_uart.ir_putc(ch)
-            #log_debug("Serial Rx =", ch)
-            blue_led.set_brightness(0)
+# Async task to fade the power LED on and off
+async def power_led_task():
+    log_debug("main::power_led_task - Task started")
+    while True:
+         green_led.set_brightness(255)
+         await asyncio.sleep_ms(1000)
+         green_led.set_brightness(10)
+         await asyncio.sleep_ms(250)
 
 # Async I/O task generation and launch
 async def aio_main():
     tasks = [
+        # BLE related tasks
         asyncio.create_task(ble_central.ble_peripheral_task()),
         asyncio.create_task(ble_central.connection_status_task(blue_led)),
         asyncio.create_task(ble_central.process_commands_task()),
+
+        # General background tasks
+        asyncio.create_task(blue_led.led_process_task()),
+        asyncio.create_task(green_led.led_process_task()),
+        asyncio.create_task(power_led_task()),
     ]
     await asyncio.gather(*tasks)
 
@@ -144,14 +148,8 @@ parallel_port = Parallel_port(i2c0, _GPIO_INT0)
 green_led = Status_led(_GPIO_GREEN_LED, 255, 20)
 blue_led = Status_led(_GPIO_BLUE_LED, 0, 20)
 
-# Set up a process timer
-process_timer = Process_timer()
-
-# Use the process timer for all timer based activities:
-process_timer.register_callback(green_led.led_process)
-process_timer.register_callback(blue_led.led_process)
-process_timer.register_callback(power_led)
+# Initialise BLE central
+ble_central = Ble_central(_GPIO_BUTTON2)
 
 log_info("main - Launching asynchronous tasks...")
 asyncio.run(aio_main())
-log_info("main - All done")

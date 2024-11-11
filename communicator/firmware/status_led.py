@@ -27,6 +27,7 @@
 
 from log import log_debug, log_info, log_warn
 from machine import PWM
+import asyncio
 
 class Status_led:
     def __init__(self, led_pin, brightness = 0, fade_speed = 10):
@@ -51,15 +52,17 @@ class Status_led:
         if (fade_speed > 255): fade_speed = 255
         self.fade_speed = fade_speed
 
-    # This should be called by a timer to process the LED fading
-    def led_process(self):
-        if (self.target_brightness > self.current_brightness):
-            self.current_brightness += self.fade_speed
-        elif (self.target_brightness < self.current_brightness):
-            self.current_brightness -= self.fade_speed
+    # Process the LED fading
+    async def led_process_task(self):
+        while True:
+            if (self.target_brightness > self.current_brightness):
+                self.current_brightness += self.fade_speed
+            elif (self.target_brightness < self.current_brightness):
+                self.current_brightness -= self.fade_speed
 
-        if (self.current_brightness < 0): self.current_brightness = 0
-        if (self.current_brightness > 255): self.current_brightness = 255
+            if (self.current_brightness < 0): self.current_brightness = 0
+            if (self.current_brightness > 255): self.current_brightness = 255
 
-        invert = int((255 - self.current_brightness) * 257)
-        self.led.duty_u16(invert)
+            invert = int((255 - self.current_brightness) * 257)
+            self.led.duty_u16(invert)
+            await asyncio.sleep_ms(10)

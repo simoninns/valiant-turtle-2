@@ -13,6 +13,6 @@
     "python.analysis.extraPaths": [
         "~/.micropico-stubs/included"
     ],
-    "micropico.manualComDevice": "",
-    "micropico.autoConnect": true
+    "micropico.manualComDevice": "/dev/ttyACM3",
+    "micropico.autoConnect": false
 }
