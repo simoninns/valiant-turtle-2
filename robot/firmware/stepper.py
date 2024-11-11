@@ -45,6 +45,10 @@ class Stepper:
         # Orientation of stepper
         self.is_left = is_left
 
+        # Direction of stepper
+        self._is_forwards = True
+        self.set_forwards()
+
         # Tracking progress
         self.steps_remaining = 0
         self.is_busy_flag = False
@@ -65,16 +69,22 @@ class Stepper:
         self.pulse_generator.callback_subscribe(self.callback)
 
     def set_forwards(self):
+        self._is_forwards = True
         if self.is_left: self.direction.value(1)
         else: self.direction.value(0)
 
     def set_backwards(self):
+        self._is_forwards = False
         if self.is_left: self.direction.value(0)
         else: self.direction.value(1)
 
     @property
     def is_busy(self) -> bool:
         return self.is_busy_flag
+    
+    @property
+    def is_forwards(self) -> bool:
+        return self._is_forwards
 
     def set_velocity(self, velocity: Velocity) -> bool:
         if self.is_busy:

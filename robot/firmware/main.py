@@ -61,7 +61,7 @@ _GPIO_M1 = const(13)
 _GPIO_M2 = const(14)
 
 # WS2812b led number mapping
-_LED_power = const(0)
+_LED_status = const(0)
 _LED_left_motor = const(1)
 _LED_right_motor = const(2)
 _LED_left_eye = const(3)
@@ -80,29 +80,42 @@ async def status_led_task():
         # interval 5 = 1250
 
         # Stepper motor status
+        # Green = forwards, red = backwards, grey = not in motion
         if left_stepper.is_busy:
-            led_fx.set_led_colour(_LED_left_motor, 64, 0, 0)
+            if left_stepper.is_forwards: led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
+            else: led_fx.set_led_colour(_LED_left_motor, 64, 0, 0)
         else:
-            led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
+            led_fx.set_led_colour(_LED_left_motor, 8, 8, 8)
 
         if right_stepper.is_busy:
-            led_fx.set_led_colour(_LED_right_motor, 64, 0, 0)
+            # Green = forwards, red = backwards, grey = not in motion
+            if right_stepper.is_forwards: led_fx.set_led_colour(_LED_right_motor, 0, 64, 0)
+            else: led_fx.set_led_colour(_LED_right_motor, 64, 0, 0)
         else:
-            led_fx.set_led_colour(_LED_right_motor, 0, 64, 0)
+            led_fx.set_led_colour(_LED_right_motor, 8, 8, 8)
 
         # Eyes
-        if ble_peripheral.is_connected:
-            led_fx.set_led_colour(_LED_left_eye, 0, 0, 64)
-            led_fx.set_led_colour(_LED_right_eye, 0, 0, 64)
-        else:
-            led_fx.set_led_colour(_LED_left_eye, 0, 64, 0)
-            led_fx.set_led_colour(_LED_right_eye, 0, 64, 0)
+        if interval == 2:
+            led_fx.set_led_fade_speed(_LED_left_eye, 30)
+            led_fx.set_led_fade_speed(_LED_right_eye, 30)
+            led_fx.set_led_colour(_LED_left_eye, 255, 0, 0)
+            led_fx.set_led_colour(_LED_right_eye, 255, 0, 0)
 
-        # Power LED
-        if interval == 0: 
-            led_fx.set_led_colour(_LED_power, 0, 64, 0)
-        if interval == 5: 
-            led_fx.set_led_colour(_LED_power, 64, 0, 64)
+        if interval == 3:
+            led_fx.set_led_colour(_LED_left_eye, 64, 0, 0)
+            led_fx.set_led_colour(_LED_right_eye, 64, 0, 0)
+
+        # Status LED
+        if ble_peripheral.is_connected:
+            if interval == 0: 
+                led_fx.set_led_colour(_LED_status, 0, 0, 64)
+            if interval == 5: 
+                led_fx.set_led_colour(_LED_status, 0, 64, 0)
+        else:
+            if interval == 0: 
+                led_fx.set_led_colour(_LED_status, 0, 64, 0)
+            if interval == 5: 
+                led_fx.set_led_colour(_LED_status, 0, 0, 64)
 
         interval += 1
         if interval == 6: interval = 0
@@ -128,8 +141,42 @@ async def aio_main():
         # General background tasks
         asyncio.create_task(status_led_task()),
         asyncio.create_task(led_fx.process_leds_task()),
+        #asyncio.create_task(stepper_task()),
     ]
     await asyncio.gather(*tasks)
+
+# Stepper test task
+async def stepper_task():
+    # Define a velocity sequence
+    velocity = Velocity(6400, 32, 2, 1600, 16)
+
+    while True:
+        drv8825.set_enable(True)
+
+        left_stepper.set_forwards()
+        right_stepper.set_forwards()
+        left_stepper.set_velocity(velocity)
+        right_stepper.set_velocity(velocity)
+        log_debug("Steppers running forwards")
+
+        # Wait for the stepper to finish
+        while left_stepper.is_busy or right_stepper.is_busy:
+            await asyncio.sleep_ms(250)
+
+        left_stepper.set_backwards()
+        right_stepper.set_backwards()
+        left_stepper.set_velocity(velocity)
+        right_stepper.set_velocity(velocity)
+        log_debug("Steppers running backwards")
+
+        # Wait for the stepper to finish
+        while left_stepper.is_busy or right_stepper.is_busy:
+            await asyncio.sleep_ms(250)
+
+        drv8825.set_enable(False)
+        log_debug("Steppers stopped")
+
+        await asyncio.sleep(5)
 
 # Main set up ---------------------------------------------------------------------------------------------------------
 
@@ -172,21 +219,6 @@ right_stepper.set_forwards()
 
 # Configure the LEDs
 led_fx = Led_fx(5, _GPIO_LEDS)
-
-# Define a velocity sequence
-# velocity = Velocity(6400, 32, 2, 1600, 16)
-
-# while True:
-#     drv8825.set_enable(True)
-#     left_stepper.set_velocity(velocity)
-#     right_stepper.set_velocity(velocity)
-#     print("Stepper sequence running")
-
-#     # Wait for the stepper to finish
-#     while left_stepper.is_busy or right_stepper.is_busy:
-#         sleep(0.01)
-#     drv8825.set_enable(False)
-#     print("Stepper sequence complete")
 
 log_info("main - Launching asynchronous tasks...")
 asyncio.run(aio_main())
