@@ -35,12 +35,10 @@ from velocity import Velocity
 from drv8825 import Drv8825
 from stepper import Stepper
 from metric import Metric
-from process_timer import Process_timer
+from ble_peripheral import Ble_peripheral
 
 from time import sleep
 from machine import I2C, Pin
-
-import ble_peripheral
 
 import asyncio
 
@@ -69,16 +67,39 @@ _WS2812B_right_motor = const(2)
 _WS2812B_left_eye = const(3)
 _WS2812B_right_eye = const(4)
 
-# Fade the power LED on and off...
-ticker = 0
-def power_led():
-    global ticker
-    if ticker == 0: ws2812b.set_pixel(_WS2812B_power, 0, 64, 0)
-    if ticker == 75: ws2812b.set_pixel(_WS2812B_power, 0, 0, 0)
-    if ticker == 100:
-        ticker = 0
-    else:
-        ticker += 1
+# Async task to fade the power LED on and off
+async def power_led_task():
+    log_debug("main::power_led_task - Task started")
+    while True:
+         ws2812b.set_pixel(_WS2812B_power, 0, 64, 0)
+         await asyncio.sleep_ms(1000)
+         ws2812b.set_pixel(_WS2812B_power, 0, 0, 0)
+         await asyncio.sleep_ms(250)
+
+# Async task to update status LEDs depending on various states
+async def status_led_task():
+    while True:
+        # Stepper motor status
+        if left_stepper.is_busy:
+            ws2812b.set_pixel(_WS2812B_left_motor, 64, 0, 0)
+        else:
+            ws2812b.set_pixel(_WS2812B_left_motor, 0, 64, 0)
+
+        if right_stepper.is_busy:
+            ws2812b.set_pixel(_WS2812B_right_motor, 64, 0, 0)
+        else:
+            ws2812b.set_pixel(_WS2812B_right_motor, 0, 64, 0)
+
+        # Eyes
+        if ble_peripheral.is_connected:
+            ws2812b.set_pixel(_WS2812B_left_eye, 0, 0, 64)
+            ws2812b.set_pixel(_WS2812B_right_eye, 0, 0, 64)
+        else:
+            ws2812b.set_pixel(_WS2812B_left_eye, 0, 64, 0)
+            ws2812b.set_pixel(_WS2812B_right_eye, 0, 64, 0)
+
+        # Wait before next update
+        await asyncio.sleep_ms(500)
 
 # Output power monitoring information periodically
 ina260_ticker = 0
@@ -92,25 +113,15 @@ def ina260_info():
 # Async I/O task generation and launch
 async def aio_main():
     tasks = [
-        #asyncio.create_task(ble_peripheral.blink_task()),
+        # BLE tasks
         asyncio.create_task(ble_peripheral.ble_peripheral_task()),
-        asyncio.create_task(motor_led_task()),
+
+        # General background tasks
+        asyncio.create_task(power_led_task()),
+        asyncio.create_task(status_led_task()),
+        asyncio.create_task(ws2812b.process_pixels_task()),
     ]
     await asyncio.gather(*tasks)
-
-# Test function to make motor status LEDs flash
-async def motor_led_task():
-    while True:
-        ws2812b.set_pixel(_WS2812B_left_motor, 0, 64, 0)
-        ws2812b.set_pixel(_WS2812B_right_motor, 0, 64, 0)
-        ws2812b.set_pixel(_WS2812B_left_eye, 64, 0, 0)
-        ws2812b.set_pixel(_WS2812B_right_eye, 64, 0, 0)
-        await asyncio.sleep_ms(1500)
-        ws2812b.set_pixel(_WS2812B_left_motor, 64, 0, 0)
-        ws2812b.set_pixel(_WS2812B_right_motor, 64, 0, 0)
-        ws2812b.set_pixel(_WS2812B_left_eye, 0, 0, 0)
-        ws2812b.set_pixel(_WS2812B_right_eye, 0, 0, 0)
-        await asyncio.sleep_ms(1500)
 
 # Main set up ---------------------------------------------------------------------------------------------------------
 
@@ -141,24 +152,19 @@ if not configuration.unpack(eeprom.read(0, configuration.pack_size)):
     # Current EEPROM image is invalid, write the default
     eeprom.write(0, configuration.pack())
 
-# Set up a process timer
-process_timer = Process_timer()
+# Initialise BLE peripheral
+ble_peripheral = Ble_peripheral()
 
-# Use the process timer for all timer based activities:
-process_timer.register_callback(power_led) # For fading on and off the power LED
-#process_timer.register_callback(ina260_info) # Periodic power usage output to debug
-process_timer.register_callback(ws2812b.process_pixels) # WS2812 fading process
+# Configure the DRV8825
+drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
+drv8825.set_steps_per_revolution(800)
+drv8825.set_enable(False)
 
-# # Configure the DRV8825
-# drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
-# drv8825.set_steps_per_revolution(800)
-# drv8825.set_enable(False)
-
-# # Configure the steppers
-# left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
-# left_stepper.set_forwards()
-# right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
-# right_stepper.set_forwards()
+# Configure the steppers
+left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
+left_stepper.set_forwards()
+right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
+right_stepper.set_forwards()
 
 # Define a velocity sequence
 # velocity = Velocity(6400, 32, 2, 1600, 16)
@@ -179,6 +185,5 @@ process_timer.register_callback(ws2812b.process_pixels) # WS2812 fading process
 #     ws2812b.set_pixel(_WS2812B_right_motor, 64, 0, 0)
 #     print("Stepper sequence complete")
 
-log_info("main - Launching asynchronus tasks...")
+log_info("main - Launching asynchronous tasks...")
 asyncio.run(aio_main())
-log_info("main - All done")

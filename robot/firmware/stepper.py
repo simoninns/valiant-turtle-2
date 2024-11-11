@@ -36,6 +36,8 @@ class Stepper:
     _sm_counter = 0 # Keep track of the next free state-machine
 
     def __init__(self, direction_pin, step_pin, is_left: bool):
+        self.pio = 1
+
         # Configure the direction GPIO
         self.direction = Pin(direction_pin, Pin.OUT)
         self.direction.value(0)
@@ -50,13 +52,13 @@ class Stepper:
 
         # Ensure we have a free state-machine
         if Stepper._sm_counter < 4:
-            log_info("Stepper::__init__ - Using SM", Stepper._sm_counter)
+            log_info("Stepper::__init__ - Using PIO", self.pio,"SM", Stepper._sm_counter)
         else:
             raise RuntimeError("Stepper::__init__ - No more state machines available!")
 
         # Initialise the pulse generator on PIO 1
         # Note: This controls the step GPIO
-        self.pulse_generator = Pulse_generator(1, Stepper._sm_counter, step_pin)
+        self.pulse_generator = Pulse_generator(self.pio, Stepper._sm_counter, step_pin)
         Stepper._sm_counter += 1
 
         # Set up the pulse generator callback
