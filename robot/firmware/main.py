@@ -106,7 +106,7 @@ async def status_led_task():
             led_fx.set_led_colour(_LED_right_eye, 64, 0, 0)
 
         # Status LED
-        if ble_peripheral.is_vt2_communicator_connected:
+        if ble_peripheral.is_central_connected:
             if interval == 0: 
                 led_fx.set_led_colour(_LED_status, 0, 0, 64)
             if interval == 5: 
@@ -117,6 +117,7 @@ async def status_led_task():
             if interval == 5: 
                 led_fx.set_led_colour(_LED_status, 0, 0, 64)
 
+        # Increment interval
         interval += 1
         if interval == 6: interval = 0
 

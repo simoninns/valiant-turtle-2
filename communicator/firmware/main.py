@@ -30,10 +30,8 @@ from machine import Pin, UART, I2C
 from status_led import Status_led
 from ir_uart import Ir_uart
 from parallel_port import Parallel_port
-from process_timer import Process_timer
 from configuration import Configuration
 from eeprom import Eeprom
-
 from ble_central import Ble_central
 
 from time import sleep
@@ -83,27 +81,50 @@ _GPIO_BUTTON2 = const(19)
 #             #log_debug("Serial Rx =", ch)
 #             blue_led.set_brightness(0)
 
-# Async task to fade the power LED on and off
-async def power_led_task():
-    log_debug("main::power_led_task - Task started")
+# Async task to update status LEDs depending on various states and times
+async def status_led_task():
+    interval = 0
+
     while True:
-         green_led.set_brightness(255)
-         await asyncio.sleep_ms(1000)
-         green_led.set_brightness(10)
-         await asyncio.sleep_ms(250)
+        # interval 0 =    0
+        # interval 1 =  250
+        # interval 2 =  500
+        # interval 3 =  750
+        # interval 4 = 1000
+        # interval 5 = 1250
+
+        if interval == 0: green_led.set_brightness(255)
+        if interval == 5: green_led.set_brightness(10)
+
+        if ble_central.is_peripheral_connected:
+            # Stay on when connected
+            if interval == 0: blue_led.set_brightness(255)
+        else:
+            # Flash quickly when disconnected
+            if interval == 0: blue_led.set_brightness(255)
+            if interval == 1: blue_led.set_brightness(0)
+            if interval == 2: blue_led.set_brightness(255)
+            if interval == 3: blue_led.set_brightness(0)
+            if interval == 4: blue_led.set_brightness(255)
+            if interval == 5: blue_led.set_brightness(0)
+
+        # Increment interval
+        interval += 1
+        if interval == 6: interval = 0
+
+        # Wait before next interval
+        await asyncio.sleep_ms(250)
 
 # Async I/O task generation and launch
 async def aio_main():
     tasks = [
         # BLE related tasks
-        asyncio.create_task(ble_central.ble_peripheral_task()),
-        asyncio.create_task(ble_central.connection_status_task(blue_led)),
-        asyncio.create_task(ble_central.process_commands_task()),
+        asyncio.create_task(ble_central.ble_central_task()),
 
         # General background tasks
         asyncio.create_task(blue_led.led_process_task()),
         asyncio.create_task(green_led.led_process_task()),
-        asyncio.create_task(power_led_task()),
+        asyncio.create_task(status_led_task()),
     ]
     await asyncio.gather(*tasks)
 
@@ -149,7 +170,7 @@ green_led = Status_led(_GPIO_GREEN_LED, 255, 20)
 blue_led = Status_led(_GPIO_BLUE_LED, 0, 20)
 
 # Initialise BLE central
-ble_central = Ble_central(_GPIO_BUTTON2)
+ble_central = Ble_central()
 
 log_info("main - Launching asynchronous tasks...")
 asyncio.run(aio_main())

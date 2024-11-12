@@ -25,134 +25,147 @@
 #
 #************************************************************************
 
-import aioble.device
 from log import log_debug, log_info, log_warn
 
+from machine import Pin, unique_id
+from micropython import const
+
+import sys
 import aioble
 import bluetooth
-from machine import unique_id
 import asyncio
 
 class Ble_peripheral:
     def __init__(self):
-        # Flags to show connected status
-        self.connected = False
-        self.connection = None
-
-        # Get the local device's Unique ID
+        # Get the local device's Unique ID (used as the serial number)
         self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
 
-        # Define the device we want to connect to:
+        # Flags to show connected status
+        self.connection = None
+        self.connected = False
 
-        # Remote device advertising definitions
-        self.vt2_communicator_advertising_uuid = bluetooth.UUID(0xF910) 
-        self.vt2_communicator_advertising_name = "vt2-communicator"
+        # Advertising definitions
+        self.__ble_advertising_definitions()
 
-    # Property that is true when VT2 Communicator is connected
+        # Service definitions
+        self.__ble_service_command_definitions()
+        self.__ble_service_device_info_definitions()
+        self.__ble_service_battery_definition()
+
+        # Register services with AIOBLE library
+        aioble.register_services(self.command_service_info, self.device_info_service, self.battery_service_info)
+
+    def __ble_advertising_definitions(self):
+        # Definitions used for advertising via BLE
+
+        # Set our advertising UUID
+        self.peripheral_advertising_uuid = bluetooth.UUID(0xF910)
+
+        # Set our appearance to "Remote Control"
+        self.peripheral_appearance_generic_remote_control = const(0x0180)
+
+        self.peripheral_advertising_name = "vt2-robot"
+        self.peripheral_manufacturer = (0xFFE1, b"www.waitingforfriday.com")
+
+    # Define a service - command
+    def __ble_service_command_definitions(self):
+        # Create a command service and attach a button characteristic to it
+        command_service_uuid = bluetooth.UUID(0xFA20) # Custom
+        characteristic_uuid = bluetooth.UUID(0x2AF8) # Fixed-string 8
+
+        self.command_service_info = aioble.Service(command_service_uuid)
+
+        self.fixed_string_8_characteristic = aioble.Characteristic(self.command_service_info, characteristic_uuid, read=True, notify=True) # Subscribe
+
+    # Define a service - device info with static characteristics
+    def __ble_service_device_info_definitions(self):
+        # Device information service definitions
+        device_information_service_uuid = bluetooth.UUID(0x180A)
+        manufacturer_id_characteristic_uuid = bluetooth.UUID(0x02A29)
+        model_number_id_characteristic_uuid = bluetooth.UUID(0x2A24)
+        serial_number_id_characteristic_uuid = bluetooth.UUID(0x2A25)
+        hardware_revision_id_characteristic_uuid = bluetooth.UUID(0x2A26)
+        ble_version_id_characteristic_uuid = bluetooth.UUID(0x2A28)
+
+        self.device_info_service = aioble.Service(device_information_service_uuid)
+     
+        self.manufacturer_id_characteristic = aioble.Characteristic(self.device_info_service, manufacturer_id_characteristic_uuid, read = True, initial = self.peripheral_manufacturer[1])
+        self.model_number_id_characteristic = aioble.Characteristic(self.device_info_service, model_number_id_characteristic_uuid, read = True, initial = "1.0")
+        self.serial_number_id_characteristic = aioble.Characteristic(self.device_info_service, serial_number_id_characteristic_uuid, read = True, initial = self.uid)
+        self.hardware_revision_id_characteristic = aioble.Characteristic(self.device_info_service, hardware_revision_id_characteristic_uuid, read = True, initial = sys.version)
+        self.ble_version_id_characteristic = aioble.Characteristic(self.device_info_service, ble_version_id_characteristic_uuid, read = True, initial = "1.0")
+
+    # Define a service - battery information
+    def __ble_service_battery_definition(self):
+        battery_service_uuid = bluetooth.UUID(0x180F) # Battery service
+
+        battery_level_characteristic_uuid = bluetooth.UUID(0x2A19) # Battery level
+        battery_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
+        battery_power_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
+        battery_current_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
+
+        self.battery_service_info = aioble.Service(battery_service_uuid)
+
+        self.battery_level_characteristic = aioble.Characteristic(self.battery_service_info, battery_level_characteristic_uuid, read=True, notify=True)
+        self.battery_voltage_characteristic = aioble.Characteristic(self.battery_service_info, battery_voltage_characteristic_uuid, read=True, notify=True)
+        self.battery_power_characteristic = aioble.Characteristic(self.battery_service_info, battery_power_characteristic_uuid, read=True, notify=True)
+        self.battery_current_characteristic = aioble.Characteristic(self.battery_service_info, battery_current_characteristic_uuid, read=True, notify=True)
+
+    # Property that is true when central (VT2 Communicator) is connected
     @property
-    def is_vt2_communicator_connected(self) -> bool:
+    def is_central_connected(self) -> bool:
         return self.connected
 
-    # Process commands received from the VT2 communicator
-    def process_command(self, command):
-        if command == b'a':
-            log_debug("Ble_peripheral::process_command - Button A pressed")
-        elif command == b'b':
-            log_debug("Ble_peripheral::process_command - Button B pressed")
-        elif command == b'x':
-            log_debug("Ble_peripheral::process_command - Button X pressed")
-        elif command == b'y':
-            log_debug("Ble_peripheral::process_command - Button Y pressed")
-
-    # Scan for a VT2 Communicator
-    async def scan_for_vt2_communicator(self):
-        # Scan for 5 seconds, in active mode, with very low interval/window (to
-        # maximise detection rate).
-        log_debug("Ble_peripheral::scan_for_vt2_communicator - Scanning for VT2 communicator device...")
-        async with aioble.scan(duration_ms = 5000, interval_us = 30000, window_us = 30000, active = True) as scanner:
-            async for result in scanner:
-                # See if it matches our name
-                if result.name() == self.vt2_communicator_advertising_name:
-                    log_debug("Ble_peripheral::scan_for_vt2_communicator - Found VT2 communicator device with matching advertising name of", self.vt2_communicator_advertising_name)
-                    for item in result.services():
-                        log_debug("Ble_peripheral::scan_for_vt2_communicator - Got advertised UUID:", item)
-                    if self.vt2_communicator_advertising_uuid in result.services():
-                        log_debug("Ble_peripheral::scan_for_vt2_communicator - VT2 device advertises required UUID")
-                        return result.device
-
-        return None
-
-    # Connect to a VT2 Communicator
-    async def connect_to_vt2_communicator(self):
-        self.connected = False
-        device = await self.scan_for_vt2_communicator()
-        if not device:
-            log_debug("Ble_peripheral::connect_to_vt2_communicator - VT2 Communicator not found")
-            return
-        try:
-            log_debug("Ble_peripheral::connect_to_vt2_communicator - VT2 Communicator with address", device.addr_hex(), "found.  Attempting to connect")
-            self.connection = await device.connect()
-            log_debug("Ble_peripheral::connect_to_vt2_communicator - Connection to VT2 Communicator successful")
-            self.connected = True
-            
-        except asyncio.TimeoutError:
-            log_debug("Ble_peripheral::connect_to_vt2_communicator - Connection attempt timed out!")
-            return
-    
-    # Tasks when VT2 Communicator is connected
-    async def connected_to_vt2_communicator(self):
-        log_debug("Ble_peripheral::connected_to_vt2_communicator - Connected to VT2 communicator")
-
-        command_service_uuid = bluetooth.UUID(0xFA20)
-        fixed_string_8_characteristic_uuid = bluetooth.UUID(0x2AF8)
-
-        # Connect to the command service
-        command_service = await self.connection.service(command_service_uuid)
-
-        # Connect to the service's characteristics
-        fixed_string_8_characteristic = await command_service.characteristic(fixed_string_8_characteristic_uuid)
-
+    # Process commands task
+    async def process_commands_task(self):
         while True:
-            try:
-                if command_service == None:
-                    log_debug("Ble_peripheral::connected_to_vt2_communicator - VT2 Communicator command_service is missing!")
-                    break
+            if not self.connected:
+                # Not connected - wait a second and try again
+                await asyncio.sleep_ms(1000)
+                continue
+
+            # if self.button_a.value() == 0:
+            #     log_info("Ble_central::process_commands_task - Button A pressed")   
+            #     self.fixed_string_8_characteristic.notify(self.connection,b"a")
+            # elif button_b.read():
+            #     print('Button B pressed')
+            #     # button_characteristic.write(b"b")
+            #     button_characteristic.notify(connection,b"b")
+            # elif button_x.read():
+            #     print('Button X pressed')
+            #     # button_characteristic.write(b"x")
+            #     button_characteristic.notify(connection,b"x")
+            # elif button_y.read():
+            #     print('Button Y pressed')
+            #     # button_characteristic.write(b"y")
+            #     button_characteristic.notify(connection,b"x")
+            # else:
+            #     button_characteristic.notify(connection,b"!")
+
+            await asyncio.sleep_ms(100)
                 
-            except asyncio.TimeoutError:
-                log_debug("Ble_peripheral::connected_to_vt2_communicator - Timeout discovering services/characteristics")
-                break
-            
-            if fixed_string_8_characteristic == None:
-                log_debug("Ble_peripheral::connected_to_vt2_communicator - VT2 Communicator command_service fixed_string_8_characteristic missing!")
-                break
-        
-            try:
-                # VT2 Communicator connected - loop waiting for notifications
-                #data = await control_characteristic.read(timeout_ms = 1000)
-
-                await fixed_string_8_characteristic.subscribe(notify = True)
-                while True:
-                    command = await fixed_string_8_characteristic.notified()
-                    self.process_command(command)
-                                                            
-            except Exception as e:
-                log_debug("Ble_peripheral::connected_to_vt2_communicator - Exception was flagged (VT2 Communicator probably disappeared)")
-                self.connected = False
-                break
-
-    # Wait for disconnection from the VT2 communicator
-    async def wait_for_disconnection_from_vt2_communicator(self):
-        await self.connection.disconnected()
-
-        log_debug("Ble_peripheral::connect_to_vt2_communicator - VT2 Communicator disconnected")
-        self.connection = None
-
-    # Main BLE peripheral task
+    # Serially wait for connections. Don't advertise if a central is connected.    
     async def ble_peripheral_task(self):
-        log_debug("Ble_peripheral::ble_peripheral_task - Task started")
-        while True:
-            await self.connect_to_vt2_communicator()
+        log_debug("Ble_peripheral::peripheral_task - Task started")
 
-            if self.connected:
-                await self.connected_to_vt2_communicator()
-                await self.wait_for_disconnection_from_vt2_communicator()
+        # BLE Advertising frequency
+        ble_advertising_frequency_us = const(250000)
+
+        while True:
+            # Wait for something to connect
+            log_debug("Ble_peripheral::peripheral_task - Advertising and waiting for connection from central...")
+            self.connection = await aioble.advertise(
+                    ble_advertising_frequency_us,
+                    name = self.peripheral_advertising_name,
+                    services = [self.peripheral_advertising_uuid],
+                    appearance = self.peripheral_appearance_generic_remote_control,
+                    manufacturer = self.peripheral_manufacturer,
+                )
+            log_info("Ble_peripheral::peripheral_task - Advertising stopped - Connected to central with address", self.connection.device.addr_hex())
+            self.connected = True
+
+            # Wait for the connected central to disconnect
+            await self.connection.disconnected()
+            self.connected = False
+            self.connection = None
+            log_info("Ble_peripheral::peripheral_task - BLE central disconnected")
