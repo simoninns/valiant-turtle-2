@@ -42,37 +42,61 @@ class Ble_central:
         # Define command buttons
         self.button_a = Pin(button_pin, Pin.IN, Pin.PULL_UP)
 
-        # Get the local device's Unique ID
+        # Get the local device's Unique ID (used as the serial number)
         self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
 
         # Flags to show connected status
         self.connection = None
         self.connected = False
 
+        # Advertising definitions
+        self.__ble_advertising_definitions()
+
+        # Service definitions
+        self.__ble_service_generic_definitions()
+        self.__ble_service_device_info_definitions()
+
+        # Register services with AIOBLE library
+        aioble.register_services(self.generic_service_info, self.local_device_info_service)
+
+    def __ble_advertising_definitions(self):
+        # Definitions used for advertising via BLE
+
+        # Set our advertising UUID
+        self.vt2_communicator_advertising_uuid = bluetooth.UUID(0xF910)
+
+        # Set our appearance to "Remote Control"
+        # See: https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Assigned_Numbers/out/en/Assigned_Numbers.pdf
+        # Page 28
+        self.ble_appearance_generic_remote_control = const(0x0180)
+
+        self.advertising_name = "vt2-communicator"
+        self.manufacturer = (0xFFE1, b"www.waitingforfriday.com")
+
+    # Define a service - generic with a button characteristic
+    def __ble_service_generic_definitions(self):
+        # Create a generic service and attach a button characteristic to it
+        service_uuid = bluetooth.UUID(0x1848)
+        characteristic_uuid = bluetooth.UUID(0x2A6E)
+        self.generic_service_info = aioble.Service(service_uuid)
+        self.button_characteristic = aioble.Characteristic(self.generic_service_info, characteristic_uuid, read=True, notify=True) # Subscribe
+
+    # Define a service - device info with static characteristics
+    def __ble_service_device_info_definitions(self):
         # Device service definitions
-        env_sense_uuid = bluetooth.UUID(0x180A)
-        self.local_device_info = aioble.Service(env_sense_uuid)
-
-        # Create characteristics for local device info
-        manufacturer_id = const(0x02A29)
-        model_number_id = const(0x2A24)
-        serial_number_id = const(0x2A25)
-        hardware_revision_id = const(0x2A26)
-        ble_version_id = const(0x2A28)
-        aioble.Characteristic(self.local_device_info, bluetooth.UUID(manufacturer_id), read = True, initial = "waitingforfriday.com")
-        aioble.Characteristic(self.local_device_info, bluetooth.UUID(model_number_id), read = True, initial = "1.0")
-        aioble.Characteristic(self.local_device_info, bluetooth.UUID(serial_number_id), read = True, initial = self.uid)
-        aioble.Characteristic(self.local_device_info, bluetooth.UUID(hardware_revision_id), read = True, initial = sys.version)
-        aioble.Characteristic(self.local_device_info, bluetooth.UUID(ble_version_id), read = True, initial = "1.0")
-
-        # Create characteristics for remote device info
-        generic_uuid = bluetooth.UUID(0x1848)
-        button_uuid = bluetooth.UUID(0x2A6E)
-        self.remote_service_info = aioble.Service(generic_uuid)
-        self.button_characteristic = aioble.Characteristic(self.remote_service_info, button_uuid, read=True, notify=True) # Subscribe
-
-        # Register our services
-        aioble.register_services(self.remote_service_info, self.local_device_info)
+        service_uuid = bluetooth.UUID(0x180A)
+        manufacturer_id_characteristic_uuid = const(0x02A29)
+        model_number_id_characteristic_uuid = const(0x2A24)
+        serial_number_id_characteristic_uuid = const(0x2A25)
+        hardware_revision_id_characteristic_uuid = const(0x2A26)
+        ble_version_id_characteristic_uuid = const(0x2A28)
+        self.local_device_info_service = aioble.Service(service_uuid)
+     
+        aioble.Characteristic(self.local_device_info_service, bluetooth.UUID(manufacturer_id_characteristic_uuid), read = True, initial = self.manufacturer[1])
+        aioble.Characteristic(self.local_device_info_service, bluetooth.UUID(model_number_id_characteristic_uuid), read = True, initial = "1.0")
+        aioble.Characteristic(self.local_device_info_service, bluetooth.UUID(serial_number_id_characteristic_uuid), read = True, initial = self.uid)
+        aioble.Characteristic(self.local_device_info_service, bluetooth.UUID(hardware_revision_id_characteristic_uuid), read = True, initial = sys.version)
+        aioble.Characteristic(self.local_device_info_service, bluetooth.UUID(ble_version_id_characteristic_uuid), read = True, initial = "1.0")
 
     # Process commands task
     async def process_commands_task(self):
@@ -108,23 +132,20 @@ class Ble_central:
     async def ble_peripheral_task(self):
         log_debug("Ble_central::peripheral_task - Task started")
 
-        env_sense_temp_uuid = bluetooth.UUID(0x1800)
-        ble_appearance_generic_remote_control = const(384)
-
         # BLE Advertising frequency
         ble_advertising_frequency_us = const(250000)
 
         while True:
             # Wait for something to connect
-            log_debug("Ble_central::peripheral_task - Waiting for connection...")
+            log_debug("Ble_central::peripheral_task - Advertising service and waiting for connection...")
             self.connection = await aioble.advertise(
                     ble_advertising_frequency_us,
-                    name = "vt2-robot",
-                    services = [env_sense_temp_uuid],
-                    appearance = ble_appearance_generic_remote_control,
-                    manufacturer = (0xabcd, b"1234"),
+                    name = self.advertising_name,
+                    services = [self.vt2_communicator_advertising_uuid],
+                    appearance = self.ble_appearance_generic_remote_control,
+                    manufacturer = self.manufacturer,
                 )
-            log_info("Ble_central::peripheral_task - BLE connection from", self.connection.device)
+            log_info("Ble_central::peripheral_task - Advertising stopped - BLE connection from", self.connection.device.addr_hex())
             self.connected = True
 
             # Wait for the connected device to disconnect

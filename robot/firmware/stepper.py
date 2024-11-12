@@ -36,7 +36,7 @@ class Stepper:
     _sm_counter = 0 # Keep track of the next free state-machine
 
     def __init__(self, direction_pin, step_pin, is_left: bool):
-        self.pio = 1
+        self.pio = 0
 
         # Configure the direction GPIO
         self.direction = Pin(direction_pin, Pin.OUT)

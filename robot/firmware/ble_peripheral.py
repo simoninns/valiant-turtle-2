@@ -25,58 +25,65 @@
 #
 #************************************************************************
 
+import aioble.device
 from log import log_debug, log_info, log_warn
 
 import aioble
 import bluetooth
-import machine
+from machine import unique_id
 import asyncio
 
 class Ble_peripheral:
     def __init__(self):
         # Flags to show connected status
         self.connected = False
-        self.alive = False
+        self.connection = None
 
+        # Get the local device's Unique ID
+        self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
+
+        # Define the device we want to connect to:
+
+        # Remote device advertising definitions
+        self.vt2_communicator_advertising_uuid = bluetooth.UUID(0xF910) 
+        self.vt2_communicator_advertising_name = "vt2-communicator"
+
+    # Property that is true when VT2 Communicator is connected
+    @property
+    def is_vt2_communicator_connected(self) -> bool:
+        return self.connected
+
+    # Process commands received from the VT2 communicator
+    def process_command(self, command):
+        if command == b'a':
+            log_debug("Ble_peripheral::process_command - Button A pressed")
+        elif command == b'b':
+            log_debug("Ble_peripheral::process_command - Button B pressed")
+        elif command == b'x':
+            log_debug("Ble_peripheral::process_command - Button X pressed")
+        elif command == b'y':
+            log_debug("Ble_peripheral::process_command - Button Y pressed")
+
+    # Scan for a VT2 Communicator
     async def scan_for_vt2_communicator(self):
-        env_sense_uuid = bluetooth.UUID(0x1800) 
         # Scan for 5 seconds, in active mode, with very low interval/window (to
         # maximise detection rate).
-        log_debug("ble_peripheral::scan_for_vt2_communicator - Scanning for VT2 communicator device...")
+        log_debug("Ble_peripheral::scan_for_vt2_communicator - Scanning for VT2 communicator device...")
         async with aioble.scan(duration_ms = 5000, interval_us = 30000, window_us = 30000, active = True) as scanner:
             async for result in scanner:
                 # See if it matches our name
-                if result.name() == "vt2-robot":
-                    log_debug("Ble_peripheral::scan_for_vt2_communicator - Found VT2 communicator device")
+                if result.name() == self.vt2_communicator_advertising_name:
+                    log_debug("Ble_peripheral::scan_for_vt2_communicator - Found VT2 communicator device with matching advertising name of", self.vt2_communicator_advertising_name)
                     for item in result.services():
-                        log_debug("Ble_peripheral::scan_for_vt2_communicator - Got service:", item)
-                    if env_sense_uuid in result.services():
-                        log_debug("Ble_peripheral::scan_for_vt2_communicator - VT2 device provides required service UUID")
+                        log_debug("Ble_peripheral::scan_for_vt2_communicator - Got advertised UUID:", item)
+                    if self.vt2_communicator_advertising_uuid in result.services():
+                        log_debug("Ble_peripheral::scan_for_vt2_communicator - VT2 device advertises required UUID")
                         return result.device
 
         return None
 
-    # Property that is true when BLE is connected
-    @property
-    def is_connected(self) -> bool:
-        return self.connected
-
-    # Just a dummy for testing...
-    def move_robot(self, command):
-        if command == b'a':
-            print("a button pressed")
-        elif command == b'b':
-            print("b button pressed")
-        elif command == b'x':
-            print("x button pressed")
-        elif command == b'y':
-            print("y button pressed")
-
+    # Connect to a VT2 Communicator
     async def connect_to_vt2_communicator(self):
-        # Bluetooth UUIDS can be found online at https://www.bluetooth.com/specifications/gatt/services/
-        remote_uuid = bluetooth.UUID(0x1848)
-        remote_characteristics_uuid = bluetooth.UUID(0x2A6E)
-        
         self.connected = False
         device = await self.scan_for_vt2_communicator()
         if not device:
@@ -84,56 +91,64 @@ class Ble_peripheral:
             return
         try:
             log_debug("Ble_peripheral::connect_to_vt2_communicator - VT2 Communicator with address", device.addr_hex(), "found.  Attempting to connect")
-            connection = await device.connect()
+            self.connection = await device.connect()
+            log_debug("Ble_peripheral::connect_to_vt2_communicator - Connection to VT2 Communicator successful")
+            self.connected = True
             
         except asyncio.TimeoutError:
             log_debug("Ble_peripheral::connect_to_vt2_communicator - Connection attempt timed out!")
             return
-        
-        async with connection:
-            log_debug("Ble_peripheral::connect_to_vt2_communicator - Connected to VT2 communicator")
-            self.alive = True
-            self.connected = True
+    
+    # Tasks when VT2 Communicator is connected
+    async def connected_to_vt2_communicator(self):
+        log_debug("Ble_peripheral::connected_to_vt2_communicator - Connected to VT2 communicator")
 
-            robot_service = await connection.service(remote_uuid)
-            control_characteristic = await robot_service.characteristic(remote_characteristics_uuid)
-            
-            while True:
-                try:
-                    if robot_service == None:
-                        log_debug("Ble_peripheral::connect_to_vt2_communicator - VT2 Communicator disconnected")
-                        self.alive = False
-                        break
-                    
-                except asyncio.TimeoutError:
-                    log_debug("Ble_peripheral::connect_to_vt2_communicator - Timeout discovering services/characteristics")
-                    self.alive = False
+        generic_service_uuid = bluetooth.UUID(0x1848)
+        generic_service_button_characteristic_uuid = bluetooth.UUID(0x2A6E)
+        robot_service = await self.connection.service(generic_service_uuid)
+        control_characteristic = await robot_service.characteristic(generic_service_button_characteristic_uuid)
+        
+        while True:
+            try:
+                if robot_service == None:
+                    log_debug("Ble_peripheral::connected_to_vt2_communicator - VT2 Communicator providing no services!")
                     break
                 
-                if control_characteristic == None:
-                    log_debug("Ble_peripheral::connect_to_vt2_communicator - no control characteristics found")
-                    self.alive = False
-                    break
+            except asyncio.TimeoutError:
+                log_debug("Ble_peripheral::connected_to_vt2_communicator - Timeout discovering services/characteristics")
+                break
             
-                try:
-                    data = await control_characteristic.read(timeout_ms = 1000)
+            if control_characteristic == None:
+                log_debug("Ble_peripheral::connected_to_vt2_communicator - VT2 Communicator providing no characteristics")
+                break
+        
+            try:
+                # VT2 Communicator connected - loop waiting for notifications
+                #data = await control_characteristic.read(timeout_ms = 1000)
 
-                    await control_characteristic.subscribe(notify = True)
-                    while True:
-                        command = await control_characteristic.notified()
-                        self.move_robot(command)
-                                                                
-                except Exception as e:
-                    log_debug("Ble_peripheral::connect_to_vt2_communicator - Exception was flagged, device gone?")
-                    self.connected = False
-                    self.alive = False
-                    break
+                await control_characteristic.subscribe(notify = True)
+                while True:
+                    command = await control_characteristic.notified()
+                    self.process_command(command)
+                                                            
+            except Exception as e:
+                log_debug("Ble_peripheral::connected_to_vt2_communicator - Exception was flagged (VT2 Communicator probably disappeared)")
+                self.connected = False
+                break
 
-            await connection.disconnected()
-            log_debug("Ble_peripheral::connect_to_vt2_communicator - VT2 Communicator disconnected")
-            self.alive = False
+    # Wait for disconnection from the VT2 communicator
+    async def wait_for_disconnection_from_vt2_communicator(self):
+        await self.connection.disconnected()
 
+        log_debug("Ble_peripheral::connect_to_vt2_communicator - VT2 Communicator disconnected")
+        self.connection = None
+
+    # Main BLE peripheral task
     async def ble_peripheral_task(self):
         log_debug("Ble_peripheral::ble_peripheral_task - Task started")
         while True:
             await self.connect_to_vt2_communicator()
+
+            if self.connected:
+                await self.connected_to_vt2_communicator()
+                await self.wait_for_disconnection_from_vt2_communicator()
