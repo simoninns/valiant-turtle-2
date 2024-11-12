@@ -53,11 +53,12 @@ class Ble_central:
         self.__ble_advertising_definitions()
 
         # Service definitions
-        self.__ble_service_generic_definitions()
+        self.__ble_service_command_definitions()
         self.__ble_service_device_info_definitions()
+        self.__ble_service_battery_definition()
 
         # Register services with AIOBLE library
-        aioble.register_services(self.generic_service_info, self.local_device_info_service)
+        aioble.register_services(self.command_service_info, self.device_info_service, self.battery_service_info)
 
     def __ble_advertising_definitions(self):
         # Definitions used for advertising via BLE
@@ -73,30 +74,49 @@ class Ble_central:
         self.advertising_name = "vt2-communicator"
         self.manufacturer = (0xFFE1, b"www.waitingforfriday.com")
 
-    # Define a service - generic with a button characteristic
-    def __ble_service_generic_definitions(self):
-        # Create a generic service and attach a button characteristic to it
-        service_uuid = bluetooth.UUID(0x1848)
-        characteristic_uuid = bluetooth.UUID(0x2A6E)
-        self.generic_service_info = aioble.Service(service_uuid)
-        self.button_characteristic = aioble.Characteristic(self.generic_service_info, characteristic_uuid, read=True, notify=True) # Subscribe
+    # Define a service - command
+    def __ble_service_command_definitions(self):
+        # Create a command service and attach a button characteristic to it
+        command_service_uuid = bluetooth.UUID(0xFA20) # Custom
+        characteristic_uuid = bluetooth.UUID(0x2AF8) # Fixed-string 8
+
+        self.command_service_info = aioble.Service(command_service_uuid)
+
+        self.fixed_string_8_characteristic = aioble.Characteristic(self.command_service_info, characteristic_uuid, read=True, notify=True) # Subscribe
 
     # Define a service - device info with static characteristics
     def __ble_service_device_info_definitions(self):
-        # Device service definitions
-        service_uuid = bluetooth.UUID(0x180A)
-        manufacturer_id_characteristic_uuid = const(0x02A29)
-        model_number_id_characteristic_uuid = const(0x2A24)
-        serial_number_id_characteristic_uuid = const(0x2A25)
-        hardware_revision_id_characteristic_uuid = const(0x2A26)
-        ble_version_id_characteristic_uuid = const(0x2A28)
-        self.local_device_info_service = aioble.Service(service_uuid)
+        # Device information service definitions
+        device_information_service_uuid = bluetooth.UUID(0x180A)
+        manufacturer_id_characteristic_uuid = bluetooth.UUID(0x02A29)
+        model_number_id_characteristic_uuid = bluetooth.UUID(0x2A24)
+        serial_number_id_characteristic_uuid = bluetooth.UUID(0x2A25)
+        hardware_revision_id_characteristic_uuid = bluetooth.UUID(0x2A26)
+        ble_version_id_characteristic_uuid = bluetooth.UUID(0x2A28)
+
+        self.device_info_service = aioble.Service(device_information_service_uuid)
      
-        aioble.Characteristic(self.local_device_info_service, bluetooth.UUID(manufacturer_id_characteristic_uuid), read = True, initial = self.manufacturer[1])
-        aioble.Characteristic(self.local_device_info_service, bluetooth.UUID(model_number_id_characteristic_uuid), read = True, initial = "1.0")
-        aioble.Characteristic(self.local_device_info_service, bluetooth.UUID(serial_number_id_characteristic_uuid), read = True, initial = self.uid)
-        aioble.Characteristic(self.local_device_info_service, bluetooth.UUID(hardware_revision_id_characteristic_uuid), read = True, initial = sys.version)
-        aioble.Characteristic(self.local_device_info_service, bluetooth.UUID(ble_version_id_characteristic_uuid), read = True, initial = "1.0")
+        self.manufacturer_id_characteristic = aioble.Characteristic(self.device_info_service, manufacturer_id_characteristic_uuid, read = True, initial = self.manufacturer[1])
+        self.model_number_id_characteristic = aioble.Characteristic(self.device_info_service, model_number_id_characteristic_uuid, read = True, initial = "1.0")
+        self.serial_number_id_characteristic = aioble.Characteristic(self.device_info_service, serial_number_id_characteristic_uuid, read = True, initial = self.uid)
+        self.hardware_revision_id_characteristic = aioble.Characteristic(self.device_info_service, hardware_revision_id_characteristic_uuid, read = True, initial = sys.version)
+        self.ble_version_id_characteristic = aioble.Characteristic(self.device_info_service, ble_version_id_characteristic_uuid, read = True, initial = "1.0")
+
+    # Define a service - battery information
+    def __ble_service_battery_definition(self):
+        battery_service_uuid = bluetooth.UUID(0x180F) # Battery service
+
+        battery_level_characteristic_uuid = bluetooth.UUID(0x2A19) # Battery level
+        battery_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
+        battery_power_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
+        battery_current_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
+
+        self.battery_service_info = aioble.Service(battery_service_uuid)
+
+        self.battery_level_characteristic = aioble.Characteristic(self.battery_service_info, battery_level_characteristic_uuid, read=True, notify=True)
+        self.battery_voltage_characteristic = aioble.Characteristic(self.battery_service_info, battery_voltage_characteristic_uuid, read=True, notify=True)
+        self.battery_power_characteristic = aioble.Characteristic(self.battery_service_info, battery_power_characteristic_uuid, read=True, notify=True)
+        self.battery_current_characteristic = aioble.Characteristic(self.battery_service_info, battery_current_characteristic_uuid, read=True, notify=True)
 
     # Process commands task
     async def process_commands_task(self):
@@ -107,10 +127,8 @@ class Ble_central:
                 continue
 
             if self.button_a.value() == 0:
-                log_info("Ble_central::process_commands_task - Button A pressed")
-                #only need to write OR notify, not both!
-                # button_characteristic.write(b"a")    
-                self.button_characteristic.notify(self.connection,b"a")
+                log_info("Ble_central::process_commands_task - Button A pressed")   
+                self.fixed_string_8_characteristic.notify(self.connection,b"a")
             # elif button_b.read():
             #     print('Button B pressed')
             #     # button_characteristic.write(b"b")

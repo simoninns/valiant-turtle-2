@@ -103,32 +103,36 @@ class Ble_peripheral:
     async def connected_to_vt2_communicator(self):
         log_debug("Ble_peripheral::connected_to_vt2_communicator - Connected to VT2 communicator")
 
-        generic_service_uuid = bluetooth.UUID(0x1848)
-        generic_service_button_characteristic_uuid = bluetooth.UUID(0x2A6E)
-        robot_service = await self.connection.service(generic_service_uuid)
-        control_characteristic = await robot_service.characteristic(generic_service_button_characteristic_uuid)
-        
+        command_service_uuid = bluetooth.UUID(0xFA20)
+        fixed_string_8_characteristic_uuid = bluetooth.UUID(0x2AF8)
+
+        # Connect to the command service
+        command_service = await self.connection.service(command_service_uuid)
+
+        # Connect to the service's characteristics
+        fixed_string_8_characteristic = await command_service.characteristic(fixed_string_8_characteristic_uuid)
+
         while True:
             try:
-                if robot_service == None:
-                    log_debug("Ble_peripheral::connected_to_vt2_communicator - VT2 Communicator providing no services!")
+                if command_service == None:
+                    log_debug("Ble_peripheral::connected_to_vt2_communicator - VT2 Communicator command_service is missing!")
                     break
                 
             except asyncio.TimeoutError:
                 log_debug("Ble_peripheral::connected_to_vt2_communicator - Timeout discovering services/characteristics")
                 break
             
-            if control_characteristic == None:
-                log_debug("Ble_peripheral::connected_to_vt2_communicator - VT2 Communicator providing no characteristics")
+            if fixed_string_8_characteristic == None:
+                log_debug("Ble_peripheral::connected_to_vt2_communicator - VT2 Communicator command_service fixed_string_8_characteristic missing!")
                 break
         
             try:
                 # VT2 Communicator connected - loop waiting for notifications
                 #data = await control_characteristic.read(timeout_ms = 1000)
 
-                await control_characteristic.subscribe(notify = True)
+                await fixed_string_8_characteristic.subscribe(notify = True)
                 while True:
-                    command = await control_characteristic.notified()
+                    command = await fixed_string_8_characteristic.notified()
                     self.process_command(command)
                                                             
             except Exception as e:
