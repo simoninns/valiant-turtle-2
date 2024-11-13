@@ -124,14 +124,15 @@ async def status_led_task():
         # Wait before next interval
         await asyncio.sleep_ms(250)
 
-# Output power monitoring information periodically
-ina260_ticker = 0
-def ina260_info():
-    global ina260_ticker
-    if ina260_ticker == 0:
-        log_info("INA260: mA =", ina260.current, "/ mV =" , ina260.bus_voltage, "/ mW =", ina260.power)
-    ina260_ticker += 1
-    if ina260_ticker == 2000: ina260_ticker = 0
+# Async task to update battery level service
+async def power_monitor_task():
+    test_level = 250
+    while True:
+        # Wait before next update
+        await asyncio.sleep_ms(5000)
+
+        # Read the INA260 and send an update to BLE central
+        ble_peripheral.battery_service_update(ina260.voltage, ina260.current, ina260.power)
 
 # Async I/O task generation and launch
 async def aio_main():
@@ -144,6 +145,7 @@ async def aio_main():
         asyncio.create_task(status_led_task()),
         asyncio.create_task(led_fx.process_leds_task()),
         #asyncio.create_task(stepper_task()),
+        asyncio.create_task(power_monitor_task()),
     ]
     await asyncio.gather(*tasks)
 

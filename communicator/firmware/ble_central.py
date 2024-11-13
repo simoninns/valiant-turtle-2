@@ -33,6 +33,8 @@ import bluetooth
 from machine import unique_id
 import asyncio
 
+import data_encode
+
 class Ble_central:
     def __init__(self):
         # Flags to show connected status
@@ -102,18 +104,20 @@ class Ble_central:
             log_debug("Ble_central::command_service_notification - Unknown button pressed")
 
     # Process battery_service notifications from the peripheral
-    def battery_service_notification(self, data):
-        log_debug("Ble_central::battery_service_notification - Received data =", data)
+    def battery_service_notification(self, voltage, current, power):
+        log_debug("Ble_central::battery_service_notification - mV =" , voltage, "/ mA =", current, "/ mW =", power)
 
     # Task to handle battery_service notifications
-    async def handle_battery_service_task(self, battery_level_characteristic):
+    async def handle_battery_service_task(self, battery_voltage_characteristic, battery_current_characteristic, battery_power_characteristic):
         log_debug("Ble_central::handle_battery_service_task - battery_service notification handler running")
 
         try:
             # Loop waiting for service notifications
             while self.connected:
-                battery_level_data = await battery_level_characteristic.notified()
-                self.battery_service_notification(battery_level_data)
+                battery_voltage_data = await battery_voltage_characteristic.notified()
+                battery_current_data = await battery_current_characteristic.read()
+                battery_power_data = await battery_power_characteristic.read()
+                self.battery_service_notification(data_encode.from_float(battery_voltage_data), data_encode.from_float(battery_current_data), data_encode.from_float(battery_power_data))
                                                             
         except Exception as e:
             log_debug("Ble_central::handle_battery_service_task - Exception was flagged (Peripheral probably disappeared)")
@@ -159,38 +163,36 @@ class Ble_central:
         # Battery service setup
         battery_service_uuid = bluetooth.UUID(0x180F) # Battery service
 
-        battery_level_characteristic_uuid = bluetooth.UUID(0x2A19) # Battery level
         battery_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
-        battery_power_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
         battery_current_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
+        battery_power_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
 
         battery_service = await self.connection.service(battery_service_uuid)
-        battery_level_characteristic = await battery_service.characteristic(battery_level_characteristic_uuid)
-        # battery_voltage_characteristic = await battery_service.characteristic(battery_voltage_characteristic_uuid)
-        # battery_power_characteristic = await battery_service.characteristic(battery_power_characteristic_uuid)
-        # battery_current_characteristic = await battery_service.characteristic(battery_current_characteristic_uuid)
+        battery_voltage_characteristic = await battery_service.characteristic(battery_voltage_characteristic_uuid)
+        battery_current_characteristic = await battery_service.characteristic(battery_current_characteristic_uuid)
+        battery_power_characteristic = await battery_service.characteristic(battery_power_characteristic_uuid)
 
         try:
             if battery_service == None:
                 log_debug("Ble_central::connected_to_peripheral - Peripheral battery_service is missing!")
-                RuntimeError("Peripheral BLE is broken - command_service is missing!")
+                RuntimeError("Peripheral BLE is broken - bettery_service is missing!")
             
         except asyncio.TimeoutError:
             log_debug("Ble_central::connected_to_peripheral - Timeout discovering services/characteristics")
             RuntimeError("Peripheral BLE is broken - Timeout discovering services/characteristics!")
         
-        if battery_level_characteristic == None:
+        if battery_voltage_characteristic == None:
             log_debug("Ble_central::connected_to_peripheral - Peripheral battery_service battery_level_characteristic missing!")
-            RuntimeError("Peripheral BLE is broken - command_service battery_level_characteristic missing!")
+            RuntimeError("Peripheral BLE is broken - bettery_service battery_voltage_characteristic missing!")
 
         # Subscribe to characteristic notifications
         await fixed_string_8_characteristic.subscribe(notify = True)
-        await battery_level_characteristic.subscribe(notify = True)
+        await battery_voltage_characteristic.subscribe(notify = True)
 
         # Generate a task for each service and then run them
         central_tasks = [
             asyncio.create_task(self.handle_command_service_task(fixed_string_8_characteristic)),
-            asyncio.create_task(self.handle_battery_service_task(battery_level_characteristic)),
+            asyncio.create_task(self.handle_battery_service_task(battery_voltage_characteristic, battery_current_characteristic, battery_power_characteristic)),
         ]
         await asyncio.gather(*central_tasks)
 

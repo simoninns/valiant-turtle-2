@@ -30,10 +30,11 @@ from log import log_debug, log_info, log_warn
 from machine import Pin, unique_id
 from micropython import const
 
-import sys
 import aioble
 import bluetooth
 import asyncio
+
+import data_encode
 
 class Ble_peripheral:
     def __init__(self):
@@ -50,10 +51,8 @@ class Ble_peripheral:
         # Service definitions
         self.__ble_service_command_definitions()
         self.__ble_service_battery_definition()
-        #self.__ble_service_device_info_definitions()
 
         # Register services with AIOBLE library
-        # Note: self.device_info_service is removed for testing
         aioble.register_services(self.command_service_info, self.battery_service_info)
 
     def __ble_advertising_definitions(self):
@@ -82,35 +81,15 @@ class Ble_peripheral:
     def __ble_service_battery_definition(self):
         battery_service_uuid = bluetooth.UUID(0x180F) # Battery service
 
-        battery_level_characteristic_uuid = bluetooth.UUID(0x2A19) # Battery level
         battery_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
-        battery_power_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
         battery_current_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
+        battery_power_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
 
         self.battery_service_info = aioble.Service(battery_service_uuid)
 
-        self.battery_level_characteristic = aioble.Characteristic(self.battery_service_info, battery_level_characteristic_uuid, read=True, notify=True)
-        self.battery_voltage_characteristic = aioble.Characteristic(self.battery_service_info, battery_voltage_characteristic_uuid, read=True, notify=False)
-        self.battery_power_characteristic = aioble.Characteristic(self.battery_service_info, battery_power_characteristic_uuid, read=True, notify=False)
+        self.battery_voltage_characteristic = aioble.Characteristic(self.battery_service_info, battery_voltage_characteristic_uuid, read=True, notify=True)
         self.battery_current_characteristic = aioble.Characteristic(self.battery_service_info, battery_current_characteristic_uuid, read=True, notify=False)
-
-    # Define a service - device info with static characteristics
-    def __ble_service_device_info_definitions(self):
-        # Device information service definitions
-        device_information_service_uuid = bluetooth.UUID(0x180A)
-        manufacturer_id_characteristic_uuid = bluetooth.UUID(0x02A29)
-        model_number_id_characteristic_uuid = bluetooth.UUID(0x2A24)
-        serial_number_id_characteristic_uuid = bluetooth.UUID(0x2A25)
-        hardware_revision_id_characteristic_uuid = bluetooth.UUID(0x2A26)
-        ble_version_id_characteristic_uuid = bluetooth.UUID(0x2A28)
-
-        self.device_info_service = aioble.Service(device_information_service_uuid)
-     
-        self.manufacturer_id_characteristic = aioble.Characteristic(self.device_info_service, manufacturer_id_characteristic_uuid, read = True, initial = self.peripheral_manufacturer[1])
-        self.model_number_id_characteristic = aioble.Characteristic(self.device_info_service, model_number_id_characteristic_uuid, read = True, initial = "1.0")
-        self.serial_number_id_characteristic = aioble.Characteristic(self.device_info_service, serial_number_id_characteristic_uuid, read = True, initial = self.uid)
-        self.hardware_revision_id_characteristic = aioble.Characteristic(self.device_info_service, hardware_revision_id_characteristic_uuid, read = True, initial = sys.version)
-        self.ble_version_id_characteristic = aioble.Characteristic(self.device_info_service, ble_version_id_characteristic_uuid, read = True, initial = "1.0")
+        self.battery_power_characteristic = aioble.Characteristic(self.battery_service_info, battery_power_characteristic_uuid, read=True, notify=False)
 
     # Property that is true when central (VT2 Communicator) is connected
     @property
@@ -170,3 +149,11 @@ class Ble_peripheral:
             self.connected = False
             self.connection = None
             log_info("Ble_peripheral::peripheral_task - BLE central disconnected")
+
+    # Send battery service characteristics update
+    def battery_service_update(self, voltage, current, power):
+        if self.connected:
+            log_debug("Ble_peripheral::battery_service_update - mV =" , voltage, "/ mA =", current, "/ mW =", power)
+            self.battery_voltage_characteristic.notify(self.connection, data_encode.to_float(voltage))
+            self.battery_current_characteristic.write(data_encode.to_float(current))
+            self.battery_power_characteristic.write(data_encode.to_float(power))

@@ -78,9 +78,9 @@ class Ina260:
         response = int.from_bytes(self.i2c.readfrom(self.address, 2, True), "big")
         return float(response) * 1.25
 
-    # Read the bus voltage in V
+    # Read the voltage in V
     @property
-    def bus_voltage(self) -> float:
+    def voltage(self) -> float:
         buffer = bytearray([_INA260_REG_VOLTAGE])
         self.i2c.writeto(self.address, buffer, False)
         response = int.from_bytes(self.i2c.readfrom(self.address, 2, True), "big")
