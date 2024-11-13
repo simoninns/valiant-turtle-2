@@ -49,11 +49,12 @@ class Ble_peripheral:
 
         # Service definitions
         self.__ble_service_command_definitions()
-        self.__ble_service_device_info_definitions()
         self.__ble_service_battery_definition()
+        #self.__ble_service_device_info_definitions()
 
         # Register services with AIOBLE library
-        aioble.register_services(self.command_service_info, self.device_info_service, self.battery_service_info)
+        # Note: self.device_info_service is removed for testing
+        aioble.register_services(self.command_service_info, self.battery_service_info)
 
     def __ble_advertising_definitions(self):
         # Definitions used for advertising via BLE
@@ -77,6 +78,22 @@ class Ble_peripheral:
 
         self.fixed_string_8_characteristic = aioble.Characteristic(self.command_service_info, characteristic_uuid, read=True, notify=True) # Subscribe
 
+    # Define a service - battery information
+    def __ble_service_battery_definition(self):
+        battery_service_uuid = bluetooth.UUID(0x180F) # Battery service
+
+        battery_level_characteristic_uuid = bluetooth.UUID(0x2A19) # Battery level
+        battery_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
+        battery_power_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
+        battery_current_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
+
+        self.battery_service_info = aioble.Service(battery_service_uuid)
+
+        self.battery_level_characteristic = aioble.Characteristic(self.battery_service_info, battery_level_characteristic_uuid, read=True, notify=True)
+        self.battery_voltage_characteristic = aioble.Characteristic(self.battery_service_info, battery_voltage_characteristic_uuid, read=True, notify=False)
+        self.battery_power_characteristic = aioble.Characteristic(self.battery_service_info, battery_power_characteristic_uuid, read=True, notify=False)
+        self.battery_current_characteristic = aioble.Characteristic(self.battery_service_info, battery_current_characteristic_uuid, read=True, notify=False)
+
     # Define a service - device info with static characteristics
     def __ble_service_device_info_definitions(self):
         # Device information service definitions
@@ -94,22 +111,6 @@ class Ble_peripheral:
         self.serial_number_id_characteristic = aioble.Characteristic(self.device_info_service, serial_number_id_characteristic_uuid, read = True, initial = self.uid)
         self.hardware_revision_id_characteristic = aioble.Characteristic(self.device_info_service, hardware_revision_id_characteristic_uuid, read = True, initial = sys.version)
         self.ble_version_id_characteristic = aioble.Characteristic(self.device_info_service, ble_version_id_characteristic_uuid, read = True, initial = "1.0")
-
-    # Define a service - battery information
-    def __ble_service_battery_definition(self):
-        battery_service_uuid = bluetooth.UUID(0x180F) # Battery service
-
-        battery_level_characteristic_uuid = bluetooth.UUID(0x2A19) # Battery level
-        battery_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
-        battery_power_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
-        battery_current_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
-
-        self.battery_service_info = aioble.Service(battery_service_uuid)
-
-        self.battery_level_characteristic = aioble.Characteristic(self.battery_service_info, battery_level_characteristic_uuid, read=True, notify=True)
-        self.battery_voltage_characteristic = aioble.Characteristic(self.battery_service_info, battery_voltage_characteristic_uuid, read=True, notify=True)
-        self.battery_power_characteristic = aioble.Characteristic(self.battery_service_info, battery_power_characteristic_uuid, read=True, notify=True)
-        self.battery_current_characteristic = aioble.Characteristic(self.battery_service_info, battery_current_characteristic_uuid, read=True, notify=True)
 
     # Property that is true when central (VT2 Communicator) is connected
     @property

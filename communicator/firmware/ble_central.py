@@ -53,17 +53,6 @@ class Ble_central:
     def is_peripheral_connected(self) -> bool:
         return self.connected
 
-    # Process commands received from the VT2 robot
-    def process_command(self, command):
-        if command == b'a':
-            log_debug("Ble_central::process_command - Button A pressed")
-        elif command == b'b':
-            log_debug("Ble_central::process_command - Button B pressed")
-        elif command == b'x':
-            log_debug("Ble_central::process_command - Button X pressed")
-        elif command == b'y':
-            log_debug("Ble_central::process_command - Button Y pressed")
-
     # Scan for a peripheral
     async def scan_for_peripheral(self):
         # Scan for 5 seconds, in active mode, with very low interval/window (to
@@ -99,17 +88,61 @@ class Ble_central:
             log_debug("Ble_central::connect_to_peripheral - Connection attempt timed out!")
             return
     
+    # Process command_service notifications from the peripheral
+    def command_service_notification(self, data):
+        if data == b'a':
+            log_debug("Ble_central::command_service_notification - Button A pressed")
+        elif data == b'b':
+            log_debug("Ble_central::command_service_notification - Button B pressed")
+        elif data == b'x':
+            log_debug("Ble_central::command_service_notification - Button X pressed")
+        elif data == b'y':
+            log_debug("Ble_central::command_service_notification - Button Y pressed")
+        else:
+            log_debug("Ble_central::command_service_notification - Unknown button pressed")
+
+    # Process battery_service notifications from the peripheral
+    def battery_service_notification(self, data):
+        log_debug("Ble_central::battery_service_notification - Received data =", data)
+
+    # Task to handle battery_service notifications
+    async def handle_battery_service_task(self, battery_level_characteristic):
+        log_debug("Ble_central::handle_battery_service_task - battery_service notification handler running")
+
+        try:
+            # Loop waiting for service notifications
+            while self.connected:
+                battery_level_data = await battery_level_characteristic.notified()
+                self.battery_service_notification(battery_level_data)
+                                                            
+        except Exception as e:
+            log_debug("Ble_central::handle_battery_service_task - Exception was flagged (Peripheral probably disappeared)")
+            self.connected = False
+
+    # Task to handle command_service notifications
+    async def handle_command_service_task(self, fixed_string_8_characteristic):
+        log_debug("Ble_central::handle_command_service_task - command_service notification handler running")
+
+        try:
+            # Loop waiting for service notifications
+            while self.connected:
+                data = await fixed_string_8_characteristic.notified()
+                self.command_service_notification(data)
+                                                        
+        except Exception as e:
+            log_debug("Ble_central::handle_command_service_task - Exception was flagged (Peripheral probably disappeared)")
+            self.connected = False
+
     # Tasks when a peripheral is connected
     async def connected_to_peripheral(self):
         log_debug("Ble_central::connected_to_peripheral - Connected to peripheral")
 
-        # Command service
+        # Command service setup
         command_service_uuid = bluetooth.UUID(0xFA20)
         fixed_string_8_characteristic_uuid = bluetooth.UUID(0x2AF8)
         command_service = await self.connection.service(command_service_uuid)
         fixed_string_8_characteristic = await command_service.characteristic(fixed_string_8_characteristic_uuid)
 
-        # Ensure that we connected correctly to the service and characteristics...
         try:
             if command_service == None:
                 log_debug("Ble_central::connected_to_peripheral - Peripheral command_service is missing!")
@@ -123,21 +156,43 @@ class Ble_central:
             log_debug("Ble_central::connected_to_peripheral - Peripheral command_service fixed_string_8_characteristic missing!")
             RuntimeError("Peripheral BLE is broken - command_service fixed_string_8_characteristic missing!")
         
-        # Enter a loop waiting for BLE notifications
-        while True:
-            try:
-                # VT2 Robot connected - loop waiting for notifications
-                #data = await control_characteristic.read(timeout_ms = 1000)
+        # Battery service setup
+        battery_service_uuid = bluetooth.UUID(0x180F) # Battery service
 
-                await fixed_string_8_characteristic.subscribe(notify = True)
-                while True:
-                    command = await fixed_string_8_characteristic.notified()
-                    self.process_command(command)
-                                                            
-            except Exception as e:
-                log_debug("Ble_central::connected_to_peripheral - Exception was flagged (Peripheral probably disappeared)")
-                self.connected = False
-                break
+        battery_level_characteristic_uuid = bluetooth.UUID(0x2A19) # Battery level
+        battery_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
+        battery_power_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
+        battery_current_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
+
+        battery_service = await self.connection.service(battery_service_uuid)
+        battery_level_characteristic = await battery_service.characteristic(battery_level_characteristic_uuid)
+        # battery_voltage_characteristic = await battery_service.characteristic(battery_voltage_characteristic_uuid)
+        # battery_power_characteristic = await battery_service.characteristic(battery_power_characteristic_uuid)
+        # battery_current_characteristic = await battery_service.characteristic(battery_current_characteristic_uuid)
+
+        try:
+            if battery_service == None:
+                log_debug("Ble_central::connected_to_peripheral - Peripheral battery_service is missing!")
+                RuntimeError("Peripheral BLE is broken - command_service is missing!")
+            
+        except asyncio.TimeoutError:
+            log_debug("Ble_central::connected_to_peripheral - Timeout discovering services/characteristics")
+            RuntimeError("Peripheral BLE is broken - Timeout discovering services/characteristics!")
+        
+        if battery_level_characteristic == None:
+            log_debug("Ble_central::connected_to_peripheral - Peripheral battery_service battery_level_characteristic missing!")
+            RuntimeError("Peripheral BLE is broken - command_service battery_level_characteristic missing!")
+
+        # Subscribe to characteristic notifications
+        await fixed_string_8_characteristic.subscribe(notify = True)
+        await battery_level_characteristic.subscribe(notify = True)
+
+        # Generate a task for each service and then run them
+        central_tasks = [
+            asyncio.create_task(self.handle_command_service_task(fixed_string_8_characteristic)),
+            asyncio.create_task(self.handle_battery_service_task(battery_level_characteristic)),
+        ]
+        await asyncio.gather(*central_tasks)
 
     # Wait for disconnection from the peripheral
     async def wait_for_disconnection_from_peripheral(self):
