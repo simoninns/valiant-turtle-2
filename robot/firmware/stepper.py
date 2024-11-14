@@ -56,7 +56,7 @@ class Stepper:
 
         # Ensure we have a free state-machine
         if Stepper._sm_counter < 4:
-            log_info("Stepper::__init__ - Using PIO", self.pio,"SM", Stepper._sm_counter)
+            log_debug("Stepper::__init__ - Using PIO", self.pio,"SM", Stepper._sm_counter)
         else:
             raise RuntimeError("Stepper::__init__ - No more state machines available!")
 

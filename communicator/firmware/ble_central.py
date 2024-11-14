@@ -83,7 +83,7 @@ class Ble_central:
         try:
             log_debug("Ble_central::connect_to_peripheral - Peripheral with address", device.addr_hex(), "found.  Attempting to connect")
             self.connection = await device.connect()
-            log_debug("Ble_central::connect_to_peripheral - Connection to peripheral successful")
+            log_info("Ble_central::connect_to_peripheral - Connected to peripheral with address", device.addr_hex())
             self.connected = True
             
         except asyncio.TimeoutError:
@@ -234,9 +234,9 @@ class Ble_central:
     async def wait_for_disconnection_from_peripheral(self):
         try:
             await self.connection.disconnected(timeout_ms=2000)
-            log_debug("Ble_central::wait_for_disconnection_from_peripheral - Peripheral disconnected")
+            log_info("Ble_central::wait_for_disconnection_from_peripheral - Peripheral disconnected")
         except asyncio.TimeoutError:
-            log_debug("Ble_central::wait_for_disconnection_from_peripheral - Disconnection timeout")
+            log_info("Ble_central::wait_for_disconnection_from_peripheral - Disconnection timeout")
 
         self.connection = None
         self.connected = False

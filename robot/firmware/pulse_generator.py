@@ -75,7 +75,7 @@ class Pulse_generator:
         log_info("Pulse_generator::__init__ - Pulse generator initialising on PIO", _pio, "state-machine", _state_machine)
         if _pio == 1: _state_machine += 4 # PIO 0 is SM 0-3 and PIO 1 is SM 4-7
 
-        log_info("Pulse_generator::__init__ - Micropython state-machine ID is", _state_machine)
+        log_debug("Pulse_generator::__init__ - Micropython state-machine ID is", _state_machine)
         self._sm = rp2.StateMachine(_state_machine, pulse_generator, freq=2500000, set_base=Pin(pin))
         
         # Set interrupt for SM on IRQ 0

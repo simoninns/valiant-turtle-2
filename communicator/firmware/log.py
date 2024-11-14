@@ -49,8 +49,8 @@ def log_debug(*args, **kwargs):
 
 def log_info(*args, **kwargs):
     global is_logging_info
-    if is_logging_debug: print("Info: "+" ".join(map(str,args))+"\r", **kwargs)
+    if is_logging_info: print("Info: "+" ".join(map(str,args))+"\r", **kwargs)
 
 def log_warn(*args, **kwargs):
     global is_logging_warn
-    if is_logging_debug: print("Warn: "+" ".join(map(str,args))+"\r", **kwargs)
+    if is_logging_warn: print("Warn: "+" ".join(map(str,args))+"\r", **kwargs)
