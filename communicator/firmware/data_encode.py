@@ -47,3 +47,10 @@ def to_float(value):
 
 def from_float(data) -> float:
     return struct.unpack("<f", data)[0]
+
+# unsigned char (1 byte)
+def to_uint8(value):
+    return struct.pack("<B", int(value))
+
+def from_uint8(data) -> int:
+    return struct.unpack("<B", data)[0]
