@@ -35,7 +35,6 @@ import bluetooth
 import asyncio
 
 import data_encode
-import sys
 
 class Ble_peripheral:
     def __init__(self):
@@ -86,8 +85,8 @@ class Ble_peripheral:
     def __ble_service_battery_definition(self):
         battery_service_uuid = bluetooth.UUID(0x180F) # Battery service
         battery_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
-        battery_current_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
-        battery_power_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
+        battery_current_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
+        battery_power_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
 
         self.battery_service = aioble.Service(battery_service_uuid)
 
@@ -146,9 +145,10 @@ class Ble_peripheral:
             if self.connected:
                 # Receive from c2p
                 reply_data = await self.wait_for_data(self.rx_c2p_characteristic)
-                log_debug("Ble_peripheral::command_service_update - Reply data =", data_encode.from_int16(reply_data))
+                if reply_data != None:
+                    log_debug("Ble_peripheral::command_service_update - Reply data =", data_encode.from_int16(reply_data))
 
-                await asyncio.sleep_ms(1000)
+            if self.connected: await asyncio.sleep_ms(1000)
 
     # Tasks to run whilst connected to central  
     async def connected_to_central(self):
@@ -156,7 +156,7 @@ class Ble_peripheral:
         peripheral_tasks = [
             asyncio.create_task(self.command_service_update_task()),
         ]
-        log_info("Ble_peripheral::connected_to_central - Running tasks during connection")
+        log_info("Ble_peripheral::connected_to_central - Running connected tasks")
         await asyncio.gather(*peripheral_tasks)
 
     async def wait_for_disconnection_from_central(self):
