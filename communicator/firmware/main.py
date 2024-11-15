@@ -62,24 +62,34 @@ _GPIO_BUTTON0 = const(21)
 _GPIO_BUTTON1 = const(20)
 _GPIO_BUTTON2 = const(19)
 
-# # Process serial and parallel data to IR
-# # using the original Valiant Turtle communication
-# def legacy_mode():
-#     # Send any received parallel port data via IR
-#         while(parallel_port.any()):
-#             blue_led.set_brightness(255)
-#             ch = parallel_port.read()
-#             ir_uart.ir_putc(ch)
-#             #log_debug("Parallel Rx =", ch)
-#             blue_led.set_brightness(0)
+in_legacy_mode = True
 
-#         # Send any received serial data via IR
-#         while(uart1.any()):
-#             blue_led.set_brightness(255)
-#             ch = int(uart1.read(1)[0]) # Get 1 byte, store as int
-#             ir_uart.ir_putc(ch)
-#             #log_debug("Serial Rx =", ch)
-#             blue_led.set_brightness(0)
+# Process serial data to IR using the original Valiant Turtle communication
+async def process_legacy_serial():
+    # Configure Valiant communication serial UART1
+    uart1 = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
+        txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
+    
+    # Add stream reader to Rx buffer
+    serial_reader = asyncio.StreamReader(uart1)
+
+    while True:
+        data = await serial_reader.read(128)
+        ir_uart.ir_print(data)
+        log_debug("main::process_legacy_serial - Serial Rx =", list(data))
+
+# Process parallel data to IR using the original Valiant Turtle communication
+async def process_legacy_parallel():
+    # Configure Valiant communication parallel port
+    parallel_port = Parallel_port(i2c0, _GPIO_INT0)
+
+    # Add stream reader to Rx buffer
+    parallel_reader = asyncio.StreamReader(parallel_port.rx_rio)
+
+    while True:
+        data = await parallel_reader.read(128)
+        ir_uart.ir_print(data)
+        log_debug("main::process_legacy_parallel - Parallel Rx =", list(data))
 
 # Async task to update status LEDs depending on various states and times
 async def status_led_task():
@@ -125,6 +135,10 @@ async def aio_main():
         asyncio.create_task(blue_led.led_process_task()),
         asyncio.create_task(green_led.led_process_task()),
         asyncio.create_task(status_led_task()),
+
+        # Communication tasks
+        #asyncio.create_task(process_legacy_serial()),
+        asyncio.create_task(process_legacy_parallel()),
     ]
     await asyncio.gather(*tasks)
 
@@ -135,10 +149,6 @@ log_control(True, True, True)
 
 # Configure serial UART0
 uart0 = UART(0, baudrate=115200, tx=Pin(_GPIO_UART0_TX), rx=Pin(_GPIO_UART0_RX))
-
-# Configure Valiant communication serial UART1
-uart1 = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
-    txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
 
 # Ensure IR LED is off
 ir_led = Pin(_GPIO_IR_LED, Pin.OUT)
@@ -161,9 +171,6 @@ configuration = Configuration()
 if not configuration.unpack(eeprom.read(0, configuration.pack_size)):
     # Current EEPROM image is invalid, write the default
     eeprom.write(0, configuration.pack())
-
-# Configure Valiant communication parallel port
-parallel_port = Parallel_port(i2c0, _GPIO_INT0)
 
 # Initialise status LEDs
 green_led = Status_led(_GPIO_GREEN_LED, 255, 20)

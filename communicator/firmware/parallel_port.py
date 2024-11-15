@@ -31,6 +31,9 @@ from machine import I2C, Pin
 from mcp23017 import Mcp23017
 from byte_fifo import Byte_fifo
 
+import asyncio
+import micropython
+
 # Parallel port to MCP23017 GPIO mapping
 _PARALLEL_UN0 = const(0)
 _PARALLEL_UN1 = const(1)
@@ -55,8 +58,8 @@ class Parallel_port:
         self._is_present = self.mcp.is_present
 
         if (self._is_present):
-            # Define an Rx FIFO for storing incoming data
-            self.rx_fifo = Byte_fifo(1024)
+            # Define a Rx ring buffer to store incoming data
+            self.rx_rio = micropython.RingIO(1024)
 
             # Set pin directions (True = input, False = output)
             self.mcp.mgpio_set_dir(_PARALLEL_UN0, True)
@@ -114,18 +117,8 @@ class Parallel_port:
     def __callback(self, p):
         # Get the databus value
         rx_data = self.mcp.mgpio_get_all() >> 8
-        self.rx_fifo.write(rx_data)
+        self.rx_rio.write(rx_data.to_bytes(1, 'big'))
         
         # ACK a received byte (M6522 VIA Handshake output mode, pull CB1 low)
         self.mcp.mgpio_put(_PARALLEL_BUSY, False)
         self.mcp.mgpio_put(_PARALLEL_BUSY, True)
-
-    # Get a byte from the FIFO
-    def read(self):
-        if (self._is_present): return self.rx_fifo.read()
-        return 0
-    
-    # Returns False if fifo is empty
-    def any(self) -> bool:
-        if (self._is_present): return self.rx_fifo.any()
-        return False

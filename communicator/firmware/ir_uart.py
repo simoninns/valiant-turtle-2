@@ -118,7 +118,6 @@ class Ir_uart:
     # 6 bits represent the 3 parity pulses (0b00 = 50uS, 0b01 = 75uS or 0b10 = 100uS)
     def __encode(self, tx_byte):
         encoded_word = 0
-
         # Note: The data is sent LSB first, so transmission is from
         # bit 0 to bit 6 (7-bit data).  Bit 7 should always be 0
 

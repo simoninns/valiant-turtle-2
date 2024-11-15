@@ -148,7 +148,7 @@ class Ble_peripheral:
                 if reply_data != None:
                     log_debug("Ble_peripheral::command_service_update - Reply data =", data_encode.from_int16(reply_data))
 
-            if self.connected: await asyncio.sleep_ms(1000)
+            if self.connected: await asyncio.sleep_ms(10000)
 
     # Tasks to run whilst connected to central  
     async def connected_to_central(self):
