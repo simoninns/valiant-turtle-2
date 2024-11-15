@@ -123,39 +123,30 @@ class Ir_uart:
 
         # Start of frame
         bitPointer = 0
-
-        debug_s = "Ir_uart::__encode() - Encoding value "
-        debug_s = bin(tx_byte) + " : "
         
         # Send the lead-in period
         #
         # This is 60 if bit 0 is a 0 or 35 if bit 0 is a 1
         if not self.__is_bit_set(tx_byte, bitPointer):
             encoded_word = self.__set_bit(encoded_word, 0)
-            debug_s += "LI 60, "
-        else: debug_s += "LI 35, "
         
         # Send the data bit periods
         for bitPointer in range(7):
             # If the current bit is 0 and the next bit is 0 output 75 uS period
             if not self.__is_bit_set(tx_byte, bitPointer) and not self.__is_bit_set(tx_byte, bitPointer+1):
                 encoded_word = self.__set_bit(encoded_word, (bitPointer*2) + 2)
-                debug_s += "75, "
                 
-            # If the current bit is 0 and the next bit is 1 output 50 uS period
-            if not self.__is_bit_set(tx_byte, bitPointer) and self.__is_bit_set(tx_byte, bitPointer+1):
-                # Encoded result is 00 - do nothing
-                debug_s += "50, "
+            # # If the current bit is 0 and the next bit is 1 output 50 uS period
+            # if not self.__is_bit_set(tx_byte, bitPointer) and self.__is_bit_set(tx_byte, bitPointer+1):
+            #     # Encoded result is 00 - do nothing
                 
             # If the current bit is 1 and the next bit is 0 output 100 uS period
             if self.__is_bit_set(tx_byte, bitPointer) and not self.__is_bit_set(tx_byte, bitPointer+1):
                 encoded_word = self.__set_bit(encoded_word, (bitPointer*2) + 3)
-                debug_s += "100, "
                 
             # If the current bit is 1 and the next bit is 1 output 75 uS period
             if self.__is_bit_set(tx_byte, bitPointer) and self.__is_bit_set(tx_byte, bitPointer+1):
                 encoded_word = self.__set_bit(encoded_word, (bitPointer*2) + 2)
-                debug_s += "75, "
         
         # Send the lead-out periods:
         if self.__parity(tx_byte) == 0:
@@ -163,14 +154,11 @@ class Ir_uart:
             # Encoded result is 00 - do nothing for 50
             encoded_word = self.__set_bit(encoded_word, 18) # 75
             encoded_word = self.__set_bit(encoded_word, 18+2+1) # 100
-            debug_s += "50, 75, 100 EVEN"
         else:
             # If the parity is odd the lead-out periods are 50, 75 and 75
             # Encoded result is 00 - do nothing for 50
             encoded_word = self.__set_bit(encoded_word, 18) # 75
             encoded_word = self.__set_bit(encoded_word, 18+2) # 75
-            debug_s += "50, 75, 75 ODD"
         
         # End of frame
-        #log_debug(debug_s, ": Encoded word =", bin(encoded_word))
         return encoded_word

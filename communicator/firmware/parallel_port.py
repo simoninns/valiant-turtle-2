@@ -28,11 +28,9 @@
 from log import log_debug, log_info, log_warn
 
 from machine import I2C, Pin
-from mcp23017 import Mcp23017
-from byte_fifo import Byte_fifo
+from micropython import const, RingIO
 
-import asyncio
-import micropython
+from mcp23017 import Mcp23017
 
 # Parallel port to MCP23017 GPIO mapping
 _PARALLEL_UN0 = const(0)
@@ -56,10 +54,11 @@ class Parallel_port:
     def __init__(self, i2c: I2C, interrupt_pin):
         self.mcp = Mcp23017(i2c, 0x20)
         self._is_present = self.mcp.is_present
+        self._auto_ack = True
 
         if (self._is_present):
             # Define a Rx ring buffer to store incoming data
-            self.rx_rio = micropython.RingIO(1024)
+            self.rx_rio = RingIO(1024)
 
             # Set pin directions (True = input, False = output)
             self.mcp.mgpio_set_dir(_PARALLEL_UN0, True)
@@ -118,7 +117,21 @@ class Parallel_port:
         # Get the databus value
         rx_data = self.mcp.mgpio_get_all() >> 8
         self.rx_rio.write(rx_data.to_bytes(1, 'big'))
+        if self._auto_ack: self.ack()
         
-        # ACK a received byte (M6522 VIA Handshake output mode, pull CB1 low)
+    # ACK a received byte (M6522 VIA Handshake output mode, pull CB1 low)
+    def ack(self):
         self.mcp.mgpio_put(_PARALLEL_BUSY, False)
         self.mcp.mgpio_put(_PARALLEL_BUSY, True)
+
+    # Turn automatic acknowledgement on or off
+    def auto_ack(self, state):
+        if state: self._auto_ack = True
+        else: self._auto_ack = False
+
+    # Returns an integer counting the number of characters that can be read from the rx ring buffer
+    def any(self):
+        return self.rx_rio.any()
+    
+    def read(self, num = 1):
+        return self.rx_rio.read(num)
