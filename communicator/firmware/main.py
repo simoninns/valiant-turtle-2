@@ -79,8 +79,9 @@ eeprom = Eeprom(i2c0, 0x50)
 # True = VT1 IR mode, False = VT2 bluetooth mode
 run_as_legacy = False
 
-# Run in legacy VT1 mode?
+# Which mode are we running in?
 if run_as_legacy:
+    # Run in VT1 mode
     uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
         txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
     ir_uart = Ir_uart(_GPIO_IR_LED)
@@ -90,7 +91,8 @@ if run_as_legacy:
         vt1_mode.process()
 else:
     # Run in VT2 mode
-    uart = UART(1, baudrate=115200, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
+    uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
+        #cts=Pin(_GPIO_UART1_CTS), rts=Pin(_GPIO_UART1_RTS), flow=(UART.RTS | UART.CTS),
         txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
     vt2_mode = Vt2_mode(uart, parallel_port, leds, eeprom)
     while True:

@@ -32,7 +32,6 @@ import aioble
 import bluetooth
 from machine import unique_id
 import asyncio
-
 import data_encode
 
 class Ble_central:
@@ -40,6 +39,12 @@ class Ble_central:
         # Flags to show connected status
         self.connected = False
         self.connection = None
+
+        # asyncio events
+        self._ble_event = asyncio.Event()
+        self._host_event = None
+
+        self._host_comms = None
 
         # Get the local device's Unique ID
         self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
@@ -49,11 +54,31 @@ class Ble_central:
         self.peripheral_advertising_name = "vt2-robot"
 
         self.fixed_string_8_characteristic = None
+    
+    @property
+    def host_comms(self):
+        return self._host_comms
+    
+    @host_comms.setter
+    def host_comms(self, value):
+        self._host_comms = value
 
     # Property that is true when peripheral is connected
     @property
     def is_peripheral_connected(self) -> bool:
         return self.connected
+    
+    @property
+    def host_event(self):
+        return self._host_event
+
+    @host_event.setter
+    def host_event(self, value: asyncio.Event):
+        self._host_event = value
+
+    @property
+    def ble_event(self):
+        return self._ble_event
 
     # Scan for a peripheral
     async def scan_for_peripheral(self):
@@ -112,7 +137,14 @@ class Ble_central:
 
     # Process command_service notifications from the peripheral
     def command_service_notification(self, value):
-        log_debug("Ble_central::command_service_notification - value =" , value)
+        log_debug("Ble_central::command_service_notification - Command response from robot =" , value)
+        self.command_response = value
+        self._ble_event.set() # Flag the event
+
+    # Provide the command response and clear the event flag
+    def get_command_response(self):
+        self._ble_event.clear()
+        return self.command_response
 
     # Task to handle command_service notifications
     async def handle_command_service_task(self):
@@ -244,6 +276,7 @@ class Ble_central:
     # Main BLE central task
     async def ble_central_task(self):
         log_debug("Ble_central::ble_central_task - Task started")
+
         while True:
             await self.connect_to_peripheral()
 

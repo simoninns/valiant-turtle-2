@@ -34,6 +34,7 @@ from parallel_port import Parallel_port
 from ble_central import Ble_central
 from eeprom import Eeprom
 from configuration import Configuration
+from host_comms import Host_comms
 
 import asyncio
 
@@ -46,6 +47,13 @@ class Vt2_mode:
 
         # Initialise BLE central
         self.ble_central = Ble_central()
+
+        # Initialise host communication
+        self.host_comms = Host_comms(uart)
+
+        # Make the two communication objects aware of each other
+        self.host_comms.ble_central = self.ble_central
+        self.ble_central.host_comms = self.host_comms
 
         # Initialise configuration 
         self.configuration = Configuration()
@@ -95,17 +103,21 @@ class Vt2_mode:
 
     # Async I/O task generation and launch
     async def aio_process(self):
-        tasks = [
-            # BLE related tasks
-            asyncio.create_task(self.ble_central.ble_central_task()),
+        # Share the events between the host and BLE objects
+        self.ble_central.host_event = self.host_comms.host_event
+        self.host_comms.ble_event = self.ble_central.ble_event
 
+        tasks = [
             # General background tasks
             asyncio.create_task(self.status_led_task()),
 
             # Communication tasks
+            asyncio.create_task(self.ble_central.ble_central_task()), # BLE
+            asyncio.create_task(self.host_comms.host_task()), # Serial host
         ]
         await asyncio.gather(*tasks)
 
+    # Method to kick-off async process
     def process(self):
         log_info("Vt2_mode::process - Launching asynchronous tasks...")
         asyncio.run(self.aio_process())
