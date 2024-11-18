@@ -102,7 +102,7 @@ class Command_shell:
         await self.writer.awrite(self.prompt)
 
         def is_printable(char):
-            """Check if a character is logging.debugable (basic ASCII range)."""
+            """Check if a character is printable (basic ASCII range)."""
             return 32 <= ord(char) <= 126
 
         while True:
