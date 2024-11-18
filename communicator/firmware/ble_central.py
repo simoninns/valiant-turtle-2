@@ -26,8 +26,7 @@
 #************************************************************************
 
 import aioble.device
-from log import log_debug, log_info, log_warn
-
+import logging
 import aioble
 import bluetooth
 from machine import unique_id
@@ -84,16 +83,16 @@ class Ble_central:
     async def scan_for_peripheral(self):
         # Scan for 5 seconds, in active mode, with very low interval/window (to
         # maximise detection rate).
-        log_debug("Ble_central::scan_for_peripheral - Scanning for peripheral...")
+        logging.debug("Ble_central::scan_for_peripheral - Scanning for peripheral...")
         async with aioble.scan(duration_ms = 5000, interval_us = 30000, window_us = 30000, active = True) as scanner:
             async for result in scanner:
                 # See if it matches our name
                 if result.name() == self.peripheral_advertising_name:
-                    log_debug("Ble_central::scan_for_peripheral - Found peripheral with matching advertising name of", self.peripheral_advertising_name)
+                    logging.debug("Ble_central::scan_for_peripheral - Found peripheral with matching advertising name of", self.peripheral_advertising_name)
                     for item in result.services():
-                        log_debug("Ble_central::scan_for_peripheral - Got advertised UUID:", item)
+                        logging.debug("Ble_central::scan_for_peripheral - Got advertised UUID:", item)
                     if self.peripheral_advertising_uuid in result.services():
-                        log_debug("Ble_central::scan_for_peripheral - Peripheral advertises required UUID")
+                        logging.debug("Ble_central::scan_for_peripheral - Peripheral advertises required UUID")
                         return result.device
 
         return None
@@ -103,25 +102,25 @@ class Ble_central:
         self.connected = False
         device = await self.scan_for_peripheral()
         if not device:
-            log_debug("Ble_central::connect_to_peripheral - Peripheral not found")
+            logging.debug("Ble_central::connect_to_peripheral - Peripheral not found")
             return
         try:
-            log_debug("Ble_central::connect_to_peripheral - Peripheral with address", device.addr_hex(), "found.  Attempting to connect")
+            logging.debug("Ble_central::connect_to_peripheral - Peripheral with address", device.addr_hex(), "found.  Attempting to connect")
             self.connection = await device.connect()
-            log_info("Ble_central::connect_to_peripheral - Connected to peripheral with address", device.addr_hex())
+            logging.info("Ble_central::connect_to_peripheral - Connected to peripheral with address", device.addr_hex())
             self.connected = True
             
         except asyncio.TimeoutError:
-            log_debug("Ble_central::connect_to_peripheral - Connection attempt timed out!")
+            logging.debug("Ble_central::connect_to_peripheral - Connection attempt timed out!")
             return
 
     # Process battery_service notifications from the peripheral
     def battery_service_notification(self, voltage, current, power):
-        log_debug("Ble_central::battery_service_notification - mV =" , voltage, "/ mA =", current, "/ mW =", power)
+        logging.debug("Ble_central::battery_service_notification - mV =" , voltage, "/ mA =", current, "/ mW =", power)
 
     # Task to handle battery_service notifications
     async def handle_battery_service_task(self):
-        log_debug("Ble_central::handle_battery_service_task - battery_service notification handler running")
+        logging.debug("Ble_central::handle_battery_service_task - battery_service notification handler running")
 
         try:
             # Loop waiting for service notifications
@@ -132,12 +131,12 @@ class Ble_central:
                 self.battery_service_notification(data_encode.from_float(battery_voltage_data), data_encode.from_float(battery_current_data), data_encode.from_float(battery_power_data))
                                                             
         except Exception as e:
-            log_debug("Ble_central::handle_battery_service_task - Exception was flagged (Peripheral probably disappeared)")
+            logging.debug("Ble_central::handle_battery_service_task - Exception was flagged (Peripheral probably disappeared)")
             self.connected = False
 
     # Process command_service notifications from the peripheral
     def command_service_notification(self, value):
-        log_debug("Ble_central::command_service_notification - Command response from robot =" , value)
+        logging.debug("Ble_central::command_service_notification - Command response from robot =" , value)
         self.command_response = value
         self._ble_event.set() # Flag the event
 
@@ -148,7 +147,7 @@ class Ble_central:
 
     # Task to handle command_service notifications
     async def handle_command_service_task(self):
-        log_debug("Ble_central::handle_command_service_task - command_service notification handler running")
+        logging.debug("Ble_central::handle_command_service_task - command_service notification handler running")
 
         try:
             # Loop waiting for service notifications
@@ -159,16 +158,16 @@ class Ble_central:
                 # Respond
                 response = data_encode.from_int16(value)
                 response = response + 2
-                log_debug("Ble_central::handle_command_service_task - response =" , response)
+                logging.debug("Ble_central::handle_command_service_task - response =" , response)
                 await self.rx_c2p_characteristic.write(data_encode.to_int16(response))
                                                         
         except Exception as e:
-            log_debug("Ble_central::handle_command_service_task - Exception was flagged (Peripheral probably disappeared)")
+            logging.debug("Ble_central::handle_command_service_task - Exception was flagged (Peripheral probably disappeared)")
             self.connected = False
 
     # Tasks when a peripheral is connected
     async def connected_to_peripheral(self):
-        log_debug("Ble_central::connected_to_peripheral - Connected to peripheral")
+        logging.debug("Ble_central::connected_to_peripheral - Connected to peripheral")
 
         # Command service setup
         command_service_uuid = bluetooth.UUID(0xFA20)
@@ -176,12 +175,12 @@ class Ble_central:
         try:
             command_service = await self.connection.service(command_service_uuid)
             if command_service == None:
-                log_debug("Ble_central::connected_to_peripheral - FATAL: Peripheral command_service is missing!")
+                logging.debug("Ble_central::connected_to_peripheral - FATAL: Peripheral command_service is missing!")
                 self.connected = False
                 return
             
         except asyncio.TimeoutError:
-            log_debug("Ble_central::connected_to_peripheral - FATAL: Timeout discovering services/characteristics")
+            logging.debug("Ble_central::connected_to_peripheral - FATAL: Timeout discovering services/characteristics")
             self.connected = False
             return
 
@@ -192,12 +191,12 @@ class Ble_central:
             self.tx_p2c_characteristic = await command_service.characteristic(tx_p2c_characteristic_uuid)
             
             if self.tx_p2c_characteristic == None:
-                log_debug("Ble_central::connected_to_peripheral - FATAL: Peripheral command_service tx_p2c_characteristic missing!")
+                logging.debug("Ble_central::connected_to_peripheral - FATAL: Peripheral command_service tx_p2c_characteristic missing!")
                 self.connected = False
                 return
 
         except asyncio.TimeoutError:
-            log_debug("Ble_central::connected_to_peripheral - FATAL: Timeout discovering characteristics")
+            logging.debug("Ble_central::connected_to_peripheral - FATAL: Timeout discovering characteristics")
             self.connected = False
             return
 
@@ -205,12 +204,12 @@ class Ble_central:
             self.rx_c2p_characteristic = await command_service.characteristic(rx_c2p_characteristic_uuid)
             
             if self.rx_c2p_characteristic == None:
-                log_debug("Ble_central::connected_to_peripheral - FATAL: Peripheral command_service rx_c2p_characteristic missing!")
+                logging.debug("Ble_central::connected_to_peripheral - FATAL: Peripheral command_service rx_c2p_characteristic missing!")
                 self.connected = False
                 return
 
         except asyncio.TimeoutError:
-            log_debug("Ble_central::connected_to_peripheral - FATAL: Timeout discovering characteristics")
+            logging.debug("Ble_central::connected_to_peripheral - FATAL: Timeout discovering characteristics")
             self.connected = False
             return
         
@@ -220,12 +219,12 @@ class Ble_central:
         
         try:
             if battery_service == None:
-                log_debug("Ble_central::connected_to_peripheral - FATAL: Peripheral battery_service is missing!")
+                logging.debug("Ble_central::connected_to_peripheral - FATAL: Peripheral battery_service is missing!")
                 self.connected = False
                 return
             
         except asyncio.TimeoutError:
-            log_debug("Ble_central::connected_to_peripheral - FATAL: Timeout discovering service")
+            logging.debug("Ble_central::connected_to_peripheral - FATAL: Timeout discovering service")
             self.connected = False
             return
         
@@ -239,12 +238,12 @@ class Ble_central:
             self.battery_power_characteristic = await battery_service.characteristic(battery_power_characteristic_uuid)
 
             if self.battery_voltage_characteristic == None:
-                log_debug("Ble_central::connected_to_peripheral - FATAL: Peripheral battery_service characteristics missing!")
+                logging.debug("Ble_central::connected_to_peripheral - FATAL: Peripheral battery_service characteristics missing!")
                 self.connected = False
                 return
 
         except asyncio.TimeoutError:
-            log_debug("Ble_central::connected_to_peripheral - FATAL: Timeout discovering characteristics")
+            logging.debug("Ble_central::connected_to_peripheral - FATAL: Timeout discovering characteristics")
             self.connected = False
             return
 
@@ -266,16 +265,16 @@ class Ble_central:
     async def wait_for_disconnection_from_peripheral(self):
         try:
             await self.connection.disconnected(timeout_ms=2000)
-            log_info("Ble_central::wait_for_disconnection_from_peripheral - Peripheral disconnected")
+            logging.info("Ble_central::wait_for_disconnection_from_peripheral - Peripheral disconnected")
         except asyncio.TimeoutError:
-            log_info("Ble_central::wait_for_disconnection_from_peripheral - Disconnection timeout")
+            logging.info("Ble_central::wait_for_disconnection_from_peripheral - Disconnection timeout")
 
         self.connection = None
         self.connected = False
 
     # Main BLE central task
     async def ble_central_task(self):
-        log_debug("Ble_central::ble_central_task - Task started")
+        logging.debug("Ble_central::ble_central_task - Task started")
 
         while True:
             await self.connect_to_peripheral()

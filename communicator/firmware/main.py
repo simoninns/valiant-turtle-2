@@ -24,7 +24,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn, log_control
+import logging
 from micropython import const
 from machine import Pin, UART, I2C
 from time import sleep
@@ -60,8 +60,8 @@ _GPIO_BUTTON0 = const(21)
 _GPIO_BUTTON1 = const(20)
 _GPIO_BUTTON2 = const(19)
 
-# Turn on logging
-log_control(True, True, True)
+# Configure the logging module
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000) # Internal I2C bus
 parallel_port = Parallel_port(i2c0, _GPIO_INT0)

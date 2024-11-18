@@ -25,15 +25,14 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
-#from ws2812b import Ws2812b
+import logging
 from machine import PWM, Pin, Timer
 
 class Leds:
     def __init__(self, data_gpio_pins):
         self.period_ms = 25
         self.number_of_leds = len(data_gpio_pins)
-        log_debug("Leds::__init__ - Initialising with", self.number_of_leds, "leds")
+        logging.debug("Leds::__init__ - Initialising with", self.number_of_leds, "leds")
 
         # Set up led values
         self.current_brightness = []

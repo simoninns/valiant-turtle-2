@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
+import logging
 
 from machine import UART
 
@@ -119,5 +119,5 @@ class Vt2_mode:
 
     # Method to kick-off async process
     def process(self):
-        log_info("Vt2_mode::process - Launching asynchronous tasks...")
+        logging.info("Vt2_mode::process - Launching asynchronous tasks...")
         asyncio.run(self.aio_process())

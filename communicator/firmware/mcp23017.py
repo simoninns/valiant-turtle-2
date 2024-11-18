@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
+import logging
 
 from machine import I2C, Pin
 
@@ -83,9 +83,9 @@ class Mcp23017:
             if devices[idx] == self.address: self._is_present = True
 
         if self._is_present:
-            log_info("Mcp23017::__init__ - MCP23017 detected at address", hex(self.address))
+            logging.info("Mcp23017::__init__ - MCP23017 detected at address", hex(self.address))
         else:
-            log_info("Mcp23017::__init__ - MCP23017 is not present... Cannot initialise!")
+            logging.info("Mcp23017::__init__ - MCP23017 is not present... Cannot initialise!")
             return
 
         # Configure IO Control
@@ -102,7 +102,7 @@ class Mcp23017:
         self.__write_dual_registers(_MCP23017_INTCONA, self.intcon_ab) # Also writes INTCONB
         self.__write_dual_registers(_MCP23017_GPINTENA, self.gpinten_ab) # Also writes GPINTENB
 
-        log_info("Mcp23017::__init__ - MCP23017 initialised")
+        logging.info("Mcp23017::__init__ - MCP23017 initialised")
 
     # Return True is MCP23017 was detected and initialised
     @property
@@ -125,28 +125,28 @@ class Mcp23017:
 
         io_control_flags = (io_control_flags << 8) + io_control_flags # Copy A to B
         self.__write_dual_registers(_MCP23017_IOCONA, io_control_flags) # Also writes IOCONB
-        log_debug("Mcp23017::configuration - IOCON =", '{0:08b}'.format(io_control_flags))
+        logging.debug("Mcp23017::configuration - IOCON =", '{0:08b}'.format(io_control_flags))
 
     # Public method to enable and disable interrupts
     def interrupt_enable(self, gpio, is_set: bool):
         if gpio > 15: gpio = 15
         self.gpinten_ab = self.__set_bit(self.gpinten_ab, gpio, is_set)
         self.__write_dual_registers(_MCP23017_GPINTENA, self.gpinten_ab) # Also writes GPINTENB
-        log_debug("Mcp23017::interrupt_enable - GPINTEN =", '{0:016b}'.format(self.gpinten_ab))
+        logging.debug("Mcp23017::interrupt_enable - GPINTEN =", '{0:016b}'.format(self.gpinten_ab))
 
     # Public method to set default gpio value (false = 0, true = 1) for interrupt comparison
     def interrupt_set_default_value(self, gpio, default_value: bool):
         if gpio > 15: gpio = 15
         self.defval_ab = self.__set_bit(self.defval_ab, gpio, default_value)
         self.__write_dual_registers(_MCP23017_DEFVALA, self.defval_ab) # Also writes DEFVALB
-        log_debug("Mcp23017::interrupt_set_default_value - DEFVAL =", '{0:016b}'.format(self.defval_ab))
+        logging.debug("Mcp23017::interrupt_set_default_value - DEFVAL =", '{0:016b}'.format(self.defval_ab))
 
     # Public method to configure the interrupt type (false = compare to previous state, true = compare to default value in DEFVAL)
     def interrupt_set_type(self, gpio, is_default_compared: bool):
         if gpio > 15: gpio = 15
         self.intcon_ab = self.__set_bit(self.intcon_ab, gpio, is_default_compared)
         self.__write_dual_registers(_MCP23017_INTCONA, self.intcon_ab) # Also writes INTCONB
-        log_debug("Mcp23017::interrupt_set_type - INTCON =", '{0:016b}'.format(self.intcon_ab))
+        logging.debug("Mcp23017::interrupt_set_type - INTCON =", '{0:016b}'.format(self.intcon_ab))
     
     # Method to get the pin values at the time the last interrupt occurred. Note: this has to be
     # read all at once as the read clears the values
@@ -180,13 +180,13 @@ class Mcp23017:
         if gpio > 15: gpio = 15
         self.iodir_ab = self.__set_bit(self.iodir_ab, gpio, is_input)
         self.__write_dual_registers(_MCP23017_IODIRA, self.iodir_ab) # Also writes IODIRB
-        log_debug("Mcp23017::mgpio_set_dir - IODIR =", '{0:016b}'.format(self.iodir_ab))
+        logging.debug("Mcp23017::mgpio_set_dir - IODIR =", '{0:016b}'.format(self.iodir_ab))
 
     def mgpio_pull_up(self, gpio, is_on: bool):
         if gpio > 15: gpio = 15
         self.gppub_ab = self.__set_bit(self.gppub_ab, gpio, is_on)
         self.__write_dual_registers(_MCP23017_GPPUA, self.gppub_ab) # Also writes GPPUB
-        log_debug("Mcp23017::mgpio_pull_up - GPPU =", '{0:016b}'.format(self.gppub_ab))
+        logging.debug("Mcp23017::mgpio_pull_up - GPPU =", '{0:016b}'.format(self.gppub_ab))
 
     def mgpio_get(self, gpio):
         if gpio > 15: gpio = 15

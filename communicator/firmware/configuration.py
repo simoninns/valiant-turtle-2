@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
+import logging
 import ustruct
 
 _CONFIGURATION_version = const(0x02)
@@ -62,11 +62,11 @@ class Configuration:
 
         # Check configuration is valid
         if self._configuration_version != _CONFIGURATION_version:
-            log_info("Configuration::unpack - Configuration invalid... Using default")
+            logging.info("Configuration::unpack - Configuration invalid... Using default")
             self.default()
             return False
 
-        log_info("Configuration::unpack - Configuration valid")
+        logging.info("Configuration::unpack - Configuration valid")
         return True
     
     def default(self):

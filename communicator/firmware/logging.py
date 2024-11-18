@@ -1,8 +1,8 @@
 #************************************************************************ 
 #
-#   log.py
+#   logging.py
 #
-#   Logging methods
+#   Simple logging module for MicroPython
 #   Valiant Turtle 2 - Communicator firmware
 #   Copyright (C) 2024 Simon Inns
 #
@@ -25,32 +25,36 @@
 #
 #************************************************************************
 
-is_logging_debug = False
-is_logging_info = False
-is_logging_warn = False
+import sys
 
-def log_control(debug: bool, info: bool, warn: bool):
-    global is_logging_debug
-    global is_logging_info
-    global is_logging_warn
-    is_logging_debug = debug
-    is_logging_info = info
-    is_logging_warn = warn
+DEBUG = 10
+INFO = 20
+WARNING = 30
+ERROR = 40
+CRITICAL = 50
 
-    # Output some whitespace and a header
-    if (debug or info or warn):
-        print("\r")
-        print("\r")
-        print("Valiant Turtle 2 - Communicator - Debug output\r")
+_level = INFO
 
-def log_debug(*args, **kwargs):
-    global is_logging_debug
-    if is_logging_debug: print("Debug: "+" ".join(map(str,args))+"\r", **kwargs)
+def basicConfig(level=INFO, format=None):
+    global _level
+    _level = level
 
-def log_info(*args, **kwargs):
-    global is_logging_info
-    if is_logging_info: print("Info: "+" ".join(map(str,args))+"\r", **kwargs)
+def debug(msg, *args):
+    if _level <= DEBUG:
+        print("[DEBUG]", msg.format(*args))
 
-def log_warn(*args, **kwargs):
-    global is_logging_warn
-    if is_logging_warn: print("Warn: "+" ".join(map(str,args))+"\r", **kwargs)
+def info(msg, *args):
+    if _level <= INFO:
+        print("[INFO]", msg.format(*args))
+
+def warning(msg, *args):
+    if _level <= WARNING:
+        print("[WARNING]", msg.format(*args))
+
+def error(msg, *args):
+    if _level <= ERROR:
+        print("[ERROR]", msg.format(*args))
+
+def critical(msg, *args):
+    if _level <= CRITICAL:
+        print("[CRITICAL]", msg.format(*args))

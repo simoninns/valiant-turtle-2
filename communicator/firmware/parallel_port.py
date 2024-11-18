@@ -25,8 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
-
+import logging
 from machine import I2C, Pin
 from micropython import const, RingIO
 
@@ -108,9 +107,9 @@ class Parallel_port:
             self.interrupt_pin = Pin(interrupt_pin, Pin.IN, Pin.PULL_UP)
             self.interrupt_pin.irq(handler=self.__callback, trigger=self.interrupt_pin.IRQ_FALLING)
 
-            log_info("Parallel::__init__ - Parallel port initialised")
+            logging.info("Parallel::__init__ - Parallel port initialised")
         else:
-            log_info("Parallel::__init__ - MCP23017 not detected - Parallel port NOT initialised")
+            logging.info("Parallel::__init__ - MCP23017 not detected - Parallel port NOT initialised")
 
     # MCP23017 INTB pin callback
     def __callback(self, p):

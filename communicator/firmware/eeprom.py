@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
+import logging
 from machine import I2C
 from time import sleep
 
@@ -42,9 +42,9 @@ class Eeprom:
             if devices[idx] == self.i2c_address: self._is_present = True
 
         if self._is_present:
-            log_info("Eeprom::__init__ - 24LC16 EEPROM detected at address", hex(self.i2c_address))
+            logging.info("Eeprom::__init__ - 24LC16 EEPROM detected at address", hex(self.i2c_address))
         else:
-            log_info("Eeprom::__init__ - 24LC16 EEPROM is not present... Cannot initialise!")
+            logging.info("Eeprom::__init__ - 24LC16 EEPROM is not present... Cannot initialise!")
 
         self._maximum_address = 2048 # Maximum address value for the 24LC16
         self._page_size = 16 # The page size for the 24LC16
@@ -68,7 +68,7 @@ class Eeprom:
         self._blockaddr[0] = (address & 0xFF); # Block address
 
         # Read from the EEPROM and return the collected data
-        log_debug("Eeprom::read - Address =", address, "number of bytes =", number_of_bytes)
+        logging.debug("Eeprom::read - Address =", address, "number of bytes =", number_of_bytes)
 
         sleep(0.01)
         self.i2c.writeto(self._devaddr[0], self._blockaddr, False)
@@ -83,7 +83,7 @@ class Eeprom:
         
         remaining_data = len(data) # Keep track of what's left to write
         data_pointer = 0
-        log_debug("Eeprom::write - Writing address =", address, "write length =", remaining_data)
+        logging.debug("Eeprom::write - Writing address =", address, "write length =", remaining_data)
 
         while remaining_data > 0:
             # Determine the device address (including the block) and intra-block address
@@ -108,7 +108,7 @@ class Eeprom:
                 page_buffer[i+1] = data[data_pointer]
                 data_pointer += 1
 
-            log_debug("Eeprom::write - Page write @ address =", address, "write length =", write_length)
+            logging.debug("Eeprom::write - Page write @ address =", address, "write length =", write_length)
 
             # Perform a write
             sleep(0.01)

@@ -25,8 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
-
+import logging
 from machine import UART
 import asyncio
 
@@ -58,16 +57,16 @@ class Host_comms:
         return self._host_event
 
     async def rx_task(self):
-        log_debug("Host_comms::rx_task - Task started")
+        logging.debug("Host_comms::rx_task - Task started")
         # Add stream reader to Rx buffer
         serial_reader = asyncio.StreamReader(self._uart)
 
         while True:
             data = await serial_reader.read(128)
-            log_debug("Host_comms::rx_task - Serial Rx =", list(data))
+            logging.debug("Host_comms::rx_task - Serial Rx =", list(data))
 
     async def tx_task(self):
-        log_debug("Host_comms::tx_task - Task started")
+        logging.debug("Host_comms::tx_task - Task started")
         # Add stream writer to Tx buffer
         serial_writer = asyncio.StreamWriter(self._uart)
 
@@ -76,7 +75,7 @@ class Host_comms:
                 await self.ble_event.wait()
                 data = self._ble_central.get_command_response()
                 serial_writer.write(str(data)) # Note: str is just for testing - should be raw byte value
-                log_debug("Host_comms::tx_task - Serial Tx =", str(data))
+                logging.debug("Host_comms::tx_task - Serial Tx =", str(data))
                 await serial_writer.drain()
             else:
                 # No event or BLE object attached - just pause and loop
@@ -92,7 +91,7 @@ class Host_comms:
             print("Got", command_line, file=serial_writer)
 
     async def host_task(self):
-        log_debug("Host_comms::host_task - Starting async host communication tasks")
+        logging.debug("Host_comms::host_task - Starting async host communication tasks")
 
         tasks = [
             # Communication tasks
