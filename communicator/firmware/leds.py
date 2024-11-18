@@ -32,7 +32,7 @@ class Leds:
     def __init__(self, data_gpio_pins):
         self.period_ms = 25
         self.number_of_leds = len(data_gpio_pins)
-        logging.debug("Leds::__init__ - Initialising with", self.number_of_leds, "leds")
+        logging.debug(f"Leds::__init__ - Initialising with {self.number_of_leds} leds")
 
         # Set up led values
         self.current_brightness = []

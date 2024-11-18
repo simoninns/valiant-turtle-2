@@ -28,6 +28,7 @@
 import logging
 from machine import UART
 import asyncio
+from command_shell import Command_shell
 
 class Host_comms:
     def __init__(self, uart: UART):
@@ -82,13 +83,13 @@ class Host_comms:
                 await asyncio.sleep_ms(250)
 
     async def cli_task(self):
-        serial_reader = asyncio.StreamReader(self._uart)
-        serial_writer = asyncio.StreamWriter(self._uart)
+        cli_prompt="VT2>"
+        cli_intro="\r\nWelcome to Valiant Turtle 2 Communicator!\r\nType your commands below. Type 'exit' to quit."
+        command_shell = Command_shell(self._uart, prompt=cli_prompt, intro=cli_intro, history_limit=10)
 
         # Gather a command terminated with <CR>
         while True:
-            command_line = input("VT2> ", stdin=serial_reader, stdout=serial_writer)
-            print("Got", command_line, file=serial_writer)
+            await command_shell.run_shell()
 
     async def host_task(self):
         logging.debug("Host_comms::host_task - Starting async host communication tasks")

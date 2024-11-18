@@ -70,7 +70,7 @@ class Ir_uart:
         # Note: This SM counter is a little rough... it assumes that only this class will
         # consume SMs...
         if Ir_uart._sm_counter < 4:
-            logging.info("Ir_uart::__init__ - Initialised using state-machine", Ir_uart._sm_counter)
+            logging.info(f"Ir_uart::__init__ - Initialised using state-machine {Ir_uart._sm_counter}")
         else:
             raise RuntimeError("Pulse_generator::__init__ - No more state machines available!")
         

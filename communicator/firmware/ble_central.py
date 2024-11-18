@@ -88,7 +88,7 @@ class Ble_central:
             async for result in scanner:
                 # See if it matches our name
                 if result.name() == self.peripheral_advertising_name:
-                    logging.debug("Ble_central::scan_for_peripheral - Found peripheral with matching advertising name of", self.peripheral_advertising_name)
+                    logging.debug(f"Ble_central::scan_for_peripheral - Found peripheral with matching advertising name of {self.peripheral_advertising_name}")
                     for item in result.services():
                         logging.debug("Ble_central::scan_for_peripheral - Got advertised UUID:", item)
                     if self.peripheral_advertising_uuid in result.services():
@@ -105,9 +105,9 @@ class Ble_central:
             logging.debug("Ble_central::connect_to_peripheral - Peripheral not found")
             return
         try:
-            logging.debug("Ble_central::connect_to_peripheral - Peripheral with address", device.addr_hex(), "found.  Attempting to connect")
+            logging.debug(f"Ble_central::connect_to_peripheral - Peripheral with address {device.addr_hex()} found.  Attempting to connect")
             self.connection = await device.connect()
-            logging.info("Ble_central::connect_to_peripheral - Connected to peripheral with address", device.addr_hex())
+            logging.info("Ble_central::connect_to_peripheral - Connected to peripheral with address {device.addr_hex()}")
             self.connected = True
             
         except asyncio.TimeoutError:
@@ -116,7 +116,7 @@ class Ble_central:
 
     # Process battery_service notifications from the peripheral
     def battery_service_notification(self, voltage, current, power):
-        logging.debug("Ble_central::battery_service_notification - mV =" , voltage, "/ mA =", current, "/ mW =", power)
+        logging.debug(f"Ble_central::battery_service_notification - mV = {voltage} / mA = {current} / mW = {power}")
 
     # Task to handle battery_service notifications
     async def handle_battery_service_task(self):
@@ -136,7 +136,7 @@ class Ble_central:
 
     # Process command_service notifications from the peripheral
     def command_service_notification(self, value):
-        logging.debug("Ble_central::command_service_notification - Command response from robot =" , value)
+        logging.debug(f"Ble_central::command_service_notification - Command response from robot = {value}")
         self.command_response = value
         self._ble_event.set() # Flag the event
 
@@ -158,7 +158,7 @@ class Ble_central:
                 # Respond
                 response = data_encode.from_int16(value)
                 response = response + 2
-                logging.debug("Ble_central::handle_command_service_task - response =" , response)
+                logging.debug(f"Ble_central::handle_command_service_task - response = {response}")
                 await self.rx_c2p_characteristic.write(data_encode.to_int16(response))
                                                         
         except Exception as e:

@@ -26,20 +26,16 @@
 #************************************************************************
 
 import asyncio
+import logging
 from machine import UART, Pin
 from micropython import const
 
 class Command_shell:
-    def __init__(self, uart_num: int = 1, baudrate: int = 9600, tx: int = None, rx: int = None, 
-                 timeout: int = 1000, prompt: str = "> ", intro: str = None, 
+    def __init__(self, uart: UART, prompt: str = ">", intro: str = None, 
                  history_limit: int = 10) -> None:
-        try:
-            self.uart = UART(uart_num, baudrate=baudrate, tx=tx, rx=rx, timeout=timeout)
-        except Exception as e:
-            raise RuntimeError(f"Failed to initialize UART: {e}")
-        
-        self.reader = asyncio.StreamReader(self.uart)
-        self.writer = asyncio.StreamWriter(self.uart, {})
+        """A simple UART command shell using asyncio streams"""
+        self.reader = asyncio.StreamReader(uart)
+        self.writer = asyncio.StreamWriter(uart, {})
         self.prompt = prompt
         self.intro = intro
         self.history = []
@@ -53,14 +49,14 @@ class Command_shell:
         try:
             await self.writer.awrite(f"{message}\r\n")
         except Exception as e:
-            print(f"Failed to send response: {e}")
+            logging.debug(f"Command_shell::send_response - Failed to send response: {e}")
 
     async def clear_line(self) -> None:
         """Clear the current line completely."""
         try:
             await self.writer.awrite('\r' + ' ' * 80 + '\r')
         except Exception as e:
-            print(f"Failed to clear line: {e}")
+            logging.debug(f"Command_shell::clear_line - Failed to clear line: {e}")
 
     async def move_cursor_left(self, positions: int = 1) -> None:
         """Move the cursor to the left."""
@@ -68,7 +64,7 @@ class Command_shell:
             try:
                 await self.writer.awrite(f'\x1b[{positions}D')
             except Exception as e:
-                print(f"Failed to move cursor left: {e}")
+                logging.debug(f"Command_shell::move_cursor_left - Failed to move cursor left: {e}")
 
     async def move_cursor_right(self, positions: int = 1) -> None:
         """Move the cursor to the right."""
@@ -76,7 +72,7 @@ class Command_shell:
             try:
                 await self.writer.awrite(f'\x1b[{positions}C')
             except Exception as e:
-                print(f"Failed to move cursor right: {e}")
+                logging.debug(f"Command_shell::move_cursor_right - Failed to move cursor right: {e}")
 
     async def display_command(self, command: str, cursor_pos: int) -> None:
         """Display the command with the cursor at the correct position."""
@@ -86,14 +82,14 @@ class Command_shell:
             await self.move_cursor_left(len(command) - cursor_pos)
             self.current_display_length = len(command)  # Update current display length
         except Exception as e:
-            print(f"Failed to display command: {e}")
+            logging.debug(f"Command_shell::display_command - Failed to display command: {e}")
 
     async def clear_command_line(self) -> None:
         """Clear the line based on the length of the previously displayed command."""
         try:
             await self.writer.awrite('\r')
         except Exception as e:
-            print(f"Failed to clear command line: {e}")
+            logging.debug(f"Command_shell::clear_command_line - Failed to clear command line: {e}")
         await self.writer.awrite(' ' * (len(self.prompt) + self.current_display_length))
         await self.writer.awrite('\r')
 
@@ -106,7 +102,7 @@ class Command_shell:
         await self.writer.awrite(self.prompt)
 
         def is_printable(char):
-            """Check if a character is printable (basic ASCII range)."""
+            """Check if a character is logging.debugable (basic ASCII range)."""
             return 32 <= ord(char) <= 126
 
         while True:
@@ -164,7 +160,7 @@ class Command_shell:
                         cursor_pos = len(command)
                         await self.display_command(command, cursor_pos)
 
-            # Handle printable characters
+            # Handle logging.debugable characters
             elif is_printable(char):
                 command.insert(cursor_pos, char)
                 cursor_pos += 1
@@ -195,7 +191,7 @@ class Command_shell:
         if self.intro:
             await self.send_response(self.intro)
 
-        print("UART shell started. Listening for commands over UART...")
+        logging.debug("Command_shell::run_shell - Host shell started")
         try:
             while True:
                 input_line = await self.read_command()
@@ -216,14 +212,4 @@ class Command_shell:
             await self.send_response(f"Error: {e}")
         finally:
             self.uart.deinit()
-            print("UART shell terminated.")
-
-# async def main():
-#     cli_prompt="VT2>"
-#     cli_intro="\r\nWelcome to Valiant Turtle 2 Communicator!\r\nType your commands below. Type 'exit' to quit."
-
-#     shell = Command_shell(uart_num=1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX), prompt=cli_prompt, intro_prompt=cli_intro, history_limit=10)
-#     await shell.run_shell()
-
-# # Run the main async function
-# asyncio.run(main())
+            logging.debug("Command_shell::run_shell - UART shell terminated.")
