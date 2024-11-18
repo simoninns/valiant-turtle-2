@@ -82,12 +82,22 @@ class Host_comms:
                 # No event or BLE object attached - just pause and loop
                 await asyncio.sleep_ms(250)
 
+    async def cli_task(self):
+        serial_reader = asyncio.StreamReader(self._uart)
+        serial_writer = asyncio.StreamWriter(self._uart)
+
+        # Gather a command terminated with <CR>
+        while True:
+            command_line = input("VT2> ", stdin=serial_reader, stdout=serial_writer)
+            print("Got", command_line, file=serial_writer)
+
     async def host_task(self):
         log_debug("Host_comms::host_task - Starting async host communication tasks")
 
         tasks = [
             # Communication tasks
-            asyncio.create_task(self.tx_task()),
-            asyncio.create_task(self.rx_task()),
+            #asyncio.create_task(self.tx_task()),
+            #asyncio.create_task(self.rx_task()),
+            asyncio.create_task(self.cli_task()),
         ]
         await asyncio.gather(*tasks)
