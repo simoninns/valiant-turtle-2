@@ -33,9 +33,9 @@ from micropython import const
 class Command_shell:
     def __init__(self, uart: UART, prompt: str = ">", intro: str = None, 
                  history_limit: int = 10) -> None:
-        """A simple UART command shell using asyncio streams"""
+        """A simple command shell using asyncio streams via UART"""
         self.reader = asyncio.StreamReader(uart)
-        self.writer = asyncio.StreamWriter(uart, {})
+        self.writer = asyncio.StreamWriter(uart)
         self.prompt = prompt
         self.intro = intro
         self.history = []
@@ -43,6 +43,26 @@ class Command_shell:
         self.current_input = ""
         self.history_limit = history_limit
         self.current_display_length = 0  # Track the length of the current command display
+
+        # Properties that are updated by the parent host_comms object
+        self._battery_status = (0,0,0)
+        self._command_status = 0
+
+    @property
+    def battery_status(self):
+        return self._battery_status
+    
+    @battery_status.setter
+    def battery_status(self, value):
+        self._battery_status = value
+
+    @property
+    def command_status(self):
+        return self._command_status
+    
+    @command_status.setter
+    def command_status(self, value):
+        self._command_status = value
 
     async def send_response(self, message: str) -> None:
         """Send a response back over UART."""
@@ -94,7 +114,7 @@ class Command_shell:
         await self.writer.awrite('\r')
 
     async def read_command(self):
-        """Asynchronously read and edit a command from the UART with arrow key support and history."""
+        """Asynchronously read and edit a command from the UART stream with arrow key support and history."""
         command = []
         cursor_pos = 0
         self.history_index = None
@@ -160,7 +180,7 @@ class Command_shell:
                         cursor_pos = len(command)
                         await self.display_command(command, cursor_pos)
 
-            # Handle logging.debugable characters
+            # Handle printable characters
             elif is_printable(char):
                 command.insert(cursor_pos, char)
                 cursor_pos += 1
@@ -176,7 +196,7 @@ class Command_shell:
         parts = input_line.split()
         if not parts:
             return None, []
-        command = parts[0]
+        command = parts[0].lower()
         parameters = parts[1:]
         return command, parameters
 
@@ -187,7 +207,7 @@ class Command_shell:
         self.history.append(command)
 
     async def run_shell(self):
-        """Run the asynchronous UART shell."""
+        """Run the command shell."""
         if self.intro:
             await self.send_response(self.intro)
 
@@ -200,16 +220,48 @@ class Command_shell:
                     if input_line.strip():
                         self.add_to_history(input_line)
 
+                    # Parse the command (into lower case) and parameters (into a list)
                     command, parameters = self.parse_command(input_line)
-                    if command:
-                        await self.send_response(f"Command: {command}")
-                        await self.send_response(f"Parameters: {parameters}")
+                    command_handled = False
 
-                    if command.lower() == 'exit':
-                        await self.send_response("Exiting shell.")
-                        break
+                    if command:
+                        if parameters:
+                            logging.debug(f"Command_shell::run_shell - Got command {command} {parameters} from shell")
+                        else:
+                            logging.debug(f"Command_shell::run_shell - Got command {command} from shell")
+                    else:
+                        command_handled = True
+
+                    # Handle the commands
+                    if command == 'help':
+                        # Display the help text
+                        await self.send_response("Help:")
+                        await self.send_response("  help                        - show this help text")
+                        await self.send_response("  forwards <distance in mm>   - move forwards")
+                        await self.send_response("  backwards <distance in mm>  - move backwards")
+                        await self.send_response("  left <rotation in degrees>  - turn left")
+                        await self.send_response("  right <rotation in degress> - turn right")
+                        await self.send_response("  status                      - show the robot's current status")
+                        await self.send_response("  penup                       - lift the pen")
+                        await self.send_response("  pendown                     - lower the pen")
+                        await self.send_response("  battery                     - show the battery status")
+                        command_handled = True
+
+                    if command == 'battery':
+                        # Display the battery status
+                        await self.send_response(f"{self.battery_status[0]} mV")
+                        await self.send_response(f"{self.battery_status[1]} mA")
+                        await self.send_response(f"{self.battery_status[2]} mW")
+                        command_handled = True
+
+                    if command == 'status':
+                        # Display the robot status
+                        await self.send_response(f"{self.command_status}")
+                        command_handled = True
+
+                    # Was the command handled?
+                    if not command_handled:
+                        await self.send_response(f"Unknown command: {command}")
         except Exception as e:
             await self.send_response(f"Error: {e}")
-        finally:
-            self.uart.deinit()
-            logging.debug("Command_shell::run_shell - UART shell terminated.")
+            logging.debug(f"Command_shell::run_shell - Error: {e}")

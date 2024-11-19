@@ -40,10 +40,15 @@ class Ble_central:
         self.connection = None
 
         # asyncio events
-        self._ble_event = asyncio.Event()
+        self._ble_command_service_event = asyncio.Event()
+        self._ble_battery_service_event = asyncio.Event()
         self._host_event = None
 
         self._host_comms = None
+
+        # Responses
+        self._command_service_response = 0
+        self._battery_service_response = (0, 0, 0)
 
         # Get the local device's Unique ID
         self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
@@ -76,8 +81,12 @@ class Ble_central:
         self._host_event = value
 
     @property
-    def ble_event(self):
-        return self._ble_event
+    def ble_command_service_event(self):
+        return self._ble_command_service_event
+    
+    @property
+    def ble_battery_service_event(self):
+        return self._ble_battery_service_event
 
     # Scan for a peripheral
     async def scan_for_peripheral(self):
@@ -107,7 +116,7 @@ class Ble_central:
         try:
             logging.debug(f"Ble_central::connect_to_peripheral - Peripheral with address {device.addr_hex()} found.  Attempting to connect")
             self.connection = await device.connect()
-            logging.info("Ble_central::connect_to_peripheral - Connected to peripheral with address {device.addr_hex()}")
+            logging.info(f"Ble_central::connect_to_peripheral - Connected to peripheral with address {device.addr_hex()}")
             self.connected = True
             
         except asyncio.TimeoutError:
@@ -117,6 +126,13 @@ class Ble_central:
     # Process battery_service notifications from the peripheral
     def battery_service_notification(self, voltage, current, power):
         logging.debug(f"Ble_central::battery_service_notification - mV = {voltage} / mA = {current} / mW = {power}")
+        self._battery_service_response = (voltage, current, power)
+        self._ble_battery_service_event.set() # Flag the event
+
+    # Provide the battery service response and clear the event flag
+    def get_battery_service_response(self):
+        self._ble_battery_service_event.clear()
+        return self._battery_service_response
 
     # Task to handle battery_service notifications
     async def handle_battery_service_task(self):
@@ -137,13 +153,13 @@ class Ble_central:
     # Process command_service notifications from the peripheral
     def command_service_notification(self, value):
         logging.debug(f"Ble_central::command_service_notification - Command response from robot = {value}")
-        self.command_response = value
-        self._ble_event.set() # Flag the event
+        self._command_service_response = value
+        self._ble_command_service_event.set() # Flag the event
 
-    # Provide the command response and clear the event flag
-    def get_command_response(self):
-        self._ble_event.clear()
-        return self.command_response
+    # Provide the command service response and clear the event flag
+    def get_command_service_response(self):
+        self._ble_command_service_event.clear()
+        return self._command_service_response
 
     # Task to handle command_service notifications
     async def handle_command_service_task(self):
