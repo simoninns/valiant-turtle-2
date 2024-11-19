@@ -24,7 +24,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn, log_control
+import logging
 
 from pen import Pen
 from ina260 import Ina260
@@ -67,162 +67,165 @@ _LED_right_motor = const(2)
 _LED_left_eye = const(3)
 _LED_right_eye = const(4)
 
-# Async task to update status LEDs depending on various states and times
-async def status_led_task():
-    interval = 0
+def main():
+    """Main function"""
 
-    while True:
-        # interval 0 =    0
-        # interval 1 =  250
-        # interval 2 =  500
-        # interval 3 =  750
-        # interval 4 = 1000
-        # interval 5 = 1250
+    # Async task to update status LEDs depending on various states and times
+    async def status_led_task():
+        interval = 0
 
-        # Stepper motor status
-        # Green = forwards, red = backwards, grey = not in motion
-        if left_stepper.is_busy:
-            if left_stepper.is_forwards: led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
-            else: led_fx.set_led_colour(_LED_left_motor, 64, 0, 0)
-        else:
-            led_fx.set_led_colour(_LED_left_motor, 8, 8, 8)
+        while True:
+            # interval 0 =    0
+            # interval 1 =  250
+            # interval 2 =  500
+            # interval 3 =  750
+            # interval 4 = 1000
+            # interval 5 = 1250
 
-        if right_stepper.is_busy:
+            # Stepper motor status
             # Green = forwards, red = backwards, grey = not in motion
-            if right_stepper.is_forwards: led_fx.set_led_colour(_LED_right_motor, 0, 64, 0)
-            else: led_fx.set_led_colour(_LED_right_motor, 64, 0, 0)
-        else:
-            led_fx.set_led_colour(_LED_right_motor, 8, 8, 8)
+            if left_stepper.is_busy:
+                if left_stepper.is_forwards: led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
+                else: led_fx.set_led_colour(_LED_left_motor, 64, 0, 0)
+            else:
+                led_fx.set_led_colour(_LED_left_motor, 8, 8, 8)
 
-        # Eyes
-        if interval == 2:
-            led_fx.set_led_fade_speed(_LED_left_eye, 30)
-            led_fx.set_led_fade_speed(_LED_right_eye, 30)
-            led_fx.set_led_colour(_LED_left_eye, 255, 0, 0)
-            led_fx.set_led_colour(_LED_right_eye, 255, 0, 0)
+            if right_stepper.is_busy:
+                # Green = forwards, red = backwards, grey = not in motion
+                if right_stepper.is_forwards: led_fx.set_led_colour(_LED_right_motor, 0, 64, 0)
+                else: led_fx.set_led_colour(_LED_right_motor, 64, 0, 0)
+            else:
+                led_fx.set_led_colour(_LED_right_motor, 8, 8, 8)
 
-        if interval == 3:
-            led_fx.set_led_colour(_LED_left_eye, 64, 0, 0)
-            led_fx.set_led_colour(_LED_right_eye, 64, 0, 0)
+            # Eyes
+            if interval == 2:
+                led_fx.set_led_fade_speed(_LED_left_eye, 30)
+                led_fx.set_led_fade_speed(_LED_right_eye, 30)
+                led_fx.set_led_colour(_LED_left_eye, 255, 0, 0)
+                led_fx.set_led_colour(_LED_right_eye, 255, 0, 0)
 
-        # Status LED
-        if ble_peripheral.is_central_connected:
-            if interval == 0: 
-                led_fx.set_led_colour(_LED_status, 0, 0, 64)
-            if interval == 5: 
-                led_fx.set_led_colour(_LED_status, 0, 64, 0)
-        else:
-            if interval == 0: 
-                led_fx.set_led_colour(_LED_status, 0, 64, 0)
-            if interval == 5: 
-                led_fx.set_led_colour(_LED_status, 0, 0, 64)
+            if interval == 3:
+                led_fx.set_led_colour(_LED_left_eye, 64, 0, 0)
+                led_fx.set_led_colour(_LED_right_eye, 64, 0, 0)
 
-        # Increment interval
-        interval += 1
-        if interval == 6: interval = 0
+            # Status LED
+            if ble_peripheral.is_central_connected:
+                if interval == 0: 
+                    led_fx.set_led_colour(_LED_status, 0, 0, 64)
+                if interval == 5: 
+                    led_fx.set_led_colour(_LED_status, 0, 64, 0)
+            else:
+                if interval == 0: 
+                    led_fx.set_led_colour(_LED_status, 0, 64, 0)
+                if interval == 5: 
+                    led_fx.set_led_colour(_LED_status, 0, 0, 64)
 
-        # Wait before next interval
-        await asyncio.sleep_ms(250)
+            # Increment interval
+            interval += 1
+            if interval == 6: interval = 0
 
-# Async task to update battery level service
-async def power_monitor_task():
-    test_level = 250
-    while True:
-        # Wait before next update
-        await asyncio.sleep_ms(5000)
-
-        # Read the INA260 and send an update to BLE central
-        ble_peripheral.battery_service_update(ina260.voltage, ina260.current, ina260.power)
-
-# Async I/O task generation and launch
-async def aio_main():
-    tasks = [
-        # BLE tasks
-        # Note: This seems to cause the WS2812s to flicker?
-        asyncio.create_task(ble_peripheral.ble_peripheral_task()),
-
-        # General background tasks
-        asyncio.create_task(status_led_task()),
-        asyncio.create_task(led_fx.process_leds_task()),
-        #asyncio.create_task(stepper_task()),
-        asyncio.create_task(power_monitor_task()),
-    ]
-    await asyncio.gather(*tasks)
-
-# Stepper test task
-async def stepper_task():
-    # Define a velocity sequence
-    velocity = Velocity(6400, 32, 2, 1600, 16)
-
-    while True:
-        drv8825.set_enable(True)
-
-        left_stepper.set_forwards()
-        right_stepper.set_forwards()
-        left_stepper.set_velocity(velocity)
-        right_stepper.set_velocity(velocity)
-        log_debug("Steppers running forwards")
-
-        # Wait for the stepper to finish
-        while left_stepper.is_busy or right_stepper.is_busy:
+            # Wait before next interval
             await asyncio.sleep_ms(250)
 
-        left_stepper.set_backwards()
-        right_stepper.set_backwards()
-        left_stepper.set_velocity(velocity)
-        right_stepper.set_velocity(velocity)
-        log_debug("Steppers running backwards")
+    # Async task to update battery level service
+    async def power_monitor_task():
+        test_level = 250
+        while True:
+            # Wait before next update
+            await asyncio.sleep_ms(5000)
 
-        # Wait for the stepper to finish
-        while left_stepper.is_busy or right_stepper.is_busy:
-            await asyncio.sleep_ms(250)
+            # Read the INA260 and send an update to BLE central
+            ble_peripheral.battery_service_update(ina260.voltage, ina260.current, ina260.power)
 
-        drv8825.set_enable(False)
-        log_debug("Steppers stopped")
+    # Async I/O task generation and launch
+    async def aio_main():
+        tasks = [
+            # BLE tasks
+            # Note: This seems to cause the WS2812s to flicker?
+            asyncio.create_task(ble_peripheral.ble_peripheral_task()),
 
-        await asyncio.sleep(5)
+            # General background tasks
+            asyncio.create_task(status_led_task()),
+            asyncio.create_task(led_fx.process_leds_task()),
+            #asyncio.create_task(stepper_task()),
+            asyncio.create_task(power_monitor_task()),
+        ]
+        await asyncio.gather(*tasks)
 
-# Main set up ---------------------------------------------------------------------------------------------------------
+    # Stepper test task
+    async def stepper_task():
+        # Define a velocity sequence
+        velocity = Velocity(6400, 32, 2, 1600, 16)
 
-# Turn on logging
-log_control(True, True, True)
+        while True:
+            drv8825.set_enable(True)
 
-# Initialise the pen control
-pen = Pen(_GPIO_PEN)
-pen.off()
+            left_stepper.set_forwards()
+            right_stepper.set_forwards()
+            left_stepper.set_velocity(velocity)
+            right_stepper.set_velocity(velocity)
+            log_debug("Steppers running forwards")
 
-# Initialise the I2C buses
-i2c_internal = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000)
-i2c_external = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=400000)
+            # Wait for the stepper to finish
+            while left_stepper.is_busy or right_stepper.is_busy:
+                await asyncio.sleep_ms(250)
 
-# Initialise the INA260 power monitoring chip
-ina260 = Ina260(i2c_internal, 0x40)
+            left_stepper.set_backwards()
+            right_stepper.set_backwards()
+            left_stepper.set_velocity(velocity)
+            right_stepper.set_velocity(velocity)
+            log_debug("Steppers running backwards")
 
-# Initialise the EEPROM
-eeprom = Eeprom(i2c_internal, 0x50)
+            # Wait for the stepper to finish
+            while left_stepper.is_busy or right_stepper.is_busy:
+                await asyncio.sleep_ms(250)
 
-# Read the configuration from EEPROM
-configuration = Configuration()
-if not configuration.unpack(eeprom.read(0, configuration.pack_size)):
-    # Current EEPROM image is invalid, write the default
-    eeprom.write(0, configuration.pack())
+            drv8825.set_enable(False)
+            log_debug("Steppers stopped")
 
-# Initialise BLE peripheral
-ble_peripheral = Ble_peripheral()
+            await asyncio.sleep(5)
 
-# Configure the DRV8825
-drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
-drv8825.set_steps_per_revolution(800)
-drv8825.set_enable(False)
+    # Configure the logging module
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Configure the steppers
-left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
-left_stepper.set_forwards()
-right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
-right_stepper.set_forwards()
+    # Initialise the pen control
+    pen = Pen(_GPIO_PEN)
+    pen.off()
 
-# Configure the LEDs
-led_fx = Led_fx(5, _GPIO_LEDS)
+    # Initialise the I2C buses
+    i2c_internal = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000)
+    i2c_external = I2C(1, scl=Pin(_GPIO_SCL1), sda=Pin(_GPIO_SDA1), freq=400000)
 
-log_info("main - Launching asynchronous tasks...")
-asyncio.run(aio_main())
+    # Initialise the INA260 power monitoring chip
+    ina260 = Ina260(i2c_internal, 0x40)
+
+    # Initialise the EEPROM
+    eeprom = Eeprom(i2c_internal, 0x50)
+
+    # Read the configuration from EEPROM
+    configuration = Configuration()
+    if not configuration.unpack(eeprom.read(0, configuration.pack_size)):
+        # Current EEPROM image is invalid, write the default
+        eeprom.write(0, configuration.pack())
+
+    # Initialise BLE peripheral
+    ble_peripheral = Ble_peripheral()
+
+    # Configure the DRV8825
+    drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
+    drv8825.set_steps_per_revolution(800)
+    drv8825.set_enable(False)
+
+    # Configure the steppers
+    left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
+    left_stepper.set_forwards()
+    right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
+    right_stepper.set_forwards()
+
+    # Configure the LEDs
+    led_fx = Led_fx(5, _GPIO_LEDS)
+
+    logging.info("main - Launching asynchronous tasks...")
+    asyncio.run(aio_main())
+
+main()

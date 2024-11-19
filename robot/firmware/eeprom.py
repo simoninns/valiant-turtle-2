@@ -25,12 +25,42 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
+import logging
 from machine import I2C
 from time import sleep
 
 class Eeprom:
+    """
+    A class to represent a 24LC16 I2C EEPROM.
+
+    Attributes
+    ----------
+    i2c : I2C
+        The I2C bus instance.
+    i2c_address : int
+        The I2C address of the EEPROM.
+    _is_present : bool
+        Flag indicating if the EEPROM is present.
+    _maximum_address : int
+        The maximum address value for the 24LC16 EEPROM.
+
+    Methods
+    -------
+    __init__(i2c_bus: I2C, address: int = 0x50):
+        Initializes the EEPROM with the given I2C bus and address.
+    """
+
     def __init__(self, i2c_bus: I2C, address: int = 0x50):
+        """
+        Constructs all the necessary attributes for the EEPROM object.
+
+        Parameters
+        ----------
+        i2c_bus : I2C
+            The I2C bus instance.
+        address : int, optional
+            The I2C address of the EEPROM (default is 0x50).
+        """
         self.i2c = i2c_bus
         self.i2c_address = address
 
@@ -42,9 +72,9 @@ class Eeprom:
             if devices[idx] == self.i2c_address: self._is_present = True
 
         if self._is_present:
-            log_info("Eeprom::__init__ - 24LC16 EEPROM detected at address", hex(self.i2c_address))
+            logging.info(f"Eeprom::__init__ - 24LC16 EEPROM detected at address {hex(self.i2c_address)}")
         else:
-            log_info("Eeprom::__init__ - 24LC16 EEPROM is not present... Cannot initialise!")
+            logging.info("Eeprom::__init__ - 24LC16 EEPROM is not present... Cannot initialise!")
 
         self._maximum_address = 2048 # Maximum address value for the 24LC16
         self._page_size = 16 # The page size for the 24LC16
@@ -68,7 +98,7 @@ class Eeprom:
         self._blockaddr[0] = (address & 0xFF); # Block address
 
         # Read from the EEPROM and return the collected data
-        log_debug("Eeprom::read - Address =", address, "number of bytes =", number_of_bytes)
+        logging.debug(f"Eeprom::read - Address = {address} - number of bytes = {number_of_bytes}")
 
         sleep(0.01)
         self.i2c.writeto(self._devaddr[0], self._blockaddr, False)
@@ -83,7 +113,7 @@ class Eeprom:
         
         remaining_data = len(data) # Keep track of what's left to write
         data_pointer = 0
-        log_debug("Eeprom::write - Writing address =", address, "write length =", remaining_data)
+        logging.debug(f"Eeprom::write - Writing address = {address} - write length = {remaining_data}")
 
         while remaining_data > 0:
             # Determine the device address (including the block) and intra-block address
@@ -108,7 +138,7 @@ class Eeprom:
                 page_buffer[i+1] = data[data_pointer]
                 data_pointer += 1
 
-            log_debug("Eeprom::write - Page write @ address =", address, "write length =", write_length)
+            logging.debug(f"Eeprom::write - Page write @ address = {address} - write length = {write_length}")
 
             # Perform a write
             sleep(0.01)
@@ -117,3 +147,7 @@ class Eeprom:
             # Continue if required
             remaining_data -= write_length
             address += write_length
+
+if __name__ == "__main__":
+    from main import main
+    main()

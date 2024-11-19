@@ -1,8 +1,8 @@
 #************************************************************************ 
 #
-#   data_encode.py
+#   logging.py
 #
-#   Data type encoding and decoding functions
+#   Simple logging module for MicroPython
 #   Valiant Turtle 2 - Robot firmware
 #   Copyright (C) 2024 Simon Inns
 #
@@ -25,28 +25,49 @@
 #
 #************************************************************************
 
-import struct
+import sys
 
-# signed short integer (2 bytes)
-def to_int16(value):
-    return struct.pack("<h", int(value))
+DEBUG = 10
+INFO = 20
+WARNING = 30
+ERROR = 40
+CRITICAL = 50
 
-def from_int16(data) -> int:
-    return struct.unpack("<h", data)[0]
+_level = INFO
 
-# unsigned short integer (2 bytes)
-def to_uint16(value):
-    return struct.pack("<H", int(value))
+def basicConfig(level=INFO, format=None):
+    global _level
+    _level = level
 
-def from_uint16(data) -> int:
-    return struct.unpack("<H", data)[0]
+def debug(msg, *args):
+    if _level <= DEBUG:
+        print("[DEBUG]", msg.format(*args))
 
-# float (4 bytes)
-def to_float(value):
-    return struct.pack("<f", float(value))
+def info(msg, *args):
+    if _level <= INFO:
+        print("[INFO]", msg.format(*args))
 
-def from_float(data) -> float:
-    return struct.unpack("<f", data)[0]
+def warning(msg, *args):
+    if _level <= WARNING:
+        print("[WARNING]", msg.format(*args))
+
+def error(msg, *args):
+    if _level <= ERROR:
+        print("[ERROR]", msg.format(*args))
+
+def critical(msg, *args):
+    if _level <= CRITICAL:
+        print("[CRITICAL]", msg.format(*args))
+
+if __name__ == "__main__":
+    # If this module is run directly, execute main.py instead
+    with open("main.py") as f:
+        exec(f.read())
+
+if __name__ == "__main__":
+    # If this module is run directly, execute main.py instead
+    with open("main.py") as f:
+        exec(f.read())
 
 if __name__ == "__main__":
     from main import main

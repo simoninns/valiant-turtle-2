@@ -43,3 +43,7 @@ class Pen:
 
     def off(self):
         self.servo.set_power(False)
+
+if __name__ == "__main__":
+    from main import main
+    main()

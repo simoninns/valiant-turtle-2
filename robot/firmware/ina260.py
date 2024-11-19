@@ -26,7 +26,7 @@
 #************************************************************************
 
 from machine import I2C
-from log import log_debug, log_info, log_warn
+import logging
 
 # INA260 Registers
 _INA260_REG_CONFIG = const(0x00)
@@ -55,9 +55,9 @@ class Ina260:
             if devices[idx] == self.address: self._is_present = True
 
         if self._is_present:
-            log_info("Ina260::__init__ - INA260 detected at address", hex(self.address))
+            logging.info(f"Ina260::__init__ - INA260 detected at address {hex(self.address)}")
         else:
-            log_info("Ina260::__init__ - INA260 is not present... Cannot initialise!")
+            logging.info("Ina260::__init__ - INA260 is not present... Cannot initialise!")
 
         if self._is_present:
             # Reg: Config - 16 bit - Set bit 15 = reset
@@ -109,3 +109,7 @@ class Ina260:
         self.i2c.writeto(self.address, buffer, False)
         response = int.from_bytes(self.i2c.readfrom(self.address, 2, True), "big")
         return response
+    
+if __name__ == "__main__":
+    from main import main
+    main()

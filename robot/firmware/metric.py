@@ -25,10 +25,6 @@
 #
 #************************************************************************
 
-from log import log_debug
-from log import log_info
-from log import log_warn
-
 class Metric:
     def __init__(self, wheel_diameter_mm = 54.0, axel_distance_mm = 230.0, steps_per_revolution = 800):
         self.wheel_diameter_mm = wheel_diameter_mm
@@ -48,3 +44,7 @@ class Metric:
         circumference = (2.0 * self.pi) * (self.axel_distance_mm / 2.0)
         millimeters = (circumference / 360.0) * degrees
         return self.mm_to_steps(millimeters)
+    
+if __name__ == "__main__":
+    from main import main
+    main()

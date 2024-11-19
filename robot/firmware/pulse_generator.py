@@ -25,8 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
-
+import logging
 from machine import Pin
 import rp2
 
@@ -72,10 +71,10 @@ class Pulse_generator:
         if _state_machine > 3 or _state_machine < 0:
             ValueError("Pulse_generator::__init__ - State-machine ID must be 0-3")
 
-        log_info("Pulse_generator::__init__ - Pulse generator initialising on PIO", _pio, "state-machine", _state_machine)
+        logging.info(f"Pulse_generator::__init__ - Pulse generator initialising on PIO {_pio} state-machine {_state_machine}")
         if _pio == 1: _state_machine += 4 # PIO 0 is SM 0-3 and PIO 1 is SM 4-7
 
-        log_debug("Pulse_generator::__init__ - Micropython state-machine ID is", _state_machine)
+        logging.debug(f"Pulse_generator::__init__ - Micropython state-machine ID is {_state_machine}")
         self._sm = rp2.StateMachine(_state_machine, pulse_generator, freq=2500000, set_base=Pin(pin))
         
         # Set interrupt for SM on IRQ 0
@@ -94,7 +93,7 @@ class Pulse_generator:
 
         # Place the values into the TX FIFO towards the required state machine
         # Note: The FIFO is 4x32-bit
-        #log_debug("Pulse_generator::set: Pulses =", pulses, ", PIO delay =", pio_delay)
+        #logging.debug("Pulse_generator::set: Pulses =", pulses, ", PIO delay =", pio_delay)
         self._sm.put(pulses)
         self._sm.put(pio_delay)
 
@@ -102,7 +101,7 @@ class Pulse_generator:
     def __pps_to_pio_delay(self, pps) -> int:
         # Range check our input
         if pps > 250000:
-            log_debug("Pulse_generator::__pps_to_pio_delay: Maximum PPS is 250,000 - limiting!")
+            logging.debug("Pulse_generator::__pps_to_pio_delay: Maximum PPS is 250,000 - limiting!")
             pps = 250000
         
         # The loop overhead in PIO clock ticks
@@ -128,3 +127,7 @@ class Pulse_generator:
         # Call any functions that have subscribed to the callback
         for fn in self.callbacks:
             fn()
+
+if __name__ == "__main__":
+    from main import main
+    main()

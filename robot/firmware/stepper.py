@@ -25,8 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
-
+import logging
 from velocity import Velocity
 from pulse_generator import Pulse_generator
 
@@ -56,7 +55,7 @@ class Stepper:
 
         # Ensure we have a free state-machine
         if Stepper._sm_counter < 4:
-            log_debug("Stepper::__init__ - Using PIO", self.pio,"SM", Stepper._sm_counter)
+            logging.debug(f"Stepper::__init__ - Using PIO {self.pio} SM {Stepper._sm_counter}")
         else:
             raise RuntimeError("Stepper::__init__ - No more state machines available!")
 
@@ -88,7 +87,7 @@ class Stepper:
 
     def set_velocity(self, velocity: Velocity) -> bool:
         if self.is_busy:
-            log_debug("Stepper::set_velocity - Failed... Stepper is busy")
+            logging.debug("Stepper::set_velocity - Failed... Stepper is busy")
             return False
         
         self.velocity = velocity
@@ -117,3 +116,7 @@ class Stepper:
             else:
                 # Sequence completed
                 self.is_busy_flag = False
+
+if __name__ == "__main__":
+    from main import main
+    main()

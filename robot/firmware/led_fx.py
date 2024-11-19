@@ -25,8 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
-#from ws2812b import Ws2812b
+import logging
 import machine, neopixel
 
 import asyncio
@@ -73,7 +72,7 @@ class Led_fx:
 
     # Process the LED effects
     async def process_leds_task(self):
-        log_debug("Led_fx::process_leds_task - Task started")
+        logging.debug("Led_fx::process_leds_task - Task started")
         while True:
             for idx in range(self.number_of_leds):
                 if (self.target_red[idx] > self.current_red[idx]): self.current_red[idx] += self.fade_speed[idx]
@@ -96,3 +95,7 @@ class Led_fx:
             # Perform the actual update
             self.neopixel.write()
             await asyncio.sleep_ms(10)
+
+if __name__ == "__main__":
+    from main import main
+    main()

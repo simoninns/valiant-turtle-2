@@ -62,3 +62,7 @@ class Servo:
 
     def get_position(self):
         return self.degrees
+    
+if __name__ == "__main__":
+    from main import main
+    main()

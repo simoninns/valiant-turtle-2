@@ -25,8 +25,7 @@
 #
 #************************************************************************
 
-from log import log_debug, log_info, log_warn
-
+import logging
 from machine import Pin
 
 class Drv8825:
@@ -48,32 +47,32 @@ class Drv8825:
             self.m0.value(0)
             self.m1.value(0)
             self.m2.value(0)
-            log_debug("Velocity::set_steps_per_revolution - Full step mode set (200 steps/rev)")
+            logging.debug("Velocity::set_steps_per_revolution - Full step mode set (200 steps/rev)")
         elif steps_per_revolution == 400: # Half step
             self.m0.value(1)
             self.m1.value(0)
             self.m2.value(0)
-            log_debug("Velocity::set_steps_per_revolution - Half step mode set (400 steps/rev)")
+            logging.debug("Velocity::set_steps_per_revolution - Half step mode set (400 steps/rev)")
         elif steps_per_revolution == 800: # 1/4 step
             self.m0.value(0)
             self.m1.value(1)
             self.m2.value(0)
-            log_debug("Velocity::set_steps_per_revolution - 1/4 step mode set (800 steps/rev)")
+            logging.debug("Velocity::set_steps_per_revolution - 1/4 step mode set (800 steps/rev)")
         elif steps_per_revolution == 1600: # 1/8 step
             self.m0.value(1)
             self.m1.value(1)
             self.m2.value(0)
-            log_debug("Velocity::set_steps_per_revolution - 1/8 step mode set (1600 steps/rev)")
+            logging.debug("Velocity::set_steps_per_revolution - 1/8 step mode set (1600 steps/rev)")
         elif steps_per_revolution == 3200: # 1/16 step
             self.m0.value(0)
             self.m1.value(0)
             self.m2.value(1)
-            log_debug("Velocity::set_steps_per_revolution - 1/16 step mode set (3200 steps/rev)")
+            logging.debug("Velocity::set_steps_per_revolution - 1/16 step mode set (3200 steps/rev)")
         elif steps_per_revolution == 6400: # 1/32 step
             self.m0.value(1)
             self.m1.value(0)
             self.m2.value(1)
-            log_debug("Velocity::set_steps_per_revolution - 1/32 step mode set (6400 steps/rev)")
+            logging.debug("Velocity::set_steps_per_revolution - 1/32 step mode set (6400 steps/rev)")
         else:
             raise RuntimeError("Drv8825::set_steps_per_revolution - ERROR - Steps per revolution must be 200, 400, 800, 1600, 3200 or 6400")
         
@@ -81,7 +80,11 @@ class Drv8825:
     def set_enable(self, is_enabled: bool):
         if (is_enabled): 
             self.enable.value(1)
-            log_debug("Velocity::set_enable - DRV8825 Enabled")
+            logging.debug("Velocity::set_enable - DRV8825 Enabled")
         else: 
             self.enable.value(0)
-            log_debug("Velocity::set_enable - DRV8825 Disabled")
+            logging.debug("Velocity::set_enable - DRV8825 Disabled")
+
+if __name__ == "__main__":
+    from main import main
+    main()
