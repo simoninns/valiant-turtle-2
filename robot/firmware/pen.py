@@ -26,22 +26,60 @@
 #************************************************************************
 
 from servo import Servo
+from machine import Pin
 
 class Pen:
-    def __init__(self, pin):
+    """
+    A class to represent a Pen controlled by a servo motor.
+    Attributes
+    ----------
+    servo : Servo
+        An instance of the Servo class to control the pen.
+    Methods
+    -------
+    __init__(pin):
+        Initializes the Pen with the given servo pin and sets the servo power to off.
+    up():
+        Raises the pen by setting the servo position to 90 degrees and turning the servo power on.
+    down():
+        Lowers the pen by setting the servo position to 0 degrees and turning the servo power on.
+    off():
+        Turns the servo power off.
+    """
+
+    def __init__(self, pin: Pin):
+        """
+        Initializes the Pen object.
+        Args:
+            pin (Pin): The pin to which the pen servo is connected.
+        Initializes the pen servo and sets its power to the off state.
+        """
+
         # Initialise the pen servo to off
         self.servo = Servo(pin)
         self.servo.set_power(False)
 
     def up(self):
+        """
+        Raises the pen by setting the servo position to 90 degrees and turns on the servo power.
+        """
+
         self.servo.set_position(90)
         self.servo.set_power(True)
     
     def down(self):
+        """
+        Lowers the pen by setting the servo position to 0 degrees and turning on the servo power.
+        """
+
         self.servo.set_position(0)
         self.servo.set_power(True)
 
     def off(self):
+        """
+        Turns off the servo power.
+        """
+
         self.servo.set_power(False)
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@
 
 import logging
 from velocity import Velocity
-from pulse_generator import Pulse_generator
+from pulse_generator import PulseGenerator
 
 from machine import Pin
 
@@ -61,7 +61,7 @@ class Stepper:
 
         # Initialise the pulse generator on PIO 1
         # Note: This controls the step GPIO
-        self.pulse_generator = Pulse_generator(self.pio, Stepper._sm_counter, step_pin)
+        self.pulse_generator = PulseGenerator(self.pio, Stepper._sm_counter, step_pin)
         Stepper._sm_counter += 1
 
         # Set up the pulse generator callback

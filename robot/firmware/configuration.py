@@ -27,21 +27,32 @@
 
 import logging
 import ustruct
-
-_CONFIGURATION_version = const(0x02)
+from micropython import const
 
 class Configuration:
+    CONFIGURATION_VERSION = const(0x03)
+
     def __init__(self):
+        self._configuration_version = 0
+        self._is_legacy_mode = False
+        self._serial_speed = 0
+        self._serial_rtscts = False
+
         # Set default configuration
         self.default()
 
         # ustruct format
         # See: https://docs.micropython.org/en/latest/library/struct.html
-        self.format = 'iiii' # Format: i = 4 byte int
+        # Format: i = 4 byte int
+        # 1st int: configuration version
+        # 2nd int: is legacy mode (boolean as int)
+        # 3rd int: serial speed
+        # 4th int: serial RTS/CTS (boolean as int)
+        self.format = 'iiii'
 
     def pack(self) -> bytes:
         buffer = ustruct.pack(self.format,
-            self._configuration_version,
+            Configuration.CONFIGURATION_VERSION,
             int(self._is_legacy_mode),
             self._serial_speed,
             int(self._serial_rtscts)
@@ -61,7 +72,7 @@ class Configuration:
         self._serial_rtscts = bool(result[3])
 
         # Check configuration is valid
-        if self._configuration_version != _CONFIGURATION_version:
+        if self._configuration_version != Configuration.CONFIGURATION_VERSION:
             logging.info("Configuration::unpack - Configuration invalid... Using default")
             self.default()
             return False
@@ -70,7 +81,7 @@ class Configuration:
         return True
     
     def default(self):
-        self._configuration_version = _CONFIGURATION_version
+        self._configuration_version = Configuration.CONFIGURATION_VERSION
         self._is_legacy_mode = True
         self._serial_speed = 4800
         self._serial_rtscts = False

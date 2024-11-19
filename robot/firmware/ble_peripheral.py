@@ -36,13 +36,19 @@ import asyncio
 
 import data_encode
 
-class Ble_peripheral:
+class BlePeripheral:
+    MANUFACTURER_DATA = (0xFFE1, b"www.waitingforfriday.com")
+    CONNECTION_CONFIRMATION_CODE = 12345
+    ADVERTISING_NAME = "vt2-robot"
+
     def __init__(self):
         # Get the local device's Unique ID (used as the serial number)
         self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
 
-        # Flags to show connected status
+        # Connection to central
         self.connection = None
+
+        # Flag to show connected status
         self.connected = False
 
         # Advertising definitions
@@ -63,9 +69,8 @@ class Ble_peripheral:
 
         # Set our appearance to "Remote Control"
         self.peripheral_appearance_generic_remote_control = const(0x0180)
-
-        self.peripheral_advertising_name = "vt2-robot"
-        self.peripheral_manufacturer = (0xFFE1, b"www.waitingforfriday.com")
+        self.peripheral_manufacturer = BlePeripheral.MANUFACTURER_DATA
+        self.peripheral_advertising_name = BlePeripheral.ADVERTISING_NAME
 
     # Define a service - command
     def __ble_service_command_definitions(self):
@@ -104,33 +109,33 @@ class Ble_peripheral:
             _, data = await characteristic.written(timeout_ms=t_ms)
             return data
         except asyncio.TimeoutError:
-            logging.debug("Ble_peripheral::wait_for_data - Data timed-out - (Central probably disappeared)")
+            logging.debug("BlePeripheral::wait_for_data - Data timed-out - (Central probably disappeared)")
             self.connected = False
             return None
 
     # Send battery service characteristics update
     def battery_service_update(self, voltage, current, power):
-        if self.connected:
-            logging.debug(f"Ble_peripheral::battery_service_update - mV = {voltage} / mA = {current} / mW = {power}")
+        if self.connected and self.connection:
+            logging.debug(f"BlePeripheral::battery_service_update - mV = {voltage} / mA = {current} / mW = {power}")
             try:
                 self.battery_voltage_characteristic.notify(self.connection, data_encode.to_float(voltage))
                 self.battery_current_characteristic.write(data_encode.to_float(current))
                 self.battery_power_characteristic.write(data_encode.to_float(power))
             
             except Exception as e:
-                logging.debug("Ble_peripheral::battery_service_update - Exception was flagged (Central probably disappeared)")
+                logging.debug("BlePeripheral::battery_service_update - Exception was flagged (Central probably disappeared)")
                 self.connected = False
     
     # Send command service characteristics update
     def command_service_update(self, value):
-        if self.connected:
-            logging.debug("Ble_peripheral::command_service_update - value =", value)
+        if self.connected and self.connection:
+            logging.debug(f"BlePeripheral::command_service_update - value = {value}")
             try:
                 # Send from p2c
                 self.tx_p2c_characteristic.notify(self.connection, data_encode.to_int16(value))
                 
             except Exception as e:
-                logging.debug("Ble_peripheral::command_service_update - Exception was flagged (Central probably disappeared)")
+                logging.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
                 self.connected = False
 
     # This is just for testing purposes
@@ -146,7 +151,7 @@ class Ble_peripheral:
                 # Receive from c2p
                 reply_data = await self.wait_for_data(self.rx_c2p_characteristic)
                 if reply_data != None:
-                    logging.debug(f"Ble_peripheral::command_service_update - Reply data = {data_encode.from_int16(reply_data)}")
+                    logging.debug(f"BlePeripheral::command_service_update_task - Reply data = {data_encode.from_int16(reply_data)}")
 
             if self.connected: await asyncio.sleep_ms(10000)
 
@@ -156,14 +161,14 @@ class Ble_peripheral:
         peripheral_tasks = [
             asyncio.create_task(self.command_service_update_task()),
         ]
-        logging.info("Ble_peripheral::connected_to_central - Running connected tasks")
+        logging.info("BlePeripheral::connected_to_central - Running connected tasks")
         await asyncio.gather(*peripheral_tasks)
 
     async def wait_for_disconnection_from_central(self):
         await self.connection.disconnected()
         self.connected = False
         self.connection = None
-        logging.info("Ble_peripheral::wait_for_disconnection_from_central - Central disconnected")
+        logging.info("BlePeripheral::wait_for_disconnection_from_central - Central disconnected")
 
     # Advertise peripheral to central
     async def advertise_to_central(self):
@@ -171,34 +176,34 @@ class Ble_peripheral:
         ble_advertising_frequency_us = const(250000)
 
         # Wait for something to connect
-        logging.debug("Ble_peripheral::advertise_to_central - Advertising and waiting for connection from central...")
+        logging.debug("BlePeripheral::advertise_to_central - Advertising and waiting for connection from central...")
         self.connection = await aioble.advertise(
-                ble_advertising_frequency_us,
-                name = self.peripheral_advertising_name,
-                services = [self.peripheral_advertising_uuid],
-                appearance = self.peripheral_appearance_generic_remote_control,
-                manufacturer = self.peripheral_manufacturer,
-            )
-        logging.info(f"Ble_peripheral::advertise_to_central - Central with address {self.connection.device.addr_hex()} has connected - advertising stopped")
+            ble_advertising_frequency_us,
+            name=self.peripheral_advertising_name,
+            services=[self.peripheral_advertising_uuid],
+            appearance=self.peripheral_appearance_generic_remote_control,
+            manufacturer=self.peripheral_manufacturer,
+        )
+        logging.info(f"BlePeripheral::advertise_to_central - Central with address {self.connection.device.addr_hex()} has connected - advertising stopped")
 
         # It takes a while for the central to really connect.  So, to avoid data dropping into a black hole
         # the central will start by sending us a byte of data.  Once received, we can mark it as connected for real
-        logging.debug("Ble_peripheral::advertise_to_central - Waiting for central to confirm connection...")
+        logging.debug("BlePeripheral::advertise_to_central - Waiting for central to confirm connection...")
         reply_data = await self.wait_for_data(self.rx_c2p_characteristic)
         if reply_data != None:
-            if data_encode.from_int16(reply_data) == 12345:
-                logging.debug("Ble_peripheral::advertise_to_central - Central has confirmed as connected")
+            if data_encode.from_int16(reply_data) == BlePeripheral.CONNECTION_CONFIRMATION_CODE:
+                logging.debug("BlePeripheral::advertise_to_central - Central has confirmed as connected")
                 self.connected = True
             else:
-                logging.debug("Ble_peripheral::advertise_to_central - Central did not respond with 12345 - Reverting to disconnected state")
+                logging.debug("BlePeripheral::advertise_to_central - Central did not respond with 12345 - Reverting to disconnected state")
                 self.connected = False
         else:
-            logging.debug("Ble_peripheral::advertise_to_central - Central did not respond - Reverting to disconnected state")
+            logging.debug("BlePeripheral::advertise_to_central - Central did not respond - Reverting to disconnected state")
             self.connected = False
 
     # Main BLE peripheral task
     async def ble_peripheral_task(self):
-        logging.debug("Ble_peripheral::ble_peripheral_task - Task started")
+        logging.debug("BlePeripheral::ble_peripheral_task - Task started")
         while True:
             await self.advertise_to_central()
 

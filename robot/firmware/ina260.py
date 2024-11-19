@@ -43,7 +43,22 @@ _TEXAS_INSTRUMENTS_ID = const(0x5449)
 _INA260_ID = const(0x2270)
 
 class Ina260:
+    """
+    Class to interface with the INA260 sensor using I2C communication.
+
+    Attributes:
+        i2c (I2C): The I2C bus instance.
+        address (int): The I2C address of the INA260 sensor.
+        _is_present (bool): Flag indicating if the INA260 sensor is present on the I2C bus.
+    """
     def __init__(self, i2c: I2C, address: int = 0x40):
+        """
+        Initializes the INA260 instance.
+
+        Args:
+            i2c (I2C): The I2C bus instance.
+            address (int, optional): The I2C address of the INA260 sensor. Defaults to 0x40.
+        """
         self.i2c = i2c
         self.address = address
 
@@ -72,15 +87,17 @@ class Ina260:
 
     # Read the current (between V+ and V-) in mA
     @property
-    def current(self) -> float:
+    def current_mA(self) -> float:
+        """Read the current (between V+ and V-) in mA"""
         buffer = bytearray([_INA260_REG_CURRENT])
         self.i2c.writeto(self.address, buffer, False)
         response = int.from_bytes(self.i2c.readfrom(self.address, 2, True), "big")
         return float(response) * 1.25
 
-    # Read the voltage in V
+    # Read the voltage in mV
     @property
-    def voltage(self) -> float:
+    def voltage_mV(self) -> float:
+        """Read the voltage in mV"""
         buffer = bytearray([_INA260_REG_VOLTAGE])
         self.i2c.writeto(self.address, buffer, False)
         response = int.from_bytes(self.i2c.readfrom(self.address, 2, True), "big")
@@ -88,7 +105,8 @@ class Ina260:
 
     # Read the power being delivered to the load in mW
     @property
-    def power(self) -> float:
+    def power_mW(self) -> float:
+        """Read the power being delivered to the load in mW"""
         buffer = bytearray([_INA260_REG_POWER])
         self.i2c.writeto(self.address, buffer, False)
         response = int.from_bytes(self.i2c.readfrom(self.address, 2, True), "big")
@@ -97,6 +115,7 @@ class Ina260:
     # Read the manufacturer's ID
     @property
     def manu_id(self) -> int:
+        """Read the manufacturer's ID"""
         buffer = bytearray([_INA260_REG_MANU])
         self.i2c.writeto(self.address, buffer, False)
         response = int.from_bytes(self.i2c.readfrom(self.address, 2, True), "big")
@@ -105,6 +124,7 @@ class Ina260:
     # Read the die ID
     @property
     def die_id(self) -> int:
+        """Read the die ID"""
         buffer = bytearray([_INA260_REG_DIE])
         self.i2c.writeto(self.address, buffer, False)
         response = int.from_bytes(self.i2c.readfrom(self.address, 2, True), "big")

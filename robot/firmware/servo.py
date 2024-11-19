@@ -28,9 +28,46 @@
 from machine import Pin, PWM
 
 class Servo:
+    """
+    A class to represent a servo motor controlled via PWM.
+    Attributes
+    ----------
+    is_on : bool
+        A flag indicating whether the servo is powered on.
+    duty_cycle : float
+        The current duty cycle of the PWM signal.
+    degrees : float
+        The current position of the servo in degrees.
+    pwm : PWM
+        The PWM object used to control the servo.
+    Methods
+    -------
+    __init__(pin):
+        Initializes the servo with the specified pin.
+    set_power(is_on: bool):
+        Sets the power state of the servo.
+    get_power():
+        Returns the current power state of the servo.
+    set_position(degrees):
+        Sets the position of the servo in degrees.
+    get_position():
+        Returns the current position of the servo in degrees.
+    """
+
     def __init__(self, pin):
+        """
+        Initializes the Servo object.
+        Args:
+            pin (int): The GPIO pin number to which the servo is connected.
+        Attributes:
+            is_on (bool): Indicates whether the servo is currently on.
+            duty_cycle (int): The duty cycle of the PWM signal controlling the servo.
+            degrees (float): The current angle of the servo in degrees.
+            pwm (PWM): The PWM object used to control the servo.
+        """
+
         self.is_on = False
-        self.duty_cycle = 0
+        self.duty_cycle = 4833  # Corresponding duty cycle for 90 degrees
         self.degrees = 90
 
         self.pwm = PWM(Pin(pin))
@@ -38,16 +75,40 @@ class Servo:
         self.pwm.duty_u16(int(self.duty_cycle))
 
     def set_power(self, is_on: bool):
+        """
+        Sets the power state of the servo.
+        Args:
+            is_on (bool): If True, turns the servo on by setting the PWM duty cycle to the current duty cycle value.
+                          If False, turns the servo off by setting the PWM duty cycle to 0.
+        """
+
         self.is_on = is_on
-        if (self.is_on):
+        if self.is_on:
             self.pwm.duty_u16(int(self.duty_cycle))
         else:
             self.pwm.duty_u16(0)
 
-    def get_power(self):
+    def get_power(self) -> bool:
+        """
+        Check if the servo is powered on.
+        Returns:
+            bool: True if the servo is on, False otherwise.
+        """
+
         return self.is_on
 
-    def set_position(self, degrees):
+    def set_position(self, degrees: float):
+        """
+        Sets the position of the servo motor to the specified angle in degrees.
+        Args:
+            degrees (float): The desired angle in degrees. Must be between 0 and 180.
+                             Values outside this range will be clamped to the nearest limit.
+        Sets:
+            self.degrees (float): The clamped angle in degrees.
+            self.duty_cycle (float): The calculated duty cycle corresponding to the angle.
+        If the servo motor is on, updates the PWM duty cycle to move the servo to the specified position.
+        """
+
         if (degrees > 180): degrees = 180
         if (degrees < 0): degrees = 0
         self.degrees = degrees
@@ -60,7 +121,13 @@ class Servo:
         if (self.is_on): 
             self.pwm.duty_u16(int(self.duty_cycle))
 
-    def get_position(self):
+    def get_position(self) -> float:
+        """
+        Get the current position of the servo in degrees.
+        Returns:
+            float: The current position of the servo in degrees.
+        """
+
         return self.degrees
     
 if __name__ == "__main__":

@@ -34,8 +34,8 @@ from velocity import Velocity
 from drv8825 import Drv8825
 from stepper import Stepper
 from metric import Metric
-from ble_peripheral import Ble_peripheral
-from led_fx import Led_fx
+from ble_peripheral import BlePeripheral
+from led_fx import LedFx
 
 from time import sleep
 from machine import I2C, Pin
@@ -68,7 +68,14 @@ _LED_left_eye = const(3)
 _LED_right_eye = const(4)
 
 def main():
-    """Main function"""
+    """
+    Main entry point for the Valiant Turtle 2 Robot firmware.
+    
+    This function initializes various components such as the pen control, I2C buses,
+    power monitoring chip, EEPROM, BLE peripheral, stepper motor drivers, and LEDs.
+    It also configures logging and launches asynchronous tasks for status LED updates,
+    power monitoring, and BLE peripheral tasks.
+    """
 
     # Async task to update status LEDs depending on various states and times
     async def status_led_task():
@@ -129,13 +136,12 @@ def main():
 
     # Async task to update battery level service
     async def power_monitor_task():
-        test_level = 250
         while True:
             # Wait before next update
             await asyncio.sleep_ms(5000)
 
             # Read the INA260 and send an update to BLE central
-            ble_peripheral.battery_service_update(ina260.voltage, ina260.current, ina260.power)
+            ble_peripheral.battery_service_update(ina260.voltage_mV, ina260.current_mA, ina260.power_mW)
 
     # Async I/O task generation and launch
     async def aio_main():
@@ -164,7 +170,7 @@ def main():
             right_stepper.set_forwards()
             left_stepper.set_velocity(velocity)
             right_stepper.set_velocity(velocity)
-            log_debug("Steppers running forwards")
+            logging.debug("Main::stepper_task - Steppers running forwards")
 
             # Wait for the stepper to finish
             while left_stepper.is_busy or right_stepper.is_busy:
@@ -174,14 +180,14 @@ def main():
             right_stepper.set_backwards()
             left_stepper.set_velocity(velocity)
             right_stepper.set_velocity(velocity)
-            log_debug("Steppers running backwards")
+            logging.debug("Main::stepper_task - Steppers running backwards")
 
             # Wait for the stepper to finish
             while left_stepper.is_busy or right_stepper.is_busy:
                 await asyncio.sleep_ms(250)
 
             drv8825.set_enable(False)
-            log_debug("Steppers stopped")
+            logging.debug("Main::stepper_task - Steppers stopped")
 
             await asyncio.sleep(5)
 
@@ -209,7 +215,7 @@ def main():
         eeprom.write(0, configuration.pack())
 
     # Initialise BLE peripheral
-    ble_peripheral = Ble_peripheral()
+    ble_peripheral = BlePeripheral()
 
     # Configure the DRV8825
     drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
@@ -223,9 +229,10 @@ def main():
     right_stepper.set_forwards()
 
     # Configure the LEDs
-    led_fx = Led_fx(5, _GPIO_LEDS)
+    led_fx = LedFx(5, _GPIO_LEDS)
 
     logging.info("main - Launching asynchronous tasks...")
+    # Run the main asynchronous I/O tasks
     asyncio.run(aio_main())
 
 main()
