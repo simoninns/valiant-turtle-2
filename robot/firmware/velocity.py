@@ -27,15 +27,6 @@
 
 import logging
 
-# This function produces a sequence of steps that represent the required number of steps
-# and rotational speed needed to accelerate, run and decelerate based on a set number of
-# stepper motor steps.
-#
-# required_steps is the total number of steps requested
-# acc_spsps is the maximum acceleration in Steps per second per second
-# maximum_sps is the maximum allowed rotational speed in Steps per second
-# minimum_sps is the minimum allowed rotational speed in steps per second
-# intervals_per_second is the number of intervals per second (which sets the period of each update)
 class Velocity:
     """
     A class to represent the velocity profile for a stepper motor.

@@ -35,10 +35,10 @@
 import logging
 from machine import UART
 from leds import Leds
-from ir_uart import Ir_uart
-from parallel_port import Parallel_port
+from ir_uart import IrUart
+from parallel_port import ParallelPort
 
-class Vt1_mode:
+class Vt1Mode:
     """
     Class to manage the Valiant Turtle 1 Communicator mode.
 
@@ -49,7 +49,7 @@ class Vt1_mode:
         _leds (Leds): LED control interface.
     """
 
-    def __init__(self, uart: UART, parallel: Parallel_port, ir_uart: Ir_uart, leds: Leds):
+    def __init__(self, uart: UART, parallel: ParallelPort, ir_uart: IrUart, leds: Leds):
         """
         Initialize the Vt1_mode class.
 
@@ -68,7 +68,7 @@ class Vt1_mode:
         """
         Run the VT1 legacy mode process for serial and parallel to IR communication.
         """
-        logging.info("Vt1_mode::process - Running VT1 legacy mode process for serial and parallel to IR")
+        logging.info("Vt1Mode::process - Running VT1 legacy mode process for serial and parallel to IR")
         self._leds.set_brightness(0, 255) # Power LED on
         self._parallel.auto_ack(False) # Turn off auto-ACK
         

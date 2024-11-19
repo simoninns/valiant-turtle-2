@@ -48,7 +48,7 @@ _PARALLEL_DAT5 = const(13)
 _PARALLEL_DAT6 = const(14)
 _PARALLEL_DAT7 = const(15)
 
-class Parallel_port:
+class ParallelPort:
     """
     Class to manage the parallel port interface using the MCP23017 GPIO expander.
 
@@ -123,9 +123,9 @@ class Parallel_port:
             self.interrupt_pin = Pin(interrupt_pin, Pin.IN, Pin.PULL_UP)
             self.interrupt_pin.irq(handler=self.__callback, trigger=self.interrupt_pin.IRQ_FALLING)
 
-            logging.info("Parallel::__init__ - Parallel port initialised")
+            logging.info("ParallelPort::__init__ - Parallel port initialised")
         else:
-            logging.info("Parallel::__init__ - MCP23017 not detected - Parallel port NOT initialised")
+            logging.info("ParallelPort::__init__ - MCP23017 not detected - Parallel port NOT initialised")
 
     # MCP23017 INTB pin callback
     def __callback(self, p):

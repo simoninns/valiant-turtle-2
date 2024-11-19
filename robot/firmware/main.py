@@ -137,7 +137,7 @@ def main():
     # Async task to update battery level service
     async def power_monitor_task():
         while True:
-            # Wait before next update
+            # Wait 5 seconds before next update
             await asyncio.sleep_ms(5000)
 
             # Read the INA260 and send an update to BLE central
@@ -153,7 +153,7 @@ def main():
             # General background tasks
             asyncio.create_task(status_led_task()),
             asyncio.create_task(led_fx.process_leds_task()),
-            asyncio.create_task(stepper_task()),
+            #asyncio.create_task(stepper_task()),
             asyncio.create_task(power_monitor_task()),
         ]
         await asyncio.gather(*tasks)

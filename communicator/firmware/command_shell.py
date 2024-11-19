@@ -29,9 +29,9 @@ import asyncio
 import logging
 from machine import UART, Pin
 from micropython import const
-from robot_comms import Battery
+from robot_comms import PowerMonitor
 
-class Command_shell:
+class CommandShell:
     def __init__(self, uart: UART, prompt: str = ">", intro: str = None, 
                  history_limit: int = 10) -> None:
         """A simple command shell using asyncio streams via UART"""
@@ -46,16 +46,16 @@ class Command_shell:
         self.current_display_length = 0  # Track the length of the current command display
 
         # Properties that are updated by the parent host_comms object
-        self._battery = Battery(0,0,0)
+        self._power_monitor = PowerMonitor(0,0,0)
         self._command_status = 0
 
     @property
-    def battery(self) -> Battery:
-        return self._battery
+    def power_monitor(self) -> PowerMonitor:
+        return self._power_monitor
     
-    @battery.setter
-    def battery(self, value: Battery.status):
-        self._battery = value
+    @power_monitor.setter
+    def power_monitor(self, value: PowerMonitor.status):
+        self._power_monitor = value
 
     @property
     def command_status(self):
@@ -70,14 +70,14 @@ class Command_shell:
         try:
             await self.writer.awrite(f"{message}\r\n")
         except Exception as e:
-            logging.debug(f"Command_shell::send_response - Failed to send response: {e}")
+            logging.debug(f"CommandShell::send_response - Failed to send response: {e}")
 
     async def clear_line(self) -> None:
         """Clear the current line completely."""
         try:
             await self.writer.awrite('\r' + ' ' * 80 + '\r')
         except Exception as e:
-            logging.debug(f"Command_shell::clear_line - Failed to clear line: {e}")
+            logging.debug(f"CommandShell::clear_line - Failed to clear line: {e}")
 
     async def move_cursor_left(self, positions: int = 1) -> None:
         """Move the cursor to the left."""
@@ -85,7 +85,7 @@ class Command_shell:
             try:
                 await self.writer.awrite(f'\x1b[{positions}D')
             except Exception as e:
-                logging.debug(f"Command_shell::move_cursor_left - Failed to move cursor left: {e}")
+                logging.debug(f"CommandShell::move_cursor_left - Failed to move cursor left: {e}")
 
     async def move_cursor_right(self, positions: int = 1) -> None:
         """Move the cursor to the right."""
@@ -93,7 +93,7 @@ class Command_shell:
             try:
                 await self.writer.awrite(f'\x1b[{positions}C')
             except Exception as e:
-                logging.debug(f"Command_shell::move_cursor_right - Failed to move cursor right: {e}")
+                logging.debug(f"CommandShell::move_cursor_right - Failed to move cursor right: {e}")
 
     async def display_command(self, command: str, cursor_pos: int) -> None:
         """Display the command with the cursor at the correct position."""
@@ -103,14 +103,14 @@ class Command_shell:
             await self.move_cursor_left(len(command) - cursor_pos)
             self.current_display_length = len(command)  # Update current display length
         except Exception as e:
-            logging.debug(f"Command_shell::display_command - Failed to display command: {e}")
+            logging.debug(f"CommandShell::display_command - Failed to display command: {e}")
 
     async def clear_command_line(self) -> None:
         """Clear the line based on the length of the previously displayed command."""
         try:
             await self.writer.awrite('\r')
         except Exception as e:
-            logging.debug(f"Command_shell::clear_command_line - Failed to clear command line: {e}")
+            logging.debug(f"CommandShell::clear_command_line - Failed to clear command line: {e}")
         await self.writer.awrite(' ' * (len(self.prompt) + self.current_display_length))
         await self.writer.awrite('\r')
 
@@ -212,7 +212,7 @@ class Command_shell:
         if self.intro:
             await self.send_response(self.intro)
 
-        logging.debug("Command_shell::run_shell - Host shell started")
+        logging.debug("CommandShell::run_shell - Host shell started")
         try:
             while True:
                 input_line = await self.read_command()
@@ -227,9 +227,9 @@ class Command_shell:
 
                     if command:
                         if parameters:
-                            logging.info(f"Command_shell::run_shell - Got command {command} {parameters}")
+                            logging.info(f"CommandShell::run_shell - Got command {command} {parameters}")
                         else:
-                            logging.info(f"Command_shell::run_shell - Got command {command}")
+                            logging.info(f"CommandShell::run_shell - Got command {command}")
                     else:
                         command_handled = True
 
@@ -245,14 +245,14 @@ class Command_shell:
                         await self.send_response("  status                      - show the robot's current status")
                         await self.send_response("  penup                       - lift the pen")
                         await self.send_response("  pendown                     - lower the pen")
-                        await self.send_response("  battery                     - show the battery status")
+                        await self.send_response("  power                       - show the power monitor status")
                         command_handled = True
 
-                    if command == 'battery':
-                        # Display the battery status
-                        await self.send_response(self._battery.voltage_mV_fstring)
-                        await self.send_response(self._battery.current__mA_fstring)
-                        await self.send_response(self._battery.power__mW_fstring)
+                    if command == 'power':
+                        # Display the power monitor status
+                        await self.send_response(self._power_monitor.voltage_mV_fstring)
+                        await self.send_response(self._power_monitor.current__mA_fstring)
+                        await self.send_response(self._power_monitor.power__mW_fstring)
                         command_handled = True
 
                     if command == 'status':
@@ -265,7 +265,7 @@ class Command_shell:
                         await self.send_response(f"Unknown command: {command}")
         except Exception as e:
             await self.send_response(f"Error: {e}")
-            logging.debug(f"Command_shell::run_shell - Error: {e}")
+            logging.debug(f"CommandShell::run_shell - Error: {e}")
 
 if __name__ == "__main__":
     from main import main

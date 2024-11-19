@@ -78,20 +78,20 @@ def ir_uart():
     jmp(x_dec, "bitloop")
 
 
-class Ir_uart:
+class IrUart:
     _sm_counter = 0
 
     def __init__(self, pin):
         # Note: This SM counter is a little rough... it assumes that only this class will
         # consume SMs...
-        if Ir_uart._sm_counter < 4:
-            logging.info(f"Ir_uart::__init__ - Initialised using state-machine {Ir_uart._sm_counter}")
+        if IrUart._sm_counter < 4:
+            logging.info(f"IrUart::__init__ - Initialised using state-machine {IrUart._sm_counter}")
         else:
             raise RuntimeError("Pulse_generator::__init__ - No more state machines available!")
         
         # Clock divider is /125 so 125,000,000 / 125 = 1,000,000
-        self._sm = rp2.StateMachine(Ir_uart._sm_counter, ir_uart, freq=1000000, set_base=Pin(pin))
-        Ir_uart._sm_counter += 1
+        self._sm = rp2.StateMachine(IrUart._sm_counter, ir_uart, freq=1000000, set_base=Pin(pin))
+        IrUart._sm_counter += 1
 
         # Activate the state machine
         self._sm.active(1)

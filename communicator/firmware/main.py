@@ -30,12 +30,12 @@ from machine import Pin, UART, I2C
 from time import sleep
 
 from leds import Leds
-from ir_uart import Ir_uart
-from parallel_port import Parallel_port
+from ir_uart import IrUart
+from parallel_port import ParallelPort
 from eeprom import Eeprom
 
-from vt1_mode import Vt1_mode
-from vt2_mode import Vt2_mode
+from vt1_mode import Vt1Mode
+from vt2_mode import Vt2Mode
 
 # GPIO Hardware mapping
 _GPIO_GREEN_LED = const(16)
@@ -68,7 +68,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
     i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000) # Internal I2C bus
-    parallel_port = Parallel_port(i2c0, _GPIO_INT0)
+    parallel_port = ParallelPort(i2c0, _GPIO_INT0)
 
     # Ensure IR LED driver is off
     ir_led = Pin(_GPIO_IR_LED, Pin.OUT)
@@ -88,9 +88,9 @@ def main():
         # Run in VT1 mode
         uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
             txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
-        ir_uart = Ir_uart(_GPIO_IR_LED)
+        ir_uart = IrUart(_GPIO_IR_LED)
 
-        vt1_mode = Vt1_mode(uart, parallel_port, ir_uart, leds)
+        vt1_mode = Vt1Mode(uart, parallel_port, ir_uart, leds)
         while True:
             vt1_mode.process()
     else:
@@ -98,7 +98,7 @@ def main():
         uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
             #cts=Pin(_GPIO_UART1_CTS), rts=Pin(_GPIO_UART1_RTS), flow=(UART.RTS | UART.CTS),
             txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
-        vt2_mode = Vt2_mode(uart, parallel_port, leds, eeprom)
+        vt2_mode = Vt2Mode(uart, parallel_port, leds, eeprom)
         while True:
             vt2_mode.process()
 
