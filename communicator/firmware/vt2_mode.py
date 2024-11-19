@@ -39,7 +39,27 @@ from host_comms import Host_comms
 import asyncio
 
 class Vt2_mode:
+    """
+    Class to manage the Valiant Turtle 2 Communicator mode.
+
+    Attributes:
+        _uart (UART): UART interface for communication.
+        _parallel (Parallel_port): Parallel port interface.
+        _leds (Leds): LED control interface.
+        _eeprom (Eeprom): EEPROM interface for persistent storage.
+        ble_central (Ble_central): BLE central interface.
+    """
+
     def __init__(self, uart: UART, parallel: Parallel_port, leds: Leds, eeprom: Eeprom):
+        """
+        Initialize the Vt2_mode class.
+
+        Args:
+            uart (UART): The UART interface for communication.
+            parallel (Parallel_port): The parallel port interface.
+            leds (Leds): The LED control interface.
+            eeprom (Eeprom): The EEPROM interface for persistent storage.
+        """
         self._uart = uart
         self._parallel = parallel
         self._leds = leds
@@ -122,3 +142,7 @@ class Vt2_mode:
     def process(self):
         logging.info("Vt2_mode::process - Launching asynchronous tasks...")
         asyncio.run(self.aio_process())
+
+if __name__ == "__main__":
+    from main import main
+    main()

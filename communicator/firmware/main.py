@@ -60,40 +60,47 @@ _GPIO_BUTTON0 = const(21)
 _GPIO_BUTTON1 = const(20)
 _GPIO_BUTTON2 = const(19)
 
-# Configure the logging module
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+def main():
+    """
+    Main entry point for the Valiant Turtle 2 Communicator firmware.
+    """
+    # Configure the logging module
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000) # Internal I2C bus
-parallel_port = Parallel_port(i2c0, _GPIO_INT0)
+    i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000) # Internal I2C bus
+    parallel_port = Parallel_port(i2c0, _GPIO_INT0)
 
-# Ensure IR LED driver is off
-ir_led = Pin(_GPIO_IR_LED, Pin.OUT)
-ir_led.value(0)
+    # Ensure IR LED driver is off
+    ir_led = Pin(_GPIO_IR_LED, Pin.OUT)
+    ir_led.value(0)
 
-# Initialise LEDs
-leds = Leds([_GPIO_GREEN_LED, _GPIO_BLUE_LED])
+    # Initialise LEDs
+    leds = Leds([_GPIO_GREEN_LED, _GPIO_BLUE_LED])
 
-# Initialise EEPROM
-eeprom = Eeprom(i2c0, 0x50)
+    # Initialise EEPROM
+    eeprom = Eeprom(i2c0, 0x50)
 
-# True = VT1 IR mode, False = VT2 bluetooth mode
-run_as_legacy = False
+    # True = VT1 IR mode, False = VT2 bluetooth mode
+    run_as_legacy = False
 
-# Which mode are we running in?
-if run_as_legacy:
-    # Run in VT1 mode
-    uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
-        txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
-    ir_uart = Ir_uart(_GPIO_IR_LED)
+    # Which mode are we running in?
+    if run_as_legacy:
+        # Run in VT1 mode
+        uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
+            txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
+        ir_uart = Ir_uart(_GPIO_IR_LED)
 
-    vt1_mode = Vt1_mode(uart, parallel_port, ir_uart, leds)
-    while True:
-        vt1_mode.process()
-else:
-    # Run in VT2 mode
-    uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
-        #cts=Pin(_GPIO_UART1_CTS), rts=Pin(_GPIO_UART1_RTS), flow=(UART.RTS | UART.CTS),
-        txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
-    vt2_mode = Vt2_mode(uart, parallel_port, leds, eeprom)
-    while True:
-        vt2_mode.process()
+        vt1_mode = Vt1_mode(uart, parallel_port, ir_uart, leds)
+        while True:
+            vt1_mode.process()
+    else:
+        # Run in VT2 mode
+        uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
+            #cts=Pin(_GPIO_UART1_CTS), rts=Pin(_GPIO_UART1_RTS), flow=(UART.RTS | UART.CTS),
+            txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
+        vt2_mode = Vt2_mode(uart, parallel_port, leds, eeprom)
+        while True:
+            vt2_mode.process()
+
+if __name__ == "__main__":
+    main()

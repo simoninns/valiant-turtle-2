@@ -28,7 +28,6 @@
 import logging
 from machine import I2C, Pin
 from micropython import const, RingIO
-
 from mcp23017 import Mcp23017
 
 # Parallel port to MCP23017 GPIO mapping
@@ -50,12 +49,29 @@ _PARALLEL_DAT6 = const(14)
 _PARALLEL_DAT7 = const(15)
 
 class Parallel_port:
+    """
+    Class to manage the parallel port interface using the MCP23017 GPIO expander.
+
+    Attributes:
+        mcp (Mcp23017): Instance of the MCP23017 GPIO expander.
+        _is_present (bool): Indicates if the MCP23017 is present.
+        _auto_ack (bool): Indicates if auto acknowledgment is enabled.
+        rx_rio (RingIO): Ring buffer for storing incoming data.
+    """
+
     def __init__(self, i2c: I2C, interrupt_pin):
+        """
+        Initialize the Parallel_port class.
+
+        Args:
+            i2c (I2C): The I2C interface to communicate with the MCP23017.
+            interrupt_pin (Pin): The pin used for interrupt handling.
+        """
         self.mcp = Mcp23017(i2c, 0x20)
         self._is_present = self.mcp.is_present
         self._auto_ack = True
 
-        if (self._is_present):
+        if self._is_present:
             # Define a Rx ring buffer to store incoming data
             self.rx_rio = RingIO(1024)
 
@@ -134,3 +150,7 @@ class Parallel_port:
     
     def read(self, num = 1):
         return self.rx_rio.read(num)
+
+if __name__ == "__main__":
+    from main import main
+    main()

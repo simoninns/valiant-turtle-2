@@ -30,7 +30,37 @@ from machine import I2C
 from time import sleep
 
 class Eeprom:
+    """
+    A class to represent a 24LC16 I2C EEPROM.
+
+    Attributes
+    ----------
+    i2c : I2C
+        The I2C bus instance.
+    i2c_address : int
+        The I2C address of the EEPROM.
+    _is_present : bool
+        Flag indicating if the EEPROM is present.
+    _maximum_address : int
+        The maximum address value for the 24LC16 EEPROM.
+
+    Methods
+    -------
+    __init__(i2c_bus: I2C, address: int = 0x50):
+        Initializes the EEPROM with the given I2C bus and address.
+    """
+
     def __init__(self, i2c_bus: I2C, address: int = 0x50):
+        """
+        Constructs all the necessary attributes for the EEPROM object.
+
+        Parameters
+        ----------
+        i2c_bus : I2C
+            The I2C bus instance.
+        address : int, optional
+            The I2C address of the EEPROM (default is 0x50).
+        """
         self.i2c = i2c_bus
         self.i2c_address = address
 
@@ -117,3 +147,7 @@ class Eeprom:
             # Continue if required
             remaining_data -= write_length
             address += write_length
+
+if __name__ == "__main__":
+    from main import main
+    main()

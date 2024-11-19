@@ -33,8 +33,11 @@ from machine import unique_id
 import asyncio
 import data_encode
 
+from robot_comms import Battery
+
 class Ble_central:
     def __init__(self):
+        """Class to manage BLE central tasks"""
         # Flags to show connected status
         self.connected = False
         self.connection = None
@@ -48,7 +51,7 @@ class Ble_central:
 
         # Responses
         self._command_service_response = 0
-        self._battery_service_response = (0, 0, 0)
+        self._battery_service_response = Battery(0, 0, 0)
 
         # Get the local device's Unique ID
         self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
@@ -61,37 +64,43 @@ class Ble_central:
     
     @property
     def host_comms(self):
+        """Get the host communication object"""
         return self._host_comms
     
     @host_comms.setter
     def host_comms(self, value):
+        """Set the host communication object"""
         self._host_comms = value
 
-    # Property that is true when peripheral is connected
     @property
     def is_peripheral_connected(self) -> bool:
+        """Property that is true when BLE peripheral is connected"""
         return self.connected
     
     @property
     def host_event(self):
+        """Get the host event"""
         return self._host_event
 
     @host_event.setter
     def host_event(self, value: asyncio.Event):
+        """Set the host event"""
         self._host_event = value
 
     @property
     def ble_command_service_event(self):
+        """Get the BLE command service event"""
         return self._ble_command_service_event
     
     @property
     def ble_battery_service_event(self):
+        """Get the BLE battery service event"""
         return self._ble_battery_service_event
 
-    # Scan for a peripheral
     async def scan_for_peripheral(self):
-        # Scan for 5 seconds, in active mode, with very low interval/window (to
-        # maximise detection rate).
+        """Scan for a BLE peripheral
+        Scan for 5 seconds, in active mode, with very low interval/window (to maximize detection rate)."""
+
         logging.debug("Ble_central::scan_for_peripheral - Scanning for peripheral...")
         async with aioble.scan(duration_ms = 5000, interval_us = 30000, window_us = 30000, active = True) as scanner:
             async for result in scanner:
@@ -106,8 +115,8 @@ class Ble_central:
 
         return None
 
-    # Connect to a peripheral
     async def connect_to_peripheral(self):
+        """Connect to a BLE peripheral by performing a scan and then connecting to the first one found with the correct name and UUID"""
         self.connected = False
         device = await self.scan_for_peripheral()
         if not device:
@@ -123,19 +132,19 @@ class Ble_central:
             logging.debug("Ble_central::connect_to_peripheral - Connection attempt timed out!")
             return
 
-    # Process battery_service notifications from the peripheral
     def battery_service_notification(self, voltage, current, power):
-        logging.debug(f"Ble_central::battery_service_notification - mV = {voltage} / mA = {current} / mW = {power}")
-        self._battery_service_response = (voltage, current, power)
+        """Process battery_service notifications from the peripheral"""
+        self._battery_service_response.status = (voltage, current, power)
         self._ble_battery_service_event.set() # Flag the event
+        logging.debug(f"Ble_central::battery_service_notification - {self._battery_service_response.voltage_mV_fstring} / {self._battery_service_response.current__mA_fstring} / {self._battery_service_response.power__mW_fstring}")
 
-    # Provide the battery service response and clear the event flag
     def get_battery_service_response(self):
+        """Provide the battery service response and clear the event flag"""
         self._ble_battery_service_event.clear()
         return self._battery_service_response
 
-    # Task to handle battery_service notifications
     async def handle_battery_service_task(self):
+        """Task to handle battery_service notifications"""
         logging.debug("Ble_central::handle_battery_service_task - battery_service notification handler running")
 
         try:
@@ -150,19 +159,19 @@ class Ble_central:
             logging.debug("Ble_central::handle_battery_service_task - Exception was flagged (Peripheral probably disappeared)")
             self.connected = False
 
-    # Process command_service notifications from the peripheral
     def command_service_notification(self, value):
+        """Process command_service notifications from the peripheral"""
         logging.debug(f"Ble_central::command_service_notification - Command response from robot = {value}")
         self._command_service_response = value
         self._ble_command_service_event.set() # Flag the event
 
-    # Provide the command service response and clear the event flag
     def get_command_service_response(self):
+        """Provide the command service response and clear the event flag"""
         self._ble_command_service_event.clear()
         return self._command_service_response
 
-    # Task to handle command_service notifications
     async def handle_command_service_task(self):
+        """Task to handle command_service notifications"""
         logging.debug("Ble_central::handle_command_service_task - command_service notification handler running")
 
         try:
@@ -181,8 +190,8 @@ class Ble_central:
             logging.debug("Ble_central::handle_command_service_task - Exception was flagged (Peripheral probably disappeared)")
             self.connected = False
 
-    # Tasks when a peripheral is connected
     async def connected_to_peripheral(self):
+        """Tasks to perform when connected to a peripheral"""
         logging.debug("Ble_central::connected_to_peripheral - Connected to peripheral")
 
         # Command service setup
@@ -277,8 +286,8 @@ class Ble_central:
         ]
         await asyncio.gather(*central_tasks)
 
-    # Wait for disconnection from the peripheral
     async def wait_for_disconnection_from_peripheral(self):
+        """Wait for disconnection from the peripheral"""
         try:
             await self.connection.disconnected(timeout_ms=2000)
             logging.info("Ble_central::wait_for_disconnection_from_peripheral - Peripheral disconnected")
@@ -288,8 +297,8 @@ class Ble_central:
         self.connection = None
         self.connected = False
 
-    # Main BLE central task
     async def ble_central_task(self):
+        """Main BLE central task"""
         logging.debug("Ble_central::ble_central_task - Task started")
 
         while True:
@@ -298,3 +307,7 @@ class Ble_central:
             if self.connected:
                 await self.connected_to_peripheral()
                 await self.wait_for_disconnection_from_peripheral()
+
+if __name__ == "__main__":
+    from main import main
+    main()

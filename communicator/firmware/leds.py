@@ -29,7 +29,39 @@ import logging
 from machine import PWM, Pin, Timer
 
 class Leds:
+    """
+    A class to represent and control LED effects.
+
+    Attributes
+    ----------
+    period_ms : int
+        The period in milliseconds for updating LED states.
+    number_of_leds : int
+        The number of LEDs being controlled.
+    current_brightness : list
+        The current brightness levels of the LEDs.
+    target_brightness : list
+        The target brightness levels of the LEDs.
+    fade_speed : list
+        The speed at which the LEDs fade to the target brightness.
+    led : list
+        The PWM instances for each LED.
+
+    Methods
+    -------
+    __init__(data_gpio_pins):
+        Initializes the LEDs with the given GPIO pins.
+    """
+
     def __init__(self, data_gpio_pins):
+        """
+        Constructs all the necessary attributes for the Leds object.
+
+        Parameters
+        ----------
+        data_gpio_pins : list
+            A list of GPIO pins to which the LEDs are connected.
+        """
         self.period_ms = 25
         self.number_of_leds = len(data_gpio_pins)
         logging.debug(f"Leds::__init__ - Initialising with {self.number_of_leds} leds")
@@ -76,3 +108,7 @@ class Leds:
 
         # Set the one-shot timer up again
         self.timer.init(period=self.period_ms, mode=Timer.ONE_SHOT, callback=self.__update_leds)
+
+if __name__ == "__main__":
+    from main import main
+    main()

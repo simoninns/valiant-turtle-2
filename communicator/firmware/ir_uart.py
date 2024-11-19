@@ -32,6 +32,21 @@ import rp2
 
 @rp2.asm_pio(set_init=rp2.PIO.OUT_LOW, out_shiftdir=rp2.PIO.SHIFT_RIGHT)
 def ir_uart():
+    """
+    PIO assembly program for IR UART communication.
+
+    This function defines a PIO (Programmable Input/Output) assembly program
+    for handling IR (Infrared) UART (Universal Asynchronous Receiver-Transmitter)
+    communication. The program is designed to be run on the RP2040's PIO state machine.
+
+    The program performs the following steps:
+    1. Pulls data from the output shift register (OSR) into the state machine.
+    2. Sets up a bit loop to handle 8 data bits and 3 parity bits.
+    3. Outputs a lead-in signal.
+    4. Outputs each bit of the data, with appropriate timing.
+
+    The timing and logic are designed to match the requirements of the Valiant IR protocol.
+    """
     pull(block)
     set(x, 10)                # Get ready for the bit loop (8 bits + 3 parity)
 
@@ -162,3 +177,7 @@ class Ir_uart:
         
         # End of frame
         return encoded_word
+
+if __name__ == "__main__":
+    from main import main
+    main()

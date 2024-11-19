@@ -61,6 +61,42 @@ _MCP23017_IOCON_ODR_BIT      = const(2)
 _MCP23017_IOCON_INTPOL_BIT   = const(1)
 
 class Mcp23017:
+    """
+    A class to represent and control the MCP23017 I2C I/O Expander.
+
+    Attributes
+    ----------
+    i2c : I2C
+        The I2C bus instance.
+    address : int
+        The I2C address of the MCP23017.
+    _is_present : bool
+        Flag indicating if the MCP23017 is present.
+    iodir_ab : int
+        Direction of data I/O ports A and B.
+    gppub_ab : int
+        Pull-up configuration for ports A and B.
+    gpio_input_ab : int
+        Input state of GPIO ports A and B.
+    gpio_output_ab : int
+        Output state of GPIO ports A and B.
+    ipol_ab : int
+        Input polarity configuration for ports A and B.
+    gpinten_ab : int
+        Interrupt on change configuration for ports A and B.
+    defval_ab : int
+        Default value configuration for ports A and B.
+    intcon_ab : int
+        Interrupt control configuration for ports A and B.
+
+    Methods
+    -------
+    __init__(i2c: I2C, address):
+        Initializes the MCP23017 with the given I2C bus and address.
+    configuration(mirror, seqop):
+        Configures the IO Control register.
+    """
+    
     def __init__(self, i2c: I2C, address):
         self.i2c = i2c
         self.address = address
@@ -246,3 +282,7 @@ class Mcp23017:
                 return True
 
         return False
+    
+if __name__ == "__main__":
+    from main import main
+    main()

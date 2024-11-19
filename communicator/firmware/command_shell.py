@@ -29,6 +29,7 @@ import asyncio
 import logging
 from machine import UART, Pin
 from micropython import const
+from robot_comms import Battery
 
 class Command_shell:
     def __init__(self, uart: UART, prompt: str = ">", intro: str = None, 
@@ -45,16 +46,16 @@ class Command_shell:
         self.current_display_length = 0  # Track the length of the current command display
 
         # Properties that are updated by the parent host_comms object
-        self._battery_status = (0,0,0)
+        self._battery = Battery(0,0,0)
         self._command_status = 0
 
     @property
-    def battery_status(self):
-        return self._battery_status
+    def battery(self) -> Battery:
+        return self._battery
     
-    @battery_status.setter
-    def battery_status(self, value):
-        self._battery_status = value
+    @battery.setter
+    def battery(self, value: Battery.status):
+        self._battery = value
 
     @property
     def command_status(self):
@@ -226,9 +227,9 @@ class Command_shell:
 
                     if command:
                         if parameters:
-                            logging.debug(f"Command_shell::run_shell - Got command {command} {parameters} from shell")
+                            logging.info(f"Command_shell::run_shell - Got command {command} {parameters}")
                         else:
-                            logging.debug(f"Command_shell::run_shell - Got command {command} from shell")
+                            logging.info(f"Command_shell::run_shell - Got command {command}")
                     else:
                         command_handled = True
 
@@ -249,9 +250,9 @@ class Command_shell:
 
                     if command == 'battery':
                         # Display the battery status
-                        await self.send_response(f"{self.battery_status[0]} mV")
-                        await self.send_response(f"{self.battery_status[1]} mA")
-                        await self.send_response(f"{self.battery_status[2]} mW")
+                        await self.send_response(self._battery.voltage_mV_fstring)
+                        await self.send_response(self._battery.current__mA_fstring)
+                        await self.send_response(self._battery.power__mW_fstring)
                         command_handled = True
 
                     if command == 'status':
@@ -265,3 +266,7 @@ class Command_shell:
         except Exception as e:
             await self.send_response(f"Error: {e}")
             logging.debug(f"Command_shell::run_shell - Error: {e}")
+
+if __name__ == "__main__":
+    from main import main
+    main()

@@ -54,3 +54,7 @@ def to_uint8(value):
 
 def from_uint8(data) -> int:
     return struct.unpack("<B", data)[0]
+
+if __name__ == "__main__":
+    from main import main
+    main()

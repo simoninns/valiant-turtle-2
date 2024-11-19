@@ -58,3 +58,17 @@ def error(msg, *args):
 def critical(msg, *args):
     if _level <= CRITICAL:
         print("[CRITICAL]", msg.format(*args))
+
+if __name__ == "__main__":
+    # If this module is run directly, execute main.py instead
+    with open("main.py") as f:
+        exec(f.read())
+
+if __name__ == "__main__":
+    # If this module is run directly, execute main.py instead
+    with open("main.py") as f:
+        exec(f.read())
+
+if __name__ == "__main__":
+    from main import main
+    main()

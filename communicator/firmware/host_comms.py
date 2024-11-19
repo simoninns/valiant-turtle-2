@@ -29,6 +29,7 @@ import logging
 from machine import UART
 import asyncio
 from command_shell import Command_shell
+from robot_comms import Battery
 
 class Host_comms:
     """Class to manage host communication tasks"""
@@ -40,8 +41,8 @@ class Host_comms:
         self._host_event = asyncio.Event()
 
         # Create a command shell
-        cli_prompt="VT2>"
-        cli_intro="\r\nWelcome to Valiant Turtle 2 Communicator!\r\nType your commands below. Type 'help' for help."
+        cli_prompt="VT2> "
+        cli_intro="\r\nWelcome to the Valiant Turtle 2 Communicator\r\nType your commands below. Type 'help' for help."
         self.command_shell = Command_shell(self._uart, prompt=cli_prompt, intro=cli_intro, history_limit=10)
 
     @property
@@ -80,7 +81,7 @@ class Host_comms:
             if self._ble_central != None and self.ble_command_service_event != None:
                 await self.ble_command_service_event.wait()
                 self.command_shell.command_status = self._ble_central.get_command_service_response()
-                logging.debug(f"Host_comms::ble_command_service_listener - BLE command_service event = {str(self.command_shell.command_status)}")
+                #logging.debug(f"Host_comms::ble_command_service_listener - BLE command_service event = {str(self.command_shell.command_status)}")
             else:
                 await asyncio.sleep_ms(250)
 
@@ -91,9 +92,9 @@ class Host_comms:
             # Check if BLE central is available
             if self._ble_central != None and self.ble_battery_service_event != None:
                 await self.ble_battery_service_event.wait()
-                self.command_shell.battery_status = self._ble_central.get_battery_service_response()
-                voltage, current, power = self.command_shell.battery_status
-                logging.debug(f"Host_comms::ble_battery_service_listener - BLE battery_service event - mV={str(voltage)}, mA={str(current)}, mW={str(power)}")
+                self.command_shell.battery = self._ble_central.get_battery_service_response()
+                #voltage, current, power = self.command_shell.battery.status
+                #logging.debug(f"Host_comms::ble_battery_service_listener - BLE battery_service event - mV={str(voltage)}, mA={str(current)}, mW={str(power)}")
             else:
                 await asyncio.sleep_ms(250)
 
@@ -116,3 +117,7 @@ class Host_comms:
             asyncio.create_task(self.ble_battery_service_listener()),
         ]
         await asyncio.gather(*tasks)
+
+if __name__ == "__main__":
+    from main import main
+    main()
