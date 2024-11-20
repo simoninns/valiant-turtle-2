@@ -3,7 +3,7 @@
 #   robot_comms.py
 #
 #   Classes for robot communications
-#   Valiant Turtle 2 - Communicator firmware
+#   Valiant Turtle 2 - Robot firmware
 #   Copyright (C) 2024 Simon Inns
 #
 #   This file is part of Valiant Turtle 2

@@ -133,6 +133,7 @@ class HostComms:
 
         # Display the help text
         if command == 'help':
+            command_handled = True
             await self.command_shell.send_response("Help:")
             await self.command_shell.send_response("  help                        - show this help text")
             await self.command_shell.send_response("  forward <distance in mm>    - move forwards (alias: fd)")
@@ -143,17 +144,17 @@ class HostComms:
             await self.command_shell.send_response("  penup                       - lift the pen (alias: pu)")
             await self.command_shell.send_response("  pendown                     - lower the pen (alias: pd)")
             await self.command_shell.send_response("  power                       - show the power monitor status")
-            command_handled = True
 
         # Display the power monitor status
         if command == 'power':
+            command_handled = True
             await self.command_shell.send_response(f"   Supply voltage: {self._power_monitor.voltage_V_fstring}")
             await self.command_shell.send_response(f"     Current draw: {self._power_monitor.current_mA_fstring}")
             await self.command_shell.send_response(f"Power consumption: {self._power_monitor.power_mW_fstring}")
-            command_handled = True
 
         # Display the robot status (see class StatusBitFlag for details)
         if command == 'status':
+            command_handled = True
             await self.command_shell.send_response("Status:")
             if self._command_status.result:
                 await self.command_shell.send_response("           Last command: Success")
@@ -192,27 +193,83 @@ class HostComms:
                     await self.command_shell.send_response("              Pen servo: Down")
             else: await self.command_shell.send_response("              Pen servo: Off")
 
-            command_handled = True
-
         # Move forwards
         if command in ['forward', 'fd']:
+            command_handled = True
             # Check for a parameter and, if present, range check it
             if parameters:
                 distance_mm = int(parameters[0])
-                if 0 < distance_mm <= 10000:
-                    await self.command_shell.send_response(f"Moving forwards {distance_mm}mm")
+                if 0 < distance_mm <= 100000:
+                    await self.command_shell.send_response("OK")
                     robot_command = RobotCommand("forward", distance_mm)
                     await self.ble_central.queue_command(robot_command)
-                    command_handled = True
                 else:
-                    await self.command_shell.send_response("Invalid distance - must be greater than zero and less than 10000mm")
+                    await self.command_shell.send_response("ERROR Invalid distance - must be greater than zero and less than 100,000 mm")
             else:
-                await self.command_shell.send_response("Missing parameter - distance in mm")
-            
+                await self.command_shell.send_response("ERROR Missing parameter - distance in mm")
+        
+        # Move backwards
+        if command in ['backward', 'bk']:
+            command_handled = True
+            # Check for a parameter and, if present, range check it
+            if parameters:
+                distance_mm = int(parameters[0])
+                if 0 < distance_mm <= 100000:
+                    await self.command_shell.send_response("OK")
+                    robot_command = RobotCommand("backward", distance_mm)
+                    await self.ble_central.queue_command(robot_command)
+                else:
+                    await self.command_shell.send_response("ERROR Invalid distance - must be greater than zero and less than 100,000 mm")
+            else:
+                await self.command_shell.send_response("ERROR Missing parameter - distance in mm")
+
+        # Turn left
+        if command in ['left', 'lt']:
+            command_handled = True
+            # Check for a parameter and, if present, range check it
+            if parameters:
+                rotation_deg = int(parameters[0])
+                if 0 < rotation_deg <= 36000:
+                    await self.command_shell.send_response("OK")
+                    robot_command = RobotCommand("left", rotation_deg)
+                    await self.ble_central.queue_command(robot_command)
+                else:
+                    await self.command_shell.send_response("ERROR Invalid rotation - must be greater than zero and less than 36,000 degrees")
+            else:
+                await self.command_shell.send_response("ERROR Missing parameter - rotation in degrees")
+
+        # Turn right
+        if command in ['right', 'rt']:
+            command_handled = True
+            # Check for a parameter and, if present, range check it
+            if parameters:
+                rotation_deg = int(parameters[0])
+                if 0 < rotation_deg <= 36000:
+                    await self.command_shell.send_response("OK")
+                    robot_command = RobotCommand("right", rotation_deg)
+                    await self.ble_central.queue_command(robot_command)
+                else:
+                    await self.command_shell.send_response("ERROR Invalid rotation - must be greater than zero and less than 36,000 degrees")
+            else:
+                await self.command_shell.send_response("ERROR Missing parameter - rotation in degrees")
+
+        # Pen up
+        if command in ['penup', 'pu']:
+            command_handled = True
+            await self.command_shell.send_response("OK")
+            robot_command = RobotCommand("penup")
+            await self.ble_central.queue_command(robot_command)
+
+        # Pen down
+        if command in ['pendown', 'pd']:
+            command_handled = True
+            await self.command_shell.send_response("OK")
+            robot_command = RobotCommand("pendown")
+            await self.ble_central.queue_command(robot_command)
 
         # Was the command handled?
         if not command_handled:
-            await self.command_shell.send_response(f"Unknown command ignored: {command}")
+            await self.command_shell.send_response(f"ERROR Unknown command ignored: {command}")
             logging.debug(f"HostComms::process_command - Command [{command}] was not recognised - ignored")
 
 if __name__ == "__main__":

@@ -167,7 +167,7 @@ class BleCentral:
 
     def command_service_notification(self, value):
         """Process command_service notifications from the peripheral"""
-        logging.debug(f"BleCentral::command_service_notification - Command response from robot = {value}")
+        #logging.debug(f"BleCentral::command_service_notification - Command response from robot = {value}")
         self._command_service_response = value
         self._ble_command_service_event.set() # Flag the event
 
@@ -188,14 +188,16 @@ class BleCentral:
 
                 # Check for any commands to send to the peripheral and, if there aren't any, send a nop command
                 if len(self._command_queue) > 0:
+                    # Send the next command in the queue
                     command = self._command_queue.pop(0)
                     if not isinstance(command, RobotCommand):
                         raise TypeError("Expected command to be of type RobotCommand")
                     logging.debug(f"BleCentral::handle_command_service_task - Sending command {command}")
                     await self.rx_c2p_characteristic.write(command.get_packed_bytes())
                 else:
+                    # No commands queued, send a nop command
                     command = RobotCommand("nop")
-                    logging.debug("BleCentral::handle_command_service_task - No queued commands, sending nop command")
+                    #logging.debug("BleCentral::handle_command_service_task - No queued commands, sending nop command")
                     await self.rx_c2p_characteristic.write(command.get_packed_bytes())
                                                         
         except Exception as e:

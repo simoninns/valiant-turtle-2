@@ -34,7 +34,7 @@ import aioble
 import bluetooth
 import asyncio
 import data_encode
-from status_flag import StatusBitFlag
+from robot_comms import StatusBitFlag, RobotCommand
 
 class BlePeripheral:
     MANUFACTURER_DATA = (0xFFE1, b"www.waitingforfriday.com")
@@ -129,7 +129,7 @@ class BlePeripheral:
     # Send command service characteristics update
     def command_service_update(self, status_bit_flag: StatusBitFlag):
         if self.__connected and self.__connection:
-            logging.debug(f"BlePeripheral::command_service_update - Status Bit Flags = {status_bit_flag.display_flags()}")
+            #logging.debug(f"BlePeripheral::command_service_update - Status Bit Flags = {status_bit_flag.display_flags()}")
             try:
                 # Send from p2c
                 self.tx_p2c_characteristic.notify(self.__connection, data_encode.to_uint32(status_bit_flag.flags))
@@ -152,11 +152,18 @@ class BlePeripheral:
             # Command service update time out can cause disconnection - only wait for reply if still connected...
             if self.__connected:
                 # Receive from c2p
-                reply_data = await self.wait_for_data(self.rx_c2p_characteristic)
-                if reply_data != None:
-                    logging.debug(f"BlePeripheral::command_service_update_task - Reply data = {data_encode.from_uint32(reply_data)}")
+                command_data = await self.wait_for_data(self.rx_c2p_characteristic)
+                if command_data != None:
+                    if len(command_data) != 20:
+                        logging.debug("BlePeripheral::command_service_update_task - Invalid reply data length")
+                        self.__connected = False
+                        continue
+                    else:
+                        # Process the command contained in the reply
+                        command = RobotCommand.from_packed_bytes(command_data)
+                    if command.command_id != 0: logging.debug(f"BlePeripheral::command_service_update_task - Command received = {command}")
 
-            if self.__connected: await asyncio.sleep_ms(10000)
+            if self.__connected: await asyncio.sleep_ms(250)
 
     # Tasks to run whilst connected to central  
     async def connected_to_central(self):
