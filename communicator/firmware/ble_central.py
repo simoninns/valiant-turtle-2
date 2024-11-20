@@ -139,7 +139,7 @@ class BleCentral:
         """Process power_service notifications from the peripheral"""
         self._power_service_response.status = (voltage, current, power)
         self._ble_power_service_event.set() # Flag the event
-        logging.debug(f"BleCentral::power_service_notification - {self._power_service_response.voltage_mV_fstring} / {self._power_service_response.current__mA_fstring} / {self._power_service_response.power__mW_fstring}")
+        logging.debug(f"BleCentral::power_service_notification - {self._power_service_response.voltage_mV_fstring} / {self._power_service_response.current_mA_fstring} / {self._power_service_response.power_mW_fstring}")
 
     def get_power_service_response(self):
         """Provide the power service response and clear the event flag"""

@@ -27,9 +27,7 @@
 
 import asyncio
 import logging
-from machine import UART, Pin
-from micropython import const
-from robot_comms import PowerMonitor, StatusBitFlag
+from machine import UART
 
 class CommandShell:
     def __init__(self, uart: UART, prompt: str = ">", intro: str = None, 
@@ -44,26 +42,6 @@ class CommandShell:
         self.current_input = ""
         self.history_limit = history_limit
         self.current_display_length = 0  # Track the length of the current command display
-
-        # Properties that are updated by the parent host_comms object
-        self._power_monitor = PowerMonitor(0,0,0)
-        self._command_status = StatusBitFlag()
-
-    @property
-    def power_monitor(self) -> PowerMonitor:
-        return self._power_monitor
-    
-    @power_monitor.setter
-    def power_monitor(self, value: PowerMonitor.status):
-        self._power_monitor = value
-
-    @property
-    def command_status(self) -> StatusBitFlag:
-        return self._command_status
-    
-    @command_status.setter
-    def command_status(self, value: int):
-        self._command_status.flags = value
 
     async def send_response(self, message: str) -> None:
         """Send a response back over UART."""
@@ -207,14 +185,19 @@ class CommandShell:
             self.history.pop(0)
         self.history.append(command)
 
-    async def run_shell(self):
-        """Run the command shell."""
+    async def start_shell(self):
+        """Perform the initial setup and start of the shell"""
         if self.intro:
             await self.send_response(self.intro)
 
-        logging.debug("CommandShell::run_shell - Host shell started")
+        logging.debug("CommandShell::start_shell - Host shell started")
+
+    async def get_command(self):
+        """Get a command from the user and return it"""
         try:
-            while True:
+            command = None
+            parameters = None
+            while not command:
                 input_line = await self.read_command()
 
                 if input_line:
@@ -223,74 +206,18 @@ class CommandShell:
 
                     # Parse the command (into lower case) and parameters (into a list)
                     command, parameters = self.parse_command(input_line)
-                    command_handled = False
 
                     if command:
                         if parameters:
-                            logging.info(f"CommandShell::run_shell - Got command {command} {parameters}")
+                            logging.info(f"CommandShell::get_command - Got command {command} {parameters}")
                         else:
-                            logging.info(f"CommandShell::run_shell - Got command {command}")
-                    else:
-                        command_handled = True
-
-                    # Handle the commands
-                    if command == 'help':
-                        # Display the help text
-                        await self.send_response("Help:")
-                        await self.send_response("  help                        - show this help text")
-                        await self.send_response("  forwards <distance in mm>   - move forwards")
-                        await self.send_response("  backwards <distance in mm>  - move backwards")
-                        await self.send_response("  left <rotation in degrees>  - turn left")
-                        await self.send_response("  right <rotation in degress> - turn right")
-                        await self.send_response("  status                      - show the robot's current status")
-                        await self.send_response("  penup                       - lift the pen")
-                        await self.send_response("  pendown                     - lower the pen")
-                        await self.send_response("  power                       - show the power monitor status")
-                        command_handled = True
-
-                    if command == 'power':
-                        # Display the power monitor status
-                        await self.send_response(f"   Supply voltage: {self._power_monitor.voltage_V_fstring}")
-                        await self.send_response(f"     Current draw: {self._power_monitor.current__mA_fstring}")
-                        await self.send_response(f"Power consumption: {self._power_monitor.power__mW_fstring}")
-                        command_handled = True
-
-                    if command == 'status':
-                        # Display the robot status
-                        await self.send_response("Status:")
-                        if self.command_status.result: await self.send_response("  Last command: Success")
-                        else: await self.send_response("  Last command: Failure")
-
-                        if self.command_status.left_motor_busy: await self.send_response("  Left motor: Busy")
-                        else: await self.send_response("  Left motor: Not busy")
-
-                        if self.command_status.right_motor_busy: await self.send_response("  Right motor: Busy")
-                        else: await self.send_response("  Right motor: Not busy")
-
-                        if self.command_status.left_motor_direction: await self.send_response("  Left motor direction: Forwards")
-                        else: await self.send_response("  Left motor direction: Backwards")
-
-                        if self.command_status.right_motor_direction: await self.send_response("  Right motor direction: Forwards")
-                        else: await self.send_response("  Right motor direction: Backwards")
-
-                        if self.command_status.motor_power_enabled: await self.send_response("  Motor power: Enabled")
-                        else: await self.send_response("  Motor power: Disabled")
-
-                        if self.command_status.pen_servo_on:
-                            if self.command_status.pen_servo_up:
-                                await self.send_response("  Pen servo: Up")
-                            else:
-                                await self.send_response("  Pen servo: Down")
-                        else: await self.send_response("  Pen servo: Off")
-
-                        command_handled = True
-
-                    # Was the command handled?
-                    if not command_handled:
-                        await self.send_response(f"Unknown command: {command}")
+                            logging.info(f"CommandShell::get_command - Got command {command}")
+                        
         except Exception as e:
             await self.send_response(f"Error: {e}")
-            logging.debug(f"CommandShell::run_shell - Error: {e}")
+            logging.debug(f"CommandShell::get_command - Error: {e}")
+
+        return command, parameters
 
 if __name__ == "__main__":
     from main import main

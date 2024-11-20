@@ -53,7 +53,7 @@ class PowerMonitor:
         return  self._current_mA
     
     @property
-    def current__mA_fstring(self) -> str:
+    def current_mA_fstring(self) -> str:
         """Get the power monitor current as a formatted string"""
         return "{:.2f} mA".format(self._current_mA)
     
@@ -63,7 +63,7 @@ class PowerMonitor:
         return  self._power_mW
     
     @property
-    def power__mW_fstring(self) -> str:
+    def power_mW_fstring(self) -> str:
         """Get the power monitor power as a formatted string"""
         return "{:.2f} mW".format(self._power_mW)
 
