@@ -56,10 +56,10 @@ class BlePeripheral:
 
         # Service definitions
         self.__ble_service_command_definitions()
-        self.__ble_service_battery_definition()
+        self.__ble_service_power_definition()
 
         # Register services with aioBLE library
-        aioble.register_services(self.command_service, self.battery_service)
+        aioble.register_services(self.command_service, self.power_service)
 
     def __ble_advertising_definitions(self):
         # Definitions used for advertising via BLE
@@ -86,18 +86,18 @@ class BlePeripheral:
         # RX: Central -> Peripheral
         self.rx_c2p_characteristic = aioble.Characteristic(self.command_service, rx_c2p_characteristic_uuid, write=True, write_no_response=True, capture=True)
 
-    # Define a service - battery information
-    def __ble_service_battery_definition(self):
-        battery_service_uuid = bluetooth.UUID(0x180F) # Battery service
-        battery_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
-        battery_current_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
-        battery_power_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
+    # Define a service - power information
+    def __ble_service_power_definition(self):
+        power_service_uuid = bluetooth.UUID(0x180F) # Battery service
+        power_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
+        power_current_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
+        power_watts_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
 
-        self.battery_service = aioble.Service(battery_service_uuid)
+        self.power_service = aioble.Service(power_service_uuid)
 
-        self.battery_voltage_characteristic = aioble.Characteristic(self.battery_service, battery_voltage_characteristic_uuid, read=True, notify=True)
-        self.battery_current_characteristic = aioble.Characteristic(self.battery_service, battery_current_characteristic_uuid, read=True, notify=False)
-        self.battery_power_characteristic = aioble.Characteristic(self.battery_service, battery_power_characteristic_uuid, read=True, notify=False)
+        self.power_voltage_characteristic = aioble.Characteristic(self.power_service, power_voltage_characteristic_uuid, read=True, notify=True)
+        self.power_current_characteristic = aioble.Characteristic(self.power_service, power_current_characteristic_uuid, read=True, notify=False)
+        self.power_watts_characteristic = aioble.Characteristic(self.power_service, power_watts_characteristic_uuid, read=True, notify=False)
 
     # Property that is true when central (VT2 Communicator) is connected
     @property
@@ -113,17 +113,17 @@ class BlePeripheral:
             self.connected = False
             return None
 
-    # Send battery service characteristics update
-    def battery_service_update(self, voltage, current, power):
+    # Send power service characteristics update
+    def power_service_update(self, voltage, current, power):
         if self.connected and self.connection:
-            logging.debug(f"BlePeripheral::battery_service_update - mV = {voltage} / mA = {current} / mW = {power}")
+            logging.debug(f"BlePeripheral::power_service_update - mV = {voltage} / mA = {current} / mW = {power}")
             try:
-                self.battery_voltage_characteristic.notify(self.connection, data_encode.to_float(voltage))
-                self.battery_current_characteristic.write(data_encode.to_float(current))
-                self.battery_power_characteristic.write(data_encode.to_float(power))
+                self.power_voltage_characteristic.notify(self.connection, data_encode.to_float(voltage))
+                self.power_current_characteristic.write(data_encode.to_float(current))
+                self.power_watts_characteristic.write(data_encode.to_float(power))
             
             except Exception as e:
-                logging.debug("BlePeripheral::battery_service_update - Exception was flagged (Central probably disappeared)")
+                logging.debug("BlePeripheral::power_service_update - Exception was flagged (Central probably disappeared)")
                 self.connected = False
     
     # Send command service characteristics update

@@ -126,7 +126,7 @@ class Vt2Mode:
         # Share the events between the host and BLE objects
         self.ble_central.host_event = self.host_comms.host_event
         self.host_comms.ble_command_service_event = self.ble_central.ble_command_service_event
-        self.host_comms.ble_battery_service_event = self.ble_central.ble_battery_service_event
+        self.host_comms.ble_power_service_event = self.ble_central.ble_power_service_event
 
         tasks = [
             # General background tasks

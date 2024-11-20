@@ -1,9 +1,9 @@
 #************************************************************************ 
 #
-#   robot_comms.py
+#   status_flag.py
 #
-#   Classes for robot communications
-#   Valiant Turtle 2 - Communicator firmware
+#   Control servos using PWM
+#   Valiant Turtle 2 - Robot firmware
 #   Copyright (C) 2024 Simon Inns
 #
 #   This file is part of Valiant Turtle 2
@@ -24,69 +24,6 @@
 #   Email: simon.inns@gmail.com
 #
 #************************************************************************
-
-class PowerMonitor:
-    def __init__(self, voltage_mV: float = 0, current_mA: float = 0, power_mW: float = 0):
-        """Class to store power monitor status information"""
-        self._voltage_mV = voltage_mV
-        self._current_mA = current_mA
-        self._power_mW = power_mW
-
-    @property
-    def voltage_mV(self):
-        """Get the power monitor voltage in mV"""
-        return  self._voltage_mV
-    
-    @property
-    def voltage_mV_fstring(self) -> str:
-        """Get the power monitor voltage as a formatted string"""
-        return "{:.2f} mV".format(self._voltage_mV)
-    
-    @property
-    def current_mA(self):
-        """Get the power monitor current in mA"""
-        return  self._current_mA
-    
-    @property
-    def current__mA_fstring(self) -> str:
-        """Get the power monitor current as a formatted string"""
-        return "{:.2f} mA".format(self._current_mA)
-    
-    @property
-    def power_mW(self):
-        """Get the power monitor power in mW"""
-        return  self._power_mW
-    
-    @property
-    def power__mW_fstring(self) -> str:
-        """Get the power monitor power as a formatted string"""
-        return "{:.2f} mW".format(self._power_mW)
-
-    @voltage_mV.setter
-    def voltage_mV(self, value):
-        """Set the power monitor voltage in mV"""
-        self._voltage_mV = value
-
-    @current_mA.setter
-    def current_mA(self, value):
-        """Set the power monitor current in mA"""
-        self._current_mA = value
-
-    @power_mW.setter
-    def voltage_mV(self, value):
-        """Set the power monitor power in mW"""
-        self._power_mW = value
-
-    @property
-    def status(self):
-        """Get the power monitor status as a tuple containing voltage, current and power (mV, mA, mW)"""
-        return (self._voltage_mV, self._current_mA, self._power_mW)
-
-    @status.setter
-    def status(self, values):
-        """Set the power monitor status as a tuple containing voltage, current and power (mV, mA, mW)"""
-        self._voltage_mV, self._current_mA, self._power_mW = values
-
 
 class StatusBitFlag:
     def __init__(self):
@@ -238,7 +175,7 @@ class StatusBitFlag:
         """
         
         return f'{self._flags:032b}'
-
+    
 if __name__ == "__main__":
     from main import main
     main()

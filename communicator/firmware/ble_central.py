@@ -44,14 +44,14 @@ class BleCentral:
 
         # asyncio events
         self._ble_command_service_event = asyncio.Event()
-        self._ble_battery_service_event = asyncio.Event()
+        self._ble_power_service_event = asyncio.Event()
         self._host_event = None
 
         self._host_comms = None
 
         # Responses
         self._command_service_response = 0
-        self._battery_service_response = PowerMonitor(0, 0, 0)
+        self._power_service_response = PowerMonitor(0, 0, 0)
 
         # Get the local device's Unique ID
         self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
@@ -93,9 +93,9 @@ class BleCentral:
         return self._ble_command_service_event
     
     @property
-    def ble_battery_service_event(self):
-        """Get the BLE battery service event"""
-        return self._ble_battery_service_event
+    def ble_power_service_event(self):
+        """Get the BLE power service event"""
+        return self._ble_power_service_event
 
     async def scan_for_peripheral(self):
         """Scan for a BLE peripheral
@@ -132,31 +132,31 @@ class BleCentral:
             logging.debug("BleCentral::connect_to_peripheral - Connection attempt timed out!")
             return
 
-    def battery_service_notification(self, voltage, current, power):
-        """Process battery_service notifications from the peripheral"""
-        self._battery_service_response.status = (voltage, current, power)
-        self._ble_battery_service_event.set() # Flag the event
-        logging.debug(f"BleCentral::battery_service_notification - {self._battery_service_response.voltage_mV_fstring} / {self._battery_service_response.current__mA_fstring} / {self._battery_service_response.power__mW_fstring}")
+    def power_service_notification(self, voltage, current, power):
+        """Process power_service notifications from the peripheral"""
+        self._power_service_response.status = (voltage, current, power)
+        self._ble_power_service_event.set() # Flag the event
+        logging.debug(f"BleCentral::power_service_notification - {self._power_service_response.voltage_mV_fstring} / {self._power_service_response.current__mA_fstring} / {self._power_service_response.power__mW_fstring}")
 
-    def get_battery_service_response(self):
-        """Provide the battery service response and clear the event flag"""
-        self._ble_battery_service_event.clear()
-        return self._battery_service_response
+    def get_power_service_response(self):
+        """Provide the power service response and clear the event flag"""
+        self._ble_power_service_event.clear()
+        return self._power_service_response
 
-    async def handle_battery_service_task(self):
-        """Task to handle battery_service notifications"""
-        logging.debug("BleCentral::handle_battery_service_task - battery_service notification handler running")
+    async def handle_power_service_task(self):
+        """Task to handle power_service notifications"""
+        logging.debug("BleCentral::handle_power_service_task - power_service notification handler running")
 
         try:
             # Loop waiting for service notifications
             while self.connected:
-                battery_voltage_data = await self.battery_voltage_characteristic.notified()
-                battery_current_data = await self.battery_current_characteristic.read()
-                battery_power_data = await self.battery_power_characteristic.read()
-                self.battery_service_notification(data_encode.from_float(battery_voltage_data), data_encode.from_float(battery_current_data), data_encode.from_float(battery_power_data))
+                power_voltage_data = await self.power_voltage_characteristic.notified()
+                power_current_data = await self.power_current_characteristic.read()
+                power_watts_data = await self.power_watts_characteristic.read()
+                self.power_service_notification(data_encode.from_float(power_voltage_data), data_encode.from_float(power_current_data), data_encode.from_float(power_watts_data))
                                                             
         except Exception as e:
-            logging.debug("BleCentral::handle_battery_service_task - Exception was flagged (Peripheral probably disappeared)")
+            logging.debug("BleCentral::handle_power_service_task - Exception was flagged (Peripheral probably disappeared)")
             self.connected = False
 
     def command_service_notification(self, value):
@@ -238,13 +238,13 @@ class BleCentral:
             self.connected = False
             return
         
-        # Battery service setup
-        battery_service_uuid = bluetooth.UUID(0x180F) # Battery service
-        battery_service = await self.connection.service(battery_service_uuid)
+        # Power service setup
+        power_service_uuid = bluetooth.UUID(0x180F) # Battery service
+        power_service = await self.connection.service(power_service_uuid)
         
         try:
-            if battery_service == None:
-                logging.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral battery_service is missing!")
+            if power_service == None:
+                logging.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral power_service is missing!")
                 self.connected = False
                 return
             
@@ -253,17 +253,17 @@ class BleCentral:
             self.connected = False
             return
         
-        # Battery service characteristics setup
-        battery_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
-        battery_current_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
-        battery_power_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
+        # Power service characteristics setup
+        power_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
+        power_current_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
+        power_watts_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
         try:
-            self.battery_voltage_characteristic = await battery_service.characteristic(battery_voltage_characteristic_uuid)
-            self.battery_current_characteristic = await battery_service.characteristic(battery_current_characteristic_uuid)
-            self.battery_power_characteristic = await battery_service.characteristic(battery_power_characteristic_uuid)
+            self.power_voltage_characteristic = await power_service.characteristic(power_voltage_characteristic_uuid)
+            self.power_current_characteristic = await power_service.characteristic(power_current_characteristic_uuid)
+            self.power_watts_characteristic = await power_service.characteristic(power_watts_characteristic_uuid)
 
-            if self.battery_voltage_characteristic == None:
-                logging.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral battery_service characteristics missing!")
+            if self.power_voltage_characteristic == None:
+                logging.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral power_service characteristics missing!")
                 self.connected = False
                 return
 
@@ -274,7 +274,7 @@ class BleCentral:
 
         # Subscribe to characteristic notifications
         await self.tx_p2c_characteristic.subscribe(notify = True)
-        await self.battery_voltage_characteristic.subscribe(notify = True)
+        await self.power_voltage_characteristic.subscribe(notify = True)
 
         # Send a response of 12345 to the peripheral to show we are connected and ready
         await self.rx_c2p_characteristic.write(data_encode.to_int16(12345))
@@ -282,7 +282,7 @@ class BleCentral:
         # Generate a task for each service and then run them
         central_tasks = [
             asyncio.create_task(self.handle_command_service_task()),
-            asyncio.create_task(self.handle_battery_service_task()),
+            asyncio.create_task(self.handle_power_service_task()),
         ]
         await asyncio.gather(*central_tasks)
 

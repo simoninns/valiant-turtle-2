@@ -29,7 +29,6 @@ import logging
 from machine import UART
 import asyncio
 from command_shell import CommandShell
-from robot_comms import PowerMonitor
 
 class HostComms:
     """Class to manage host communication tasks"""
@@ -37,7 +36,7 @@ class HostComms:
         self._uart = uart
         self._ble_central = None
         self._ble_command_service_event = None
-        self._ble_battery_service_event = None
+        self._ble_power_service_event = None
         self._host_event = asyncio.Event()
 
         # Create a command shell
@@ -62,12 +61,12 @@ class HostComms:
         self._ble_command_service_event = value
 
     @property
-    def ble_battery_service_event(self):
-        return self._ble_battery_service_event
+    def ble_power_service_event(self):
+        return self._ble_power_service_event
 
-    @ble_battery_service_event.setter
-    def ble_battery_service_event(self, value: asyncio.Event):
-        self._ble_battery_service_event = value
+    @ble_power_service_event.setter
+    def ble_power_service_event(self, value: asyncio.Event):
+        self._ble_power_service_event = value
 
     @property
     def host_event(self):
@@ -84,14 +83,14 @@ class HostComms:
             else:
                 await asyncio.sleep_ms(250)
 
-    async def ble_battery_service_listener(self):
-        logging.debug("HostComms::ble_battery_service_listener - Task started")
+    async def ble_power_service_listener(self):
+        logging.debug("HostComms::ble_power_service_listener - Task started")
 
         while True:
             # Check if BLE central is available
-            if self._ble_central != None and self.ble_battery_service_event != None:
-                await self.ble_battery_service_event.wait()
-                self.command_shell.power_monitor = self._ble_central.get_battery_service_response()
+            if self._ble_central != None and self.ble_power_service_event != None:
+                await self.ble_power_service_event.wait()
+                self.command_shell.power_monitor = self._ble_central.get_power_service_response()
             else:
                 await asyncio.sleep_ms(250)
 
@@ -111,7 +110,7 @@ class HostComms:
 
             # Event listener tasks
             asyncio.create_task(self.ble_command_service_listener()),
-            asyncio.create_task(self.ble_battery_service_listener()),
+            asyncio.create_task(self.ble_power_service_listener()),
         ]
         await asyncio.gather(*tasks)
 

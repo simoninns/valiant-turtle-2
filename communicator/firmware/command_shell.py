@@ -29,7 +29,7 @@ import asyncio
 import logging
 from machine import UART, Pin
 from micropython import const
-from robot_comms import PowerMonitor
+from robot_comms import PowerMonitor, StatusBitFlag
 
 class CommandShell:
     def __init__(self, uart: UART, prompt: str = ">", intro: str = None, 
@@ -47,7 +47,7 @@ class CommandShell:
 
         # Properties that are updated by the parent host_comms object
         self._power_monitor = PowerMonitor(0,0,0)
-        self._command_status = 0
+        self._command_status = StatusBitFlag()
 
     @property
     def power_monitor(self) -> PowerMonitor:
@@ -58,12 +58,12 @@ class CommandShell:
         self._power_monitor = value
 
     @property
-    def command_status(self):
+    def command_status(self) -> StatusBitFlag:
         return self._command_status
     
     @command_status.setter
-    def command_status(self, value):
-        self._command_status = value
+    def command_status(self, value: int):
+        self._command_status.flags = value
 
     async def send_response(self, message: str) -> None:
         """Send a response back over UART."""
@@ -250,14 +250,39 @@ class CommandShell:
 
                     if command == 'power':
                         # Display the power monitor status
-                        await self.send_response(self._power_monitor.voltage_mV_fstring)
-                        await self.send_response(self._power_monitor.current__mA_fstring)
-                        await self.send_response(self._power_monitor.power__mW_fstring)
+                        await self.send_response(f"   Supply voltage: {self._power_monitor.voltage_mV_fstring}")
+                        await self.send_response(f"     Current draw: {self._power_monitor.current__mA_fstring}")
+                        await self.send_response(f"Power consumption: {self._power_monitor.power__mW_fstring}")
                         command_handled = True
 
                     if command == 'status':
                         # Display the robot status
-                        await self.send_response(f"{self.command_status}")
+                        await self.send_response("Status:")
+                        if self.command_status.result: await self.send_response("  Last command: Success")
+                        else: await self.send_response("  Last command: Failure")
+
+                        if self.command_status.left_motor_busy: await self.send_response("  Left motor: Busy")
+                        else: await self.send_response("  Left motor: Not busy")
+
+                        if self.command_status.right_motor_busy: await self.send_response("  Right motor: Busy")
+                        else: await self.send_response("  Right motor: Not busy")
+
+                        if self.command_status.left_motor_direction: await self.send_response("  Left motor direction: Forwards")
+                        else: await self.send_response("  Left motor direction: Backwards")
+
+                        if self.command_status.right_motor_direction: await self.send_response("  Right motor direction: Forwards")
+                        else: await self.send_response("  Right motor direction: Backwards")
+
+                        if self.command_status.motor_power_enabled: await self.send_response("  Motor power: Enabled")
+                        else: await self.send_response("  Motor power: Disabled")
+
+                        if self.command_status.pen_servo_on:
+                            if self.command_status.pen_servo_up:
+                                await self.send_response("  Pen servo: Up")
+                            else:
+                                await self.send_response("  Pen servo: Down")
+                        else: await self.send_response("  Pen servo: Off")
+
                         command_handled = True
 
                     # Was the command handled?

@@ -141,7 +141,7 @@ def main():
             await asyncio.sleep_ms(5000)
 
             # Read the INA260 and send an update to BLE central
-            ble_peripheral.battery_service_update(ina260.voltage_mV, ina260.current_mA, ina260.power_mW)
+            ble_peripheral.power_service_update(ina260.voltage_mV, ina260.current_mA, ina260.power_mW)
 
     # Async I/O task generation and launch
     async def aio_main():
