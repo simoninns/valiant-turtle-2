@@ -36,6 +36,9 @@ import data_encode
 from robot_comms import PowerMonitor
 
 class BleCentral:
+    CONNECTION_CONFIRMATION_CODE = 12345
+    ADVERTISING_NAME = "vt2-robot"
+
     def __init__(self):
         """Class to manage BLE central tasks"""
         # Flags to show connected status
@@ -58,7 +61,7 @@ class BleCentral:
 
         # Remote device advertising definitions
         self.peripheral_advertising_uuid = bluetooth.UUID(0xF910) 
-        self.peripheral_advertising_name = "vt2-robot"
+        self.peripheral_advertising_name = BleCentral.ADVERTISING_NAME
 
         self.fixed_string_8_characteristic = None
     
@@ -178,13 +181,13 @@ class BleCentral:
             # Loop waiting for service notifications
             while self.connected:
                 value = await self.tx_p2c_characteristic.notified()
-                self.command_service_notification(data_encode.from_int16(value))
+                self.command_service_notification(data_encode.from_uint32(value))
 
                 # Respond
-                response = data_encode.from_int16(value)
+                response = data_encode.from_uint32(value)
                 response = response + 2
                 logging.debug(f"BleCentral::handle_command_service_task - response = {response}")
-                await self.rx_c2p_characteristic.write(data_encode.to_int16(response))
+                await self.rx_c2p_characteristic.write(data_encode.to_uint32(response))
                                                         
         except Exception as e:
             logging.debug("BleCentral::handle_command_service_task - Exception was flagged (Peripheral probably disappeared)")
@@ -277,7 +280,7 @@ class BleCentral:
         await self.power_voltage_characteristic.subscribe(notify = True)
 
         # Send a response of 12345 to the peripheral to show we are connected and ready
-        await self.rx_c2p_characteristic.write(data_encode.to_int16(12345))
+        await self.rx_c2p_characteristic.write(data_encode.to_int16(BleCentral.CONNECTION_CONFIRMATION_CODE))
 
         # Generate a task for each service and then run them
         central_tasks = [

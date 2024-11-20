@@ -43,6 +43,11 @@ class PowerMonitor:
         return "{:.2f} mV".format(self._voltage_mV)
     
     @property
+    def voltage_V_fstring(self) -> str:
+        """Get the power monitor voltage as a formatted string"""
+        return "{:.2f} V".format(self._voltage_mV/1000)
+    
+    @property
     def current_mA(self):
         """Get the power monitor current in mA"""
         return  self._current_mA

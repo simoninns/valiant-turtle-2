@@ -41,19 +41,26 @@ def to_uint16(value):
 def from_uint16(data) -> int:
     return struct.unpack("<H", data)[0]
 
+# signed long integer (4 bytes)
+def to_int32(value):
+    return struct.pack("<l", int(value))
+
+def from_int32(data) -> int:
+    return struct.unpack("<l", data)[0]
+
+# unsigned long integer (4 bytes)
+def to_uint32(value):
+    return struct.pack("<L", int(value))
+
+def from_uint32(data) -> int:
+    return struct.unpack("<L", data)[0]
+
 # float (4 bytes)
 def to_float(value):
     return struct.pack("<f", float(value))
 
 def from_float(data) -> float:
     return struct.unpack("<f", data)[0]
-
-# unsigned char (1 byte)
-def to_uint8(value):
-    return struct.pack("<B", int(value))
-
-def from_uint8(data) -> int:
-    return struct.unpack("<B", data)[0]
 
 if __name__ == "__main__":
     from main import main

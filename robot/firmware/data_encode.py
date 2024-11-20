@@ -41,6 +41,20 @@ def to_uint16(value):
 def from_uint16(data) -> int:
     return struct.unpack("<H", data)[0]
 
+# signed long integer (4 bytes)
+def to_int32(value):
+    return struct.pack("<l", int(value))
+
+def from_int32(data) -> int:
+    return struct.unpack("<l", data)[0]
+
+# unsigned long integer (4 bytes)
+def to_uint32(value):
+    return struct.pack("<L", int(value))
+
+def from_uint32(data) -> int:
+    return struct.unpack("<L", data)[0]
+
 # float (4 bytes)
 def to_float(value):
     return struct.pack("<f", float(value))

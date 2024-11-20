@@ -33,8 +33,8 @@ from micropython import const
 import aioble
 import bluetooth
 import asyncio
-
 import data_encode
+from status_flag import StatusBitFlag
 
 class BlePeripheral:
     MANUFACTURER_DATA = (0xFFE1, b"www.waitingforfriday.com")
@@ -43,13 +43,13 @@ class BlePeripheral:
 
     def __init__(self):
         # Get the local device's Unique ID (used as the serial number)
-        self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
+        self.__uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
 
         # Connection to central
-        self.connection = None
+        self.__connection = None
 
         # Flag to show connected status
-        self.connected = False
+        self.__connected = False
 
         # Advertising definitions
         self.__ble_advertising_definitions()
@@ -102,7 +102,7 @@ class BlePeripheral:
     # Property that is true when central (VT2 Communicator) is connected
     @property
     def is_central_connected(self) -> bool:
-        return self.connected
+        return self.__connected
 
     async def wait_for_data(self, characteristic, t_ms=5000):
         try:
@@ -110,50 +110,53 @@ class BlePeripheral:
             return data
         except asyncio.TimeoutError:
             logging.debug("BlePeripheral::wait_for_data - Data timed-out - (Central probably disappeared)")
-            self.connected = False
+            self.__connected = False
             return None
 
     # Send power service characteristics update
     def power_service_update(self, voltage, current, power):
-        if self.connected and self.connection:
+        if self.__connected and self.__connection:
             logging.debug(f"BlePeripheral::power_service_update - mV = {voltage} / mA = {current} / mW = {power}")
             try:
-                self.power_voltage_characteristic.notify(self.connection, data_encode.to_float(voltage))
+                self.power_voltage_characteristic.notify(self.__connection, data_encode.to_float(voltage))
                 self.power_current_characteristic.write(data_encode.to_float(current))
                 self.power_watts_characteristic.write(data_encode.to_float(power))
             
             except Exception as e:
                 logging.debug("BlePeripheral::power_service_update - Exception was flagged (Central probably disappeared)")
-                self.connected = False
+                self.__connected = False
     
     # Send command service characteristics update
-    def command_service_update(self, value):
-        if self.connected and self.connection:
-            logging.debug(f"BlePeripheral::command_service_update - value = {value}")
+    def command_service_update(self, status_bit_flag: StatusBitFlag):
+        if self.__connected and self.__connection:
+            logging.debug(f"BlePeripheral::command_service_update - Status Bit Flags = {status_bit_flag.display_flags()}")
             try:
                 # Send from p2c
-                self.tx_p2c_characteristic.notify(self.connection, data_encode.to_int16(value))
+                self.tx_p2c_characteristic.notify(self.__connection, data_encode.to_uint32(status_bit_flag.flags))
                 
             except Exception as e:
                 logging.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
-                self.connected = False
+                self.__connected = False
 
-    # This is just for testing purposes
+    # Here we send the status flags to the central which 
+    # will then send a response back to us.  This is because
+    # only the peripheral can initiate a notification to the central
     async def command_service_update_task(self):
-        value = 0
-        while self.connected:
-            self.command_service_update(value)
-            value += 1
-            if value == 256: value = 0
+        status_bit_flag = StatusBitFlag()
+        status_bit_flag.flags = 70000
+        while self.__connected:
+            self.command_service_update(status_bit_flag)
+            status_bit_flag.flags += 1
+            if status_bit_flag.flags == 256: status_bit_flag.flags = 0
 
             # Command service update time out can cause disconnection - only wait for reply if still connected...
-            if self.connected:
+            if self.__connected:
                 # Receive from c2p
                 reply_data = await self.wait_for_data(self.rx_c2p_characteristic)
                 if reply_data != None:
-                    logging.debug(f"BlePeripheral::command_service_update_task - Reply data = {data_encode.from_int16(reply_data)}")
+                    logging.debug(f"BlePeripheral::command_service_update_task - Reply data = {data_encode.from_uint32(reply_data)}")
 
-            if self.connected: await asyncio.sleep_ms(10000)
+            if self.__connected: await asyncio.sleep_ms(10000)
 
     # Tasks to run whilst connected to central  
     async def connected_to_central(self):
@@ -165,9 +168,9 @@ class BlePeripheral:
         await asyncio.gather(*peripheral_tasks)
 
     async def wait_for_disconnection_from_central(self):
-        await self.connection.disconnected()
-        self.connected = False
-        self.connection = None
+        await self.__connection.disconnected()
+        self.__connected = False
+        self.__connection = None
         logging.info("BlePeripheral::wait_for_disconnection_from_central - Central disconnected")
 
     # Advertise peripheral to central
@@ -177,14 +180,14 @@ class BlePeripheral:
 
         # Wait for something to connect
         logging.debug("BlePeripheral::advertise_to_central - Advertising and waiting for connection from central...")
-        self.connection = await aioble.advertise(
+        self.__connection = await aioble.advertise(
             ble_advertising_frequency_us,
             name=self.peripheral_advertising_name,
             services=[self.peripheral_advertising_uuid],
             appearance=self.peripheral_appearance_generic_remote_control,
             manufacturer=self.peripheral_manufacturer,
         )
-        logging.info(f"BlePeripheral::advertise_to_central - Central with address {self.connection.device.addr_hex()} has connected - advertising stopped")
+        logging.info(f"BlePeripheral::advertise_to_central - Central with address {self.__connection.device.addr_hex()} has connected - advertising stopped")
 
         # It takes a while for the central to really connect.  So, to avoid data dropping into a black hole
         # the central will start by sending us a byte of data.  Once received, we can mark it as connected for real
@@ -193,13 +196,13 @@ class BlePeripheral:
         if reply_data != None:
             if data_encode.from_int16(reply_data) == BlePeripheral.CONNECTION_CONFIRMATION_CODE:
                 logging.debug("BlePeripheral::advertise_to_central - Central has confirmed as connected")
-                self.connected = True
+                self.__connected = True
             else:
                 logging.debug("BlePeripheral::advertise_to_central - Central did not respond with 12345 - Reverting to disconnected state")
-                self.connected = False
+                self.__connected = False
         else:
             logging.debug("BlePeripheral::advertise_to_central - Central did not respond - Reverting to disconnected state")
-            self.connected = False
+            self.__connected = False
 
     # Main BLE peripheral task
     async def ble_peripheral_task(self):
@@ -207,7 +210,7 @@ class BlePeripheral:
         while True:
             await self.advertise_to_central()
 
-            if self.connected:
+            if self.__connected:
                 await self.connected_to_central()
                 await self.wait_for_disconnection_from_central()
 

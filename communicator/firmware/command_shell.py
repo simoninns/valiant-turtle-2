@@ -250,7 +250,7 @@ class CommandShell:
 
                     if command == 'power':
                         # Display the power monitor status
-                        await self.send_response(f"   Supply voltage: {self._power_monitor.voltage_mV_fstring}")
+                        await self.send_response(f"   Supply voltage: {self._power_monitor.voltage_V_fstring}")
                         await self.send_response(f"     Current draw: {self._power_monitor.current__mA_fstring}")
                         await self.send_response(f"Power consumption: {self._power_monitor.power__mW_fstring}")
                         command_handled = True
