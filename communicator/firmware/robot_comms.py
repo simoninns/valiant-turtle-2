@@ -25,6 +25,8 @@
 #
 #************************************************************************
 
+import struct
+
 class PowerMonitor:
     def __init__(self, voltage_mV: float = 0, current_mA: float = 0, power_mW: float = 0):
         """Class to store power monitor status information"""
@@ -34,52 +36,52 @@ class PowerMonitor:
 
     @property
     def voltage_mV(self):
-        """Get the power monitor voltage in mV"""
+        """Get the power monitor voltage in millivolts (mV)"""
         return  self._voltage_mV
     
     @property
     def voltage_mV_fstring(self) -> str:
-        """Get the power monitor voltage as a formatted string"""
+        """Get the power monitor voltage as a formatted string in millivolts (mV)"""
         return "{:.2f} mV".format(self._voltage_mV)
     
     @property
     def voltage_V_fstring(self) -> str:
-        """Get the power monitor voltage as a formatted string"""
+        """Get the power monitor voltage as a formatted string in volts (V)"""
         return "{:.2f} V".format(self._voltage_mV/1000)
     
     @property
     def current_mA(self):
-        """Get the power monitor current in mA"""
+        """Get the power monitor current in milliamps (mA)"""
         return  self._current_mA
     
     @property
     def current_mA_fstring(self) -> str:
-        """Get the power monitor current as a formatted string"""
+        """Get the power monitor current as a formatted string in milliamps (mA)"""
         return "{:.2f} mA".format(self._current_mA)
     
     @property
     def power_mW(self):
         """Get the power monitor power in mW"""
-        return  self._power_mW
+        return self._power_mW
     
     @property
     def power_mW_fstring(self) -> str:
-        """Get the power monitor power as a formatted string"""
+        """Get the power monitor power as a formatted string in milliwatts (mW)"""
         return "{:.2f} mW".format(self._power_mW)
 
     @voltage_mV.setter
     def voltage_mV(self, value):
-        """Set the power monitor voltage in mV"""
+        """Set the power monitor voltage in millivolts (mV)"""
         self._voltage_mV = value
 
     @current_mA.setter
     def current_mA(self, value):
-        """Set the power monitor current in mA"""
+        """Set the power monitor current in milliamps (mA)"""
         self._current_mA = value
 
     @power_mW.setter
     def voltage_mV(self, value):
-        """Set the power monitor power in mW"""
+        """Set the power monitor power in milliwatts (mW)"""
         self._power_mW = value
 
     @property
@@ -91,6 +93,10 @@ class PowerMonitor:
     def status(self, values):
         """Set the power monitor status as a tuple containing voltage, current and power (mV, mA, mW)"""
         self._voltage_mV, self._current_mA, self._power_mW = values
+
+    def __str__(self):
+        """Return a string representation of the power monitor status"""
+        return f"Voltage: {self.voltage_mV_fstring}, Current: {self.current_mA_fstring}, Power: {self.power_mW_formatted}"
 
 
 class StatusBitFlag:
@@ -243,6 +249,110 @@ class StatusBitFlag:
         """
         
         return f'{self._flags:032b}'
+    
+
+class RobotCommand:
+    """
+    RobotCommand class to represent and handle robot commands with parameters.
+    Attributes:
+        _command_parameters (dict): A dictionary mapping command names to their unique IDs and number of parameters.
+    Methods:
+        __init__(self, command: str, param1: int, param2: int, param3: int, param4: int):
+            Initialize a RobotCommand instance with the given command and parameters.
+        _pack_command(self) -> bytes:
+        get_packed_bytes(self) -> bytes:
+            Get the packed 20 byte array representing the command and its parameters.
+        from_packed_bytes(cls, byte_array: bytes):
+        __str__(self):
+            Return a string representation of the RobotCommand instance.
+    """
+
+    # Command parameters: name (unique ID, number of parameters)
+    # Note: The maximum number of parameters supported is 4
+    _command_parameters = {
+        "nop": (0, 0),
+        "forward": (1, 1),
+        "backward": (2, 1),
+        "left": (3, 1),
+        "right": (4, 1),
+        "penup": (5, 0),
+        "pendown": (6, 0),
+    }
+
+    def __init__(self, command: str = "nop", param1: int = 0, param2: int = 0, param3: int = 0, param4: int = 0):
+        """
+        Initialize a RobotCommand instance.
+        
+        Args:
+            command (str): The command name.
+            param1 (int): The first parameter (32-bit integer).
+            param2 (int): The second parameter (32-bit integer).
+            param3 (int): The third parameter (32-bit integer).
+            param4 (int): The fourth parameter (32-bit integer).
+        
+        Raises:
+            ValueError: If the command is not recognized or any parameter is not a 32-bit integer.
+        """
+        if command not in self._command_parameters:
+            raise ValueError(f"Command '{command}' is not recognized")
+        
+        self._command_id = self._command_parameters[command][0]
+        self._parameters = [param1, param2, param3, param4]
+        
+        # Ensure all parameters are 32-bit integers
+        for param in self._parameters:
+            if not (0 <= param < 2**32):
+                raise ValueError(f"Parameter {param} is not a 32-bit integer")
+        
+        self._byte_array = self._pack_command()
+
+    def _pack_command(self) -> bytes:
+        """
+        Pack the command ID and parameters into a fixed-length byte array.
+        
+        Returns:
+            bytes: The packed byte array.
+        """
+        packed_data = struct.pack('>I4I', self._command_id, *self._parameters)
+        return packed_data
+
+    def get_packed_bytes(self) -> bytes:
+        """
+        Get the packed 20 byte array.
+        
+        Returns:
+            bytes: The packed 20 byte array.
+        """
+        return self._byte_array
+    
+    @classmethod
+    def from_packed_bytes(cls, byte_array: bytes):
+        """
+        Create a RobotCommand instance from a packed 20 byte array.
+        
+        Args:
+            byte_array (bytes): The packed 20 byte array.
+        
+        Returns:
+            RobotCommand: The unpacked RobotCommand instance.
+        
+        Raises:
+            ValueError: If the byte array is not the correct length.
+        """
+        if len(byte_array) != 20:  # 4 bytes for command ID + 4 * 4 bytes for parameters
+            raise ValueError("Byte array length is incorrect")
+        
+        unpacked_data = struct.unpack('>I4I', byte_array)
+        command_id, param1, param2, param3, param4 = unpacked_data
+        
+        if command_id not in cls._id_to_command:
+            raise ValueError(f"Command ID '{command_id}' is not recognized")
+        
+        command = cls._id_to_command[command_id]
+        return cls(command, param1, param2, param3, param4)
+
+    def __str__(self):
+        return f"Command ID: {self._command_id}, Parameters: {self._parameters}, Byte Array: {self._byte_array}"
 
 if __name__ == "__main__":
     from main import main

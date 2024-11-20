@@ -33,7 +33,7 @@ from machine import unique_id
 import asyncio
 import data_encode
 
-from robot_comms import PowerMonitor
+from robot_comms import PowerMonitor, RobotCommand
 
 class BleCentral:
     CONNECTION_CONFIRMATION_CODE = 12345
@@ -64,6 +64,9 @@ class BleCentral:
         self.peripheral_advertising_name = BleCentral.ADVERTISING_NAME
 
         self.fixed_string_8_characteristic = None
+
+        # Queue for commands to be sent to the peripheral
+        self._command_queue = []
     
     @property
     def host_comms(self):
@@ -139,7 +142,7 @@ class BleCentral:
         """Process power_service notifications from the peripheral"""
         self._power_service_response.status = (voltage, current, power)
         self._ble_power_service_event.set() # Flag the event
-        logging.debug(f"BleCentral::power_service_notification - {self._power_service_response.voltage_mV_fstring} / {self._power_service_response.current_mA_fstring} / {self._power_service_response.power_mW_fstring}")
+        logging.debug(f"BleCentral::power_service_notification - {self._power_service_response}")
 
     def get_power_service_response(self):
         """Provide the power service response and clear the event flag"""
@@ -183,11 +186,17 @@ class BleCentral:
                 value = await self.tx_p2c_characteristic.notified()
                 self.command_service_notification(data_encode.from_uint32(value))
 
-                # Respond
-                response = data_encode.from_uint32(value)
-                response = response + 2
-                logging.debug(f"BleCentral::handle_command_service_task - response = {response}")
-                await self.rx_c2p_characteristic.write(data_encode.to_uint32(response))
+                # Check for any commands to send to the peripheral and, if there aren't any, send a nop command
+                if len(self._command_queue) > 0:
+                    command = self._command_queue.pop(0)
+                    if not isinstance(command, RobotCommand):
+                        raise TypeError("Expected command to be of type RobotCommand")
+                    logging.debug(f"BleCentral::handle_command_service_task - Sending command {command}")
+                    await self.rx_c2p_characteristic.write(command.get_packed_bytes())
+                else:
+                    command = RobotCommand("nop")
+                    logging.debug("BleCentral::handle_command_service_task - No queued commands, sending nop command")
+                    await self.rx_c2p_characteristic.write(command.get_packed_bytes())
                                                         
         except Exception as e:
             logging.debug("BleCentral::handle_command_service_task - Exception was flagged (Peripheral probably disappeared)")
@@ -310,6 +319,10 @@ class BleCentral:
             if self.connected:
                 await self.connected_to_peripheral()
                 await self.wait_for_disconnection_from_peripheral()
+
+    async def queue_command(self, command: RobotCommand):
+        """Queue a command to be sent to the peripheral"""
+        self._command_queue.append(command)
 
 if __name__ == "__main__":
     from main import main

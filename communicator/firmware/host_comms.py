@@ -29,7 +29,7 @@ import logging
 from machine import UART
 import asyncio
 from command_shell import CommandShell
-from robot_comms import PowerMonitor, StatusBitFlag
+from robot_comms import PowerMonitor, StatusBitFlag, RobotCommand
 
 class HostComms:
     """Class to manage host communication tasks"""
@@ -122,33 +122,38 @@ class HostComms:
         await asyncio.gather(*tasks)
 
     async def process_command(self, command, parameters):
-        logging.debug(f"HostComms::process_command - Processing command {command} with parameters {parameters}")
+        if parameters:
+            logging.debug(f"HostComms::process_command - Processing command [{command}] with parameters {parameters}")
+        else:
+            logging.debug(f"HostComms::process_command - Processing command [{command}] with no parameters")
+        
         command_handled = False
 
-        # Handle the commands
+        # Handle the commands (note: all commands are lower case)
+
+        # Display the help text
         if command == 'help':
-            # Display the help text
             await self.command_shell.send_response("Help:")
             await self.command_shell.send_response("  help                        - show this help text")
-            await self.command_shell.send_response("  forwards <distance in mm>   - move forwards")
-            await self.command_shell.send_response("  backwards <distance in mm>  - move backwards")
-            await self.command_shell.send_response("  left <rotation in degrees>  - turn left")
-            await self.command_shell.send_response("  right <rotation in degress> - turn right")
+            await self.command_shell.send_response("  forward <distance in mm>    - move forwards (alias: fd)")
+            await self.command_shell.send_response("  backward <distance in mm>   - move backwards (alias: bk)")
+            await self.command_shell.send_response("  left <rotation in degrees>  - turn left (alias: lt)")
+            await self.command_shell.send_response("  right <rotation in degress> - turn right (alias: rt)")
             await self.command_shell.send_response("  status                      - show the robot's current status")
-            await self.command_shell.send_response("  penup                       - lift the pen")
-            await self.command_shell.send_response("  pendown                     - lower the pen")
+            await self.command_shell.send_response("  penup                       - lift the pen (alias: pu)")
+            await self.command_shell.send_response("  pendown                     - lower the pen (alias: pd)")
             await self.command_shell.send_response("  power                       - show the power monitor status")
             command_handled = True
 
+        # Display the power monitor status
         if command == 'power':
-            # Display the power monitor status
             await self.command_shell.send_response(f"   Supply voltage: {self._power_monitor.voltage_V_fstring}")
             await self.command_shell.send_response(f"     Current draw: {self._power_monitor.current_mA_fstring}")
             await self.command_shell.send_response(f"Power consumption: {self._power_monitor.power_mW_fstring}")
             command_handled = True
 
+        # Display the robot status (see class StatusBitFlag for details)
         if command == 'status':
-            # Display the robot status
             await self.command_shell.send_response("Status:")
             if self._command_status.result:
                 await self.command_shell.send_response("           Last command: Success")
@@ -166,14 +171,14 @@ class HostComms:
                 await self.command_shell.send_response("            Right motor: Idle")
 
             if self._command_status.left_motor_direction:
-                await self.command_shell.send_response("   Left motor direction: Forwards")
+                await self.command_shell.send_response("   Left motor direction: Forward")
             else:
-                await self.command_shell.send_response("   Left motor direction: Backwards")
+                await self.command_shell.send_response("   Left motor direction: Backward")
 
             if self._command_status.right_motor_direction:
-                await self.command_shell.send_response("  Right motor direction: Forwards")
+                await self.command_shell.send_response("  Right motor direction: Forward")
             else:
-                await self.command_shell.send_response("  Right motor direction: Backwards")
+                await self.command_shell.send_response("  Right motor direction: Backward")
 
             if self._command_status.motor_power_enabled:
                 await self.command_shell.send_response("            Motor power: Enabled")
@@ -189,9 +194,26 @@ class HostComms:
 
             command_handled = True
 
+        # Move forwards
+        if command in ['forward', 'fd']:
+            # Check for a parameter and, if present, range check it
+            if parameters:
+                distance_mm = int(parameters[0])
+                if 0 < distance_mm <= 10000:
+                    await self.command_shell.send_response(f"Moving forwards {distance_mm}mm")
+                    robot_command = RobotCommand("forward", distance_mm)
+                    await self.ble_central.queue_command(robot_command)
+                    command_handled = True
+                else:
+                    await self.command_shell.send_response("Invalid distance - must be greater than zero and less than 10000mm")
+            else:
+                await self.command_shell.send_response("Missing parameter - distance in mm")
+            
+
         # Was the command handled?
         if not command_handled:
             await self.command_shell.send_response(f"Unknown command ignored: {command}")
+            logging.debug(f"HostComms::process_command - Command [{command}] was not recognised - ignored")
 
 if __name__ == "__main__":
     from main import main

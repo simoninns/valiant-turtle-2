@@ -206,12 +206,6 @@ class CommandShell:
 
                     # Parse the command (into lower case) and parameters (into a list)
                     command, parameters = self.parse_command(input_line)
-
-                    if command:
-                        if parameters:
-                            logging.info(f"CommandShell::get_command - Got command {command} {parameters}")
-                        else:
-                            logging.info(f"CommandShell::get_command - Got command {command}")
                         
         except Exception as e:
             await self.send_response(f"Error: {e}")
