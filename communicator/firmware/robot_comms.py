@@ -250,31 +250,75 @@ class StatusBitFlag:
         
         return f'{self._flags:032b}'
     
+    def __str__(self):
+        """Return a string representation of the status flags."""
+        status_str = f"Status flags [{self.display_flags()}]:\r\n"
+        
+        if self.result:
+            status_str += "           Last command: Success\r\n"
+        else:
+            status_str += "           Last command: Failure\r\n"
+
+        if self.left_motor_busy:
+            status_str += "             Left motor: Busy\r\n"
+        else:
+            status_str += "             Left motor: Idle\r\n"
+
+        if self.right_motor_busy:
+            status_str += "            Right motor: Busy\r\n"
+        else:
+            status_str += "            Right motor: Idle\r\n"
+
+        if self.left_motor_direction:
+            status_str += "   Left motor direction: Forward\r\n"
+        else:
+            status_str += "   Left motor direction: Backward\r\n"
+
+        if self.right_motor_direction:
+            status_str += "  Right motor direction: Forward\r\n"
+        else:
+            status_str += "  Right motor direction: Backward\r\n"
+
+        if self.motor_power_enabled:
+            status_str += "            Motor power: Enabled\r\n"
+        else:
+            status_str += "            Motor power: Disabled\r\n"
+
+        if self.pen_servo_on:
+            if self.pen_servo_up:
+                status_str += "              Pen servo: Up\r\n"
+            else:
+                status_str += "              Pen servo: Down\r\n"
+        else: status_str += "              Pen servo: Off\r\n"
+
+        return status_str
 
 class RobotCommand:
     """
-    RobotCommand class to represent and handle robot commands with parameters.
+    The RobotCommand class represents a command that can be sent to a robot. Each command has a unique ID and a set of parameters.
     Attributes:
-        _command_dictionary (dict): A dictionary mapping command names to their unique IDs, number of parameters, parameter ranges, and descriptions.
+        _command_dictionary (dict): A dictionary containing command details. Each command is mapped to a tuple containing:
+            - Unique ID (int)
+            - Number of parameters (int)
+            - Minimum values for parameters (tuple)
+            - Maximum values for parameters (tuple)
+            - Descriptions for parameters (tuple)
+            - Help text (str)
     Methods:
-        __init__(self, command: str, parameters: list):
-            Initialize a RobotCommand instance with the given command and parameters.
-        _pack_command(self) -> bytes:
-            Pack the command ID and parameters into a fixed-length byte array.
-        get_packed_bytes(self) -> bytes:
-            Get the packed 20 byte array representing the command and its parameters.
-        from_packed_bytes(cls, byte_array: bytes):
-            Create a RobotCommand instance from a packed 20 byte array.
-        _id_to_command(cls, command_id: int) -> str:
-            Get the command name from the command ID.
-        num_parameters(cls, command: str) -> int:
-            Get the number of parameters for the given command.
-        parameter_range(cls, command: str, param_num: int) -> tuple:
-            Get the range of values for the given parameter of the command.
-        is_command_valid(cls, command: str) -> bool:
-            Check if the given command is valid.
-        __str__(self):
-            Return a string representation of the RobotCommand instance.
+        __init__(command: str = "nop", parameters: list = []):
+        command() -> str:
+            Get the command name.
+        command_id() -> int:
+            Get the command ID.
+        _pack_command() -> bytes:
+        get_packed_bytes() -> bytes:
+        _id_to_command(command_id: int) -> str:
+        from_packed_bytes(byte_array: bytes):
+        num_parameters(command: str) -> int:
+        parameter_range(command: str, param_num: int) -> tuple:
+        is_command_valid(command: str) -> bool:
+        help_text() -> str:
+        __str__() -> str:
     """
 
     # Command parameters: name (unique ID, number of parameters)

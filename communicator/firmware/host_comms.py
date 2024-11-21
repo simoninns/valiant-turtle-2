@@ -138,51 +138,12 @@ class HostComms:
 
         # Display the power monitor status (local command)
         if command == 'power':
-            await self.command_shell.send_response(f"   Supply voltage: {self._power_monitor.voltage_V_fstring}")
-            await self.command_shell.send_response(f"     Current draw: {self._power_monitor.current_mA_fstring}")
-            await self.command_shell.send_response(f"Power consumption: {self._power_monitor.power_mW_fstring}")
+            await self.command_shell.send_response(self._power_monitor)
             return
 
         # Display the robot status (see class StatusBitFlag for details) (local command)
         if command == 'status':
-            await self.command_shell.send_response("Status:")
-            if self._command_status.result:
-                await self.command_shell.send_response("           Last command: Success")
-            else:
-                await self.command_shell.send_response("           Last command: Failure")
-
-            if self._command_status.left_motor_busy:
-                await self.command_shell.send_response("             Left motor: Busy")
-            else:
-                await self.command_shell.send_response("             Left motor: Idle")
-
-            if self._command_status.right_motor_busy:
-                await self.command_shell.send_response("            Right motor: Busy")
-            else:
-                await self.command_shell.send_response("            Right motor: Idle")
-
-            if self._command_status.left_motor_direction:
-                await self.command_shell.send_response("   Left motor direction: Forward")
-            else:
-                await self.command_shell.send_response("   Left motor direction: Backward")
-
-            if self._command_status.right_motor_direction:
-                await self.command_shell.send_response("  Right motor direction: Forward")
-            else:
-                await self.command_shell.send_response("  Right motor direction: Backward")
-
-            if self._command_status.motor_power_enabled:
-                await self.command_shell.send_response("            Motor power: Enabled")
-            else:
-                await self.command_shell.send_response("            Motor power: Disabled")
-
-            if self._command_status.pen_servo_on:
-                if self._command_status.pen_servo_up:
-                    await self.command_shell.send_response("              Pen servo: Up")
-                else:
-                    await self.command_shell.send_response("              Pen servo: Down")
-            else: await self.command_shell.send_response("              Pen servo: Off")
-
+            await self.command_shell.send_response(self._command_status)
             return
 
         # Robot commands (uses the RobotCommand class for validation)
