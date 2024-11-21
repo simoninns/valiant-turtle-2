@@ -61,6 +61,33 @@ class BlePeripheral:
         # Register services with aioBLE library
         aioble.register_services(self.command_service, self.power_service)
 
+        # Status bit flag
+        self._command_status = StatusBitFlag()
+
+        # Command queue for received commands from central
+        self._command_queue = []
+        self._command_queue_event = asyncio.Event()
+
+    @property
+    def command_queue_event(self):
+        """Get the command queue event"""
+        return self._command_queue_event
+    
+    @property
+    def command_queue(self):
+        """Get the command queue"""
+        return self._command_queue
+
+    @property
+    def command_status(self):
+        """Get the command status"""
+        return self._command_status
+    
+    @command_status.setter
+    def command_status(self, status: StatusBitFlag):
+        """Set the command status"""
+        self._command_status = status
+
     def __ble_advertising_definitions(self):
         # Definitions used for advertising via BLE
 
@@ -139,48 +166,6 @@ class BlePeripheral:
                 logging.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
                 self.__connected = False
 
-    # Here we send the status flags to the central which 
-    # will then send a response back to us.  This is because
-    # only the peripheral can initiate a notification to the central
-    async def command_service_update_task(self):
-        status_bit_flag = StatusBitFlag()
-        status_bit_flag.flags = 70000
-        while self.__connected:
-            self.command_service_update(status_bit_flag)
-            status_bit_flag.flags += 1
-            if status_bit_flag.flags == 256: status_bit_flag.flags = 0
-
-            # Command service update time out can cause disconnection - only wait for reply if still connected...
-            if self.__connected:
-                # Receive from c2p
-                command_data = await self.wait_for_data(self.rx_c2p_characteristic)
-                if command_data != None:
-                    if len(command_data) != 20:
-                        logging.debug("BlePeripheral::command_service_update_task - Invalid reply data length")
-                        self.__connected = False
-                        continue
-                    else:
-                        # Process the command contained in the reply
-                        command = RobotCommand.from_packed_bytes(command_data)
-                    if command.command_id != 0: logging.debug(f"BlePeripheral::command_service_update_task - Command received = {command}")
-
-            if self.__connected: await asyncio.sleep_ms(250)
-
-    # Tasks to run whilst connected to central  
-    async def connected_to_central(self):
-        # Generate a task for each service and then run them
-        peripheral_tasks = [
-            asyncio.create_task(self.command_service_update_task()),
-        ]
-        logging.info("BlePeripheral::connected_to_central - Running connected tasks")
-        await asyncio.gather(*peripheral_tasks)
-
-    async def wait_for_disconnection_from_central(self):
-        await self.__connection.disconnected()
-        self.__connected = False
-        self.__connection = None
-        logging.info("BlePeripheral::wait_for_disconnection_from_central - Central disconnected")
-
     # Advertise peripheral to central
     async def advertise_to_central(self):
         # BLE Advertising frequency
@@ -213,15 +198,50 @@ class BlePeripheral:
             logging.debug("BlePeripheral::advertise_to_central - Central did not respond - Reverting to disconnected state")
             self.__connected = False
 
+    # Task to run whilst connected to central
+    async def connected_to_central(self):
+        while self.__connected:
+            # Send a command service update (which causes central to reply)
+            self.command_service_update(self._command_status)
+
+            # Command service update timeout can cause disconnection - only wait for reply if still connected...
+            if self.__connected:
+                # Receive from c2p
+                command_data = await self.wait_for_data(self.rx_c2p_characteristic)
+                if command_data != None:
+                    if len(command_data) != 20:
+                        logging.debug("BlePeripheral::connected_to_central - Invalid reply data length")
+                        self.__connected = False
+                        continue
+                    else:
+                        # Process the command data contained in the reply
+                        robot_command = RobotCommand.from_packed_bytes(command_data)
+
+                    # nop commands are not logged as they are used to keep the peripheral polling the central
+                    if robot_command.command != "nop":
+                        logging.debug(f"BlePeripheral::command_service_update_task - Command received = {robot_command}")
+                        self._command_queue.append(robot_command)
+                        self._command_queue_event.set()
+
+            # Poll central 4 times a second
+            if self.__connected: await asyncio.sleep_ms(250)
+
+    async def handle_disconnection_from_central(self):
+        await self.__connection.disconnected()
+        self.__connected = False
+        self.__connection = None
+        logging.info("BlePeripheral::wait_for_disconnection_from_central - Central disconnected")
+
     # Main BLE peripheral task
     async def ble_peripheral_task(self):
         logging.debug("BlePeripheral::ble_peripheral_task - Task started")
         while True:
-            await self.advertise_to_central()
+            await self.advertise_to_central() # Advertise and wait for connection
 
+            # If we are connected, run the connected task
             if self.__connected:
-                await self.connected_to_central()
-                await self.wait_for_disconnection_from_central()
+                await self.connected_to_central() # Returns if we are disconnected
+                await self.handle_disconnection_from_central() # Handle disconnection
 
 if __name__ == "__main__":
     from main import main

@@ -48,6 +48,8 @@ class Velocity:
         Returns the intervals per second for the velocity sequence.
     """
 
+    FULL_DEBUG = False
+
     def __init__(self, total_steps: int, acc_spsps: int, minimum_sps: int, maximum_sps: int, intervals_per_second: int):
         """
         Initialize the Velocity object with the given parameters.
@@ -94,7 +96,7 @@ class Velocity:
         logging.debug(f"Velocity::__init__ - Minimum steps per second = {minimum_sps}")
         logging.debug(f"Velocity::__init__ - Maximum steps per second = {maximum_sps}")
         logging.debug(f"Velocity::__init__ - Intervals per second = {intervals_per_second}")
-        logging.debug("Velocity::__init__")
+        if Velocity.FULL_DEBUG: logging.debug("Velocity::__init__")
 
         acc_spppp: int = int(acc_spsps / intervals_per_second) # acceleration in steps per period per period
         maximum_spp: int = int(maximum_sps / intervals_per_second) # maximum speed in steps per period
@@ -103,10 +105,11 @@ class Velocity:
         if maximum_spp < 1: maximum_spp = 1
         if minimum_spp < 1: minimum_spp = 1
 
-        logging.debug(f"Velocity::__init__ - Acceleration in steps per period per period = {acc_spppp}")
-        logging.debug(f"Velocity::__init__ - Minimum steps per period = {minimum_spp}")
-        logging.debug(f"Velocity::__init__ - Maximum steps per period = {maximum_spp}")
-        logging.debug("Velocity::__init__")
+        if Velocity.FULL_DEBUG:
+            logging.debug(f"Velocity::__init__ - Acceleration in steps per period per period = {acc_spppp}")
+            logging.debug(f"Velocity::__init__ - Minimum steps per period = {minimum_spp}")
+            logging.debug(f"Velocity::__init__ - Maximum steps per period = {maximum_spp}")
+            logging.debug("Velocity::__init__")
 
         # Before calculating the actual sequence, we make a base assumption
         # that acceleration can use a maximum of 40% of the total required steps
@@ -118,11 +121,12 @@ class Velocity:
         run_steps: int = int(run_stepsf)
         dec_steps: int = int(dec_stepsf)
 
-        logging.debug("Velocity::__init__ - Steps per stage prediction:")
-        logging.debug(f"Velocity::__init__ -  ACC steps = {acc_steps}")
-        logging.debug(f"Velocity::__init__ -  RUN steps = {run_steps}")
-        logging.debug(f"Velocity::__init__ -  DEC steps = {dec_steps}")
-        logging.debug("Velocity::__init__")
+        if Velocity.FULL_DEBUG:
+            logging.debug("Velocity::__init__ - Steps per stage prediction:")
+            logging.debug(f"Velocity::__init__ -  ACC steps = {acc_steps}")
+            logging.debug(f"Velocity::__init__ -  RUN steps = {run_steps}")
+            logging.debug(f"Velocity::__init__ -  DEC steps = {dec_steps}")
+            logging.debug("Velocity::__init__")
 
         # Calculate any error due to division rounding and add it to the runSteps
         diff_steps: int = total_steps - acc_steps - run_steps - dec_steps
@@ -149,7 +153,8 @@ class Velocity:
                 current_step_position += temp_steps
 
                 # Show the result for this sequence part
-                logging.debug(f"Velocity::__init__ - ACC [{len(self.sequence_steps)}] ({current_step_position}) Steps = {self.sequence_steps[-1]} - SPP = {self.sequence_spp[-1]}")
+                if Velocity.FULL_DEBUG:
+                    logging.debug(f"Velocity::__init__ - ACC [{len(self.sequence_steps)}] ({current_step_position}) Steps = {self.sequence_steps[-1]} - SPP = {self.sequence_spp[-1]}")
 
             # Count the number of steps in the generated acceleration sequence
             acc_steps = sum(self.sequence_steps)
@@ -160,7 +165,7 @@ class Velocity:
             logging.debug(f"Velocity::__init__ -  ACC steps = {acc_steps}")
             logging.debug(f"Velocity::__init__ -  RUN steps = {run_steps}")
             logging.debug(f"Velocity::__init__ -  DEC steps = {dec_steps}")
-            logging.debug("Velocity::__init__")
+            if Velocity.FULL_DEBUG: logging.debug("Velocity::__init__")
 
         # Run stepper
         temp_steps: int = 0
@@ -188,7 +193,9 @@ class Velocity:
         self.sequence_steps.append(temp_steps)
 
         # Show the result for this sequence part
-        logging.debug(f"Velocity::__init__ - RUN [{len(self.sequence_steps)}] ({current_step_position}) Steps = {self.sequence_steps[-1]} - SPP = {self.sequence_spp[-1]}")
+        if Velocity.FULL_DEBUG:
+            logging.debug(f"Velocity::__init__ - RUN [{len(self.sequence_steps)}] ({current_step_position}) Steps = {self.sequence_steps[-1]} - SPP = {self.sequence_spp[-1]}")
+
         logging.debug(f"Velocity::__init__ - Maximum achieved RUN speed = {self.sequence_spp[-1] * intervals_per_second} Steps per second")
 
         # Decelerate stepper
@@ -202,11 +209,12 @@ class Velocity:
                 current_step_position += self.sequence_steps[i-1]
 
                 # Show the result for this sequence part
-                logging.debug(f"Velocity::__init__ - DEC [{len(self.sequence_steps)}] ({current_step_position}) Steps = {self.sequence_steps[-1]} - SPP = {self.sequence_spp[-1]}")
+                if Velocity.FULL_DEBUG:
+                    logging.debug(f"Velocity::__init__ - DEC [{len(self.sequence_steps)}] ({current_step_position}) Steps = {self.sequence_steps[-1]} - SPP = {self.sequence_spp[-1]}")
                 
         # Count the number of steps in the generated acceleration sequence
         logging.debug(f"Velocity::__init__ - Total number of steps = {sum(self.sequence_steps)}")
-        logging.debug("Velocity::__init__")
+        if Velocity.FULL_DEBUG: logging.debug("Velocity::__init__")
 
     # Return the total number of steps in the velocity sequence
     @property

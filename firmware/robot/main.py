@@ -29,7 +29,7 @@ import library.logging as logging
 from pen import Pen
 from ina260 import Ina260
 from library.eeprom import Eeprom
-from library.robot_comms import PowerMonitor
+from library.robot_comms import PowerMonitor, RobotCommand
 from configuration import Configuration
 from velocity import Velocity
 from drv8825 import Drv8825
@@ -78,20 +78,117 @@ def main():
     power monitoring, and BLE peripheral tasks.
     """
 
-    # Async task to update status LEDs depending on various states and times
-    async def status_led_task():
-        interval = 0
+    # Async task to control the robot
+    async def robot_control_task():
+        metric = Metric()
 
         while True:
-            # interval 0 =    0
-            # interval 1 =  250
-            # interval 2 =  500
-            # interval 3 =  750
-            # interval 4 = 1000
-            # interval 5 = 1250
+            # Wait for a command to be received
+            await ble_peripheral.command_queue_event.wait()
+            ble_peripheral.command_queue_event.clear()
 
-            # Stepper motor status
-            # Green = forwards, red = backwards, grey = not in motion
+            # Process the command
+            if ble_peripheral.command_queue:
+                robot_command = ble_peripheral.command_queue.pop()
+
+                # Motor power on
+                if robot_command.command == "motors-on":
+                    logging.debug("Main::robot_control_task - Motors on")
+                    drv8825.set_enable(True)
+
+                # Motor power off
+                if robot_command.command == "motors-off":
+                    logging.debug("Main::robot_control_task - Motors off")
+                    drv8825.set_enable(False)
+
+                # Forwards
+                if robot_command.command == "forward":
+                    logging.debug("Main::robot_control_task - forwards")
+                    left_stepper.set_forwards()
+                    right_stepper.set_forwards()
+                    velocity = Velocity(robot_command.parameters[0], 32, 2, 1600, 16)
+                    left_stepper.set_velocity(velocity)
+                    right_stepper.set_velocity(velocity)
+
+                    # Wait for the stepper to finish
+                    while left_stepper.is_busy or right_stepper.is_busy:
+                        await asyncio.sleep_ms(250)
+
+                # Backwards
+                if robot_command.command == "backward":
+                    logging.debug("Main::robot_control_task - backwards")
+                    left_stepper.set_backwards()
+                    right_stepper.set_backwards()
+                    velocity = Velocity(robot_command.parameters[0], 32, 2, 1600, 16)
+                    left_stepper.set_velocity(velocity)
+                    right_stepper.set_velocity(velocity)
+
+                    # Wait for the stepper to finish
+                    while left_stepper.is_busy or right_stepper.is_busy:
+                        await asyncio.sleep_ms(250)
+
+                # Left
+                if robot_command.command == "left":
+                    logging.debug("Main::robot_control_task - left")
+                    left_stepper.set_forwards()
+                    right_stepper.set_backwards()
+                    velocity = Velocity(metric.degrees_to_steps(robot_command.parameters[0]), 32, 2, 1600, 16)
+                    left_stepper.set_velocity(velocity)
+                    right_stepper.set_velocity(velocity)
+
+                    # Wait for the stepper to finish
+                    while left_stepper.is_busy or right_stepper.is_busy:
+                        await asyncio.sleep_ms(250)
+
+                # Right
+                if robot_command.command == "right":
+                    logging.debug("Main::robot_control_task - right")
+                    left_stepper.set_backwards()
+                    right_stepper.set_forwards()
+                    velocity = Velocity(metric.degrees_to_steps(robot_command.parameters[0]), 32, 2, 1600, 16)
+                    left_stepper.set_velocity(velocity)
+                    right_stepper.set_velocity(velocity)
+
+                    # Wait for the stepper to finish
+                    while left_stepper.is_busy or right_stepper.is_busy:
+                        await asyncio.sleep_ms(250)
+                
+                # Pen up
+                if robot_command.command == "penup":
+                    logging.debug("Main::robot_control_task - Pen up")
+                    pen.up()
+
+                # Pen down
+                if robot_command.command == "pendown":
+                    logging.debug("Main::robot_control_task - Pen down")
+                    pen.down()
+
+    # Async task to monitor the robot
+    async def robot_monitor_task():
+        while True:
+            # Update the BLE peripheral command status
+            if left_stepper.is_busy: ble_peripheral.command_status.left_motor_busy = True
+            else: ble_peripheral.command_status.left_motor_busy = False
+
+            if right_stepper.is_busy: ble_peripheral.command_status.right_motor_busy = True
+            else: ble_peripheral.command_status.right_motor_busy = False
+
+            if left_stepper.is_forwards: ble_peripheral.command_status.left_motor_direction = True
+            else: ble_peripheral.command_status.left_motor_direction = False
+
+            if right_stepper.is_forwards: ble_peripheral.command_status.right_motor_direction = True
+            else: ble_peripheral.command_status.right_motor_direction = False
+
+            if drv8825.is_enabled: ble_peripheral.command_status.motor_power_enabled = True
+            else: ble_peripheral.command_status.motor_power_enabled = False
+
+            if pen._is_servo_powered: ble_peripheral.command_status.pen_servo_on = True
+            else: ble_peripheral.command_status.pen_servo_on = False
+
+            if pen._is_servo_up: ble_peripheral.command_status.pen_servo_up = True
+            else: ble_peripheral.command_status.pen_servo_up = False
+
+            # Update the stepper motor status LEDs
             if left_stepper.is_busy:
                 if left_stepper.is_forwards: led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
                 else: led_fx.set_led_colour(_LED_left_motor, 64, 0, 0)
@@ -105,37 +202,15 @@ def main():
             else:
                 led_fx.set_led_colour(_LED_right_motor, 8, 8, 8)
 
-            # Eyes
-            if interval == 2:
-                led_fx.set_led_fade_speed(_LED_left_eye, 30)
-                led_fx.set_led_fade_speed(_LED_right_eye, 30)
-                led_fx.set_led_colour(_LED_left_eye, 255, 0, 0)
-                led_fx.set_led_colour(_LED_right_eye, 255, 0, 0)
-
-            if interval == 3:
-                led_fx.set_led_colour(_LED_left_eye, 64, 0, 0)
-                led_fx.set_led_colour(_LED_right_eye, 64, 0, 0)
-
-            # Status LED
+            # Update the BLE status
             if ble_peripheral.is_central_connected:
-                if interval == 0: 
-                    led_fx.set_led_colour(_LED_status, 0, 0, 64)
-                if interval == 5: 
-                    led_fx.set_led_colour(_LED_status, 0, 64, 0)
+                led_fx.set_led_colour(_LED_status, 0, 0, 64)
             else:
-                if interval == 0: 
-                    led_fx.set_led_colour(_LED_status, 0, 64, 0)
-                if interval == 5: 
-                    led_fx.set_led_colour(_LED_status, 0, 0, 64)
+                led_fx.set_led_colour(_LED_status, 0, 64, 0)
 
-            # Increment interval
-            interval += 1
-            if interval == 6: interval = 0
-
-            # Wait before next interval
             await asyncio.sleep_ms(250)
 
-    # Async task to update battery level service
+    # Async task to monitor power and send updates to BLE central
     async def power_monitor_task():
         while True:
             # Wait 5 seconds before next update
@@ -147,15 +222,12 @@ def main():
     # Async I/O task generation and launch
     async def aio_main():
         tasks = [
-            # BLE tasks
-            # Note: This seems to cause the WS2812s to flicker?
-            asyncio.create_task(ble_peripheral.ble_peripheral_task()),
+            asyncio.create_task(ble_peripheral.ble_peripheral_task()), # BLE peripheral task
+            asyncio.create_task(led_fx.process_leds_task()), # LED effects task
 
-            # General background tasks
-            asyncio.create_task(status_led_task()),
-            asyncio.create_task(led_fx.process_leds_task()),
-            #asyncio.create_task(stepper_task()),
-            asyncio.create_task(power_monitor_task()),
+            asyncio.create_task(power_monitor_task()), # Power monitoring task
+            asyncio.create_task(robot_monitor_task()), # Robot status monitoring task
+            asyncio.create_task(robot_control_task()), # Robot control task
         ]
         await asyncio.gather(*tasks)
 

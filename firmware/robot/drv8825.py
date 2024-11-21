@@ -70,6 +70,12 @@ class Drv8825:
         self.m1.value(0)
         self.m2.value(0)
 
+        self._is_enabled = False
+
+    @property
+    def is_enabled(self):
+        return self._is_enabled
+
     # Set the DRV8825s microstepping mode
     def set_steps_per_revolution(self, steps_per_revolution: int):
         """
@@ -131,9 +137,11 @@ class Drv8825:
 
         if (is_enabled): 
             self.enable.value(1)
+            self._is_enabled = True
             logging.debug("Drv8825::set_enable - DRV8825 Enabled")
         else: 
             self.enable.value(0)
+            self._is_enabled = False
             logging.debug("Drv8825::set_enable - DRV8825 Disabled")
 
 if __name__ == "__main__":

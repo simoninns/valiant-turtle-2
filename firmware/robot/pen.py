@@ -27,6 +27,7 @@
 
 from servo import Servo
 from machine import Pin
+import library.logging as logging
 
 class Pen:
     """
@@ -58,6 +59,24 @@ class Pen:
         # Initialise the pen servo to off
         self.servo = Servo(pin)
         self.servo.set_power(False)
+        self._is_servo_powered = False
+        self._is_servo_up = False
+
+    @property
+    def is_servo_up(self) -> bool:
+        """
+        Returns True if the pen is raised, False otherwise.
+        """
+
+        return self._is_servo_up
+    
+    @property
+    def is_servo_powered(self) -> bool:
+        """
+        Returns True if the servo power is on, False otherwise.
+        """
+
+        return self._is_servo_powered
 
     def up(self):
         """
@@ -66,6 +85,9 @@ class Pen:
 
         self.servo.set_position(90)
         self.servo.set_power(True)
+        self._is_servo_up = True
+        self._is_servo_powered = True
+        logging.debug("Pen::up - Pen raised")
     
     def down(self):
         """
@@ -74,6 +96,9 @@ class Pen:
 
         self.servo.set_position(0)
         self.servo.set_power(True)
+        self._is_servo_up = False
+        self._is_servo_powered = True
+        logging.debug("Pen::down - Pen lowered")
 
     def off(self):
         """
@@ -81,6 +106,8 @@ class Pen:
         """
 
         self.servo.set_power(False)
+        self._is_servo_powered = False
+        logging.debug("Pen::off - Servo powered off")
 
 if __name__ == "__main__":
     from main import main

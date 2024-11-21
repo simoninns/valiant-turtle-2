@@ -54,6 +54,11 @@ class PowerMonitor:
         """Get the power monitor current in milliamps (mA)"""
         return  self._current_mA
     
+    @current_mA.setter
+    def current_mA(self, value):
+        """Set the power monitor current in milliamps (mA)"""
+        self._current_mA = value
+    
     @property
     def current_mA_fstring(self) -> str:
         """Get the power monitor current as a formatted string in milliamps (mA)"""
@@ -64,25 +69,15 @@ class PowerMonitor:
         """Get the power monitor power in mW"""
         return self._power_mW
     
+    @power_mW.setter
+    def power_mW(self, value):
+        """Set the power monitor power in milliwatts (mW)"""
+        self._power_mW = value
+    
     @property
     def power_mW_fstring(self) -> str:
         """Get the power monitor power as a formatted string in milliwatts (mW)"""
         return "{:.2f} mW".format(self._power_mW)
-
-    @voltage_mV.setter
-    def voltage_mV(self, value):
-        """Set the power monitor voltage in millivolts (mV)"""
-        self._voltage_mV = value
-
-    @current_mA.setter
-    def current_mA(self, value):
-        """Set the power monitor current in milliamps (mA)"""
-        self._current_mA = value
-
-    @power_mW.setter
-    def voltage_mV(self, value):
-        """Set the power monitor power in milliwatts (mW)"""
-        self._power_mW = value
 
     @property
     def status(self):
@@ -104,98 +99,87 @@ class StatusBitFlag:
         """
         Initializes the status bit flag object with all flags set to 0.
         Flags:
-            Bit 0: Result of last command (1 = success, 0 = failure)
-            Bit 1: Left Motor Busy
-            Bit 2: Right Motor Busy
-            Bit 3: Left Motor Direction (1 = Forward, 0 = Reverse)
-            Bit 4: Right Motor Direction (1 = Forward, 0 = Reverse)
-            Bit 5: Motor Power Enabled
-            Bit 6: Pen Servo On/Off (1 = On, 0 = Off)
-            Bit 7: Pen Servo Up/Down (1 = Up, 0 = Down)
+            Bit 0: Left Motor Busy
+            Bit 1: Right Motor Busy
+            Bit 2: Left Motor Direction (1 = Forward, 0 = Reverse)
+            Bit 3: Right Motor Direction (1 = Forward, 0 = Reverse)
+            Bit 4: Motor Power Enabled
+            Bit 5: Pen Servo On/Off (1 = On, 0 = Off)
+            Bit 6: Pen Servo Up/Down (1 = Up, 0 = Down)
 
-        Bits 8-31 are reserved for future use.
+        Bits 7-31 are reserved for future use.
         """
         self._flags = 0
-
-    @property
-    def result(self) -> bool:
-        """Result of last command (True = success, False = failure)"""
-        return self.__is_bit_flag_set(0)
-    
-    @result.setter
-    def result(self, value: bool):
-        """Set the result of last command (True = success, False = failure)"""
-        self.__change_bit_flag(0, value)
     
     @property
     def left_motor_busy(self) -> bool:
         """Left motor busy flag (True = busy, False = not busy)"""
-        return self.__is_bit_flag_set(1)
+        return self.__is_bit_flag_set(0)
     
     @left_motor_busy.setter
     def left_motor_busy(self, value: bool):
         """Set the left motor busy flag (True = busy, False = not busy)"""
-        self.__change_bit_flag(1, value)
+        self.__change_bit_flag(0, value)
     
     @property
     def right_motor_busy(self) -> bool:
         """Right motor busy flag (True = busy, False = not busy)"""
-        return self.__is_bit_flag_set(2)
+        return self.__is_bit_flag_set(1)
     
     @right_motor_busy.setter
     def right_motor_busy(self, value: bool):
         """Set the right motor busy flag (True = busy, False = not busy)"""
-        self.__change_bit_flag(2, value)
+        self.__change_bit_flag(1, value)
 
     @property
     def left_motor_direction(self) -> bool:
         """Left motor direction (True = forward, False = reverse)"""
-        return self.__is_bit_flag_set(3)
+        return self.__is_bit_flag_set(2)
     
     @left_motor_direction.setter
     def left_motor_direction(self, value: bool):
         """Set the left motor direction (True = forward, False = reverse)"""
-        self.__change_bit_flag(3, value)
+        self.__change_bit_flag(2, value)
 
     @property
     def right_motor_direction(self) -> bool:
         """Right motor direction (True = forward, False = reverse)"""
-        return self.__is_bit_flag_set(4)
+        return self.__is_bit_flag_set(3)
     
     @right_motor_direction.setter
     def right_motor_direction(self, value: bool):
         """Set the right motor direction (True = forward, False = reverse)"""
-        self.__change_bit_flag(4, value)
+        self.__change_bit_flag(3, value)
 
     @property
     def motor_power_enabled(self) -> bool:
         """Motor power enabled (True = enabled, False = disabled"""
-        return self.__is_bit_flag_set(5)
+        return self.__is_bit_flag_set(4)
     
     @motor_power_enabled.setter
     def motor_power_enabled(self, value: bool):
         """Set the motor power enabled (True = enabled, False = disabled)"""
-        self.__change_bit_flag(5, value)
+        self.__change_bit_flag(4, value)
 
     @property
     def pen_servo_on(self) -> bool:
         """Pen servo on/off (True = on, False = off)"""
-        return self.__is_bit_flag_set(6)
+        return self.__is_bit_flag_set(5)
     
     @pen_servo_on.setter
     def pen_servo_on(self, value: bool):
         """Set the pen servo on/off (True = on, False = off)"""
-        self.__change_bit_flag(6, value)
+        self.__change_bit_flag(5, value)
 
     @property
     def pen_servo_up(self) -> bool:
         """Pen servo up/down (True = up, False = down)"""
-        return self.__is_bit_flag_set(7)
+        return self.__is_bit_flag_set(6)
     
     @pen_servo_up.setter
     def pen_servo_up(self, value: bool):
         """Set the pen servo up/down (True = up, False = down)"""
-        self.__change_bit_flag(7, value)
+        self.__change_bit_flag(6, value)
 
     @property
     def flags(self) -> int:
@@ -253,11 +237,6 @@ class StatusBitFlag:
     def __str__(self):
         """Return a string representation of the status flags."""
         status_str = f"Status flags [{self.display_flags()}]:\r\n"
-        
-        if self.result:
-            status_str += "           Last command: Success\r\n"
-        else:
-            status_str += "           Last command: Failure\r\n"
 
         if self.left_motor_busy:
             status_str += "             Left motor: Busy\r\n"
@@ -326,15 +305,17 @@ class RobotCommand:
     _command_dictionary = {
         # Dictionary of commands:
         # Command: "name" (unique ID, number of parameters, (param1_min, ...), (param1_max, ...), (param1_desc, ...), "help_text")
-        "nop":      (0, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "No operation"),
-        "forward":  (1, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move forward"),
-        "backward": (2, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move backward"),
-        "left":     (3, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Degrees", "", "", ""), "Turn left"),
-        "right":    (4, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Degrees", "", "", ""), "Turn right"),
-        "penup":    (5, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lift the pen up"),
-        "pendown":  (6, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lower the pen down"),
-        "lefteye":  (7, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the left eye"),
-        "righteye": (8, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the right eye"),
+        "nop":        ( 0, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "No operation"),
+        "motors-on":  ( 1, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Motors on"),
+        "motors-off": ( 2, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Motors off"),
+        "forward":    ( 3, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move forward"),
+        "backward":   ( 4, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move backward"),
+        "left":       ( 5, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Degrees", "", "", ""), "Turn left"),
+        "right":      ( 6, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Degrees", "", "", ""), "Turn right"),
+        "penup":      ( 7, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lift the pen up"),
+        "pendown":    ( 8, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lower the pen down"),
+        "left-eye":   ( 9, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the left eye"),
+        "right-eye":  (10, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the right eye"),
     }
 
     def __init__(self, command: str = "nop", parameters: list = []):
@@ -383,6 +364,11 @@ class RobotCommand:
     def command_id(self) -> int:
         """Get the command ID."""
         return self._command_id
+    
+    @property
+    def parameters(self) -> list:
+        """Get the parameters for the command."""
+        return self._parameters
 
     def _pack_command(self) -> bytes:
         """
