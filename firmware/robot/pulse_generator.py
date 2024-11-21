@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 from machine import Pin
 import rp2
 

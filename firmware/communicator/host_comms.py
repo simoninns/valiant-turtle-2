@@ -25,11 +25,11 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 from machine import UART
 import asyncio
 from command_shell import CommandShell
-from robot_comms import PowerMonitor, StatusBitFlag, RobotCommand
+from library.robot_comms import PowerMonitor, StatusBitFlag, RobotCommand
 
 class HostComms:
     """Class to manage host communication tasks"""
@@ -152,6 +152,8 @@ class HostComms:
             if len(parameters) != RobotCommand.num_parameters(command):
                 if RobotCommand.num_parameters(command) == 1:
                     await self.command_shell.send_response(f"ERROR Command requires {RobotCommand.num_parameters(command)} parameter")
+                elif RobotCommand.num_parameters(command) == 0:
+                    await self.command_shell.send_response(f"ERROR Command does not require parameters") 
                 else:
                     await self.command_shell.send_response(f"ERROR Command requires {RobotCommand.num_parameters(command)} parameters")
                 return

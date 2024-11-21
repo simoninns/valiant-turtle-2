@@ -25,14 +25,14 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 
 from machine import UART
 
 from leds import Leds
 from parallel_port import ParallelPort
 from ble_central import BleCentral
-from eeprom import Eeprom
+from library.eeprom import Eeprom
 from configuration import Configuration
 from host_comms import HostComms
 

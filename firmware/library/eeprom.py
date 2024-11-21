@@ -3,7 +3,7 @@
 #   eeprom.py
 #
 #   24LC16 I2C EEPROM Communication
-#   Valiant Turtle 2 - Robot firmware
+#   Valiant Turtle 2 - Library class
 #   Copyright (C) 2024 Simon Inns
 #
 #   This file is part of Valiant Turtle 2
@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 from machine import I2C
 from time import sleep
 
@@ -147,7 +147,3 @@ class Eeprom:
             # Continue if required
             remaining_data -= write_length
             address += write_length
-
-if __name__ == "__main__":
-    from main import main
-    main()

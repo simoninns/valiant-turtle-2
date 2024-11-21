@@ -26,14 +26,14 @@
 #************************************************************************
 
 import aioble.device
-import logging
+import library.logging as logging
 import aioble
 import bluetooth
 from machine import unique_id
 import asyncio
-import data_encode
+import struct
 
-from robot_comms import PowerMonitor, RobotCommand
+from library.robot_comms import PowerMonitor, RobotCommand
 
 class BleCentral:
     CONNECTION_CONFIRMATION_CODE = 12345
@@ -159,7 +159,11 @@ class BleCentral:
                 power_voltage_data = await self.power_voltage_characteristic.notified()
                 power_current_data = await self.power_current_characteristic.read()
                 power_watts_data = await self.power_watts_characteristic.read()
-                self.power_service_notification(data_encode.from_float(power_voltage_data), data_encode.from_float(power_current_data), data_encode.from_float(power_watts_data))
+                self.power_service_notification(
+                    struct.unpack("<f", power_voltage_data)[0],
+                    struct.unpack("<f", power_current_data)[0],
+                    struct.unpack("<f", power_watts_data)[0],
+                )
                                                             
         except Exception as e:
             logging.debug("BleCentral::handle_power_service_task - Exception was flagged (Peripheral probably disappeared)")
@@ -184,7 +188,7 @@ class BleCentral:
             # Loop waiting for service notifications
             while self.connected:
                 value = await self.tx_p2c_characteristic.notified()
-                self.command_service_notification(data_encode.from_uint32(value))
+                self.command_service_notification(struct.unpack("<L", value)[0])
 
                 # Check for any commands to send to the peripheral and, if there aren't any, send a nop command
                 if len(self._command_queue) > 0:
@@ -292,7 +296,7 @@ class BleCentral:
         await self.power_voltage_characteristic.subscribe(notify = True)
 
         # Send a response of 12345 to the peripheral to show we are connected and ready
-        await self.rx_c2p_characteristic.write(data_encode.to_int16(BleCentral.CONNECTION_CONFIRMATION_CODE))
+        await self.rx_c2p_characteristic.write(struct.pack("<L", int(BleCentral.CONNECTION_CONFIRMATION_CODE)))
 
         # Generate a task for each service and then run them
         central_tasks = [

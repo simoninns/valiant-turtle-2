@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 import machine, neopixel
 import asyncio
 

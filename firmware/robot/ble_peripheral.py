@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 
 from machine import Pin, unique_id
 from micropython import const
@@ -33,8 +33,8 @@ from micropython import const
 import aioble
 import bluetooth
 import asyncio
-import data_encode
-from robot_comms import StatusBitFlag, RobotCommand
+import struct
+from library.robot_comms import StatusBitFlag, RobotCommand, PowerMonitor
 
 class BlePeripheral:
     MANUFACTURER_DATA = (0xFFE1, b"www.waitingforfriday.com")
@@ -114,13 +114,14 @@ class BlePeripheral:
             return None
 
     # Send power service characteristics update
-    def power_service_update(self, voltage, current, power):
+    def power_service_update(self, power_monitor: PowerMonitor):
         if self.__connected and self.__connection:
-            logging.debug(f"BlePeripheral::power_service_update - mV = {voltage} / mA = {current} / mW = {power}")
+            logging.debug(f"BlePeripheral::power_service_update - {power_monitor}")
             try:
-                self.power_voltage_characteristic.notify(self.__connection, data_encode.to_float(voltage))
-                self.power_current_characteristic.write(data_encode.to_float(current))
-                self.power_watts_characteristic.write(data_encode.to_float(power))
+                # Encode the power monitor object and send it                       
+                self.power_voltage_characteristic.notify(self.__connection, struct.pack("<f", float(power_monitor.voltage_mV)))
+                self.power_current_characteristic.write(struct.pack("<f", float(power_monitor.current_mA)))
+                self.power_watts_characteristic.write(struct.pack("<f", float(power_monitor.power_mW)))
             
             except Exception as e:
                 logging.debug("BlePeripheral::power_service_update - Exception was flagged (Central probably disappeared)")
@@ -132,7 +133,7 @@ class BlePeripheral:
             #logging.debug(f"BlePeripheral::command_service_update - Status Bit Flags = {status_bit_flag.display_flags()}")
             try:
                 # Send from p2c
-                self.tx_p2c_characteristic.notify(self.__connection, data_encode.to_uint32(status_bit_flag.flags))
+                self.tx_p2c_characteristic.notify(self.__connection, struct.pack("<L", int(status_bit_flag.flags)))
                 
             except Exception as e:
                 logging.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
@@ -201,7 +202,8 @@ class BlePeripheral:
         logging.debug("BlePeripheral::advertise_to_central - Waiting for central to confirm connection...")
         reply_data = await self.wait_for_data(self.rx_c2p_characteristic)
         if reply_data != None:
-            if data_encode.from_int16(reply_data) == BlePeripheral.CONNECTION_CONFIRMATION_CODE:
+            # Get the 32-bit unsigned integer from the reply data and check it
+            if struct.unpack("<L", reply_data)[0] == BlePeripheral.CONNECTION_CONFIRMATION_CODE:
                 logging.debug("BlePeripheral::advertise_to_central - Central has confirmed as connected")
                 self.__connected = True
             else:

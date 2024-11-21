@@ -32,7 +32,7 @@
 # To avoid this, legacy mode works as synchronously as possible to avoid
 # introducing unnecessary delay
 
-import logging
+import library.logging as logging
 from machine import UART
 from leds import Leds
 from ir_uart import IrUart

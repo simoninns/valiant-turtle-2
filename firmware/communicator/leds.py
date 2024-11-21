@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 from machine import PWM, Pin, Timer
 
 class Leds:

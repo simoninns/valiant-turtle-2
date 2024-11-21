@@ -26,7 +26,7 @@
 #************************************************************************
 
 import asyncio
-import logging
+import library.logging as logging
 from machine import UART
 
 class CommandShell:

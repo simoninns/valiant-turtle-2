@@ -24,14 +24,14 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 from micropython import const
 from machine import Pin, UART, I2C
 
 from leds import Leds
 from ir_uart import IrUart
 from parallel_port import ParallelPort
-from eeprom import Eeprom
+from library.eeprom import Eeprom
 
 from vt1_mode import Vt1Mode
 from vt2_mode import Vt2Mode

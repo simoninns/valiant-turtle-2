@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 from machine import I2C, Pin
 from micropython import const, RingIO
 from mcp23017 import Mcp23017

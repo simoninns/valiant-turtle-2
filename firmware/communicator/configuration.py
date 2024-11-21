@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 import ustruct
 
 _CONFIGURATION_version = const(0x02)

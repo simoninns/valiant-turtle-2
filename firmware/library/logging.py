@@ -3,7 +3,7 @@
 #   logging.py
 #
 #   Simple logging module for MicroPython
-#   Valiant Turtle 2 - Robot firmware
+#   Valiant Turtle 2 - Library class
 #   Copyright (C) 2024 Simon Inns
 #
 #   This file is part of Valiant Turtle 2
@@ -24,8 +24,6 @@
 #   Email: simon.inns@gmail.com
 #
 #************************************************************************
-
-import sys
 
 DEBUG = 10
 INFO = 20
@@ -58,17 +56,3 @@ def error(msg, *args):
 def critical(msg, *args):
     if _level <= CRITICAL:
         print("[CRITICAL]", msg.format(*args))
-
-if __name__ == "__main__":
-    # If this module is run directly, execute main.py instead
-    with open("main.py") as f:
-        exec(f.read())
-
-if __name__ == "__main__":
-    # If this module is run directly, execute main.py instead
-    with open("main.py") as f:
-        exec(f.read())
-
-if __name__ == "__main__":
-    from main import main
-    main()

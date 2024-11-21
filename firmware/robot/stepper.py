@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 from velocity import Velocity
 from pulse_generator import PulseGenerator
 

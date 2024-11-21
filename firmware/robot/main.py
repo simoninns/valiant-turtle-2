@@ -24,11 +24,12 @@
 #
 #************************************************************************
 
-import logging
+import library.logging as logging
 
 from pen import Pen
 from ina260 import Ina260
-from eeprom import Eeprom
+from library.eeprom import Eeprom
+from library.robot_comms import PowerMonitor
 from configuration import Configuration
 from velocity import Velocity
 from drv8825 import Drv8825
@@ -141,7 +142,7 @@ def main():
             await asyncio.sleep_ms(5000)
 
             # Read the INA260 and send an update to BLE central
-            ble_peripheral.power_service_update(ina260.voltage_mV, ina260.current_mA, ina260.power_mW)
+            ble_peripheral.power_service_update(ina260.power_monitor)
 
     # Async I/O task generation and launch
     async def aio_main():
@@ -196,7 +197,7 @@ def main():
 
     # Initialise the pen control
     pen = Pen(_GPIO_PEN)
-    pen.off()
+    pen.up()
 
     # Initialise the I2C buses
     i2c_internal = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000)
