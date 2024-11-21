@@ -27,7 +27,6 @@
 import logging
 from micropython import const
 from machine import Pin, UART, I2C
-from time import sleep
 
 from leds import Leds
 from ir_uart import IrUart

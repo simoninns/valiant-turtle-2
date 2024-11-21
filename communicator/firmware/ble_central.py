@@ -192,7 +192,7 @@ class BleCentral:
                     command = self._command_queue.pop(0)
                     if not isinstance(command, RobotCommand):
                         raise TypeError("Expected command to be of type RobotCommand")
-                    logging.debug(f"BleCentral::handle_command_service_task - Sending command {command}")
+                    logging.debug(f"BleCentral::handle_command_service_task - Sending {command}")
                     await self.rx_c2p_characteristic.write(command.get_packed_bytes())
                 else:
                     # No commands queued, send a nop command
@@ -202,6 +202,7 @@ class BleCentral:
                                                         
         except Exception as e:
             logging.debug("BleCentral::handle_command_service_task - Exception was flagged (Peripheral probably disappeared)")
+            logging.debug(f"BleCentral::handle_command_service_task - Exception: {e}")
             self.connected = False
 
     async def connected_to_peripheral(self):

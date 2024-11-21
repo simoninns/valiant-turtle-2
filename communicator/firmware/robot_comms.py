@@ -2,7 +2,7 @@
 #
 #   robot_comms.py
 #
-#   Classes for robot communications
+#   Classes for robot communications over BLE
 #   Valiant Turtle 2 - Communicator firmware
 #   Copyright (C) 2024 Simon Inns
 #
@@ -255,55 +255,78 @@ class RobotCommand:
     """
     RobotCommand class to represent and handle robot commands with parameters.
     Attributes:
-        _command_parameters (dict): A dictionary mapping command names to their unique IDs and number of parameters.
+        _command_dictionary (dict): A dictionary mapping command names to their unique IDs, number of parameters, parameter ranges, and descriptions.
     Methods:
-        __init__(self, command: str, param1: int, param2: int, param3: int, param4: int):
+        __init__(self, command: str, parameters: list):
             Initialize a RobotCommand instance with the given command and parameters.
         _pack_command(self) -> bytes:
+            Pack the command ID and parameters into a fixed-length byte array.
         get_packed_bytes(self) -> bytes:
             Get the packed 20 byte array representing the command and its parameters.
         from_packed_bytes(cls, byte_array: bytes):
+            Create a RobotCommand instance from a packed 20 byte array.
+        _id_to_command(cls, command_id: int) -> str:
+            Get the command name from the command ID.
+        num_parameters(cls, command: str) -> int:
+            Get the number of parameters for the given command.
+        parameter_range(cls, command: str, param_num: int) -> tuple:
+            Get the range of values for the given parameter of the command.
+        is_command_valid(cls, command: str) -> bool:
+            Check if the given command is valid.
         __str__(self):
             Return a string representation of the RobotCommand instance.
     """
 
     # Command parameters: name (unique ID, number of parameters)
     # Note: The maximum number of parameters supported is 4
-    _command_parameters = {
-        "nop": (0, 0),
-        "forward": (1, 1),
-        "backward": (2, 1),
-        "left": (3, 1),
-        "right": (4, 1),
-        "penup": (5, 0),
-        "pendown": (6, 0),
+    _command_dictionary = {
+        # Dictionary of commands:
+        # Command: "name" (unique ID, number of parameters, (param1_min, ...), (param1_max, ...), (param1_desc, ...), "help_text")
+        "nop":      (0, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "No operation"),
+        "forward":  (1, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move forward"),
+        "backward": (2, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move backward"),
+        "left":     (3, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Degrees", "", "", ""), "Turn left"),
+        "right":    (4, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Degrees", "", "", ""), "Turn right"),
+        "penup":    (5, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lift the pen up"),
+        "pendown":  (6, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lower the pen down"),
+        "lefteye":  (7, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the left eye"),
+        "righteye": (8, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the right eye"),
     }
 
-    def __init__(self, command: str = "nop", param1: int = 0, param2: int = 0, param3: int = 0, param4: int = 0):
+    def __init__(self, command: str = "nop", parameters: list = []):
         """
         Initialize a RobotCommand instance.
         
         Args:
             command (str): The command name.
-            param1 (int): The first parameter (32-bit integer).
-            param2 (int): The second parameter (32-bit integer).
-            param3 (int): The third parameter (32-bit integer).
-            param4 (int): The fourth parameter (32-bit integer).
+            parameters (list): A list of parameters for the command (must be a maximum of 4 x 32-bit integers).
         
         Raises:
             ValueError: If the command is not recognized or any parameter is not a 32-bit integer.
         """
-        if command not in self._command_parameters:
+        if command not in self._command_dictionary:
             raise ValueError(f"Command '{command}' is not recognized")
         
-        self._command = command
-        self._command_id = self._command_parameters[command][0]
-        self._parameters = [param1, param2, param3, param4]
+        if len(parameters) != self._command_dictionary[command][1]:
+            raise ValueError(f"Command '{command}' requires {self._command_dictionary[command][1]} parameters")
         
+        self._command = command
+        self._parameters = parameters
+
+        self._command_id = self._command_dictionary[command][0]
+        self._num_parameters = self._command_dictionary[command][1]
+        self._parameter_minimums = self._command_dictionary[command][2]
+        self._parameter_maximums = self._command_dictionary[command][3]
+
         # Ensure all parameters are 32-bit integers
         for param in self._parameters:
             if not (0 <= param < 2**32):
-                raise ValueError(f"Parameter {param} is not a 32-bit integer")
+                raise ValueError(f"Parameter {param} is not a 32-bit integer")      
+
+        # Range check the parameters according to the dictionary
+        for i in range(self._num_parameters):
+            if not (self._parameter_minimums[i] <= self._parameters[i] <= self._parameter_maximums[i]):
+                raise ValueError(f"Parameter {self._parameters[i]} is out of range for command '{command}'")
         
         self._byte_array = self._pack_command()
 
@@ -350,7 +373,7 @@ class RobotCommand:
         Raises:
             ValueError: If the command ID is not recognized.
         """
-        for command, (id, _) in cls._command_parameters.items():
+        for command, (id, _) in cls._command_dictionary.items():
             if id == command_id:
                 return command
         raise ValueError(f"Command ID '{command_id}' is not recognized")
@@ -378,8 +401,86 @@ class RobotCommand:
         command = cls._id_to_command(command_id)
         return cls(command, param1, param2, param3, param4)
 
+    @classmethod
+    def num_parameters(cls, command: str) -> int:
+        """
+        Get the number of parameters for the given command.
+        
+        Args:
+            command (str): The command name.
+        
+        Returns:
+            int: The number of parameters for the command.
+        
+        Raises:
+            ValueError: If the command is not recognized.
+        """
+        if command not in cls._command_dictionary:
+            raise ValueError(f"Command '{command}' is not recognized")
+        return cls._command_dictionary[command][1]
+    
+    @classmethod
+    def parameter_range(cls, command: str, param_num: int) -> tuple:
+        """
+        Get the range of values for the given parameter of the command.
+        
+        Args:
+            command (str): The command name.
+            param_num (int): The parameter number (0-3).
+        
+        Returns:
+            tuple: A tuple containing the minimum and maximum values for the parameter.
+        
+        Raises:
+            ValueError: If the command is not recognized or the parameter number is not between 1 and 4.
+        """
+        if command not in cls._command_dictionary:
+            raise ValueError(f"Command '{command}' is not recognized")
+        if not (0 <= param_num <= 3):
+            raise ValueError("Parameter number must be between 0 and 3")
+        return cls._command_dictionary[command][2][param_num], cls._command_dictionary[command][3][param_num]
+
+    @classmethod
+    def is_command_valid(cls, command: str) -> bool:
+        """
+        Check if the given command is valid.
+        
+        Args:
+            command (str): The command name.
+        
+        Returns:
+            bool: True if the command is valid, False otherwise.
+        """
+        return command in cls._command_dictionary
+    
+    @classmethod
+    def help_text(cls) -> str:
+        """
+        Return a list of all available commands with their number of parameters and descriptions.
+        
+        Returns:
+            str: A string containing the list of all available commands.
+        """
+        sorted_commands = sorted(cls._command_dictionary.items(), key=lambda item: item[1][0])
+        help_str = ""
+        for command, (_, num_params, _, _, _, help_text) in sorted_commands:
+            if num_params > 0:
+                param_desc = " ".join(f"[{desc}]" for desc in cls._command_dictionary[command][4][:num_params])
+                help_str += f"    {command} {param_desc} - {help_text}\r\n"
+            else:
+                help_str += f"    {command} - {help_text}\r\n"
+        return help_str
+    
     def __str__(self):
-        return f"Command {self._command} ({self._command_id}) with parameters: {self._parameters}"
+        """
+        Return a string representation of the RobotCommand instance.
+        
+        Returns:
+            str: A string representation of the RobotCommand instance.
+        """
+        if self._num_parameters == 0:
+            return f"Command = \"{self._command}\" with no parameters"
+        return f"Command = \"{self._command}\" with parameters = {self._parameters}"
 
 if __name__ == "__main__":
     from main import main
