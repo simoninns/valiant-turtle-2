@@ -188,7 +188,7 @@ class Stepper:
 
         # Start the pulse generator (updates are via callback)
         self.is_busy_flag = True
-        self.pulse_generator.set(self.velocity.sequence_spp[self.sequence_index] * self.velocity.parameters.intervals_per_second, self.velocity.sequence_steps[self.sequence_index])
+        self.pulse_generator.set(self.velocity.sequence_spi[self.sequence_index] * self.velocity.parameters.intervals_per_second, self.velocity.sequence_steps[self.sequence_index])
         self.steps_remaining -= self.velocity.sequence_steps[self.sequence_index]
 
         return True
@@ -211,7 +211,7 @@ class Stepper:
             self.sequence_index += 1
             if self.sequence_index < len(self.velocity.sequence_steps):
                 # Sequence in progress
-                self.pulse_generator.set(self.velocity.sequence_spp[self.sequence_index] * self.velocity.parameters.intervals_per_second, self.velocity.sequence_steps[self.sequence_index])
+                self.pulse_generator.set(self.velocity.sequence_spi[self.sequence_index] * self.velocity.parameters.intervals_per_second, self.velocity.sequence_steps[self.sequence_index])
                 self.steps_remaining -= self.velocity.sequence_steps[self.sequence_index]
             else:
                 # Sequence completed
