@@ -55,10 +55,10 @@ class Metric:
             steps_per_revolution (int): Number of steps per revolution of the wheel. Default is 800.
         """
 
-        self.wheel_diameter_mm = wheel_diameter_mm
-        self.axel_distance_mm = axel_distance_mm
-        self.steps_per_revolution = steps_per_revolution
-        self.pi = 3.14159
+        self._wheel_diameter_mm = wheel_diameter_mm
+        self._axel_distance_mm = axel_distance_mm
+        self._steps_per_revolution = steps_per_revolution
+        self._pi = 3.14159
 
     # Convert millimeters to steps
     def mm_to_steps(self, millimeters: float) -> int:
@@ -72,9 +72,24 @@ class Metric:
             int: The number of motor steps corresponding to the given distance in millimeters.
         """
 
-        circumference = (2.0 * self.pi) * (self.wheel_diameter_mm / 2.0) # C = 2pi x r 
-        millimeters_per_step = (circumference / self.steps_per_revolution)
+        circumference = (2.0 * self._pi) * (self._wheel_diameter_mm / 2.0) # C = 2pi x r 
+        millimeters_per_step = (circumference / self._steps_per_revolution)
         return int(millimeters / millimeters_per_step)
+    
+    def steps_to_mm(self, steps: int) -> float:
+        """
+        Convert motor steps to millimeters.
+        This method calculates the distance in millimeters covered by a given number of motor steps.
+        It uses the wheel diameter and the number of steps per revolution to perform the conversion.
+        Args:
+            steps (int): The number of motor steps to be converted to millimeters.
+        Returns:
+            float: The distance in millimeters covered by the given number of motor steps.
+        """
+
+        circumference = (2.0 * self._pi) * (self._wheel_diameter_mm / 2.0)
+        millimeters_per_step = (circumference / self._steps_per_revolution)
+        return steps * millimeters_per_step
 
     # Convert degrees to steps
     # Note: This is only for when the robot turns on it's axis
@@ -87,9 +102,24 @@ class Metric:
             int: The equivalent number of motor steps.
         """
 
-        circumference = (2.0 * self.pi) * (self.axel_distance_mm / 2.0)
+        circumference = (2.0 * self._pi) * (self._axel_distance_mm / 2.0)
         millimeters = (circumference / 360.0) * degrees
         return self.mm_to_steps(millimeters)
+    
+    # Convert steps to degrees
+    # Note: This is only for when the robot turns on it's axis
+    def steps_to_degrees(self, steps: int) -> float:
+        """
+        Convert motor steps to degrees of rotation.
+        Args:
+            steps (int): The number of motor steps to convert.
+        Returns:
+            float: The equivalent number of degrees of rotation.
+        """
+
+        circumference = (2.0 * self._pi) * (self._axel_distance_mm / 2.0)
+        millimeters = self.steps_to_mm(steps)
+        return (millimeters / circumference) * 360.0
     
 if __name__ == "__main__":
     from main import main

@@ -312,10 +312,11 @@ class RobotCommand:
         "backward":   ( 4, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move backward"),
         "left":       ( 5, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Degrees", "", "", ""), "Turn left"),
         "right":      ( 6, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Degrees", "", "", ""), "Turn right"),
-        "penup":      ( 7, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lift the pen up"),
-        "pendown":    ( 8, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lower the pen down"),
-        "left-eye":   ( 9, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the left eye"),
-        "right-eye":  (10, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the right eye"),
+        "velocity":   ( 7, 3, (1, 1, 1, 0), (100000, 100000, 100000, 0), ("Acceleration in mmPSPS", "Min mmPS", "Max mmPS", ""), "Set the velocity profile (in mm per second)"),
+        "penup":      ( 8, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lift the pen up"),
+        "pendown":    ( 9, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lower the pen down"),
+        "left-eye":   (10, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the left eye"),
+        "right-eye":  (11, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the right eye"),
     }
 
     def __init__(self, command: str = "nop", parameters: list = []):

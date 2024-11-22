@@ -37,9 +37,11 @@ import struct
 from library.robot_comms import StatusBitFlag, RobotCommand, PowerMonitor
 
 class BlePeripheral:
-    MANUFACTURER_DATA = (0xFFE1, b"www.waitingforfriday.com")
-    CONNECTION_CONFIRMATION_CODE = 12345
-    ADVERTISING_NAME = "vt2-robot"
+    __MANUFACTURER_DATA = (0xFFE1, b"www.waitingforfriday.com")
+    __CONNECTION_CONFIRMATION_CODE = 12345
+    __ADVERTISING_NAME = "vt2-robot"
+
+    __DEBUG_LOG_POWER = False # Set to True to log power service data notifications
 
     def __init__(self):
         # Get the local device's Unique ID (used as the serial number)
@@ -96,8 +98,8 @@ class BlePeripheral:
 
         # Set our appearance to "Remote Control"
         self.peripheral_appearance_generic_remote_control = const(0x0180)
-        self.peripheral_manufacturer = BlePeripheral.MANUFACTURER_DATA
-        self.peripheral_advertising_name = BlePeripheral.ADVERTISING_NAME
+        self.peripheral_manufacturer = BlePeripheral.__MANUFACTURER_DATA
+        self.peripheral_advertising_name = BlePeripheral.__ADVERTISING_NAME
 
     # Define a service - command
     def __ble_service_command_definitions(self):
@@ -143,7 +145,7 @@ class BlePeripheral:
     # Send power service characteristics update
     def power_service_update(self, power_monitor: PowerMonitor):
         if self.__connected and self.__connection:
-            logging.debug(f"BlePeripheral::power_service_update - {power_monitor}")
+            if BlePeripheral.__DEBUG_LOG_POWER: logging.debug(f"BlePeripheral::power_service_update - {power_monitor}")
             try:
                 # Encode the power monitor object and send it                       
                 self.power_voltage_characteristic.notify(self.__connection, struct.pack("<f", float(power_monitor.voltage_mV)))
@@ -188,7 +190,7 @@ class BlePeripheral:
         reply_data = await self.wait_for_data(self.rx_c2p_characteristic)
         if reply_data != None:
             # Get the 32-bit unsigned integer from the reply data and check it
-            if struct.unpack("<L", reply_data)[0] == BlePeripheral.CONNECTION_CONFIRMATION_CODE:
+            if struct.unpack("<L", reply_data)[0] == BlePeripheral.__CONNECTION_CONFIRMATION_CODE:
                 logging.debug("BlePeripheral::advertise_to_central - Central has confirmed as connected")
                 self.__connected = True
             else:

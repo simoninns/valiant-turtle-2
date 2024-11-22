@@ -31,7 +31,7 @@ from ina260 import Ina260
 from library.eeprom import Eeprom
 from library.robot_comms import PowerMonitor, RobotCommand
 from configuration import Configuration
-from velocity import Velocity
+from velocity import Velocity, VelocityParameters
 from drv8825 import Drv8825
 from stepper import Stepper
 from metric import Metric
@@ -80,7 +80,15 @@ def main():
 
     # Async task to control the robot
     async def robot_control_task():
+        # Create a metric object for unit conversion with default calibration values
         metric = Metric()
+
+        # Velocity parameters:
+        #   Acceleration in millimeters per second per second
+        #   Minimum millimeters Per Second
+        #   Maximum millimeters Per Second
+        #   Update Intervals per second
+        velocity_parameters = VelocityParameters(metric.mm_to_steps(10), metric.mm_to_steps(1), metric.mm_to_steps(100), 16)
 
         while True:
             # Wait for a command to be received
@@ -106,7 +114,7 @@ def main():
                     logging.debug("Main::robot_control_task - forwards")
                     left_stepper.set_forwards()
                     right_stepper.set_forwards()
-                    velocity = Velocity(robot_command.parameters[0], 32, 2, 1600, 16)
+                    velocity = Velocity(metric.mm_to_steps(robot_command.parameters[0]), velocity_parameters)
                     left_stepper.set_velocity(velocity)
                     right_stepper.set_velocity(velocity)
 
@@ -119,7 +127,7 @@ def main():
                     logging.debug("Main::robot_control_task - backwards")
                     left_stepper.set_backwards()
                     right_stepper.set_backwards()
-                    velocity = Velocity(robot_command.parameters[0], 32, 2, 1600, 16)
+                    velocity = Velocity(metric.mm_to_steps(robot_command.parameters[0]), velocity_parameters)
                     left_stepper.set_velocity(velocity)
                     right_stepper.set_velocity(velocity)
 
@@ -132,7 +140,7 @@ def main():
                     logging.debug("Main::robot_control_task - left")
                     left_stepper.set_forwards()
                     right_stepper.set_backwards()
-                    velocity = Velocity(metric.degrees_to_steps(robot_command.parameters[0]), 32, 2, 1600, 16)
+                    velocity = Velocity(metric.degrees_to_steps(robot_command.parameters[0]), velocity_parameters)
                     left_stepper.set_velocity(velocity)
                     right_stepper.set_velocity(velocity)
 
@@ -145,13 +153,21 @@ def main():
                     logging.debug("Main::robot_control_task - right")
                     left_stepper.set_backwards()
                     right_stepper.set_forwards()
-                    velocity = Velocity(metric.degrees_to_steps(robot_command.parameters[0]), 32, 2, 1600, 16)
+                    velocity = Velocity(metric.degrees_to_steps(robot_command.parameters[0]), velocity_parameters)
                     left_stepper.set_velocity(velocity)
                     right_stepper.set_velocity(velocity)
 
                     # Wait for the stepper to finish
                     while left_stepper.is_busy or right_stepper.is_busy:
                         await asyncio.sleep_ms(250)
+
+                # Velocity
+                if robot_command.command == "velocity":
+                    # Update the velocity parameters (parameters are in mm, so we convert to steps)
+                    velocity_parameters.acc_spsps = metric.mm_to_steps(robot_command.parameters[0])
+                    velocity_parameters.minimum_sps = metric.mm_to_steps(robot_command.parameters[1])
+                    velocity_parameters.maximum_sps = metric.mm_to_steps(robot_command.parameters[2])
+                    logging.debug(f"Main::robot_control_task - velocity parameters (steps) = {velocity_parameters}")
                 
                 # Pen up
                 if robot_command.command == "penup":
@@ -162,6 +178,16 @@ def main():
                 if robot_command.command == "pendown":
                     logging.debug("Main::robot_control_task - Pen down")
                     pen.down()
+
+                # Left eye colour
+                if robot_command.command == "left-eye":
+                    logging.debug("Main::robot_control_task - Left eye colour")
+                    led_fx.set_led_colour(_LED_left_eye, robot_command.parameters[0], robot_command.parameters[1], robot_command.parameters[2])
+
+                # Right eye colour
+                if robot_command.command == "right-eye":
+                    logging.debug("Main::robot_control_task - Right eye colour")
+                    led_fx.set_led_colour(_LED_right_eye, robot_command.parameters[0], robot_command.parameters[1], robot_command.parameters[2])
 
     # Async task to monitor the robot
     async def robot_monitor_task():
@@ -230,39 +256,6 @@ def main():
             asyncio.create_task(robot_control_task()), # Robot control task
         ]
         await asyncio.gather(*tasks)
-
-    # Stepper test task
-    async def stepper_task():
-        # Define a velocity sequence
-        velocity = Velocity(6400, 32, 2, 1600, 16)
-
-        while True:
-            drv8825.set_enable(True)
-
-            left_stepper.set_forwards()
-            right_stepper.set_forwards()
-            left_stepper.set_velocity(velocity)
-            right_stepper.set_velocity(velocity)
-            logging.debug("Main::stepper_task - Steppers running forwards")
-
-            # Wait for the stepper to finish
-            while left_stepper.is_busy or right_stepper.is_busy:
-                await asyncio.sleep_ms(250)
-
-            left_stepper.set_backwards()
-            right_stepper.set_backwards()
-            left_stepper.set_velocity(velocity)
-            right_stepper.set_velocity(velocity)
-            logging.debug("Main::stepper_task - Steppers running backwards")
-
-            # Wait for the stepper to finish
-            while left_stepper.is_busy or right_stepper.is_busy:
-                await asyncio.sleep_ms(250)
-
-            drv8825.set_enable(False)
-            logging.debug("Main::stepper_task - Steppers stopped")
-
-            await asyncio.sleep(5)
 
     # Configure the logging module
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')

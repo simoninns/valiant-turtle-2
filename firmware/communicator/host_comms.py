@@ -136,6 +136,11 @@ class HostComms:
             await self.command_shell.send_response(RobotCommand.help_text())
             return
 
+        # Is the robot connected?
+        if not self._ble_central.is_peripheral_connected:
+            await self.command_shell.send_response(f"ERROR Robot is not connected")
+            return
+
         # Display the power monitor status (local command)
         if command == 'power':
             await self.command_shell.send_response(self._power_monitor)

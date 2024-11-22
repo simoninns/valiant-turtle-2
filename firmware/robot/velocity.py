@@ -27,80 +27,198 @@
 
 import library.logging as logging
 
-class Velocity:
+class VelocityParameters:
     """
-    A class to represent the velocity profile for a stepper motor.
+    A class to represent the velocity parameters for a stepper motor.
     Attributes
     ----------
-    sequence_steps : list
-        A list to hold the number of steps in each period.
-    sequence_spp : list
-        A list to hold the rotational speed in steps per period for each period.
-    _intervals_per_second : int
-        The number of intervals per second.
+    acc_spsps : int
+        Acceleration in Steps Per Second Per Second.
+    minimum_sps : int
+        Minimum Steps Per Second.
+    maximum_sps : int
+        Maximum Steps Per Second.
+    intervals_per_second : int
+        Number of intervals per second.
     Methods
     -------
-    total_steps() -> int
-        Returns the total number of steps in the velocity sequence.
-    length() -> int
-        Returns the length of the velocity sequence.
-    intervals_per_second() -> int
-        Returns the intervals per second for the velocity sequence.
     """
 
-    FULL_DEBUG = False
-
-    def __init__(self, total_steps: int, acc_spsps: int, minimum_sps: int, maximum_sps: int, intervals_per_second: int):
+    def __init__(self, acc_spsps: int, minimum_sps: int, maximum_sps: int, intervals_per_second: int):
         """
-        Initialize the Velocity object with the given parameters.
+        Initialize the VelocityParameters object with the given parameters.
         Parameters:
-        total_steps (int): The total number of steps required.
         acc_spsps (int): Acceleration in Steps Per Second Per Second.
         minimum_sps (int): Minimum Steps Per Second.
         maximum_sps (int): Maximum Steps Per Second.
         intervals_per_second (int): Number of intervals per second.
         Raises:
-        RuntimeError: If any of the input parameters are invalid.
-        This method initializes the velocity sequence by calculating the acceleration,
-        running, and deceleration steps based on the given parameters. It also logs
-        debug information about the initialization process and the calculated steps.
+        ValueError: If any of the input parameters are invalid.
+        This method initializes the velocity parameters with the given values.
         """
+
+        # Range check input parameters
+        if acc_spsps < 1:
+            raise ValueError("VelocityParameters::__init__ - acceleration in Steps Per Second Per Second must be greater than 0")
+
+        if minimum_sps < 1:
+            raise ValueError("VelocityParameters::__init__ - Minimum Steps Per Second must be greater than 0")
+
+        if maximum_sps < 1:
+            raise ValueError("VelocityParameters::__init__ - Maximum Steps Per Second must be greater than 0")
+
+        if maximum_sps < acc_spsps:
+            raise ValueError("VelocityParameters::__init__ - Maximum Steps Per Second less than acceleration in Steps Per Second Per Second")
+
+        if maximum_sps < minimum_sps:
+            raise ValueError("VelocityParameters::__init__ - Maximum Steps Per Second must be greater than minimum Steps Per Second")
+
+        # Store the parameters
+        self._acc_spsps = acc_spsps
+        self._minimum_sps = minimum_sps
+        self._maximum_sps = maximum_sps
+        self._intervals_per_second = intervals_per_second
+
+    @property
+    def acc_spsps(self) -> int:
+        """
+        Get the acceleration in Steps Per Second Per Second.
+        Returns:
+            int: The acceleration in Steps Per Second Per Second.
+        """
+
+        return self._acc_spsps
+    
+    @acc_spsps.setter
+    def acc_spsps(self, value: int):
+        """
+        Set the acceleration in Steps Per Second Per Second.
+        Parameters:
+            value (int): The acceleration in Steps Per Second Per Second.
+        Raises:
+            ValueError: If the value is less than 1.
+        """
+
+        if value < 1:
+            raise ValueError("VelocityParameters::acc_spsps - acceleration in Steps Per Second Per Second must be greater than 0")
+
+        self._acc_spsps = value
+
+    @property
+    def minimum_sps(self) -> int:
+        """
+        Get the minimum Steps Per Second.
+        Returns:
+            int: The minimum Steps Per Second.
+        """
+        return self._minimum_sps
+
+    @minimum_sps.setter
+    def minimum_sps(self, value: int):
+        """
+        Set the minimum Steps Per Second.
+        Parameters:
+            value (int): The minimum Steps Per Second.
+        Raises:
+            ValueError: If the value is less than 1.
+        """
+        if value < 1:
+            raise ValueError("VelocityParameters::minimum_sps - Minimum Steps Per Second must be greater than 0")
+        self._minimum_sps = value
+
+    @property
+    def maximum_sps(self) -> int:
+        """
+        Get the maximum Steps Per Second.
+        Returns:
+            int: The maximum Steps Per Second.
+        """
+        return self._maximum_sps
+
+    @maximum_sps.setter
+    def maximum_sps(self, value: int):
+        """
+        Set the maximum Steps Per Second.
+        Parameters:
+            value (int): The maximum Steps Per Second.
+        Raises:
+            ValueError: If the value is less than 1 or less than acceleration.
+        """
+        if value < 1:
+            raise ValueError("VelocityParameters::maximum_sps - Maximum Steps Per Second must be greater than 0")
+        if value < self._acc_spsps:
+            raise ValueError("VelocityParameters::maximum_sps - Maximum Steps Per Second less than acceleration in Steps Per Second Per Second")
+        self._maximum_sps = value
+
+    @property
+    def intervals_per_second(self) -> int:
+        """
+        Get the number of intervals per second.
+        Returns:
+            int: The number of intervals per second.
+        """
+        return self._intervals_per_second
+
+    @intervals_per_second.setter
+    def intervals_per_second(self, value: int):
+        """
+        Set the number of intervals per second.
+        Parameters:
+            value (int): The number of intervals per second.
+        Raises:
+            ValueError: If the value is less than 1.
+        """
+        if value < 1:
+            raise ValueError("VelocityParameters::intervals_per_second - Number of intervals per second must be greater than 0")
+        self._intervals_per_second = value
+
+    def __str__(self) -> str:
+        """
+        Return a string representation of the velocity parameters.
+        Returns:
+            str: A string representation of the velocity parameters.
+        """
+        return f"acc_spsps = {self._acc_spsps}, minimum_sps = {self._minimum_sps}, maximum_sps = {self._maximum_sps}, intervals_per_second = {self._intervals_per_second}"
+
+class Velocity:
+    """
+    The Velocity class is responsible for calculating and managing the velocity sequence for a stepper motor.
+    It takes into account acceleration, running, and deceleration phases to generate a sequence of steps and speeds.
+    Attributes:
+        FULL_DEBUG (bool): Set to True to enable full debug output from the velocity calculations.
+    Methods:
+        __init__(total_steps: int, parameters: VelocityParameters):
+            Initializes the Velocity instance with the given total steps and velocity parameters.
+        total_steps() -> int:
+        length() -> int:
+    """
+
+    # Set to True to enable full debug output from the velocity calculations
+    FULL_DEBUG = False
+
+    def __init__(self, total_steps: int, parameters: VelocityParameters):
+        # Store the parameters
+        self._parameters = parameters
 
         # Initialise lists to hold the velocity sequence
         self.sequence_steps = [] # Number of steps in this period
         self.sequence_spp = [] # Rotational speed in steps per period (for this period)
-        self._intervals_per_second = intervals_per_second
 
-        # Range check input parameters
+        # Range check the number of steps
         if total_steps < 1:
             raise RuntimeError("Velocity::__init__ - ERROR - The number of required steps must be greater than 0")
 
-        if acc_spsps < 1:
-            raise RuntimeError("Velocity::__init__ - ERROR - acceleration in Steps Per Second Per Second must be greater than 0")
-
-        if minimum_sps < 1:
-            raise RuntimeError("Velocity::__init__ - ERROR - Minimum Steps Per Second must be greater than 0")
-
-        if maximum_sps < 1:
-            raise RuntimeError("Velocity::__init__ - ERROR - Maximum Steps Per Second must be greater than 0")
-
-        if maximum_sps < acc_spsps:
-            raise RuntimeError("Velocity::__init__ - ERROR - Maximum Steps Per Second less than acceleration in Steps Per Second Per Second")
-
-        if maximum_sps < minimum_sps:
-            raise RuntimeError("Velocity::__init__ - ERROR - Maximum Steps Per Second must be greater than minimum Steps Per Second")
-
         # Show some debug
         logging.debug(f"Velocity::__init__ - Total steps = {total_steps}")
-        logging.debug(f"Velocity::__init__ - Acceleration in steps per second per second = {acc_spsps}")
-        logging.debug(f"Velocity::__init__ - Minimum steps per second = {minimum_sps}")
-        logging.debug(f"Velocity::__init__ - Maximum steps per second = {maximum_sps}")
-        logging.debug(f"Velocity::__init__ - Intervals per second = {intervals_per_second}")
+        logging.debug(f"Velocity::__init__ - Acceleration in steps per second per second = {self._parameters.acc_spsps}")
+        logging.debug(f"Velocity::__init__ - Minimum steps per second = {self._parameters.minimum_sps}")
+        logging.debug(f"Velocity::__init__ - Maximum steps per second = {self._parameters.maximum_sps}")
+        logging.debug(f"Velocity::__init__ - Intervals per second = {self._parameters.intervals_per_second}")
         if Velocity.FULL_DEBUG: logging.debug("Velocity::__init__")
 
-        acc_spppp: int = int(acc_spsps / intervals_per_second) # acceleration in steps per period per period
-        maximum_spp: int = int(maximum_sps / intervals_per_second) # maximum speed in steps per period
-        minimum_spp: int = int(minimum_sps / intervals_per_second) # minimum speed in steps per period
+        acc_spppp: int = int(self._parameters.acc_spsps / self._parameters.intervals_per_second) # acceleration in steps per period per period
+        maximum_spp: int = int(self._parameters.maximum_sps / self._parameters.intervals_per_second) # maximum speed in steps per period
+        minimum_spp: int = int(self._parameters.minimum_sps / self._parameters.intervals_per_second) # minimum speed in steps per period
         if acc_spppp < 1: acc_spppp = 1
         if maximum_spp < 1: maximum_spp = 1
         if minimum_spp < 1: minimum_spp = 1
@@ -178,15 +296,15 @@ class Velocity:
         # Check that the sequence has contents
         if len(self.sequence_spp) > 0:
             # If we have headroom, we can accelerate once more for the run steps
-            if (self.sequence_spp[-1] + acc_spsps) < maximum_sps:
-                temp_spp = self.sequence_spp[-1] + acc_spsps
-                if temp_spp > maximum_sps: temp_spp = maximum_sps
+            if (self.sequence_spp[-1] + self._parameters.acc_spsps) < self._parameters.maximum_sps:
+                temp_spp = self.sequence_spp[-1] + self._parameters.acc_spsps
+                if temp_spp > self._parameters.maximum_sps: temp_spp = self._parameters.maximum_sps
             else:
                 # Run at full speed
-                temp_spp = maximum_sps
+                temp_spp = self._parameters.maximum_sps
         else:
             # There were no acceleration steps... use minimum speed
-            temp_spp = acc_spsps
+            temp_spp = self._parameters.acc_spsps
         
         # Store the RUN result in the dynamic sequence array
         self.sequence_spp.append(temp_spp)
@@ -196,7 +314,7 @@ class Velocity:
         if Velocity.FULL_DEBUG:
             logging.debug(f"Velocity::__init__ - RUN [{len(self.sequence_steps)}] ({current_step_position}) Steps = {self.sequence_steps[-1]} - SPP = {self.sequence_spp[-1]}")
 
-        logging.debug(f"Velocity::__init__ - Maximum achieved RUN speed = {self.sequence_spp[-1] * intervals_per_second} Steps per second")
+        logging.debug(f"Velocity::__init__ - Maximum achieved RUN speed = {self.sequence_spp[-1] * self._parameters.intervals_per_second} Steps per second")
 
         # Decelerate stepper
         # (This simply copies the acceleration sequence in reverse)
@@ -238,17 +356,17 @@ class Velocity:
 
         return len(self.sequence_steps) # Both steps and spp are the same length
     
-    # Return the intervals per second for the velocity sequence
+    # Return the velocity parameters
     @property
-    def intervals_per_second(self) -> int:
+    def parameters(self) -> VelocityParameters:
         """
-        Get the number of intervals per second.
+        Get the velocity parameters.
         Returns:
-            int: The number of intervals per second.
+            VelocityParameters: The velocity parameters.
         """
 
-        return self._intervals_per_second
-    
+        return self._parameters
+
 if __name__ == "__main__":
     from main import main
     main()
