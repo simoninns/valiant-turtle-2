@@ -77,7 +77,8 @@ display_motor_bay_left = "No"; // [Yes, No]
 display_motor_bay_right = "No"; // [Yes, No]
 display_motor_mount_left = "No"; // [Yes, No]
 display_motor_mount_right = "No"; // [Yes, No]
-display_wheels = "No"; // [Yes, No]
+display_wheel_left = "No"; // [Yes, No]
+display_wheel_right = "No"; // [Yes, No]
 display_main_pcb_mounts_front = "No"; // [Yes, No]
 display_main_pcb_mounts_back = "No"; // [Yes, No]
 display_main_pcb_screw_washer = "No"; // [Yes, No]
@@ -116,11 +117,12 @@ display_body_left_supports = "No"; // [Yes, No]
 display_body_right_supports = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
-display_motor_small = "No"; // [Yes, No]
-display_motor_large = "No"; // [Yes, No]
+display_motor_left = "No"; // [Yes, No]
+display_motor_right = "No"; // [Yes, No]
 display_rotational_axis = "No"; // [Yes, No]
 display_turning_circle = "No"; // [Yes, No]
-display_tires = "No"; // [Yes, No]
+display_tire_left = "No"; // [Yes, No]
+display_tire_right = "No"; // [Yes, No]
 display_main_pcb = "No"; // [Yes, No]
 display_aux_pcb = "No"; // [Yes, No]
 display_eye_pcb = "No"; // [Yes, No]
@@ -134,7 +136,8 @@ display_logotype_2D = "No"; // [Yes, No]
 display_battery_clip_contacts = "No"; // [Yes, No]
 
 /* [Screws] */
-display_motor_mounts_screws = "No"; // [Yes, No]
+display_motor_mount_screws_left = "No"; // [Yes, No]
+display_motor_mount_screws_right = "No"; // [Yes, No]
 display_body_left_screws = "No"; // [Yes, No]
 display_body_right_screws = "No"; // [Yes, No]
 display_motor_bay_screws = "No"; // [Yes, No]
@@ -167,7 +170,8 @@ module main() {
     d_motor_bay_right = (display_motor_bay_right == "Yes") ? true:false;
     d_motor_mount_left = (display_motor_mount_left == "Yes") ? true:false;
     d_motor_mount_right = (display_motor_mount_right == "Yes") ? true:false;
-    d_wheels = (display_wheels == "Yes") ? true:false;
+    d_wheel_left = (display_wheel_left == "Yes") ? true:false;
+    d_wheel_right = (display_wheel_right == "Yes") ? true:false;
     d_main_pcb_mounts_front = (display_main_pcb_mounts_front == "Yes") ? true:false;
     d_main_pcb_mounts_back = (display_main_pcb_mounts_back == "Yes") ? true:false;
     d_main_pcb_screw_washer = (display_main_pcb_screw_washer == "Yes") ? true:false;
@@ -207,11 +211,12 @@ module main() {
     d_body_right_supports = (display_body_right_supports == "Yes") ? true:false;
 
     // Non-printable parts
-    d_motor_small = (display_motor_small == "Yes") ? true:false;
-    d_motor_large = (display_motor_large == "Yes") ? true:false;
+    d_motor_left = (display_motor_left == "Yes") ? true:false;
+    d_motor_right = (display_motor_right == "Yes") ? true:false;
     d_rotational_axis = (display_rotational_axis == "Yes") ? true:false;
     d_turning_circle = (display_turning_circle == "Yes") ? true:false;
-    d_tires = (display_tires == "Yes") ? true:false;
+    d_tire_left = (display_tire_left == "Yes") ? true:false;
+    d_tire_right = (display_tire_right == "Yes") ? true:false;
     d_main_pcb = (display_main_pcb == "Yes") ? true:false;
     d_aux_pcb = (display_aux_pcb == "Yes") ? true:false;
     d_eye_pcb = (display_eye_pcb == "Yes") ? true:false;
@@ -225,7 +230,8 @@ module main() {
     d_battery_clip_contacts = (display_battery_clip_contacts == "Yes") ? true:false;
 
     // Screws
-    d_motor_mounts_screws = (display_motor_mounts_screws == "Yes") ? true:false;
+    d_motor_mount_screws_left = (display_motor_mount_screws_left == "Yes") ? true:false;
+    d_motor_mount_screws_right = (display_motor_mount_screws_right == "Yes") ? true:false;
     d_body_left_screws = (display_body_left_screws == "Yes") ? true:false;
     d_body_right_screws = (display_body_right_screws == "Yes") ? true:false;
     d_motor_bay_screws = (display_motor_bay_screws == "Yes") ? true:false;
@@ -249,7 +255,8 @@ module main() {
         if (d_motor_bay_right) render_motor_bay_right(toPrint);
         if (d_motor_mount_left) render_motor_mount_left(toPrint);
         if (d_motor_mount_right) render_motor_mount_right(toPrint);
-        if (d_wheels) render_wheels(toPrint);
+        if (d_wheel_left) render_wheel_left(toPrint);
+        if (d_wheel_right) render_wheel_right(toPrint);
         if (d_main_pcb_mounts_front) render_main_pcb_mounts_front(toPrint);
         if (d_main_pcb_mounts_back) render_main_pcb_mounts_back(toPrint);
         if (d_main_pcb_screw_washer) render_main_pcb_screw_washer(toPrint);
@@ -289,11 +296,12 @@ module main() {
         if (d_body_right_supports) render_body_right_supports(toPrint);
 
         // Render the non-printable parts
-        if (d_motor_small) render_motor_small(toPrint);
-        if (d_motor_large) render_motor_large(toPrint);
+        if (d_motor_left) render_motor_left(toPrint);
+        if (d_motor_right) render_motor_right(toPrint);
         if (d_rotational_axis) render_rotational_axis(toPrint);
         if (d_turning_circle) render_turning_circle(toPrint);
-        if (d_tires) render_tires(toPrint);
+        if (d_tire_left) render_tire_left(toPrint);
+        if (d_tire_right) render_tire_right(toPrint);
         if (d_main_pcb) render_main_pcb(toPrint);
         if (d_aux_pcb) render_aux_pcb(toPrint);
         if (d_eye_pcb) render_eye_pcb(toPrint);
@@ -307,7 +315,8 @@ module main() {
         if (d_battery_clip_contacts) render_battery_clip_contacts(toPrint);
 
         // Render screws
-        if (d_motor_mounts_screws) render_motor_mounts_screws(toPrint);
+        if (d_motor_mount_screws_left) render_motor_mount_screws_left(toPrint);
+        if (d_motor_mount_screws_right) render_motor_mount_screws_right(toPrint);
         if (d_body_left_screws) render_body_left_screws(toPrint);
         if (d_body_right_screws) render_body_right_screws(toPrint);
         if (d_motor_bay_screws) render_motor_bay_screws(toPrint);

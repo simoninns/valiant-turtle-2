@@ -111,12 +111,22 @@ module wheel()
     }
 }
 
-module render_wheels(toPrint)
+module render_wheel_left(toPrint)
+{
+    if (!toPrint) {
+        color([0.2,0.2,0.2,1]) {
+            xflip() move([106.5 + 1.5,64-35,-6]) xrot(90) wheel();
+        }
+    } else {
+        move([0,0,9.75]) yrot(90) wheel();
+    }
+}
+
+module render_wheel_right(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) {
             move([106.5 + 1.5,64-35,-6]) xrot(90) wheel();
-            xflip() move([106.5 + 1.5,64-35,-6]) xrot(90) wheel();
         }
     } else {
         move([0,0,9.75]) yrot(90) wheel();
@@ -148,12 +158,20 @@ module render_turning_circle(toPrint)
     }
 }
 
-module render_tires(toPrint)
+module render_tire_left(toPrint)
+{
+    if (!toPrint) {
+        color([0.4,0.4,0.4,1]) {
+            xflip() move([106.5,64-35,-6]) tire();
+        }
+    }
+}
+
+module render_tire_right(toPrint)
 {
     if (!toPrint) {
         color([0.4,0.4,0.4,1]) {
             move([106.5,64-35,-6]) tire();
-            xflip() move([106.5,64-35,-6]) tire();
         }
     }
 }

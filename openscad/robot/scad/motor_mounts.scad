@@ -30,18 +30,11 @@ use <BOSL/metric_screws.scad>
 
 include <screws.scad>
 
-module nema17_motor_small()
+module nema17_motor()
 {
     // Render the motor with the shaft pointing right and the cable to the back
-    // 24mm depth with 20mm shaft
-    xrot(-90) yrot(90) nema17_stepper(h=24, shaft=5, shaft_len=20, orient=ORIENT_Z);
-}
-
-module nema17_motor_large()
-{
-    // Render the motor with the shaft pointing right and the cable to the back
-    // 40mm depth with 24mm shaft
-    xrot(-90) yrot(90) nema17_stepper(h=40, shaft=5, shaft_len=24, orient=ORIENT_Z);
+    // 24mm depth with 22mm shaft
+    xrot(-90) yrot(90) nema17_stepper(h=24, shaft=5, shaft_len=22, orient=ORIENT_Z);
 }
 
 module nema17_mount()
@@ -141,19 +134,17 @@ module render_motor_mount_right(toPrint)
     }
 }
 
-module render_motor_small(toPrint)
+module render_motor_right(toPrint)
 {
     if (!toPrint) {
-        move([98-4,64-35,-6]) nema17_motor_small();
-        xflip() move([98-4,64-35,-6]) nema17_motor_small();
+        move([98-4,64-35,-6]) nema17_motor();
     }
 }
 
-module render_motor_large(toPrint)
+module render_motor_left(toPrint)
 {
     if (!toPrint) {
-        move([98-4,64-35,-6]) nema17_motor_large();
-        xflip() move([98-4,64-35,-6]) nema17_motor_large();
+        xflip() move([98-4,64-35,-6]) nema17_motor();
     }
 }
 
@@ -168,13 +159,13 @@ module render_rotational_axis(toPrint)
     }
 }
 
-module motor_mounts_screws()
+module motor_mount_screws()
 {
     // Motors require M3x10mm screws
-    move([101 - 1,13.5,9.5]) yrot(90) m3x10_screw();
-    move([101 - 1,13.5+31,9.5]) yrot(90) m3x10_screw();
-    move([101 - 1,13.5,-21.5]) yrot(90) m3x10_screw();
-    move([101 - 1,13.5+31,-21.5]) yrot(90) m3x10_screw();
+    move([101.5,13.5,9.5]) yrot(90) m3x10_screw();
+    move([101.5,13.5+31,9.5]) yrot(90) m3x10_screw();
+    move([101.5,13.5,-21.5]) yrot(90) m3x10_screw();
+    move([101.5,13.5+31,-21.5]) yrot(90) m3x10_screw();
 
     // Body attachment requires M3x10mm screws
     move([86,3,-9]) m3x10_screw();
@@ -183,10 +174,16 @@ module motor_mounts_screws()
     move([72,55,-9]) m3x10_screw();
 }
 
-module render_motor_mounts_screws(toPrint)
+module render_motor_mount_screws_left(toPrint)
 {
     if (!toPrint) {
-        motor_mounts_screws();
-        xflip() motor_mounts_screws();
+        xflip() motor_mount_screws();
+    }
+}
+
+module render_motor_mount_screws_right(toPrint)
+{
+    if (!toPrint) {
+        motor_mount_screws();
     }
 }

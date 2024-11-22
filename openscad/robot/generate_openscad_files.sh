@@ -22,8 +22,10 @@ echo "  motor_mount_left.stl"
 openscad -o ./stl/motor_mount_left.stl -D 'for_printing="Printing"' -D 'display_motor_mount_left="Yes"' ./scad/main.scad
 echo "  motor_mount_right.stl"
 openscad -o ./stl/motor_mount_right.stl -D 'for_printing="Printing"' -D 'display_motor_mount_right="Yes"' ./scad/main.scad
-echo "  wheels.stl"
-openscad -o ./stl/wheels.stl -D 'for_printing="Printing"' -D 'display_wheels="Yes"' ./scad/main.scad
+echo "  wheel_left.stl"
+openscad -o ./stl/wheel_left.stl -D 'for_printing="Printing"' -D 'display_wheel_left="Yes"' ./scad/main.scad
+echo "  wheel_right.stl"
+openscad -o ./stl/wheel_right.stl -D 'for_printing="Printing"' -D 'display_wheel_right="Yes"' ./scad/main.scad
 echo "  main_pcb_mounts_front.stl"
 openscad -o ./stl/main_pcb_mounts_front.stl -D 'for_printing="Printing"' -D 'display_main_pcb_mounts_front="Yes"' ./scad/main.scad
 echo "  main_pcb_mounts_back.stl"
