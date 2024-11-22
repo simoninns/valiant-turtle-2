@@ -138,11 +138,10 @@ module body_platform()
     body_lip_profile_int(pointL, pointA);
 
     // Reenforcements -------------------------------------
-    //move([19,12,-6.5]) cuboid([4,100,7]); // Back
     move([26.5,-39,-6.5]) cuboid([53,4,7]); // Front cross
     move([26,-56,-6.5]) cuboid([4,33.5,7]); // Front
 
-    move([52,-43.5,-6.5]) cuboid([4,101,7]); // Front
+    move([52,-23,-6.5]) cuboid([4,142,7], chamfer=2, edges=EDGES_X_BK-EDGES_TOP); // Front to back braces
 
     // Wheel bay reenforcements
     move([88,68.5,-4]) cuboid([65,2,4]);
@@ -199,11 +198,8 @@ module head_clearance()
 
 module wheel_cutout()
 {
-    move([+88,25.75,-4]) cuboid([62,58.5,18]);
-    move([+89,53.5,-4]) cuboid([49+2,11,18], chamfer=4);
-
-    // Back of motor
-    move([58,29,-6]) cuboid([10,44,50]);
+    move([+93,27.5,-4]) cuboid([52,61,18]);
+    move([+93,55,-4]) cuboid([40,11,18], chamfer=4);
 
     // Additional wheel clearance
     move([113,51.5,-4]) cuboid([12,11,18]);
@@ -212,20 +208,20 @@ module wheel_cutout()
 module wheel_cutout_holes()
 {
     move([0,0,5]) {
-        move([59.5 + 2.5,-7.5,-7]) xrot(180) cyl(h=8,d=3.5);
+        move([71,-7.5,-7]) xrot(180) cyl(h=8,d=3.5);
         move([116.5 - 2.5,-7.5,-7]) xrot(180) cyl(h=8,d=3.5);
 
         // Back
-        move([59.5 + 2.5,62,-7]) xrot(180) cyl(h=8,d=3.5);
+        move([71,62,-7]) xrot(180) cyl(h=8,d=3.5);
         move([116.5 - 2.5,62,-7]) xrot(180) cyl(h=8,d=3.5);   
     }
 
     move([0,0,9 - 1.5]) {
-        move([59.5 + 2.5,-7.5,-8]) xrot(180) cyl(h=4,d=5.5);
+        move([71,-7.5,-8]) xrot(180) cyl(h=4,d=5.5);
         move([116.5 - 2.5,-7.5,-8]) xrot(180) cyl(h=4,d=5.5);
 
         // Back
-        move([59.5 + 2.5,62,-8]) xrot(180) cyl(h=4,d=5.5);
+        move([71,62,-8]) xrot(180) cyl(h=4,d=5.5);
         move([116.5 - 2.5,62,-8]) xrot(180) cyl(h=4,d=5.5);   
     }
 }
@@ -233,11 +229,11 @@ module wheel_cutout_holes()
 module wheel_cutout_supports()
 {
     move([0,0,9 - 1.5]) {
-        move([59.5 + 2.5,-7.5,-10]) xrot(180) cyl(h=4,d=8);
+        move([71,-7.5,-10]) xrot(180) cyl(h=4,d=8);
         move([116.5 - 2.5,-7.5,-10]) xrot(180) cyl(h=4,d=8);
 
         // Back
-        move([59.5 + 2.5,62,-10]) xrot(180) cyl(h=4,d=8);
+        move([71,62,-10]) xrot(180) cyl(h=4,d=8);
         move([116.5 - 2.5,62,-10]) xrot(180) cyl(h=4,d=8);   
     }
 }

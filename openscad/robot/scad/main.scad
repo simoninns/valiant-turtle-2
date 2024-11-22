@@ -140,7 +140,8 @@ display_motor_mount_screws_left = "No"; // [Yes, No]
 display_motor_mount_screws_right = "No"; // [Yes, No]
 display_body_left_screws = "No"; // [Yes, No]
 display_body_right_screws = "No"; // [Yes, No]
-display_motor_bay_screws = "No"; // [Yes, No]
+display_motor_bay_screws_left = "No"; // [Yes, No]
+display_motor_bay_screws_right = "No"; // [Yes, No]
 display_head_screws = "No"; // [Yes, No]
 display_servo_holder_screws = "No"; // [Yes, No]
 display_main_pcb_mounts_front_screws = "No"; // [Yes, No]
@@ -234,7 +235,8 @@ module main() {
     d_motor_mount_screws_right = (display_motor_mount_screws_right == "Yes") ? true:false;
     d_body_left_screws = (display_body_left_screws == "Yes") ? true:false;
     d_body_right_screws = (display_body_right_screws == "Yes") ? true:false;
-    d_motor_bay_screws = (display_motor_bay_screws == "Yes") ? true:false;
+    d_motor_bay_screws_left = (display_motor_bay_screws_left == "Yes") ? true:false;
+    d_motor_bay_screws_right = (display_motor_bay_screws_right == "Yes") ? true:false;
     d_head_screws = (display_head_screws == "Yes") ? true:false;
     d_servo_holder_screws = (display_servo_holder_screws == "Yes") ? true:false;
     d_main_pcb_mounts_front_screws = (display_main_pcb_mounts_front_screws == "Yes") ? true:false;
@@ -319,7 +321,8 @@ module main() {
         if (d_motor_mount_screws_right) render_motor_mount_screws_right(toPrint);
         if (d_body_left_screws) render_body_left_screws(toPrint);
         if (d_body_right_screws) render_body_right_screws(toPrint);
-        if (d_motor_bay_screws) render_motor_bay_screws(toPrint);
+        if (d_motor_bay_screws_left) render_motor_bay_screws_left(toPrint);
+        if (d_motor_bay_screws_right) render_motor_bay_screws_right(toPrint);
         if (d_head_screws) render_head_screws(toPrint);
         if (d_servo_holder_screws) render_servo_holder_screws(toPrint);
         if (d_main_pcb_mounts_front_screws) render_main_pcb_mounts_front_screws(toPrint);

@@ -56,9 +56,9 @@ module nema17_mount()
                     move([0,26,-4]) cuboid([7,10,8], chamfer=1, edges=EDGES_X_ALL);
                 }
 
-                // Faceplate arms
-                move([-20,-26,-4]) cuboid([39,10,8], chamfer=1, edges=EDGES_X_ALL);
-                move([-20,26,-4]) cuboid([20,10,8], chamfer=1, edges=EDGES_X_ALL);
+                // Faceplate arm
+                move([-20,-26,-4]) cuboid([20,10,8], chamfer=1, edges=EDGES_X_ALL); // Long
+                move([-18,26,-4]) cuboid([3,10,8], chamfer=1, edges=EDGES_X_ALL); // Short
 
                 // NEMA 17 Lip
                 move([-(7/2) - 2.5,0,1.25]) cuboid([5,46,43.5], chamfer=1, edges=EDGES_X_ALL);
@@ -75,17 +75,13 @@ module nema17_mount()
 
             // Motor mounting screws through the arms
             move([-15.5 + 4,26,0]) xrot(180) cyl(h=30,d=3.5);
-            move([-15.5-10,26,0]) xrot(180) cyl(h=30,d=3.5);
-
             move([-15.5 + 4,-26,0]) xrot(180) cyl(h=30,d=3.5);
-            move([-15.5-21 + 4,-26,0]) xrot(180) cyl(h=30,d=3.5);
+            move([-15.5-10,-26,0]) xrot(180) cyl(h=30,d=3.5);
 
             // Motor mounting screw heads
             move([-15.5 + 4,26,7]) xrot(180) cyl(h=20,d=5.5);
-            move([-15.5-10,26,2]) xrot(180) cyl(h=10,d=5.5);
-
             move([-15.5 + 4,-26,7]) xrot(180) cyl(h=20,d=5.5);
-            move([-15.5-21 + 4,-26,2]) xrot(180) cyl(h=10,d=5.5);
+            move([-15.5-10,-26,2]) xrot(180) cyl(h=10,d=5.5);
 
             // Clean up for printing
             hull() {
@@ -169,9 +165,8 @@ module motor_mount_screws()
 
     // Body attachment requires M3x10mm screws
     move([86,3,-9]) m3x10_screw();
-    move([65,3,-9]) m3x10_screw();
+    move([72,3,-9]) m3x10_screw();
     move([86,55,-9]) m3x10_screw();
-    move([72,55,-9]) m3x10_screw();
 }
 
 module render_motor_mount_screws_left(toPrint)

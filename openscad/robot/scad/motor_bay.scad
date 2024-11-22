@@ -48,7 +48,7 @@ module motor_bay_side_panels()
     pointF = [0,75,-20];
     pointG = [0,80,-0.5];
 
-    width = 65;
+    width = 55;
     pos = -13;
 
     // Outer side panel
@@ -81,8 +81,6 @@ module motor_bay_side_panels()
             mount_profile_left(pointG);
         }
     }
-
-    
 }
 
 module motor_bay_shape()
@@ -95,7 +93,7 @@ module motor_bay_shape()
     pointF = [0,75,-20];
     pointG = [0,80,-0.5];
 
-    width = 65;
+    width = 55;
     pos = -13;
 
     // Front part
@@ -125,7 +123,7 @@ module motor_bay_shape()
         }
 
         // Needs some additional clearance for the threaded insert
-        move([59.5 + 2.5,62,-4]) xrot(180) cyl(h=18,d=4);
+        move([59.5 + 2.5 + 9,62,-4]) xrot(180) cyl(h=18,d=4);
         move([116.5 - 2.5,62,-4]) xrot(180) cyl(h=18,d=4); 
     }
     
@@ -193,9 +191,11 @@ module motor_bay_shape()
     // Mount points to attach to main body
     difference() {
         union() {
-            move([62,-8,-11]) cuboid([10,9,24]);
-            move([62,60.5,-12]) cuboid([10,9.5,20]);
+            // Back
+            move([62 + 9,-8,-11]) cuboid([10,9,24]);
+            move([62 + 9,60.5,-12]) cuboid([10,9.5,20]);
 
+            // Front
             difference() {
                 move([112,-8,-13]) cuboid([20,9,20]);
                 move([112-9,-7,-13]) zrot(45) cuboid([20,9,22]);
@@ -207,14 +207,12 @@ module motor_bay_shape()
         }
 
         // Front
-        move([0,0,0.1]) {
-            move([59.5 + 2.5,-7.5,-10]) xrot(180) cyl(h=18,d=4);
-            move([116.5 - 2.5,-7.5,-10]) xrot(180) cyl(h=18,d=4);
+        move([116.5 - 2.5,-7.5,-10]) xrot(180) cyl(h=18,d=4);
+        move([116.5 - 2.5,62,-10]) xrot(180) cyl(h=18,d=4);
 
-            // Back
-            move([59.5 + 2.5,62,-10]) xrot(180) cyl(h=18,d=4);
-            move([116.5 - 2.5,62,-10]) xrot(180) cyl(h=18,d=4);   
-        }
+        // Back
+        move([59.5 + 2.5 + 9,-7.5,-10]) xrot(180) cyl(h=18,d=4);
+        move([59.5 + 2.5 + 9,62,-10]) xrot(180) cyl(h=18,d=4);
 
         // Clean up the outer edges
         move([100,70,-14]) xrot(-13) cuboid([90,10,20]);
@@ -230,16 +228,15 @@ module motor_platform()
 {
     difference() {
         union() {
-            move([76-4,2.5,-21]) cuboid([39,9,14], chamfer=1, edges=EDGES_X_ALL); 
-            move([76-4,55.5,-21]) cuboid([39,9,14], chamfer=1, edges=EDGES_X_ALL); 
+            move([79, 2.5,-21]) cuboid([24,9,14], chamfer=1, edges=EDGES_X_ALL); 
+            move([79,55.5,-21]) cuboid([24,9,14], chamfer=1, edges=EDGES_X_ALL); 
         }
 
         // Threaded insert slot
         move([86,5-2,-17.9]) xrot(180) cyl(h=8,d=4);
-        move([90-25,5-2,-17.9]) xrot(180) cyl(h=8,d=4);
+        move([90-18,5-2,-17.9]) xrot(180) cyl(h=8,d=4);
 
         move([86,53 + 2,-17.9]) xrot(180) cyl(h=8,d=4);
-        move([90-18,53 + 2,-17.9]) xrot(180) cyl(h=8,d=4);
 
         // Trim mounts
         move([77.5,0,-32]) xrot(60) cuboid([42,10,14]);
@@ -259,7 +256,8 @@ module motor_bay()
         motor_bay_shape();
 
         // Trim all the egdes to fit into body
-        move([52,10,-25]) cuboid([10,120,50]);
+        move([52+10,10,-25]) cuboid([10,120,50]);
+
         move([124,10,-25]) cuboid([10,120,50]);
         move([84,26,2]) cuboid([80,90,10]);
         move([84,69.5,-5]) cuboid([80,4,8]);
@@ -294,19 +292,25 @@ module render_motor_bay_right(toPrint)
 module motor_bay_screws()
 {
     move([0,0,6]) {
-        move([59.5 + 2.5,-7.5,-8]) m3x10_screw();
+        move([71,-7.5,-8]) m3x10_screw();
         move([116.5 - 2.5,-7.5,-8]) m3x10_screw();
 
         // Back
-        move([59.5 + 2.5,62,-8]) m3x10_screw();
+        move([71,62,-8]) m3x10_screw();
         move([116.5 - 2.5,62,-8]) m3x10_screw(); 
     }
 }
 
-module render_motor_bay_screws(toPrint)
+module render_motor_bay_screws_left(toPrint)
+{
+    if (!toPrint) {
+        xflip() motor_bay_screws();
+    }
+}
+
+module render_motor_bay_screws_right(toPrint)
 {
     if (!toPrint) {
         motor_bay_screws();
-        xflip() motor_bay_screws();
     }
 }
