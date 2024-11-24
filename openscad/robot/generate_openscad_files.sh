@@ -94,6 +94,10 @@ echo "  body_left_support_enforcer.stl"
 openscad -o ./stl_support_enforcers/body_left_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_body_left_supports="Yes"' ./scad/main.scad
 echo "  body_right_support_enforcer.stl"
 openscad -o ./stl_support_enforcers/body_right_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_body_right_supports="Yes"' ./scad/main.scad
+echo "  stand_lower_cover_support_enforcer.stl"
+openscad -o ./stl_support_enforcers/stand_lower_cover_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_stand_lower_cover_supports="Yes"' ./scad/main.scad
+echo "  stand_upper_cover_support_enforcer.stl"
+openscad -o ./stl_support_enforcers/stand_upper_cover_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_stand_upper_cover_supports="Yes"' ./scad/main.scad
 
 echo "Generating 2D DXF files for KiCAD..."
 echo "  main_pcb.dxf"

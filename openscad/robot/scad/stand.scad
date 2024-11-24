@@ -203,6 +203,16 @@ module stand_lower_cover()
     }
 }
 
+module stand_cover_supports()
+{
+    move([0,0,2]) {
+        move([45.5,18.5,0]) cyl(h=4,d=8);
+        move([45.5,-17.5,0]) cyl(h=4,d=8);
+        move([-45.5,18.5,0]) cyl(h=4,d=8);
+        move([-45.5,-17.5,0]) cyl(h=4,d=8);
+    }
+}
+
 module render_stand(toPrint)
 {
     if (!toPrint) {
@@ -227,5 +237,19 @@ module render_stand_lower_cover(toPrint)
         move([0,0,0]) color([0.9,0.9,0.6,1]) stand_lower_cover();
     } else {  
         move([0,13,23]) stand_lower_cover();
+    }
+}
+
+module render_stand_lower_cover_supports(toPrint)
+{
+    if (toPrint) {
+        stand_cover_supports();
+    }
+}
+
+module render_stand_upper_cover_supports(toPrint)
+{
+    if (toPrint) {
+        stand_cover_supports();
     }
 }
