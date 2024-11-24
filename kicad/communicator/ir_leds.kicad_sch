@@ -7,7 +7,7 @@
 	(title_block
 		(title "Valiant Turtle 2 - Communicator - IR")
 		(date "2024-10-23")
-		(rev "2_0")
+		(rev "2_1")
 		(company "https://www.waitingforfriday.com")
 		(comment 1 "(c) 2024 Simon Inns")
 		(comment 2 "License: Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)")
@@ -1312,7 +1312,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1d4ff3b0-20ec-4d00-ad58-8daf3b1215d2")
-		(property "Reference" "#PWR016"
+		(property "Reference" "#PWR015"
 			(at 119.38 137.16 0)
 			(effects
 				(font
@@ -1362,7 +1362,7 @@
 		(instances
 			(project "vt2_communicator"
 				(path "/b885e706-6990-4e04-997b-acbbfde24966/a7c42e1f-d809-4e4a-bb50-ba2156f8e189"
-					(reference "#PWR016")
+					(reference "#PWR015")
 					(unit 1)
 				)
 			)
@@ -1378,7 +1378,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "350053b9-6cb3-4be5-9fff-e98c3d804402")
-		(property "Reference" "#PWR015"
+		(property "Reference" "#PWR014"
 			(at 119.38 66.04 0)
 			(effects
 				(font
@@ -1428,7 +1428,7 @@
 		(instances
 			(project "vt2_communicator"
 				(path "/b885e706-6990-4e04-997b-acbbfde24966/a7c42e1f-d809-4e4a-bb50-ba2156f8e189"
-					(reference "#PWR015")
+					(reference "#PWR014")
 					(unit 1)
 				)
 			)
