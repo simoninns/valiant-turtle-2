@@ -404,11 +404,11 @@ module body_left()
 module body_supports_left()
 {
     move([-54.5,0,3]) {
-        move([-7.5,(59.5 + 2.5),0]) cyl(h=6,d=8);
+        move([-7.5,71,0]) cyl(h=6,d=8);
         move([-7.5, (116.5 - 2.5),0]) cyl(h=6,d=8);
 
         // Back
-        move([62, (59.5 + 2.5),0]) cyl(h=6,d=8);
+        move([62, 71,0]) cyl(h=6,d=8);
         move([62, (116.5 - 2.5),0]) cyl(h=6,d=8); 
     }
 }
@@ -416,11 +416,11 @@ module body_supports_left()
 module body_supports_right()
 {
     move([0,0,3]) {
-        move([-7.5,(59.5 + 2.5),0]) cyl(h=6,d=8);
+        move([-7.5,71,0]) cyl(h=6,d=8);
         move([-7.5, (116.5 - 2.5),0]) cyl(h=6,d=8);
 
         // Back
-        move([62, (59.5 + 2.5),0]) cyl(h=6,d=8);
+        move([62, 71,0]) cyl(h=6,d=8);
         move([62, (116.5 - 2.5),0]) cyl(h=6,d=8); 
     }
 }
