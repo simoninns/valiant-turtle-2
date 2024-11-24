@@ -1713,6 +1713,16 @@
 		)
 		(uuid "f9efaa85-985a-4834-b849-06aa9f957809")
 	)
+	(text "Note: This is untested. Logo on the C64 requires a Valiant Turtle\nsoftware floppy which I am unable to find."
+		(exclude_from_sim no)
+		(at 144.78 64.77 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "8d211c4e-1371-496c-9d6e-8318da0fcc0f")
+	)
 	(global_label "DB4"
 		(shape bidirectional)
 		(at 99.06 97.79 180)
