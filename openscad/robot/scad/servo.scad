@@ -32,9 +32,8 @@ module micro_servo_horn(angle)
         union() {
             hull() {
                 // Rounded rhombus
-                //move([6.5,0,0]) cyl(d=4, h=4, center=true, chamfer2=0.5);
                 move([0,0,0]) cyl(d=8, h=4, center=true, chamfer2=0.5);
-                move([-8.5,0,0]) cyl(d=8, h=4, center=true, chamfer2=0.5);
+                move([-7,0,0]) cyl(d=8, h=4, center=true, chamfer2=0.5);
             }
 
             // Shaft
