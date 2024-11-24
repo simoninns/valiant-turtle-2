@@ -28,8 +28,6 @@ use <BOSL/shapes.scad>
 
 include <logotype.scad>
 
-// 130x105
-
 module label()
 {
     difference() {
@@ -57,7 +55,7 @@ module label_mask()
 module render_label(toPrint)
 {
     if (!toPrint) {
-        color([0.2, 0.2, 0.2]) move([0,0,31]) zflip() label();
+        color([0.2, 0.2, 0.2]) move([0,0,32]) zflip() label();
     } else {
         move([0,0,1]) label();
     }

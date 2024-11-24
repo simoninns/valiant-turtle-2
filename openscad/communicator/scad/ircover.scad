@@ -26,14 +26,14 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-module ircover()
+module ircover(depth, width)
 {
-    move([-50,0,(25/2) + 5 - 1.5]) cuboid([1,50,20]);
+    move([-(depth/2)+2.5,0,(25/2) + 5 - 1.5]) cuboid([1,50,20]);
 }
 
-module ircover_mask()
+module ircover_mask(depth, width)
 {
-    move([-50,0,0]) {
+    move([-(depth/2)+2.5,0,0]) {
         move([0,0,(25/2) + 5 - 1.5]) cuboid([2,51,21]);
         move([-2,0,(25/2) + 5 - 1.5]) cuboid([5,50-4,20-4], fillet=1, edges=EDGES_X_ALL);
     }
@@ -42,7 +42,7 @@ module ircover_mask()
 module render_ircover(toPrint)
 {
     if (!toPrint) {
-        color([1,0,0]) ircover();
+        color([1,0,0]) ircover(80,122);
     } else {
         // Not printable - needs to be 1mm clear/red acrylic
     }

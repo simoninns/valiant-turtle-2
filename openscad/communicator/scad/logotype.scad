@@ -88,7 +88,7 @@ module logotype()
 
 module logotype_scaled()
 {
-    move([2,0,31.51]) scale([0.9,0.9,1]) {
+    move([2,0,32.51]) scale([0.9,0.9,1]) {
         logotype();
     }
 }
@@ -100,6 +100,6 @@ module render_logotype(toPrint)
             logotype_scaled();
         }
     } else {
-        move([0,0,32]) yrot(-180) logotype_scaled();
+        move([0,0,33]) yrot(-180) logotype_scaled();
     }
 }

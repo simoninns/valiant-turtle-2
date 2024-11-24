@@ -31,18 +31,19 @@ include <holder.scad>
 // Screw holes
 module pcb_screw_holes()
 {
-    move([+(86/2)-20,+(90/2),0]) cyl(h=10, d=3.5);
-    move([-(86/2),+(90/2),0]) cyl(h=10, d=3.5);
-    move([+(86/2)-20,-(90/2),0]) cyl(h=10, d=3.5);
-    move([-(86/2),-(90/2),0]) cyl(h=10, d=3.5);
+    move([12.5,0,0]) {
+        move([+(46/2)-20,+(90/2),0]) cyl(h=10, d=3.5);
+        move([-(86/2),+(90/2),0]) cyl(h=10, d=3.5);
+        move([+(46/2)-20,-(90/2),0]) cyl(h=10, d=3.5);
+        move([-(86/2),-(90/2),0]) cyl(h=10, d=3.5);
+    }
 }
 
 module pcb() 
 {
     difference() {
         move([0,0,8.75]) {
-            //color([0.0,0.6,0.0,1]) cuboid([95,99,1.5]); // Keep to 100x100 max
-            color([0.0,0.6,0.0,1]) cuboid([93,99,1.5]); // Keep to 100x100 max
+            color([0.0,0.6,0.0,1]) cuboid([68,99,1.5]); // Keep to 100x100 max
         }
 
         move([0,0,8.75]) {
@@ -50,7 +51,7 @@ module pcb()
         }
 
         // Add holes for the LEDs
-        move([-35,0,16]) xrot(90) yrot(-90) {
+        move([-23.5,0,16]) xrot(90) yrot(-90) {
             six_leds();
         }
     }
@@ -58,10 +59,10 @@ module pcb()
 
 module pcb_screws()
 {
-    move([1,0,8 + 1.6]) {
-        move([+(86/2)-20,+(90/2),0]) m3x6_screw();
+    move([1+12.5,0,8 + 1.6]) {
+        move([+(46/2)-20,+(90/2),0]) m3x6_screw();
         move([-(86/2),+(90/2),0]) m3x6_screw();
-        move([+(86/2)-20,-(90/2),0]) m3x6_screw();
+        move([+(46/2)-20,-(90/2),0]) m3x6_screw();
         move([-(86/2),-(90/2),0]) m3x6_screw();
     }
 }

@@ -61,66 +61,69 @@ module foot_marker()
     }
 }
 
-module case_common()
+module case_common(depth, width)
 {
     difference() {
         hull() {
-            move([+(105/2)-4,+(130/2)-4,0]) case_edge();
-            move([-(105/2)+4,+(130/2)-4,0]) case_edge();
-            move([+(105/2)-4,-(130/2)+4,0]) case_edge();
-            move([-(105/2)+4,-(130/2)+4,0]) case_edge();
+            move([+(depth/2)-4,+(width/2)-4,0]) case_edge();
+            move([-(depth/2)+4,+(width/2)-4,0]) case_edge();
+            move([+(depth/2)-4,-(width/2)+4,0]) case_edge();
+            move([-(depth/2)+4,-(width/2)+4,0]) case_edge();
         }
 
         // Hollow the case with a 4mm wall
         hull() {
-            move([+(105/2) - 8,+(130/2) - 8,10]) cyl(h=16, d=8);
-            move([-(105/2) + 8,+(130/2) - 8,10]) cyl(h=16, d=8);
-            move([+(105/2) - 8,-(130/2) + 8,10]) cyl(h=16, d=8);
-            move([-(105/2) + 8,-(130/2) + 8,10]) cyl(h=16, d=8);
+            move([+(depth/2) - 8,+(width/2) - 8,10]) cyl(h=16, d=8);
+            move([-(depth/2) + 8,+(width/2) - 8,10]) cyl(h=16, d=8);
+            move([+(depth/2) - 8,-(width/2) + 8,10]) cyl(h=16, d=8);
+            move([-(depth/2) + 8,-(width/2) + 8,10]) cyl(h=16, d=8);
         }
 
         // Main panel cut-out
-        move([0,17,11 + 5]) cuboid([83,130,22]); // Back
-        move([0,-17,11 + 5]) cuboid([83,130,22]); // Front
+        move([0,17,11 + 5]) cuboid([depth-14,width+8,22]); // Back
+        move([0,-17,11 + 5]) cuboid([depth-14,width+8,22]); // Front
         move([0,0,11 + 5]) cuboid([110,108,22]); // Sides
 
         // Panel slots
-        panel_mask_left();
-        panel_mask_right();
-        panel_mask_back();
-        panel_mask_front();
+        panel_mask_left(depth, width);
+        panel_mask_right(depth, width);
+        panel_mask_back(depth, width);
+        panel_mask_front(depth, width);
     }
     
     // Screw pillars back
-    move([+(105/2) - 7,+(130/2) - 7,9]) cuboid([8,8,14], fillet=4, edges=EDGE_FR_LF+EDGE_BK_RT);
-    move([-(105/2) + 7,+(130/2) - 7,9]) cuboid([8,8,14], fillet=4, edges=EDGE_FR_RT+EDGE_BK_LF);
+    move([+(depth/2) - 7,+(width/2) - 7,9]) cuboid([8,8,14], fillet=4, edges=EDGE_FR_LF);
+    move([-(depth/2) + 7,+(width/2) - 7,9]) cuboid([8,8,14], fillet=4, edges=EDGE_FR_RT);
     
     // Screw pillars front
-    move([+(105/2) - 7,-(130/2) + 7,9]) cuboid([8,8,14], fillet=4, edges=EDGE_BK_LF);
-    move([-(105/2) + 7,-(130/2) + 7,9]) cuboid([8,8,14], fillet=4, edges=EDGE_BK_RT);
+    move([+(depth/2) - 7,-(width/2) + 7,9]) cuboid([8,8,14], fillet=4, edges=EDGE_BK_LF);
+    move([-(depth/2) + 7,-(width/2) + 7,9]) cuboid([8,8,14], fillet=4, edges=EDGE_BK_RT);
 }
 
 module case_base()
 {
+    depth = 80;
+    width = 122;
+
     difference() {
         union() {
-            case_common();
+            case_common(depth, width);
         }
 
         // Back M3 through-holes
-        move([+(105/2) - 7,+(130/2) - 7,9]) cyl(h=22, d=6);
-        move([-(105/2) + 7,+(130/2) - 7,9]) cyl(h=22, d=6);
+        move([+(depth/2) - 7,+(width/2) - 7,9]) cyl(h=22, d=6);
+        move([-(depth/2) + 7,+(width/2) - 7,9]) cyl(h=22, d=6);
 
         // Front M3 through-holes
-        move([+(105/2) - 7,-(130/2) + 7,9]) cyl(h=22, d=6);
-        move([-(105/2) + 7,-(130/2) + 7,9]) cyl(h=22, d=6);
+        move([+(depth/2) - 7,-(width/2) + 7,9]) cyl(h=22, d=6);
+        move([-(depth/2) + 7,-(width/2) + 7,9]) cyl(h=22, d=6);
 
         // Markers to show where the stick-on feet should be placed
         move([0,0,-0.25]) {
-            move([+42,+48,0]) foot_marker();
-            move([-42,+48,0]) foot_marker();
-            move([+42,-48,0]) foot_marker();
-            move([-42,-48,0]) foot_marker();
+            move([+(depth/2) - 12,+(width/2) - 18,0]) foot_marker();
+            move([-(depth/2) + 12,+(width/2) - 18,0]) foot_marker();
+            move([+(depth/2) - 12,-(width/2) + 18,0]) foot_marker();
+            move([-(depth/2) + 12,-(width/2) + 18,0]) foot_marker();
         }
     }
 
@@ -128,77 +131,80 @@ module case_base()
         difference() {
             union() {
                 // Back M3 through-holes
-                move([+(105/2) - 7,+(130/2) - 7,0.5]) cyl(h=5, d=7);
-                move([-(105/2) + 7,+(130/2) - 7,0.5]) cyl(h=5, d=7);
+                move([+(depth/2) - 7,+(width/2) - 7,0.5]) cyl(h=5, d=7);
+                move([-(depth/2) + 7,+(width/2) - 7,0.5]) cyl(h=5, d=7);
 
                 // Front M2 through-holes
-                move([+(105/2) - 7,-(130/2) + 7,0.5]) cyl(h=5, d=7);
-                move([-(105/2) + 7,-(130/2) + 7,0.5]) cyl(h=5, d=7);
+                move([+(depth/2) - 7,-(width/2) + 7,0.5]) cyl(h=5, d=7);
+                move([-(depth/2) + 7,-(width/2) + 7,0.5]) cyl(h=5, d=7);
 
                 move([0,0,-1]) {
                     // Back M3 through-holes
-                    move([+(105/2) - 7,+(130/2) - 7,0]) cyl(h=2, d1=8, d2=4);
-                    move([-(105/2) + 7,+(130/2) - 7,0]) cyl(h=2, d1=8, d2=4);
+                    move([+(depth/2) - 7,+(width/2) - 7,0]) cyl(h=2, d1=8, d2=4);
+                    move([-(depth/2) + 7,+(width/2) - 7,0]) cyl(h=2, d1=8, d2=4);
 
                     // Front M2 through-holes
-                    move([+(105/2) - 7,-(130/2) + 7,0]) cyl(h=2, d1=8, d2=4);
-                    move([-(105/2) + 7,-(130/2) + 7,0]) cyl(h=2, d1=8, d2=4);
+                    move([+(depth/2) - 7,-(width/2) + 7,0]) cyl(h=2, d1=8, d2=4);
+                    move([-(depth/2) + 7,-(width/2) + 7,0]) cyl(h=2, d1=8, d2=4);
                 }
             }
 
             move([0,0,-2]) {
                 // Back M3 through-holes
-                move([+(105/2) - 7,+(130/2) - 7,0]) cyl(h=2, d1=9.5, d2=3.5);
-                move([-(105/2) + 7,+(130/2) - 7,0]) cyl(h=2, d1=9.5, d2=3.5);
+                move([+(depth/2) - 7,+(width/2) - 7,0]) cyl(h=2, d1=9.5, d2=3.5);
+                move([-(depth/2) + 7,+(width/2) - 7,0]) cyl(h=2, d1=9.5, d2=3.5);
 
                 // Front M3 through-holes
-                move([+(105/2) - 7,-(130/2) + 7,0]) cyl(h=2, d1=9.5, d2=3.5);
-                move([-(105/2) + 7,-(130/2) + 7,0]) cyl(h=2, d1=9.5, d2=3.5);
+                move([+(depth/2) - 7,-(width/2) + 7,0]) cyl(h=2, d1=9.5, d2=3.5);
+                move([-(depth/2) + 7,-(width/2) + 7,0]) cyl(h=2, d1=9.5, d2=3.5);
             }
 
             // Back M3 screw holes
-            move([+(105/2) - 7,+(130/2) - 7,0]) cyl(h=10, d=3.5);
-            move([-(105/2) + 7,+(130/2) - 7,0]) cyl(h=10, d=3.5);
+            move([+(depth/2) - 7,+(width/2) - 7,0]) cyl(h=10, d=3.5);
+            move([-(depth/2) + 7,+(width/2) - 7,0]) cyl(h=10, d=3.5);
 
             // Front M3 screw holes
-            move([+(105/2) - 7,-(130/2) + 7,0]) cyl(h=10, d=3.5);
-            move([-(105/2) + 7,-(130/2) + 7,0]) cyl(h=10, d=3.5);
+            move([+(depth/2) - 7,-(width/2) + 7,0]) cyl(h=10, d=3.5);
+            move([-(depth/2) + 7,-(width/2) + 7,0]) cyl(h=10, d=3.5);
         }
     }
 
     // PCB pegs
-    move([1,0,0]) {
-        move([+(86/2)-20,+(90/2),0]) pcb_peg();
+    move([1+12.5,0,0]) {
+        move([+(46/2)-20,+(90/2),0]) pcb_peg();
         move([-(86/2),+(90/2),0]) pcb_peg();
-        move([+(86/2)-20,-(90/2),0]) pcb_peg();
+        move([+(46/2)-20,-(90/2),0]) pcb_peg();
         move([-(86/2),-(90/2),0]) pcb_peg();
     }
 }
 
 module case_top()
 {
+    depth = 80;
+    width = 122;
+    
     move([0,0,32]) zflip() {
         difference() {
-            case_common();
+            case_common(depth, width);
 
             move([0,0,21-6]) {
                 // Back M3 insert holes
-                move([+(105/2) - 7,+(130/2) - 7,0]) cyl(h=10, d=4);
-                move([-(105/2) + 7,+(130/2) - 7,0]) cyl(h=10, d=4);
+                move([+(depth/2) - 7,+(width/2) - 7,0]) cyl(h=10, d=4);
+                move([-(depth/2) + 7,+(width/2) - 7,0]) cyl(h=10, d=4);
 
                 // Front M3 insert holes
-                move([+(105/2) - 7,-(130/2) + 7,0]) cyl(h=10, d=4);
-                move([-(105/2) + 7,-(130/2) + 7,0]) cyl(h=10, d=4);
+                move([+(depth/2) - 7,-(width/2) + 7,0]) cyl(h=10, d=4);
+                move([-(depth/2) + 7,-(width/2) + 7,0]) cyl(h=10, d=4);
             }
 
             move([0,0,21-14]) {
                 // Back screw clearance holes
-                move([+(105/2) - 7,+(130/2) - 7,0]) cyl(h=10, d=3.25);
-                move([-(105/2) + 7,+(130/2) - 7,0]) cyl(h=10, d=3.25);
+                move([+(depth/2) - 7,+(width/2) - 7,0]) cyl(h=10, d=3.25);
+                move([-(depth/2) + 7,+(width/2) - 7,0]) cyl(h=10, d=3.25);
 
                 // Front screw clearance holes
-                move([+(105/2) - 7,-(130/2) + 7,0]) cyl(h=10, d=3.25);
-                move([-(105/2) + 7,-(130/2) + 7,0]) cyl(h=10, d=3.25);
+                move([+(depth/2) - 7,-(width/2) + 7,0]) cyl(h=10, d=3.25);
+                move([-(depth/2) + 7,-(width/2) + 7,0]) cyl(h=10, d=3.25);
             }
         
             // Label mounting
@@ -237,13 +243,16 @@ module m3x6_screw()
 
 module case_screws()
 {
+    depth = 80;
+    width = 122;
+
     // Back M3 screw holes
-    move([+(105/2) - 7,+(130/2) - 7,11]) xrot(180) m3x10_screw();
-    move([-(105/2) + 7,+(130/2) - 7,11]) xrot(180) m3x10_screw();
+    move([+(depth/2) - 7,+(width/2) - 7,11]) xrot(180) m3x10_screw();
+    move([-(depth/2) + 7,+(width/2) - 7,11]) xrot(180) m3x10_screw();
 
     // Front M3 screw holes
-    move([+(105/2) - 7,-(130/2) + 7,11]) xrot(180) m3x10_screw();
-    move([-(105/2) + 7,-(130/2) + 7,11]) xrot(180) m3x10_screw();
+    move([+(depth/2) - 7,-(width/2) + 7,11]) xrot(180) m3x10_screw();
+    move([-(depth/2) + 7,-(width/2) + 7,11]) xrot(180) m3x10_screw();
 }
 
 module render_case_base(toPrint)
@@ -260,7 +269,7 @@ module render_case_top(toPrint)
     if (!toPrint) {
         color([0.9,0.9,0.6,1]) case_top();
     } else {
-        zflip() move([0,0,-31]) case_top();
+        zflip() move([0,0,-32]) case_top();
     }
 }
 
