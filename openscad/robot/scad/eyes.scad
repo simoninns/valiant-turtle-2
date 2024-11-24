@@ -158,7 +158,7 @@ module eye_pcb_jig_rest()
     // Cable rest
     move([0,0,0]) {
         difference() {
-            move([0,0,0]) cuboid([10,10,4], chamfer=1, edges=EDGES_Z_ALL);
+            move([0,0,-0.5]) cuboid([10,11,5], chamfer=1, edges=EDGES_Z_ALL);
 
             move([0,0,1]) xcyl(h=12,d=1.5);
             move([0,2,1]) xcyl(h=12,d=1.5);

@@ -48,7 +48,8 @@ module motor_bay_side_panels()
     pointF = [0,75,-20];
     pointG = [0,80,-0.5];
 
-    width = 55;
+    // The 0.001 offset is to avoid a rendering bug
+    width = 55.001;
     pos = -13;
 
     // Outer side panel
