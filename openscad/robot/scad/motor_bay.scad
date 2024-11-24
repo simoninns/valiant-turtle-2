@@ -160,7 +160,8 @@ module motor_bay_shape()
         move([74,pos + 42,-22.75]) cuboid([45,44,10], chamfer=1);
 
         // Wheel position marker to align wheel on axel
-        move([110,pos + 42,-27]) cuboid([4.5,43,2]);
+        axel_length = 224; // See render_turning_circle()
+        move([axel_length/2,pos + 42,-30]) cuboid([3,43,2], chamfer=1);
     }
     
     // Back part

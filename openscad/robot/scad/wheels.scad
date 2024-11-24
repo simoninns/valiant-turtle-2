@@ -49,23 +49,15 @@ module wheel_hub()
 {
     difference() {
         union() {
-            move([6,0,0]) yrot(-90) cyl(h=12,d=22, chamfer=0.5);
-            move([8,0,1]) cuboid([6,7,20], chamfer=0.5);
+            move([4.5,0,0]) yrot(-90) cyl(h=9,d=22, chamfer=0.5);
+            move([5,0,1]) cuboid([6,7,20], chamfer=0.5);
         }
 
         // Setting screw hole
-        move([8,0,6]) xrot(180) cyl(h=12,d=3.25);
+        move([5,0,6]) xrot(180) cyl(h=12,d=3.25);
 
         // Threaded insert slot
-        move([8,0,7+2]) xrot(180) cyl(h=8,d=4);
-    }
-    
-    // Spacer
-    move([15.5,0,0]) {
-        difference() {
-            xcyl(h=9,d=8);
-            xcyl(h=10,d=6);
-        }
+        move([5,0,7+2]) xrot(180) cyl(h=8,d=4);
     }
 }
 
@@ -115,7 +107,7 @@ module render_wheel_left(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) {
-            xflip() move([106.5 + 1.5,64-35,-6]) xrot(90) wheel();
+            xflip() move([105,64-35,-6]) xrot(90) wheel();
         }
     } else {
         move([0,0,9.75]) yrot(90) wheel();
@@ -126,7 +118,7 @@ module render_wheel_right(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) {
-            move([106.5 + 1.5,64-35,-6]) xrot(90) wheel();
+            move([105,64-35,-6]) xrot(90) wheel();
         }
     } else {
         move([0,0,9.75]) yrot(90) wheel();
@@ -136,8 +128,8 @@ module render_wheel_right(toPrint)
 module render_turning_circle(toPrint)
 {
     if (!toPrint) {
-        // The wheels are 230mm apart (centre to centre):
-        axel_length = 230;
+        // The wheels are 224mm apart (centre to centre):
+        axel_length = 224;
         move([0,64-35,-34]) {
             difference() {
                 cyl(h=1, r=(axel_length/2) + 0.5, $fn=200);
@@ -162,7 +154,7 @@ module render_tire_left(toPrint)
 {
     if (!toPrint) {
         color([0.4,0.4,0.4,1]) {
-            xflip() move([106.5,64-35,-6]) tire();
+            xflip() move([103.5,64-35,-6]) tire();
         }
     }
 }
@@ -171,7 +163,7 @@ module render_tire_right(toPrint)
 {
     if (!toPrint) {
         color([0.4,0.4,0.4,1]) {
-            move([106.5,64-35,-6]) tire();
+            move([103.5,64-35,-6]) tire();
         }
     }
 }
