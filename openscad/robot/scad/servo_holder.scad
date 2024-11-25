@@ -44,21 +44,21 @@ module servo_holder_edges()
                 move([-61.25,-2.5,-7]) cuboid([25.5,39,3], chamfer=1, edges=EDGES_X_TOP+EDGES_Y_TOP+EDGES_Z_ALL);
 
                 // Platform to make installing the servo easier
-                move([4.5,0,-6]) cuboid([14,25,2], chamfer=0.5);
+                move([4.5,0,-5.5]) cuboid([14,25,2], chamfer=0.5);
             }
 
             // Servo mounting holes
-            move([-8,14,1.5]) xcyl(h=10,d=1.75);
-            move([-8,-14,1.5]) xcyl(h=10,d=1.75);
+            move([-8,14,2.5]) xcyl(h=10,d=1.75);
+            move([-8,-14,2.5]) xcyl(h=10,d=1.75);
 
             // M3 screw holes right
-            move([8,12,-7]) cyl(h=5,d=3.5);
-            move([8,-8,-7]) cyl(h=5,d=3.5);
+            move([8,12,-7]) cyl(h=5,d=3.75);
+            move([8,-8,-7]) cyl(h=5,d=3.75);
 
             // M3 screw holes left
             move([-61,0,0]) {
-                move([-8,12,-7]) cyl(h=5,d=3.5);
-                move([-8,-8,-7]) cyl(h=5,d=3.5);
+                move([-8,12,-7]) cyl(h=5,d=3.75);
+                move([-8,-8,-7]) cyl(h=5,d=3.75);
             }
 
             // M3 Recess

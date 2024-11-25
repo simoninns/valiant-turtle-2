@@ -48,7 +48,7 @@ module render_pen_holder_cap(toPrint, penUp)
 {
     if (!toPrint) {
         color([0.9,0.5,0.0,1]) {
-            if(penUp) move([0,29,-25 + 8]) xrot(180) pen_holder_cap();
+            if(penUp) move([0,29,-25 + 6.5]) xrot(180) pen_holder_cap();
             else move([0,29,-25]) xrot(180) pen_holder_cap();
         }
     } else {

@@ -83,7 +83,7 @@ module micro_servo()
 module render_micro_servo(toPrint)
 {
     if (!toPrint) {
-        move([32,34.5,10]) xrot(90) yrot(-90) {
+        move([32,34.5,11]) xrot(90) yrot(-90) {
             micro_servo();
         }
     }

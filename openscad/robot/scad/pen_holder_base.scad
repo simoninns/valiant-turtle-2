@@ -78,7 +78,7 @@ module render_pen_holder_base(toPrint, penUp)
 {
     if (!toPrint) {
         color([0.8,0.8,0.8]) {
-            if(penUp) move([0,29,23+8]) xrot(180) pen_holder();
+            if(penUp) move([0,29,23+6.5]) xrot(180) pen_holder();
             else move([0,29,23]) xrot(180) pen_holder();
         }
     } else {
@@ -109,7 +109,7 @@ module pen()
 module render_pen(toPrint, penUp)
 {
     if (!toPrint) {
-        if (penUp) move([0,0,8]) pen();
+        if (penUp) move([0,0,6.5]) pen();
         else pen();
     }
 }
