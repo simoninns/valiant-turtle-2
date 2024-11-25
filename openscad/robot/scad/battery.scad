@@ -518,11 +518,6 @@ module render_battery_pack_connector_cover(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) battery_pack_connector_cover();
-
-        color([0.8,0.8,0.0,1]) move([-23.5,16.5,-12+3]) {
-            move([-3,0,0]) bullet_4mm_female();
-            move([+3,0,0]) bullet_4mm_female();
-        }
     } else {
         move([23.5,-15,18]) battery_pack_connector_cover();
     }
@@ -534,6 +529,16 @@ module render_battery_pack_connector_lock(toPrint)
         color([0.6,0.6,0.6,1]) battery_pack_connector_lock();
     } else {
         move([23.5,-4.5,-9.5 - 0.125]) xrot(90) battery_pack_connector_lock();
+    }
+}
+
+module render_female_bullet_connectors(toPrint)
+{
+    if (!toPrint) {
+        move([-23.5,16.5,-12+3]) {
+            move([-3,0,0]) bullet_4mm_female();
+            move([+3,0,0]) bullet_4mm_female();
+        }
     }
 }
 

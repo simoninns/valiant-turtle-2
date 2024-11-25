@@ -136,6 +136,8 @@ display_battery_pack_bms_pcb = "No"; // [Yes, No]
 display_toggle_switch = "No"; // [Yes, No]
 display_logotype_2D = "No"; // [Yes, No]
 display_battery_clip_contacts = "No"; // [Yes, No]
+display_male_bullet_connectors = "No"; // [Yes, No]
+display_female_bullet_connectors = "No"; // [Yes, No]
 
 /* [Screws] */
 display_motor_mount_screws_left = "No"; // [Yes, No]
@@ -233,6 +235,8 @@ module main() {
     d_toggle_switch = (display_toggle_switch == "Yes") ? true:false;
     d_logotype_2D = (display_logotype_2D == "Yes") ? true:false;
     d_battery_clip_contacts = (display_battery_clip_contacts == "Yes") ? true:false;
+    d_male_bullet_connectors = (display_male_bullet_connectors == "Yes") ? true:false;
+    d_female_bullet_connectors = (display_female_bullet_connectors == "Yes") ? true:false;
 
     // Screws
     d_motor_mount_screws_left = (display_motor_mount_screws_left == "Yes") ? true:false;
@@ -321,6 +325,8 @@ module main() {
         if (d_toggle_switch) render_toggle_switch(toPrint);
         if (d_logotype_2D) render_logotype_2D(toPrint);
         if (d_battery_clip_contacts) render_battery_clip_contacts(toPrint);
+        if (d_male_bullet_connectors) render_male_bullet_connectors(toPrint);
+        if (d_female_bullet_connectors) render_female_bullet_connectors(toPrint);
 
         // Render screws
         if (d_motor_mount_screws_left) render_motor_mount_screws_left(toPrint);

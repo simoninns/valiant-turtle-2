@@ -290,14 +290,18 @@ module render_servo_holder(toPrint)
 {
     if (!toPrint) {
         color([0.2,0.2,0.2,1]) servo_holder();
+    } else {
+        move([0,-29,0]) servo_holder();
+    }
+}
 
-        // Add in the bullet connectors
+module render_male_bullet_connectors(toPrint)
+{
+    if (!toPrint) {
         move([-23.5,16.5,10.25]) {
             move([-3,0,0]) bullet_4mm_male();
             move([+3,0,0]) bullet_4mm_male();
         }
-    } else {
-        move([0,-29,0]) servo_holder();
     }
 }
 
