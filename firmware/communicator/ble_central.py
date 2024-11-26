@@ -67,6 +67,7 @@ class BleCentral:
 
         # Queue for commands to be sent to the peripheral
         self._command_queue = []
+        self._last_processed_command_uid = 0
     
     @property
     def host_comms(self):
@@ -169,10 +170,10 @@ class BleCentral:
             logging.debug("BleCentral::handle_power_service_task - Exception was flagged (Peripheral probably disappeared)")
             self._connected = False
 
-    def command_service_notification(self, value):
+    def command_service_notification(self, status_byte, last_processed_command_uid):
         """Process command_service notifications from the peripheral"""
-        #logging.debug(f"BleCentral::command_service_notification - Command response from robot = {value}")
-        self._command_service_response = value
+        self._command_service_response = status_byte
+        self._last_processed_command_uid = last_processed_command_uid
         self._ble_command_service_event.set() # Flag the event
 
     def get_command_service_response(self):
@@ -181,14 +182,24 @@ class BleCentral:
         return self._command_service_response
 
     async def handle_command_service_task(self):
-        """Task to handle command_service notifications"""
+        """
+        Task to handle command_service notifications.
+
+        Since we are using BLE a polling mechanism is used where the peripheral sends a notification
+        and, if we have a waiting command, we sent it back to the peripheral.  If there are no waiting
+        commands then a nop command is sent to the peripheral.  In addition, the polling notification from
+        the peripheral is used to update the last processed command UID as well as a status byte of flags
+        that show the peripheral's current state.
+        """
+        
         logging.debug("BleCentral::handle_command_service_task - command_service notification handler running")
 
         try:
             # Loop waiting for service notifications
             while self._connected:
                 value = await self.tx_p2c_characteristic.notified()
-                self.command_service_notification(struct.unpack("<L", value)[0])
+                status_byte, last_processed_command_uid = struct.unpack("<LI", value)
+                self.command_service_notification(status_byte, last_processed_command_uid)
 
                 # Check for any commands to send to the peripheral and, if there aren't any, send a nop command
                 if len(self._command_queue) > 0:
@@ -335,6 +346,29 @@ class BleCentral:
     async def flush_command_queue(self):
         """Clear the command queue"""
         self._command_queue = []
+
+    async def wait_for_command_complete(self, command: RobotCommand) -> int:
+        """Wait for the command with the specified UID to be processed
+        Returns 0 on success, 1 on timeout and 2 on peripheral disconnect"""
+        sleep_time_ms = 100
+        timeout_ms = 1000 * 30 # 30 seconds
+        current_wait_duration_ms = 0
+        while self._last_processed_command_uid < command.command_uid and self._connected == True and current_wait_duration_ms < timeout_ms:
+            await asyncio.sleep_ms(sleep_time_ms)
+            current_wait_duration_ms += sleep_time_ms
+
+        # Timeout?
+        # Note: Since the command connection is polled a timeout is very unlikely but captured here
+        # just in case.  Unless there are bugs the BLE should disconnect before this timeout is reached.
+        if current_wait_duration_ms >= timeout_ms:
+            return 1
+        
+        # Disconnected?
+        if not self._connected:
+            return 2
+        
+        # Successful
+        return 0
 
 if __name__ == "__main__":
     from main import main

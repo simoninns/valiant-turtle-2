@@ -179,9 +179,18 @@ class HostComms:
                     return
                 
             # Queue the command
-            await self.command_shell.send_response("OK")
             robot_command = RobotCommand(command, parameters)
             await self.ble_central.queue_command(robot_command)
+            command_result = await self.ble_central.wait_for_command_complete(robot_command)
+
+            # Show the result of the command processing
+            if command_result == 1:
+                await self.command_shell.send_response("TIMEOUT")
+            elif command_result == 2:
+                await self.command_shell.send_response("DISCONNECTED")
+            else:
+                await self.command_shell.send_response("OK")
+
             return
         
         # The command was not recognised

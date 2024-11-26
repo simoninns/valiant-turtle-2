@@ -320,9 +320,9 @@ class RobotCommand:
     }
 
     # Class variable to store the command UID
-    cls_command_uid = 0
+    cls_command_uid = 1
 
-    def __init__(self, command: str = "nop", parameters: list = [], command_uid: int = -1):
+    def __init__(self, command: str = "nop", parameters: list = [], command_uid: int = 0):
         """
         Initialize a RobotCommand instance.
         
@@ -344,7 +344,7 @@ class RobotCommand:
         self._parameters = parameters
 
         # Unless a specific command UID is provided, use the class variable and increment
-        if command_uid < 0:
+        if command_uid == 0:
             self._command_uid = RobotCommand.cls_command_uid
         else:
             self._command_uid = command_uid
@@ -369,8 +369,8 @@ class RobotCommand:
 
         # Increment the command UID and wrap around if necessary
         RobotCommand.cls_command_uid += 1
-        if not (0 <= RobotCommand.cls_command_uid < 2**32):
-            RobotCommand.cls_command_uid = 0
+        if not (RobotCommand.cls_command_uid < 2**32):
+            RobotCommand.cls_command_uid = 1
 
     @property
     def command(self) -> str:
@@ -399,7 +399,7 @@ class RobotCommand:
         Returns:
             bytes: The packed byte array.
         """
-        packed_data = struct.pack('>II3I', self._command_id, self._command_uid, *self._parameters)
+        packed_data = struct.pack('<II3I', self._command_id, self._command_uid, *self._parameters)
         return packed_data
 
     def get_packed_bytes(self) -> bytes:
@@ -447,7 +447,7 @@ class RobotCommand:
         if len(byte_array) != 20:  # 4 bytes for command ID + 3 * 4 bytes for parameters + 4 bytes for command UID
             raise ValueError("Byte array length is incorrect")
         
-        command_id, command_uid, param1, param2, param3 = struct.unpack('>II3I', byte_array)
+        command_id, command_uid, param1, param2, param3 = struct.unpack('<II3I', byte_array)
         
         command = cls._id_to_command(command_id)
         num_params = cls._command_dictionary[command][1]

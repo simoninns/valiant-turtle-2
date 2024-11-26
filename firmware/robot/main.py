@@ -65,8 +65,8 @@ _GPIO_M2 = const(14)
 _LED_status = const(0)
 _LED_left_motor = const(1)
 _LED_right_motor = const(2)
-_LED_left_eye = const(3)
-_LED_right_eye = const(4)
+_LED_right_eye = const(3)
+_LED_left_eye = const(4)
 
 def main():
     """
@@ -99,20 +99,18 @@ def main():
             # Process the command
             if ble_peripheral.command_queue:
                 robot_command = ble_peripheral.command_queue.pop()
+                logging.debug(f"Main::robot_control_task - processing {robot_command}")
 
                 # Motor power on
                 if robot_command.command == "motors-on":
-                    logging.debug("Main::robot_control_task - Motors on")
                     drv8825.set_enable(True)
 
                 # Motor power off
                 if robot_command.command == "motors-off":
-                    logging.debug("Main::robot_control_task - Motors off")
                     drv8825.set_enable(False)
 
                 # Forwards
                 if robot_command.command == "forward":
-                    logging.debug("Main::robot_control_task - forwards")
                     left_stepper.set_forwards()
                     right_stepper.set_forwards()
                     velocity = Velocity(metric.mm_to_steps(robot_command.parameters[0]), velocity_parameters)
@@ -125,7 +123,6 @@ def main():
 
                 # Backwards
                 if robot_command.command == "backward":
-                    logging.debug("Main::robot_control_task - backwards")
                     left_stepper.set_backwards()
                     right_stepper.set_backwards()
                     velocity = Velocity(metric.mm_to_steps(robot_command.parameters[0]), velocity_parameters)
@@ -138,7 +135,6 @@ def main():
 
                 # Left
                 if robot_command.command == "left":
-                    logging.debug("Main::robot_control_task - left")
                     left_stepper.set_forwards()
                     right_stepper.set_backwards()
                     velocity = Velocity(metric.degrees_to_steps(robot_command.parameters[0]), velocity_parameters)
@@ -151,7 +147,6 @@ def main():
 
                 # Right
                 if robot_command.command == "right":
-                    logging.debug("Main::robot_control_task - right")
                     left_stepper.set_backwards()
                     right_stepper.set_forwards()
                     velocity = Velocity(metric.degrees_to_steps(robot_command.parameters[0]), velocity_parameters)
@@ -172,23 +167,22 @@ def main():
                 
                 # Pen up
                 if robot_command.command == "penup":
-                    logging.debug("Main::robot_control_task - Pen up")
                     pen.up()
 
                 # Pen down
                 if robot_command.command == "pendown":
-                    logging.debug("Main::robot_control_task - Pen down")
                     pen.down()
 
                 # Left eye colour
                 if robot_command.command == "left-eye":
-                    logging.debug("Main::robot_control_task - Left eye colour")
                     led_fx.set_led_colour(_LED_left_eye, robot_command.parameters[0], robot_command.parameters[1], robot_command.parameters[2])
 
                 # Right eye colour
                 if robot_command.command == "right-eye":
-                    logging.debug("Main::robot_control_task - Right eye colour")
                     led_fx.set_led_colour(_LED_right_eye, robot_command.parameters[0], robot_command.parameters[1], robot_command.parameters[2])
+
+                # Set the last processed command UID
+                ble_peripheral.last_processed_command_uid = robot_command.command_uid
 
     # Async task to monitor the robot
     async def robot_monitor_task():

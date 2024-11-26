@@ -69,6 +69,7 @@ class BlePeripheral:
         # Command queue for received commands from central
         self._command_queue = []
         self._command_queue_event = asyncio.Event()
+        self._last_processed_command_uid = 0
 
     @property
     def command_queue_event(self):
@@ -89,6 +90,16 @@ class BlePeripheral:
     def command_status(self, status: StatusBitFlag):
         """Set the command status"""
         self._command_status = status
+
+    @property
+    def last_processed_command_uid(self):
+        """Get the last processed command UID"""
+        return self._last_processed_command_uid
+    
+    @last_processed_command_uid.setter
+    def last_processed_command_uid(self, uid: int):
+        """Set the last processed command UID"""
+        self._last_processed_command_uid = uid
 
     def __ble_advertising_definitions(self):
         # Definitions used for advertising via BLE
@@ -162,7 +173,7 @@ class BlePeripheral:
             #logging.debug(f"BlePeripheral::command_service_update - Status Bit Flags = {status_bit_flag.display_flags()}")
             try:
                 # Send from p2c
-                self.tx_p2c_characteristic.notify(self.__connection, struct.pack("<L", int(status_bit_flag.flags)))
+                self.tx_p2c_characteristic.notify(self.__connection, struct.pack("<LI", int(status_bit_flag.flags), self._last_processed_command_uid))
                 
             except Exception as e:
                 logging.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
