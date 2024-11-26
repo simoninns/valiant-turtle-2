@@ -106,7 +106,8 @@ class HostComms:
         # Get commands and then process them
         while True:
             command, parameters = await self.command_shell.get_command()
-            if command: await self.process_command(command, parameters)
+            if command:
+                await self.process_command(command, parameters)
 
     async def host_task(self):
         logging.debug("HostComms::host_task - Starting async host communication tasks")

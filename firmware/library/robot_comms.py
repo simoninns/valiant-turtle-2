@@ -301,31 +301,35 @@ class RobotCommand:
     """
 
     # Command parameters: name (unique ID, number of parameters)
-    # Note: The maximum number of parameters supported is 4
+    # Note: The maximum number of parameters supported is 3
     _command_dictionary = {
         # Dictionary of commands:
         # Command: "name" (unique ID, number of parameters, (param1_min, ...), (param1_max, ...), (param1_desc, ...), "help_text")
-        "nop":        ( 0, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "No operation"),
-        "motors-on":  ( 1, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Motors on"),
-        "motors-off": ( 2, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Motors off"),
-        "forward":    ( 3, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move forward"),
-        "backward":   ( 4, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move backward"),
-        "left":       ( 5, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Degrees", "", "", ""), "Turn left"),
-        "right":      ( 6, 1, (0, 0, 0, 0), (100000, 0, 0, 0), ("Degrees", "", "", ""), "Turn right"),
-        "velocity":   ( 7, 3, (1, 1, 1, 0), (100000, 100000, 100000, 0), ("Acceleration in mmPSPS", "Min mmPS", "Max mmPS", ""), "Set the velocity profile (in mm per second)"),
-        "penup":      ( 8, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lift the pen up"),
-        "pendown":    ( 9, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Lower the pen down"),
-        "left-eye":   (10, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the left eye"),
-        "right-eye":  (11, 3, (0, 0, 0, 0), (255, 255, 255, 0), ("Red", "Green", "Blue", ""), "Set the colour of the right eye"),
+        "nop":        ( 0, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "No operation"),
+        "motors-on":  ( 1, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Motors on"),
+        "motors-off": ( 2, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Motors off"),
+        "forward":    ( 3, 1, (0, 0, 0), (100000, 0, 0), ("Distance (mm)", "", ""), "Move forward"),
+        "backward":   ( 4, 1, (0, 0, 0), (100000, 0, 0), ("Distance (mm)", "", ""), "Move backward"),
+        "left":       ( 5, 1, (0, 0, 0), (100000, 0, 0), ("Degrees", "", ""), "Turn left"),
+        "right":      ( 6, 1, (0, 0, 0), (100000, 0, 0), ("Degrees", "", ""), "Turn right"),
+        "velocity":   ( 7, 3, (1, 1, 1), (100000, 100000, 100000), ("Acceleration in mmPSPS", "Min mmPS", "Max mmPS"), "Set the velocity profile (in mm per second)"),
+        "penup":      ( 8, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lift the pen up"),
+        "pendown":    ( 9, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lower the pen down"),
+        "left-eye":   (10, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the left eye"),
+        "right-eye":  (11, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the right eye"),
     }
 
-    def __init__(self, command: str = "nop", parameters: list = []):
+    # Class variable to store the command UID
+    cls_command_uid = 0
+
+    def __init__(self, command: str = "nop", parameters: list = [], command_uid: int = -1):
         """
         Initialize a RobotCommand instance.
         
         Args:
             command (str): The command name.
-            parameters (list): A list of parameters for the command (must be a maximum of 4 x 32-bit integers).
+            parameters (list): A list of parameters for the command (must be a maximum of 3 x 32-bit integers).
+            command_uid (int): The command UID (unique identifier).
         
         Raises:
             ValueError: If the command is not recognized or any parameter is not a 32-bit integer.
@@ -339,6 +343,12 @@ class RobotCommand:
         self._command = command
         self._parameters = parameters
 
+        # Unless a specific command UID is provided, use the class variable and increment
+        if command_uid < 0:
+            self._command_uid = RobotCommand.cls_command_uid
+        else:
+            self._command_uid = command_uid
+
         self._command_id = self._command_dictionary[command][0]
         self._num_parameters = self._command_dictionary[command][1]
         self._parameter_minimums = self._command_dictionary[command][2]
@@ -347,14 +357,20 @@ class RobotCommand:
         # Ensure all parameters are 32-bit integers
         for param in self._parameters:
             if not (0 <= param < 2**32):
-                raise ValueError(f"Parameter {param} is not a 32-bit integer")      
+                raise ValueError(f"Parameter {param} is not a 32-bit integer")
 
         # Range check the parameters according to the dictionary
         for i in range(self._num_parameters):
             if not (self._parameter_minimums[i] <= self._parameters[i] <= self._parameter_maximums[i]):
                 raise ValueError(f"Parameter {self._parameters[i]} is out of range for command '{command}'")
         
-        self._byte_array = self._pack_command()
+        # Pack the command into a 20 byte array
+        self._byte_array = self._pack_command()        
+
+        # Increment the command UID and wrap around if necessary
+        RobotCommand.cls_command_uid += 1
+        if not (0 <= RobotCommand.cls_command_uid < 2**32):
+            RobotCommand.cls_command_uid = 0
 
     @property
     def command(self) -> str:
@@ -370,15 +386,20 @@ class RobotCommand:
     def parameters(self) -> list:
         """Get the parameters for the command."""
         return self._parameters
+    
+    @property
+    def command_uid(self) -> int:
+        """Get the command UID."""
+        return self._command_uid
 
     def _pack_command(self) -> bytes:
         """
-        Pack the command ID and parameters into a fixed-length byte array.
+        Pack the command ID and parameters into a fixed-length (20) byte array.
         
         Returns:
             bytes: The packed byte array.
         """
-        packed_data = struct.pack('>I4I', self._command_id, *self._parameters)
+        packed_data = struct.pack('>II3I', self._command_id, self._command_uid, *self._parameters)
         return packed_data
 
     def get_packed_bytes(self) -> bytes:
@@ -423,24 +444,32 @@ class RobotCommand:
         Raises:
             ValueError: If the byte array is not the correct length.
         """
-        if len(byte_array) != 20:  # 4 bytes for command ID + 4 * 4 bytes for parameters
+        if len(byte_array) != 20:  # 4 bytes for command ID + 3 * 4 bytes for parameters + 4 bytes for command UID
             raise ValueError("Byte array length is incorrect")
         
-        unpacked_data = struct.unpack('>I4I', byte_array)
-        command_id, param1, param2, param3, param4 = unpacked_data
+        command_id, command_uid, param1, param2, param3 = struct.unpack('>II3I', byte_array)
         
         command = cls._id_to_command(command_id)
         num_params = cls._command_dictionary[command][1]
+
         if num_params == 0:
-            return cls(command, [])
+            return cls(command, [], command_uid)
         elif num_params == 1:
-            return cls(command, [param1])
+            return cls(command, [param1], command_uid)
         elif num_params == 2:
-            return cls(command, [param1, param2])
-        elif num_params == 3:
-            return cls(command, [param1, param2, param3])
+            return cls(command, [param1, param2], command_uid)
         
-        return cls(command, [param1, param2, param3, param4])
+        return cls(command, [param1, param2, param3], command_uid)
+            
+    @classmethod
+    def byte_length(cls):
+        """
+        Get the length of the packed byte array.
+        
+        Returns:
+            int: The length of the packed byte array.
+        """
+        return 20 # Note: BLE has a maximum packet size of 20 bytes
 
     @classmethod
     def num_parameters(cls, command: str) -> int:
@@ -473,12 +502,12 @@ class RobotCommand:
             tuple: A tuple containing the minimum and maximum values for the parameter.
         
         Raises:
-            ValueError: If the command is not recognized or the parameter number is not between 1 and 4.
+            ValueError: If the command is not recognized or the parameter number is not between 0 and 2.
         """
         if command not in cls._command_dictionary:
             raise ValueError(f"Command '{command}' is not recognized")
-        if not (0 <= param_num <= 3):
-            raise ValueError("Parameter number must be between 0 and 3")
+        if not (0 <= param_num <= 2):
+            raise ValueError("Parameter number must be between 0 and 2")
         return cls._command_dictionary[command][2][param_num], cls._command_dictionary[command][3][param_num]
 
     @classmethod
@@ -520,5 +549,5 @@ class RobotCommand:
             str: A string representation of the RobotCommand instance.
         """
         if self._num_parameters == 0:
-            return f"Command = \"{self._command}\" with no parameters"
-        return f"Command = \"{self._command}\" with parameters = {self._parameters}"
+            return f"Command = \"{self._command}\" with no parameters and UID = {self._command_uid}"
+        return f"Command = \"{self._command}\" with parameters = {self._parameters} and UID = {self._command_uid}"

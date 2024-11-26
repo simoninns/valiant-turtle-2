@@ -111,7 +111,7 @@ class BlePeripheral:
         self.command_service = aioble.Service(command_service_uuid)
 
         # TX: Peripheral -> Central
-        self.tx_p2c_characteristic = aioble.BufferedCharacteristic(self.command_service, tx_p2c_characteristic_uuid, notify=True, max_len=20)
+        self.tx_p2c_characteristic = aioble.BufferedCharacteristic(self.command_service, tx_p2c_characteristic_uuid, notify=True, max_len=RobotCommand.byte_length())
         # RX: Central -> Peripheral
         self.rx_c2p_characteristic = aioble.Characteristic(self.command_service, rx_c2p_characteristic_uuid, write=True, write_no_response=True, capture=True)
 
@@ -221,7 +221,7 @@ class BlePeripheral:
 
                     # nop commands are not logged as they are used to keep the peripheral polling the central
                     if robot_command.command != "nop":
-                        logging.debug(f"BlePeripheral::command_service_update_task - Command received = {robot_command}")
+                        logging.debug(f"BlePeripheral::connected_to_central - Received {robot_command}")
                         self._command_queue.append(robot_command)
                         self._command_queue_event.set()
 
