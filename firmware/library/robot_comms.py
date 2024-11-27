@@ -107,7 +107,7 @@ class StatusBitFlag:
             Bit 5: Pen Servo On/Off (1 = On, 0 = Off)
             Bit 6: Pen Servo Up/Down (1 = Up, 0 = Down)
 
-        Bits 7-31 are reserved for future use.
+        Bits 7-15 are reserved for future use.
         """
         self._flags = 0
     
@@ -195,44 +195,44 @@ class StatusBitFlag:
         """
         Change the bit flag at the specified position.
         Args:
-            position (int): The position of the bit to change (must be between 0 and 31).
+            position (int): The position of the bit to change (must be between 0 and 15).
             value (bool): The value to set the bit to (True to set the bit, False to clear the bit).
         Raises:
-            ValueError: If the position is not between 0 and 31.
+            ValueError: If the position is not between 0 and 15.
         """
 
-        if 0 <= position < 32:
+        if 0 <= position < 16:
             if value:
                 self._flags |= (1 << position)
             else:
                 self._flags &= ~(1 << position)
         else:
-            raise ValueError("Position must be between 0 and 31")
+            raise ValueError("Position must be between 0 and 15")
 
     def __is_bit_flag_set(self, position: int):
         """
         Check if the bit flag at the specified position is set.
         Args:
-            position (int): The position of the bit flag to check (0-31).
+            position (int): The position of the bit flag to check (0-15).
         Returns:
             bool: True if the bit flag at the specified position is set, False otherwise.
         Raises:
-            ValueError: If the position is not between 0 and 31.
+            ValueError: If the position is not between 0 and 15.
         """
 
-        if 0 <= position < 32:
+        if 0 <= position < 16:
             return (self._flags & (1 << position)) != 0
         else:
             raise ValueError("Position must be between 0 and 31")
     
     def display_flags(self) -> str:
         """
-        Returns a string representation of the status flags in a 32-bit binary format.
+        Returns a string representation of the status flags in a 16-bit binary format.
         Returns:
-            str: A 32-bit binary string representing the status flags.
+            str: A 16-bit binary string representing the status flags.
         """
         
-        return f'{self._flags:032b}'
+        return f'{self._flags:016b}'
     
     def __str__(self):
         """Return a string representation of the status flags."""
@@ -302,17 +302,18 @@ class RobotCommand:
 
     # Command parameters: name (unique ID, number of parameters)
     # Note: The maximum number of parameters supported is 3
+    # NOte: All numeric items are 16-bit unsigned integers
     _command_dictionary = {
         # Dictionary of commands:
         # Command: "name" (unique ID, number of parameters, (param1_min, ...), (param1_max, ...), (param1_desc, ...), "help_text")
         "nop":        ( 0, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "No operation"),
         "motors-on":  ( 1, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Motors on"),
         "motors-off": ( 2, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Motors off"),
-        "forward":    ( 3, 1, (0, 0, 0), (100000, 0, 0), ("Distance (mm)", "", ""), "Move forward"),
-        "backward":   ( 4, 1, (0, 0, 0), (100000, 0, 0), ("Distance (mm)", "", ""), "Move backward"),
-        "left":       ( 5, 1, (0, 0, 0), (100000, 0, 0), ("Degrees", "", ""), "Turn left"),
-        "right":      ( 6, 1, (0, 0, 0), (100000, 0, 0), ("Degrees", "", ""), "Turn right"),
-        "velocity":   ( 7, 3, (1, 1, 1), (100000, 100000, 100000), ("Acceleration in mmPSPS", "Min mmPS", "Max mmPS"), "Set the velocity profile (in mm per second)"),
+        "forward":    ( 3, 1, (0, 0, 0), (65535, 0, 0), ("Distance (mm)", "", ""), "Move forward"),
+        "backward":   ( 4, 1, (0, 0, 0), (65535, 0, 0), ("Distance (mm)", "", ""), "Move backward"),
+        "left":       ( 5, 1, (0, 0, 0), (65535, 0, 0), ("Degrees", "", ""), "Turn left"),
+        "right":      ( 6, 1, (0, 0, 0), (65535, 0, 0), ("Degrees", "", ""), "Turn right"),
+        "velocity":   ( 7, 3, (1, 1, 1), (65535, 65535, 65535), ("Acceleration in mmPSPS", "Min mmPS", "Max mmPS"), "Set the velocity profile (in mm per second)"),
         "penup":      ( 8, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lift the pen up"),
         "pendown":    ( 9, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lower the pen down"),
         "left-eye":   (10, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the left eye"),
@@ -328,7 +329,7 @@ class RobotCommand:
         
         Args:
             command (str): The command name.
-            parameters (list): A list of parameters for the command (must be a maximum of 3 x 32-bit integers).
+            parameters (list): A list of parameters for the command (must be a maximum of 3 x 16-bit unsigned integers).
             command_uid (int): The command UID (unique identifier).
         
         Raises:
@@ -356,20 +357,20 @@ class RobotCommand:
 
         # Ensure all parameters are 32-bit integers
         for param in self._parameters:
-            if not (0 <= param < 2**32):
-                raise ValueError(f"Parameter {param} is not a 32-bit integer")
+            if not (0 <= param < 2**16):
+                raise ValueError(f"Parameter {param} is not an unsigned 16-bit integer")
 
         # Range check the parameters according to the dictionary
         for i in range(self._num_parameters):
             if not (self._parameter_minimums[i] <= self._parameters[i] <= self._parameter_maximums[i]):
                 raise ValueError(f"Parameter {self._parameters[i]} is out of range for command '{command}'")
         
-        # Pack the command into a 20 byte array
+        # Pack the command into a byte array
         self._byte_array = self._pack_command()        
 
         # Increment the command UID and wrap around if necessary
         RobotCommand.cls_command_uid += 1
-        if not (RobotCommand.cls_command_uid < 2**32):
+        if not (RobotCommand.cls_command_uid < 2**16):
             RobotCommand.cls_command_uid = 1
 
     @property
@@ -394,49 +395,30 @@ class RobotCommand:
 
     def _pack_command(self) -> bytes:
         """
-        Pack the command ID and parameters into a fixed-length (20) byte array.
+        Pack the command ID and parameters into a fixed-length byte array.
         
         Returns:
             bytes: The packed byte array.
         """
-        packed_data = struct.pack('<II3I', self._command_id, self._command_uid, *self._parameters)
+        packed_data = struct.pack('<HH3H', self._command_id, self._command_uid, *self._parameters)
         return packed_data
 
     def get_packed_bytes(self) -> bytes:
         """
-        Get the packed 20 byte array.
+        Get the packed byte array.
         
         Returns:
-            bytes: The packed 20 byte array.
+            bytes: The packed byte array.
         """
         return self._byte_array
-    
-    @classmethod
-    def _id_to_command(cls, command_id: int) -> str:
-        """
-        Get the command name from the command ID.
-        
-        Args:
-            command_id (int): The command ID.
-        
-        Returns:
-            str: The command name corresponding to the command ID.
-        
-        Raises:
-            ValueError: If the command ID is not recognized.
-        """
-        for command, (id, _, _, _, _, _) in cls._command_dictionary.items():
-            if id == command_id:
-                return command
-        raise ValueError(f"Command ID '{command_id}' is not recognized")
 
     @classmethod
     def from_packed_bytes(cls, byte_array: bytes):
         """
-        Create a RobotCommand instance from a packed 20 byte array.
+        Create a RobotCommand instance from a packed byte array.
         
         Args:
-            byte_array (bytes): The packed 20 byte array.
+            byte_array (bytes): The packed byte array.
         
         Returns:
             RobotCommand: The unpacked RobotCommand instance.
@@ -444,10 +426,10 @@ class RobotCommand:
         Raises:
             ValueError: If the byte array is not the correct length.
         """
-        if len(byte_array) != 20:  # 4 bytes for command ID + 3 * 4 bytes for parameters + 4 bytes for command UID
+        if len(byte_array) != 10:  # 2 bytes for command ID + 3 * 2 bytes for parameters + 2 bytes for command UID
             raise ValueError("Byte array length is incorrect")
         
-        command_id, command_uid, param1, param2, param3 = struct.unpack('<II3I', byte_array)
+        command_id, command_uid, param1, param2, param3 = struct.unpack('<HH3H', byte_array)
         
         command = cls._id_to_command(command_id)
         num_params = cls._command_dictionary[command][1]
@@ -469,7 +451,26 @@ class RobotCommand:
         Returns:
             int: The length of the packed byte array.
         """
-        return 20 # Note: BLE has a maximum packet size of 20 bytes
+        return 10 # Note: BLE has a maximum packet size of 20 bytes
+    
+    @classmethod
+    def _id_to_command(cls, command_id: int) -> str:
+        """
+        Get the command name from the command ID.
+        
+        Args:
+            command_id (int): The command ID.
+        
+        Returns:
+            str: The command name corresponding to the command ID.
+        
+        Raises:
+            ValueError: If the command ID is not recognized.
+        """
+        for command, (id, _, _, _, _, _) in cls._command_dictionary.items():
+            if id == command_id:
+                return command
+        raise ValueError(f"Command ID '{command_id}' is not recognized")
 
     @classmethod
     def num_parameters(cls, command: str) -> int:

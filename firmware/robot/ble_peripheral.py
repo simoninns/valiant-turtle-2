@@ -172,8 +172,8 @@ class BlePeripheral:
         if self.__connected and self.__connection:
             #logging.debug(f"BlePeripheral::command_service_update - Status Bit Flags = {status_bit_flag.display_flags()}")
             try:
-                # Send from p2c
-                self.tx_p2c_characteristic.notify(self.__connection, struct.pack("<LI", int(status_bit_flag.flags), self._last_processed_command_uid))
+                # Send from p2c - uint16_t status bit flags and uint16_t last processed command UID
+                self.tx_p2c_characteristic.notify(self.__connection, struct.pack("<HH", int(status_bit_flag.flags), self._last_processed_command_uid))
                 
             except Exception as e:
                 logging.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
@@ -222,7 +222,7 @@ class BlePeripheral:
                 # Receive from c2p
                 command_data = await self.wait_for_data(self.rx_c2p_characteristic)
                 if command_data != None:
-                    if len(command_data) != 20:
+                    if len(command_data) != RobotCommand.byte_length():
                         logging.debug("BlePeripheral::connected_to_central - Invalid reply data length")
                         self.__connected = False
                         continue

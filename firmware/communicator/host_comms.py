@@ -31,6 +31,57 @@ import asyncio
 from command_shell import CommandShell
 from library.robot_comms import PowerMonitor, StatusBitFlag, RobotCommand
 
+class CommandResult:
+    """Class to store the result of a command"""
+
+    # Consts to make code more readable
+    result_nop = const(-1)
+    result_ok = const(0)
+    result_timeout = const(1)
+    result_disconnected = const(2)
+    result_error = const(3)
+    result_toofew = const(4)
+    result_toomany = const(5)
+    result_invalid = const(6)
+    result_unknown = const(7)
+
+    _result_dictionary = {
+        # Dictionary of command results:
+        "nop":          (result_nop, "NOP"),                   # No operation
+        "ok":           (result_ok, "OK"),                     # Command completed successfully
+        "timeout":      (result_timeout, "TIMEOUT"),           # Command timed out
+        "disconnected": (result_disconnected, "DISCONNECTED"), # Robot disconnected
+        "error":        (result_error, "ERROR"),               # Command failed
+        "toofew":       (result_toofew, "TOOFEW"),             # Too few parameters
+        "toomany":      (result_toomany, "TOOMANY"),           # Too many parameters
+        "invalid":      (result_invalid, "INVALID"),           # Invalid parameters
+        "unknown":      (result_unknown, "UNKNOWN"),           # Unknown command
+    }
+
+    def __init__(self, resultCode: int = -1, resultDesc: str = ""):
+        # Check if the result code is valid   
+        if not any(resultCode == value[0] for value in self._result_dictionary.values()):
+            raise ValueError(f"Invalid result code: {resultCode}")
+        
+        self._resultCode = resultCode
+        self._resultDesc = resultDesc
+
+    @property
+    def error_code(self) -> int:
+        return self._resultCode
+    
+    @property
+    def error_name(self) -> str:
+        """Return the error name such as OK, TIMEOUT, etc."""
+        for key, value in self._result_dictionary.items():
+            if value[0] == self._resultCode:
+                return value[1]
+        return "UNKNOWN"
+
+    @property
+    def error_description(self) -> str:
+        return self._resultDesc
+
 class HostComms:
     """Class to manage host communication tasks"""
     def __init__(self, uart: UART):
@@ -107,7 +158,13 @@ class HostComms:
         while True:
             command, parameters = await self.command_shell.get_command()
             if command:
-                await self.process_command(command, parameters)
+                command_result = await self.process_command(command, parameters)
+                if command_result.error_code == CommandResult.result_ok or command_result.error_code == CommandResult.result_nop:
+                    # Just OK or NOP, so don't display any description
+                    await self.command_shell.send_response(command_result.error_name)
+                else:
+                    # Display the error name and description
+                    await self.command_shell.send_response(f"{command_result.error_name} - {command_result.error_description}")
 
     async def host_task(self):
         logging.debug("HostComms::host_task - Starting async host communication tasks")
@@ -122,7 +179,7 @@ class HostComms:
         ]
         await asyncio.gather(*tasks)
 
-    async def process_command(self, command, parameters):
+    async def process_command(self, command, parameters) -> CommandResult:
         """Process a command from the host"""
 
         # Display the help text (local command)
@@ -135,48 +192,47 @@ class HostComms:
             await self.command_shell.send_response("")
             await self.command_shell.send_response("  Robot commands:")
             await self.command_shell.send_response(RobotCommand.help_text())
-            return
+            return CommandResult(CommandResult.result_ok, "OK")
 
         # Is the robot connected?
         if not self._ble_central.is_peripheral_connected:
-            await self.command_shell.send_response(f"ERROR Robot is not connected")
-            return
+            return CommandResult(CommandResult.result_disconnected, "Robot is not connected")
 
         # Display the power monitor status (local command)
         if command == 'power':
             await self.command_shell.send_response(self._power_monitor)
-            return
+            return CommandResult(CommandResult.result_ok, "OK")
 
         # Display the robot status (see class StatusBitFlag for details) (local command)
         if command == 'status':
             await self.command_shell.send_response(self._command_status)
-            return
+            return CommandResult(CommandResult.result_ok, "OK")
 
         # Robot commands (uses the RobotCommand class for validation)
         if RobotCommand.is_command_valid(command):
             # Does the command have the required number of parameters?
             if len(parameters) != RobotCommand.num_parameters(command):
                 if RobotCommand.num_parameters(command) == 1:
-                    await self.command_shell.send_response(f"ERROR Command requires {RobotCommand.num_parameters(command)} parameter")
+                    return CommandResult(CommandResult.result_toofew, f"Command requires {RobotCommand.num_parameters(command)} parameter")
                 elif RobotCommand.num_parameters(command) == 0:
-                    await self.command_shell.send_response(f"ERROR Command does not require parameters") 
+                    return CommandResult(CommandResult.result_toomany, f"Command does not require any parameters")
                 else:
-                    await self.command_shell.send_response(f"ERROR Command requires {RobotCommand.num_parameters(command)} parameters")
-                return
+                    if (len(parameters) < RobotCommand.num_parameters(command)):
+                        return CommandResult(CommandResult.result_toofew, f"Command requires {RobotCommand.num_parameters(command)} parameters")
+                    else:
+                        return CommandResult(CommandResult.result_toomany, f"Command requires {RobotCommand.num_parameters(command)} parameters")
             
             # Ensure the parameters are integers
             for n in range(len(parameters)):
                 try:
                     parameters[n] = int(parameters[n])
                 except ValueError:
-                    await self.command_shell.send_response(f"ERROR Invalid parameter - {parameters[n]} must be an integer")
-                    return
+                    return CommandResult(CommandResult.result_invalid, f"Invalid parameter - {parameters[n]} must be an integer")
             
             # Range check the required parameters
             for n in range(len(parameters)):
                 if not (RobotCommand.parameter_range(command, n)[0] <= parameters[n] <= RobotCommand.parameter_range(command, n)[1]):
-                    await self.command_shell.send_response(f"ERROR Invalid parameter - {parameters[n]} must be between {RobotCommand.parameter_range(command, n)[0]} and {RobotCommand.parameter_range(command, n)[1]}")
-                    return
+                    return CommandResult(CommandResult.result_invalid, f"Invalid parameter - {parameters[n]} must be between {RobotCommand.parameter_range(command, n)[0]} and {RobotCommand.parameter_range(command, n)[1]}")
                 
             # Queue the command
             robot_command = RobotCommand(command, parameters)
@@ -185,17 +241,15 @@ class HostComms:
 
             # Show the result of the command processing
             if command_result == 1:
-                await self.command_shell.send_response("TIMEOUT")
+                return CommandResult(CommandResult.result_timeout, "Timed out waiting for response from robot")
             elif command_result == 2:
-                await self.command_shell.send_response("DISCONNECTED")
-            else:
-                await self.command_shell.send_response("OK")
+                return CommandResult(CommandResult.result_disconnected, "Robot has disconnected")
 
-            return
+            return CommandResult(CommandResult.result_ok, "OK")
         
         # The command was not recognised
-        await self.command_shell.send_response(f"ERROR Unknown command: {command}")
         logging.debug(f"HostComms::process_command - Command [{command}] was not recognised")
+        return CommandResult(CommandResult.result_unknown, f"Unknown command: {command}")
 
 if __name__ == "__main__":
     from main import main

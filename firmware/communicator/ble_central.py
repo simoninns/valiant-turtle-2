@@ -55,7 +55,7 @@ class BleCentral:
         self._host_comms = None
 
         # Responses
-        self._command_service_response = 0
+        self._command_service_response_data = 0
         self._power_service_response = PowerMonitor(0, 0, 0)
 
         # Get the local device's Unique ID
@@ -170,16 +170,16 @@ class BleCentral:
             logging.debug("BleCentral::handle_power_service_task - Exception was flagged (Peripheral probably disappeared)")
             self._connected = False
 
-    def command_service_notification(self, status_byte, last_processed_command_uid):
+    def command_service_notification(self, response_data, last_processed_command_uid):
         """Process command_service notifications from the peripheral"""
-        self._command_service_response = status_byte
+        self._command_service_response_data = response_data
         self._last_processed_command_uid = last_processed_command_uid
         self._ble_command_service_event.set() # Flag the event
 
     def get_command_service_response(self):
-        """Provide the command service response and clear the event flag"""
+        """Provide the command service response data and clear the event flag"""
         self._ble_command_service_event.clear()
-        return self._command_service_response
+        return self._command_service_response_data
 
     async def handle_command_service_task(self):
         """
@@ -198,7 +198,7 @@ class BleCentral:
             # Loop waiting for service notifications
             while self._connected:
                 value = await self.tx_p2c_characteristic.notified()
-                status_byte, last_processed_command_uid = struct.unpack("<LI", value)
+                status_byte, last_processed_command_uid = struct.unpack("<HH", value)
                 self.command_service_notification(status_byte, last_processed_command_uid)
 
                 # Check for any commands to send to the peripheral and, if there aren't any, send a nop command
