@@ -313,7 +313,7 @@ class RobotCommand:
         "backward":   ( 4, 1, (0, 0, 0), (65535, 0, 0), ("Distance (mm)", "", ""), "Move backward"),
         "left":       ( 5, 1, (0, 0, 0), (65535, 0, 0), ("Degrees", "", ""), "Turn left"),
         "right":      ( 6, 1, (0, 0, 0), (65535, 0, 0), ("Degrees", "", ""), "Turn right"),
-        "velocity":   ( 7, 3, (1, 1, 1), (65535, 65535, 65535), ("Acceleration in mmPSPS", "Min mmPS", "Max mmPS"), "Set the velocity profile (in mm per second)"),
+        "velocity":   ( 7, 3, (1, 1, 1), (65535, 65535, 65535), ("Acceleration in mmPSPS", "Min mmPS", "Max mmPS"), "Set the velocity profile"),
         "penup":      ( 8, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lift the pen up"),
         "pendown":    ( 9, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lower the pen down"),
         "left-eye":   (10, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the left eye"),
@@ -431,7 +431,7 @@ class RobotCommand:
         
         command_id, command_uid, param1, param2, param3 = struct.unpack('<HH3H', byte_array)
         
-        command = cls._id_to_command(command_id)
+        command = cls.id_to_command(command_id)
         num_params = cls._command_dictionary[command][1]
 
         if num_params == 0:
@@ -454,7 +454,7 @@ class RobotCommand:
         return 10 # Note: BLE has a maximum packet size of 20 bytes
     
     @classmethod
-    def _id_to_command(cls, command_id: int) -> str:
+    def id_to_command(cls, command_id: int) -> str:
         """
         Get the command name from the command ID.
         

@@ -28,7 +28,8 @@
 import library.logging as logging
 from machine import UART
 import asyncio
-from command_shell import CommandShell
+from interactive_shell import InteractiveShell
+from host_shell import HostShell
 from library.robot_comms import PowerMonitor, StatusBitFlag, RobotCommand
 
 class CommandResult:
@@ -95,10 +96,16 @@ class HostComms:
         self._power_monitor = PowerMonitor(0,0,0)
         self._command_status = StatusBitFlag()
 
-        # Create a command shell
+        # Create an interactive command shell
         cli_prompt="VT2> "
         cli_intro="\r\nWelcome to the Valiant Turtle 2 Communicator\r\nType your commands below. Type 'help' for help."
-        self.command_shell = CommandShell(self._uart, prompt=cli_prompt, intro=cli_intro, history_limit=10)
+        self._interactive_shell = InteractiveShell(self._uart, prompt=cli_prompt, intro=cli_intro, history_limit=10)
+
+        # Create a host shell
+        self._host_shell = HostShell(self._uart)
+
+        # Flag to track current shell mode (interactive or host)
+        self._is_shell_interactive = True
 
     @property
     def ble_central(self):
@@ -152,19 +159,33 @@ class HostComms:
 
     async def cli_task(self):
         logging.debug("HostComms::cli_task - Task started")
-        await self.command_shell.start_shell()
+        await self._interactive_shell.start_shell()
         
         # Get commands and then process them
         while True:
-            command, parameters = await self.command_shell.get_command()
-            if command:
-                command_result = await self.process_command(command, parameters)
-                if command_result.error_code == CommandResult.result_ok or command_result.error_code == CommandResult.result_nop:
-                    # Just OK or NOP, so don't display any description
-                    await self.command_shell.send_response(command_result.error_name)
+            if self._is_shell_interactive:
+                # Interactive shell mode (for human interaction)
+                command, parameters = await self._interactive_shell.get_command()
+                if command:
+                    command_result = await self.process_command(command, parameters)
+                    if command_result.error_code == CommandResult.result_ok or command_result.error_code == CommandResult.result_nop:
+                        # Just OK or NOP, so don't display any description
+                        await self._interactive_shell.send_response(command_result.error_name)
+                    else:
+                        # Display the error name and description
+                        await self._interactive_shell.send_response(f"{command_result.error_name} - {command_result.error_description}")
+            else:
+                # Host shell mode (for data-based communication)
+                command, parameters, switch_mode = await self._host_shell.get_command()
+                if switch_mode:
+                    # Switch back to interactive shell mode
+                    logging.debug("HostComms::cli_task - Switching back to interactive shell mode")
+                    self._is_shell_interactive = True
+                    await self._interactive_shell.start_shell()
                 else:
-                    # Display the error name and description
-                    await self.command_shell.send_response(f"{command_result.error_name} - {command_result.error_description}")
+                    if command:
+                        command_result = await self.process_command(command, parameters)
+                        await self._host_shell.send_response(command_result.error_code)
 
     async def host_task(self):
         logging.debug("HostComms::host_task - Starting async host communication tasks")
@@ -182,31 +203,40 @@ class HostComms:
     async def process_command(self, command, parameters) -> CommandResult:
         """Process a command from the host"""
 
-        # Display the help text (local command)
-        if command == 'help':
-            await self.command_shell.send_response("Help:")
-            await self.command_shell.send_response("  Local commands:")
-            await self.command_shell.send_response("    help - show this help text")
-            await self.command_shell.send_response("    status - show the robot's last reported status")
-            await self.command_shell.send_response("    power - show the robot's power monitor status")
-            await self.command_shell.send_response("")
-            await self.command_shell.send_response("  Robot commands:")
-            await self.command_shell.send_response(RobotCommand.help_text())
-            return CommandResult(CommandResult.result_ok, "OK")
+        # Local commands (not sent to the robot) when in interactive shell mode
+        if self._is_shell_interactive:
+            # Display the help text (local command)
+            if command == 'help':
+                await self._interactive_shell.send_response("Help:")
+                await self._interactive_shell.send_response("  Local commands:")
+                await self._interactive_shell.send_response("    help - show this help text")
+                await self._interactive_shell.send_response("    status - show the robot's last reported status")
+                await self._interactive_shell.send_response("    power - show the robot's power monitor status")
+                await self._interactive_shell.send_response("    host-mode - switch to host shell mode")
+                await self._interactive_shell.send_response("")
+                await self._interactive_shell.send_response("  Robot commands:")
+                await self._interactive_shell.send_response(RobotCommand.help_text())
+                return CommandResult(CommandResult.result_ok, "OK")
 
-        # Is the robot connected?
-        if not self._ble_central.is_peripheral_connected:
-            return CommandResult(CommandResult.result_disconnected, "Robot is not connected")
+            # Is the robot connected?
+            if not self._ble_central.is_peripheral_connected:
+                return CommandResult(CommandResult.result_disconnected, "Robot is not connected")
 
-        # Display the power monitor status (local command)
-        if command == 'power':
-            await self.command_shell.send_response(self._power_monitor)
-            return CommandResult(CommandResult.result_ok, "OK")
+            # Display the power monitor status (local command)
+            if command == 'power':
+                await self._interactive_shell.send_response(self._power_monitor)
+                return CommandResult(CommandResult.result_ok, "OK")
 
-        # Display the robot status (see class StatusBitFlag for details) (local command)
-        if command == 'status':
-            await self.command_shell.send_response(self._command_status)
-            return CommandResult(CommandResult.result_ok, "OK")
+            # Display the robot status (see class StatusBitFlag for details) (local command)
+            if command == 'status':
+                await self._interactive_shell.send_response(self._command_status)
+                return CommandResult(CommandResult.result_ok, "OK")
+            
+            if command == 'host-mode':
+                # Switch to host shell mode (data-based communication)
+                logging.debug("HostComms::process_command - Switching to host shell mode")
+                self._is_shell_interactive = False
+                return CommandResult(CommandResult.result_ok, "OK")
 
         # Robot commands (uses the RobotCommand class for validation)
         if RobotCommand.is_command_valid(command):
