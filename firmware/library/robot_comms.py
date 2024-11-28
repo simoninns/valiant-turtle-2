@@ -338,7 +338,7 @@ class RobotCommand:
         if command not in self._command_dictionary:
             raise ValueError(f"Command '{command}' is not recognized")
         
-        if len(parameters) != self._command_dictionary[command][1]:
+        if len(parameters) < self._command_dictionary[command][1]:
             raise ValueError(f"Command '{command}' requires {self._command_dictionary[command][1]} parameters")
         
         self._command = command

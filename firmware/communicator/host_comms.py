@@ -166,6 +166,7 @@ class HostComms:
             if self._is_shell_interactive:
                 # Interactive shell mode (for human interaction)
                 command, parameters = await self._interactive_shell.get_command()
+
                 if command:
                     command_result = await self.process_command(command, parameters)
                     if command_result.error_code == CommandResult.result_ok or command_result.error_code == CommandResult.result_nop:
@@ -177,15 +178,19 @@ class HostComms:
             else:
                 # Host shell mode (for data-based communication)
                 command, parameters, switch_mode = await self._host_shell.get_command()
+                
                 if switch_mode:
                     # Switch back to interactive shell mode
                     logging.debug("HostComms::cli_task - Switching back to interactive shell mode")
                     self._is_shell_interactive = True
                     await self._interactive_shell.start_shell()
                 else:
-                    if command:
+                    # Process the command (if it's not a NOP)
+                    if command != "nop":
                         command_result = await self.process_command(command, parameters)
                         await self._host_shell.send_response(command_result.error_code)
+                    else:
+                        logging.debug("HostComms::cli_task - Got NOP command - ignoring")
 
     async def host_task(self):
         logging.debug("HostComms::host_task - Starting async host communication tasks")
@@ -212,10 +217,18 @@ class HostComms:
                 await self._interactive_shell.send_response("    help - show this help text")
                 await self._interactive_shell.send_response("    status - show the robot's last reported status")
                 await self._interactive_shell.send_response("    power - show the robot's power monitor status")
-                await self._interactive_shell.send_response("    host-mode - switch to host shell mode")
+                await self._interactive_shell.send_response("    host - switch to host shell mode")
                 await self._interactive_shell.send_response("")
                 await self._interactive_shell.send_response("  Robot commands:")
                 await self._interactive_shell.send_response(RobotCommand.help_text())
+                return CommandResult(CommandResult.result_ok, "OK")
+            
+            # Switch to host shell mode (local command)
+            # Note: This works even if the robot isn't connected
+            if command == 'host':
+                # Switch to host shell mode (data-based communication)
+                logging.debug("HostComms::process_command - Switching to host shell mode")
+                self._is_shell_interactive = False
                 return CommandResult(CommandResult.result_ok, "OK")
 
             # Is the robot connected?
@@ -231,26 +244,26 @@ class HostComms:
             if command == 'status':
                 await self._interactive_shell.send_response(self._command_status)
                 return CommandResult(CommandResult.result_ok, "OK")
-            
-            if command == 'host-mode':
-                # Switch to host shell mode (data-based communication)
-                logging.debug("HostComms::process_command - Switching to host shell mode")
-                self._is_shell_interactive = False
-                return CommandResult(CommandResult.result_ok, "OK")
 
         # Robot commands (uses the RobotCommand class for validation)
         if RobotCommand.is_command_valid(command):
             # Does the command have the required number of parameters?
             if len(parameters) != RobotCommand.num_parameters(command):
-                if RobotCommand.num_parameters(command) == 1:
-                    return CommandResult(CommandResult.result_toofew, f"Command requires {RobotCommand.num_parameters(command)} parameter")
-                elif RobotCommand.num_parameters(command) == 0:
-                    return CommandResult(CommandResult.result_toomany, f"Command does not require any parameters")
-                else:
-                    if (len(parameters) < RobotCommand.num_parameters(command)):
-                        return CommandResult(CommandResult.result_toofew, f"Command requires {RobotCommand.num_parameters(command)} parameters")
+                if (self._is_shell_interactive):
+                    # In interactive shell mode we want exactly the right number of parameters always
+                    if RobotCommand.num_parameters(command) == 1:
+                        return CommandResult(CommandResult.result_toofew, f"Command requires {RobotCommand.num_parameters(command)} parameter")
+                    elif RobotCommand.num_parameters(command) == 0:
+                        return CommandResult(CommandResult.result_toomany, f"Command does not require any parameters")
                     else:
-                        return CommandResult(CommandResult.result_toomany, f"Command requires {RobotCommand.num_parameters(command)} parameters")
+                        if (len(parameters) < RobotCommand.num_parameters(command)):
+                            return CommandResult(CommandResult.result_toofew, f"Command requires {RobotCommand.num_parameters(command)} parameters")
+                        else:
+                            return CommandResult(CommandResult.result_toomany, f"Command requires {RobotCommand.num_parameters(command)} parameters")
+                else:
+                    # In host shell mode we can have any number of parameters as long as it's the minimum or more
+                    if len(parameters) < RobotCommand.num_parameters(command):
+                        return CommandResult(CommandResult.result_toofew, f"Command requires {RobotCommand.num_parameters(command)} parameters")
             
             # Ensure the parameters are integers
             for n in range(len(parameters)):

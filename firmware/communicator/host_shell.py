@@ -50,6 +50,8 @@ class HostShell:
             if data == b'\x0D':
                 break
             command_bytes.extend(data)
+
+        logging.debug(f"HostShell::read_command - Host mode command bytes = {command_bytes}")
         return command_bytes
     
     def parse_command(self, command_data: bytearray) -> tuple:
@@ -72,16 +74,25 @@ class HostShell:
                 param = int.from_bytes(command_data[i:i+2], 'little')
                 parameters.append(param)
 
-            if len(parameters) >= 3:
-                logging.debug(f"HostShell::parse_command - Command data was too long to be valid")
+            if len(parameters) > 3:
+                logging.debug(f"HostShell::parse_command - Command data was too long to be valid {command_data}")
                 return None, None, False
 
         # Check to see if this is a local command to switch back to interactive mode (host sends ii<CR> or 0x69, 0x69, 0x0D or
         # 0x49, 0x49, 0x0D (II<CR>)). This is used to switch back to interactive mode from a terminal.
         # Note: this code is used so a human can type ii<CR> from a terminal.
-        if command_id == 0x6969 or command_id == 0x4949:
+
+        # Check to see if the magic word "shell" or "SHELL" has been sent.
+        # This is used to switch back to interactive mode from a terminal.
+        if command_data == b'shell' or command_data == b'SHELL':
             logging.debug(f"HostShell::parse_command - Switching back to interactive mode")
             return RobotCommand(), None, True
+        
+        # If the host issues "HOST" or "host" when we are already in host mode, we ignore it
+        # This is to prevent the host from getting confused if it sends "HOST" when we are already in host mode
+        if command_data == b'host' or command_data == b'HOST':
+            logging.debug(f"HostShell::parse_command - Got 'host' command when already in host mode - ignoring")
+            return RobotCommand(), None, False
 
         # To keep this compatible with the InteractiveShell class we convert the command_id to a command string
         try:
