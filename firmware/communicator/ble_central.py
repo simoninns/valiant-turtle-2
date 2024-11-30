@@ -39,8 +39,6 @@ class BleCentral:
     __CONNECTION_CONFIRMATION_CODE = 12345
     __ADVERTISING_NAME = "vt2-robot"
 
-    __DEBUG_LOG_POWER = False # Set to True to log power service data notifications
-
     def __init__(self):
         """Class to manage BLE central tasks"""
         # Flags to show connected status
@@ -49,14 +47,8 @@ class BleCentral:
 
         # asyncio events
         self._ble_command_service_event = asyncio.Event()
-        self._ble_power_service_event = asyncio.Event()
         self._host_event = None
-
         self._host_comms = None
-
-        # Responses
-        self._command_service_response_data = 0
-        self._power_service_response = PowerMonitor(0, 0, 0)
 
         # Get the local device's Unique ID
         self.uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
@@ -68,6 +60,7 @@ class BleCentral:
         # Queue for commands to be sent to the peripheral
         self._command_queue = []
         self._last_processed_command_uid = 0
+        self._last_processed_command_response = 0
     
     @property
     def host_comms(self):
@@ -98,11 +91,6 @@ class BleCentral:
     def ble_command_service_event(self):
         """Get the BLE command service event"""
         return self._ble_command_service_event
-    
-    @property
-    def ble_power_service_event(self):
-        """Get the BLE power service event"""
-        return self._ble_power_service_event
 
     async def scan_for_peripheral(self):
         """Scan for a BLE peripheral
@@ -139,47 +127,19 @@ class BleCentral:
             logging.debug("BleCentral::connect_to_peripheral - Connection attempt timed out!")
             return
 
-    def power_service_notification(self, voltage, current, power):
-        """Process power_service notifications from the peripheral"""
-        self._power_service_response.status = (voltage, current, power)
-        self._ble_power_service_event.set() # Flag the event
-        if BleCentral.__DEBUG_LOG_POWER: logging.debug(f"BleCentral::power_service_notification - {self._power_service_response}")
-
-    def get_power_service_response(self):
-        """Provide the power service response and clear the event flag"""
-        self._ble_power_service_event.clear()
-        return self._power_service_response
-
-    async def handle_power_service_task(self):
-        """Task to handle power_service notifications"""
-        logging.debug("BleCentral::handle_power_service_task - power_service notification handler running")
-
-        try:
-            # Loop waiting for service notifications
-            while self._connected:
-                power_voltage_data = await self.power_voltage_characteristic.notified()
-                power_current_data = await self.power_current_characteristic.read()
-                power_watts_data = await self.power_watts_characteristic.read()
-                self.power_service_notification(
-                    struct.unpack("<f", power_voltage_data)[0],
-                    struct.unpack("<f", power_current_data)[0],
-                    struct.unpack("<f", power_watts_data)[0],
-                )
-                                                            
-        except Exception as e:
-            logging.debug("BleCentral::handle_power_service_task - Exception was flagged (Peripheral probably disappeared)")
-            self._connected = False
-
-    def command_service_notification(self, response_data, last_processed_command_uid):
+    def command_service_notification(self, last_processed_command_response, last_processed_command_uid):
         """Process command_service notifications from the peripheral"""
-        self._command_service_response_data = response_data
+        self._last_processed_command_response = last_processed_command_response
         self._last_processed_command_uid = last_processed_command_uid
         self._ble_command_service_event.set() # Flag the event
 
-    def get_command_service_response(self):
-        """Provide the command service response data and clear the event flag"""
+    def acknowledge_command_service_response(self):
+        """Acknowledge the command_service response"""
         self._ble_command_service_event.clear()
-        return self._command_service_response_data
+
+    def get_command_response(self) -> int:
+        """Get the last command response"""
+        return self._last_processed_command_response
 
     async def handle_command_service_task(self):
         """
@@ -198,8 +158,8 @@ class BleCentral:
             # Loop waiting for service notifications
             while self._connected:
                 value = await self.tx_p2c_characteristic.notified()
-                status_byte, last_processed_command_uid = struct.unpack("<HH", value)
-                self.command_service_notification(status_byte, last_processed_command_uid)
+                last_processed_command_response, last_processed_command_uid = struct.unpack("<hH", value)
+                self.command_service_notification(last_processed_command_response, last_processed_command_uid)
 
                 # Check for any commands to send to the peripheral and, if there aren't any, send a nop command
                 if len(self._command_queue) > 0:
@@ -267,44 +227,9 @@ class BleCentral:
             logging.debug("BleCentral::connected_to_peripheral - FATAL: Timeout discovering characteristics")
             self._connected = False
             return
-        
-        # Power service setup
-        power_service_uuid = bluetooth.UUID(0x180F) # Battery service
-        power_service = await self._connection.service(power_service_uuid)
-        
-        try:
-            if power_service == None:
-                logging.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral power_service is missing!")
-                self._connected = False
-                return
-            
-        except asyncio.TimeoutError:
-            logging.debug("BleCentral::connected_to_peripheral - FATAL: Timeout discovering service")
-            self._connected = False
-            return
-        
-        # Power service characteristics setup
-        power_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
-        power_current_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
-        power_watts_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
-        try:
-            self.power_voltage_characteristic = await power_service.characteristic(power_voltage_characteristic_uuid)
-            self.power_current_characteristic = await power_service.characteristic(power_current_characteristic_uuid)
-            self.power_watts_characteristic = await power_service.characteristic(power_watts_characteristic_uuid)
-
-            if self.power_voltage_characteristic == None:
-                logging.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral power_service characteristics missing!")
-                self._connected = False
-                return
-
-        except asyncio.TimeoutError:
-            logging.debug("BleCentral::connected_to_peripheral - FATAL: Timeout discovering characteristics")
-            self._connected = False
-            return
 
         # Subscribe to characteristic notifications
         await self.tx_p2c_characteristic.subscribe(notify = True)
-        await self.power_voltage_characteristic.subscribe(notify = True)
 
         # Send a response of 12345 to the peripheral to show we are connected and ready
         await self.rx_c2p_characteristic.write(struct.pack("<L", int(BleCentral.__CONNECTION_CONFIRMATION_CODE)))
@@ -312,7 +237,6 @@ class BleCentral:
         # Generate a task for each service and then run them
         central_tasks = [
             asyncio.create_task(self.handle_command_service_task()),
-            asyncio.create_task(self.handle_power_service_task()),
         ]
         await asyncio.gather(*central_tasks)
 

@@ -43,10 +43,13 @@ class InteractiveShell:
         self.history_limit = history_limit
         self.current_display_length = 0  # Track the length of the current command display
 
-    async def send_response(self, message: str) -> None:
+    async def send_response(self, message: str, command_response: int = -1) -> None:
         """Send a response back over UART."""
         try:
-            await self.writer.awrite(f"{message}\r\n")
+            if command_response == -1:
+                await self.writer.awrite(f"{message}\r\n")
+            else:
+                await self.writer.awrite(f"{message} {command_response}\r\n")
         except Exception as e:
             logging.debug(f"InteractiveShell::send_response - Failed to send response: {e}")
 

@@ -34,7 +34,7 @@ import aioble
 import bluetooth
 import asyncio
 import struct
-from library.robot_comms import StatusBitFlag, RobotCommand, PowerMonitor
+from library.robot_comms import RobotCommand
 
 class BlePeripheral:
     __MANUFACTURER_DATA = (0xFFE1, b"www.waitingforfriday.com")
@@ -58,18 +58,15 @@ class BlePeripheral:
 
         # Service definitions
         self.__ble_service_command_definitions()
-        self.__ble_service_power_definition()
 
         # Register services with aioBLE library
-        aioble.register_services(self.command_service, self.power_service)
-
-        # Status bit flag
-        self._command_status = StatusBitFlag()
+        aioble.register_services(self.command_service)
 
         # Command queue for received commands from central
         self._command_queue = []
         self._command_queue_event = asyncio.Event()
         self._last_processed_command_uid = 0
+        self._last_processed_command_response = 0
 
     @property
     def command_queue_event(self):
@@ -82,16 +79,6 @@ class BlePeripheral:
         return self._command_queue
 
     @property
-    def command_status(self):
-        """Get the command status"""
-        return self._command_status
-    
-    @command_status.setter
-    def command_status(self, status: StatusBitFlag):
-        """Set the command status"""
-        self._command_status = status
-
-    @property
     def last_processed_command_uid(self):
         """Get the last processed command UID"""
         return self._last_processed_command_uid
@@ -100,6 +87,16 @@ class BlePeripheral:
     def last_processed_command_uid(self, uid: int):
         """Set the last processed command UID"""
         self._last_processed_command_uid = uid
+
+    @property
+    def last_processed_command_response(self):
+        """Get the last processed command response"""
+        return self._last_processed_command_response
+    
+    @last_processed_command_response.setter
+    def last_processed_command_response(self, response: int):
+        """Set the last processed command response"""
+        self._last_processed_command_response = response
 
     def __ble_advertising_definitions(self):
         # Definitions used for advertising via BLE
@@ -126,19 +123,6 @@ class BlePeripheral:
         # RX: Central -> Peripheral
         self.rx_c2p_characteristic = aioble.Characteristic(self.command_service, rx_c2p_characteristic_uuid, write=True, write_no_response=True, capture=True)
 
-    # Define a service - power information
-    def __ble_service_power_definition(self):
-        power_service_uuid = bluetooth.UUID(0x180F) # Battery service
-        power_voltage_characteristic_uuid = bluetooth.UUID(0xFB10) # Custom
-        power_current_characteristic_uuid = bluetooth.UUID(0xFB11) # Custom
-        power_watts_characteristic_uuid = bluetooth.UUID(0xFB12) # Custom
-
-        self.power_service = aioble.Service(power_service_uuid)
-
-        self.power_voltage_characteristic = aioble.Characteristic(self.power_service, power_voltage_characteristic_uuid, read=True, notify=True)
-        self.power_current_characteristic = aioble.Characteristic(self.power_service, power_current_characteristic_uuid, read=True, notify=False)
-        self.power_watts_characteristic = aioble.Characteristic(self.power_service, power_watts_characteristic_uuid, read=True, notify=False)
-
     # Property that is true when central (VT2 Communicator) is connected
     @property
     def is_central_connected(self) -> bool:
@@ -152,28 +136,13 @@ class BlePeripheral:
             logging.debug("BlePeripheral::wait_for_data - Data timed-out - (Central probably disappeared)")
             self.__connected = False
             return None
-
-    # Send power service characteristics update
-    def power_service_update(self, power_monitor: PowerMonitor):
-        if self.__connected and self.__connection:
-            if BlePeripheral.__DEBUG_LOG_POWER: logging.debug(f"BlePeripheral::power_service_update - {power_monitor}")
-            try:
-                # Encode the power monitor object and send it                       
-                self.power_voltage_characteristic.notify(self.__connection, struct.pack("<f", float(power_monitor.voltage_mV)))
-                self.power_current_characteristic.write(struct.pack("<f", float(power_monitor.current_mA)))
-                self.power_watts_characteristic.write(struct.pack("<f", float(power_monitor.power_mW)))
-            
-            except Exception as e:
-                logging.debug("BlePeripheral::power_service_update - Exception was flagged (Central probably disappeared)")
-                self.__connected = False
     
     # Send command service characteristics update
-    def command_service_update(self, status_bit_flag: StatusBitFlag):
+    def command_service_update(self):
         if self.__connected and self.__connection:
-            #logging.debug(f"BlePeripheral::command_service_update - Status Bit Flags = {status_bit_flag.display_flags()}")
             try:
-                # Send from p2c - uint16_t status bit flags and uint16_t last processed command UID
-                self.tx_p2c_characteristic.notify(self.__connection, struct.pack("<HH", int(status_bit_flag.flags), self._last_processed_command_uid))
+                # Send from p2c - int16_t last processed command response and uint16_t last processed command UID
+                self.tx_p2c_characteristic.notify(self.__connection, struct.pack("<hH", self._last_processed_command_response, self._last_processed_command_uid))
                 
             except Exception as e:
                 logging.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
@@ -215,7 +184,7 @@ class BlePeripheral:
     async def connected_to_central(self):
         while self.__connected:
             # Send a command service update (which causes central to reply)
-            self.command_service_update(self._command_status)
+            self.command_service_update()
 
             # Command service update timeout can cause disconnection - only wait for reply if still connected...
             if self.__connected:
@@ -236,8 +205,8 @@ class BlePeripheral:
                         self._command_queue.append(robot_command)
                         self._command_queue_event.set()
 
-            # Poll central 4 times a second
-            if self.__connected: await asyncio.sleep_ms(250)
+            # Poll central 5 times a second
+            if self.__connected: await asyncio.sleep_ms(200)
 
     async def handle_disconnection_from_central(self):
         await self.__connection.disconnected()

@@ -30,7 +30,7 @@ from machine import UART
 import asyncio
 from interactive_shell import InteractiveShell
 from host_shell import HostShell
-from library.robot_comms import PowerMonitor, StatusBitFlag, RobotCommand
+from library.robot_comms import RobotCommand
 
 class CommandResult:
     """Class to store the result of a command"""
@@ -59,13 +59,14 @@ class CommandResult:
         "unknown":      (result_unknown, "UNKNOWN"),           # Unknown command
     }
 
-    def __init__(self, resultCode: int = -1, resultDesc: str = ""):
+    def __init__(self, resultCode: int = -1, resultDesc: str = "", response: int = -1):
         # Check if the result code is valid   
         if not any(resultCode == value[0] for value in self._result_dictionary.values()):
             raise ValueError(f"Invalid result code: {resultCode}")
         
         self._resultCode = resultCode
         self._resultDesc = resultDesc
+        self._response = response
 
     @property
     def error_code(self) -> int:
@@ -82,6 +83,14 @@ class CommandResult:
     @property
     def error_description(self) -> str:
         return self._resultDesc
+    
+    @property
+    def response(self) -> int:
+        return self._response
+    
+    @response.setter
+    def response(self, response: int):
+        self._response = response
 
 class HostComms:
     """Class to manage host communication tasks"""
@@ -89,12 +98,7 @@ class HostComms:
         self._uart = uart
         self._ble_central = None
         self._ble_command_service_event = None
-        self._ble_power_service_event = None
         self._host_event = asyncio.Event()
-
-        # Properties used by commands
-        self._power_monitor = PowerMonitor(0,0,0)
-        self._command_status = StatusBitFlag()
 
         # Create an interactive command shell
         cli_prompt="VT2> "
@@ -124,14 +128,6 @@ class HostComms:
         self._ble_command_service_event = value
 
     @property
-    def ble_power_service_event(self):
-        return self._ble_power_service_event
-
-    @ble_power_service_event.setter
-    def ble_power_service_event(self, value: asyncio.Event):
-        self._ble_power_service_event = value
-
-    @property
     def host_event(self):
         return self._host_event
 
@@ -142,18 +138,7 @@ class HostComms:
             # Check if BLE central is available
             if self._ble_central != None and self.ble_command_service_event != None:
                 await self.ble_command_service_event.wait()
-                self._command_status.flags = self._ble_central.get_command_service_response()
-            else:
-                await asyncio.sleep_ms(250)
-
-    async def ble_power_service_listener(self):
-        logging.debug("HostComms::ble_power_service_listener - Task started")
-
-        while True:
-            # Check if BLE central is available
-            if self._ble_central != None and self.ble_power_service_event != None:
-                await self.ble_power_service_event.wait()
-                self._power_monitor = self._ble_central.get_power_service_response()
+                self._ble_central.acknowledge_command_service_response()
             else:
                 await asyncio.sleep_ms(250)
 
@@ -168,13 +153,13 @@ class HostComms:
                 command, parameters = await self._interactive_shell.get_command()
 
                 if command:
-                    command_result = await self.process_command(command, parameters)
-                    if command_result.error_code == CommandResult.result_ok or command_result.error_code == CommandResult.result_nop:
+                    send_command_result = await self.send_command(command, parameters)
+                    if send_command_result.error_code == CommandResult.result_ok or send_command_result.error_code == CommandResult.result_nop:
                         # Just OK or NOP, so don't display any description
-                        await self._interactive_shell.send_response(command_result.error_name)
+                        await self._interactive_shell.send_response(send_command_result.error_name, send_command_result.response)
                     else:
                         # Display the error name and description
-                        await self._interactive_shell.send_response(f"{command_result.error_name} - {command_result.error_description}")
+                        await self._interactive_shell.send_response(f"{send_command_result.error_name} - {send_command_result.error_description}", send_command_result.response)
             else:
                 # Host shell mode (for data-based communication)
                 command, parameters, switch_mode = await self._host_shell.get_command()
@@ -187,8 +172,8 @@ class HostComms:
                 else:
                     # Process the command (if it's not a NOP)
                     if command != "nop":
-                        command_result = await self.process_command(command, parameters)
-                        await self._host_shell.send_response(command_result.error_code)
+                        send_command_result = await self.send_command(command, parameters)
+                        await self._host_shell.send_response(send_command_result.error_code, send_command_result.response)
                     else:
                         logging.debug("HostComms::cli_task - Got NOP command - ignoring")
 
@@ -201,11 +186,10 @@ class HostComms:
 
             # Event listener tasks
             asyncio.create_task(self.ble_command_service_listener()),
-            asyncio.create_task(self.ble_power_service_listener()),
         ]
         await asyncio.gather(*tasks)
 
-    async def process_command(self, command, parameters) -> CommandResult:
+    async def send_command(self, command, parameters) -> CommandResult:
         """Process a command from the host"""
 
         # Local commands (not sent to the robot) when in interactive shell mode
@@ -215,8 +199,6 @@ class HostComms:
                 await self._interactive_shell.send_response("Help:")
                 await self._interactive_shell.send_response("  Local commands:")
                 await self._interactive_shell.send_response("    help - show this help text")
-                await self._interactive_shell.send_response("    status - show the robot's last reported status")
-                await self._interactive_shell.send_response("    power - show the robot's power monitor status")
                 await self._interactive_shell.send_response("    host - switch to host shell mode")
                 await self._interactive_shell.send_response("")
                 await self._interactive_shell.send_response("  Robot commands:")
@@ -234,16 +216,6 @@ class HostComms:
             # Is the robot connected?
             if not self._ble_central.is_peripheral_connected:
                 return CommandResult(CommandResult.result_disconnected, "Robot is not connected")
-
-            # Display the power monitor status (local command)
-            if command == 'power':
-                await self._interactive_shell.send_response(self._power_monitor)
-                return CommandResult(CommandResult.result_ok, "OK")
-
-            # Display the robot status (see class StatusBitFlag for details) (local command)
-            if command == 'status':
-                await self._interactive_shell.send_response(self._command_status)
-                return CommandResult(CommandResult.result_ok, "OK")
 
         # Robot commands (uses the RobotCommand class for validation)
         if RobotCommand.is_command_valid(command):
@@ -270,7 +242,7 @@ class HostComms:
                 try:
                     parameters[n] = int(parameters[n])
                 except ValueError:
-                    return CommandResult(CommandResult.result_invalid, f"Invalid parameter - {parameters[n]} must be an integer")
+                    return CommandResult(CommandResult.result_invalid, f"Invalid parameter - {parameters[n]} must be an integer"),
             
             # Range check the required parameters
             for n in range(len(parameters)):
@@ -289,7 +261,8 @@ class HostComms:
             elif command_result == 2:
                 return CommandResult(CommandResult.result_disconnected, "Robot has disconnected")
 
-            return CommandResult(CommandResult.result_ok, "OK")
+            # Return the command result including the response from the robot
+            return CommandResult(CommandResult.result_ok, "OK", self.ble_central.get_command_response())
         
         # The command was not recognised
         logging.debug(f"HostComms::process_command - Command [{command}] was not recognised")

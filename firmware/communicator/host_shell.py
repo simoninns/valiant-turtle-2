@@ -29,6 +29,7 @@ import asyncio
 import library.logging as logging
 from machine import UART
 from library.robot_comms import RobotCommand
+import struct
 
 class HostShell:
     """
@@ -122,16 +123,21 @@ class HostShell:
 
         return command, parameters, switch_mode
     
-    async def send_response(self, response: int) -> None:
-        """Send a one-byte response back over UART."""
-        if not isinstance(response, int) or response < 0 or response > 255:
-            raise ValueError("Response must be an unsigned byte (0-255)")
+    async def send_response(self, result_code: int, command_response: int) -> None:
+        """Send a response back over UART.
+        The response is a single byte which is the result code followed by
+        a 16-bit signed command response value (which is -1 if not used)"""
+        if not isinstance(result_code, int) or result_code < 0 or result_code > 255:
+            raise ValueError("Result code must be an unsigned byte (0-255)")
+        
+        if not isinstance(command_response, int) or command_response < -1 or command_response > 32767:
+            raise ValueError("Command response must be a signed 16-bit integer (0 to 32767)")
 
-        response_byte = response.to_bytes(1, 'little')
-        logging.debug(f"HostShell::send_response - Responding with {response_byte}")
+        response_bytes = struct.pack("<Bh", result_code, command_response)
+        logging.debug(f"HostShell::send_response - Responding with {response_bytes}")
 
         try:
-            await self.writer.awrite(response_byte)
+            await self.writer.awrite(response_bytes)
         except Exception as e:
             logging.debug(f"HostShell::send_response - Failed to send response: {e}")
 

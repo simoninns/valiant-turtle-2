@@ -93,185 +93,6 @@ class PowerMonitor:
         """Return a string representation of the power monitor status"""
         return f"Voltage: {self.voltage_mV_fstring}, Current: {self.current_mA_fstring}, Power: {self.power_mW_fstring}"
 
-
-class StatusBitFlag:
-    def __init__(self):
-        """
-        Initializes the status bit flag object with all flags set to 0.
-        Flags:
-            Bit 0: Left Motor Busy
-            Bit 1: Right Motor Busy
-            Bit 2: Left Motor Direction (1 = Forward, 0 = Reverse)
-            Bit 3: Right Motor Direction (1 = Forward, 0 = Reverse)
-            Bit 4: Motor Power Enabled
-            Bit 5: Pen Servo On/Off (1 = On, 0 = Off)
-            Bit 6: Pen Servo Up/Down (1 = Up, 0 = Down)
-
-        Bits 7-15 are reserved for future use.
-        """
-        self._flags = 0
-    
-    @property
-    def left_motor_busy(self) -> bool:
-        """Left motor busy flag (True = busy, False = not busy)"""
-        return self.__is_bit_flag_set(0)
-    
-    @left_motor_busy.setter
-    def left_motor_busy(self, value: bool):
-        """Set the left motor busy flag (True = busy, False = not busy)"""
-        self.__change_bit_flag(0, value)
-    
-    @property
-    def right_motor_busy(self) -> bool:
-        """Right motor busy flag (True = busy, False = not busy)"""
-        return self.__is_bit_flag_set(1)
-    
-    @right_motor_busy.setter
-    def right_motor_busy(self, value: bool):
-        """Set the right motor busy flag (True = busy, False = not busy)"""
-        self.__change_bit_flag(1, value)
-
-    @property
-    def left_motor_direction(self) -> bool:
-        """Left motor direction (True = forward, False = reverse)"""
-        return self.__is_bit_flag_set(2)
-    
-    @left_motor_direction.setter
-    def left_motor_direction(self, value: bool):
-        """Set the left motor direction (True = forward, False = reverse)"""
-        self.__change_bit_flag(2, value)
-
-    @property
-    def right_motor_direction(self) -> bool:
-        """Right motor direction (True = forward, False = reverse)"""
-        return self.__is_bit_flag_set(3)
-    
-    @right_motor_direction.setter
-    def right_motor_direction(self, value: bool):
-        """Set the right motor direction (True = forward, False = reverse)"""
-        self.__change_bit_flag(3, value)
-
-    @property
-    def motor_power_enabled(self) -> bool:
-        """Motor power enabled (True = enabled, False = disabled"""
-        return self.__is_bit_flag_set(4)
-    
-    @motor_power_enabled.setter
-    def motor_power_enabled(self, value: bool):
-        """Set the motor power enabled (True = enabled, False = disabled)"""
-        self.__change_bit_flag(4, value)
-
-    @property
-    def pen_servo_on(self) -> bool:
-        """Pen servo on/off (True = on, False = off)"""
-        return self.__is_bit_flag_set(5)
-    
-    @pen_servo_on.setter
-    def pen_servo_on(self, value: bool):
-        """Set the pen servo on/off (True = on, False = off)"""
-        self.__change_bit_flag(5, value)
-
-    @property
-    def pen_servo_up(self) -> bool:
-        """Pen servo up/down (True = up, False = down)"""
-        return self.__is_bit_flag_set(6)
-    
-    @pen_servo_up.setter
-    def pen_servo_up(self, value: bool):
-        """Set the pen servo up/down (True = up, False = down)"""
-        self.__change_bit_flag(6, value)
-
-    @property
-    def flags(self) -> int:
-        """Get all flags as an integer."""
-        return self._flags
-    
-    @flags.setter
-    def flags(self, value: int):
-        """Set all flags from an integer."""
-        self._flags = value
-
-    def __change_bit_flag(self, position: int, value: bool):
-        """
-        Change the bit flag at the specified position.
-        Args:
-            position (int): The position of the bit to change (must be between 0 and 15).
-            value (bool): The value to set the bit to (True to set the bit, False to clear the bit).
-        Raises:
-            ValueError: If the position is not between 0 and 15.
-        """
-
-        if 0 <= position < 16:
-            if value:
-                self._flags |= (1 << position)
-            else:
-                self._flags &= ~(1 << position)
-        else:
-            raise ValueError("Position must be between 0 and 15")
-
-    def __is_bit_flag_set(self, position: int):
-        """
-        Check if the bit flag at the specified position is set.
-        Args:
-            position (int): The position of the bit flag to check (0-15).
-        Returns:
-            bool: True if the bit flag at the specified position is set, False otherwise.
-        Raises:
-            ValueError: If the position is not between 0 and 15.
-        """
-
-        if 0 <= position < 16:
-            return (self._flags & (1 << position)) != 0
-        else:
-            raise ValueError("Position must be between 0 and 31")
-    
-    def display_flags(self) -> str:
-        """
-        Returns a string representation of the status flags in a 16-bit binary format.
-        Returns:
-            str: A 16-bit binary string representing the status flags.
-        """
-        
-        return f'{self._flags:016b}'
-    
-    def __str__(self):
-        """Return a string representation of the status flags."""
-        status_str = f"Status flags [{self.display_flags()}]:\r\n"
-
-        if self.left_motor_busy:
-            status_str += "             Left motor: Busy\r\n"
-        else:
-            status_str += "             Left motor: Idle\r\n"
-
-        if self.right_motor_busy:
-            status_str += "            Right motor: Busy\r\n"
-        else:
-            status_str += "            Right motor: Idle\r\n"
-
-        if self.left_motor_direction:
-            status_str += "   Left motor direction: Forward\r\n"
-        else:
-            status_str += "   Left motor direction: Backward\r\n"
-
-        if self.right_motor_direction:
-            status_str += "  Right motor direction: Forward\r\n"
-        else:
-            status_str += "  Right motor direction: Backward\r\n"
-
-        if self.motor_power_enabled:
-            status_str += "            Motor power: Enabled\r\n"
-        else:
-            status_str += "            Motor power: Disabled\r\n"
-
-        if self.pen_servo_on:
-            if self.pen_servo_up:
-                status_str += "              Pen servo: Up\r\n"
-            else:
-                status_str += "              Pen servo: Down\r\n"
-        else: status_str += "              Pen servo: Off\r\n"
-
-        return status_str
-
 class RobotCommand:
     """
     The RobotCommand class represents a command that can be sent to a robot. Each command has a unique ID and a set of parameters.
@@ -309,15 +130,19 @@ class RobotCommand:
         "nop":        ( 0, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "No operation"),
         "motors-on":  ( 1, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Motors on"),
         "motors-off": ( 2, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Motors off"),
-        "forward":    ( 3, 1, (0, 0, 0), (65535, 0, 0), ("Distance (mm)", "", ""), "Move forward"),
-        "backward":   ( 4, 1, (0, 0, 0), (65535, 0, 0), ("Distance (mm)", "", ""), "Move backward"),
-        "left":       ( 5, 1, (0, 0, 0), (65535, 0, 0), ("Degrees", "", ""), "Turn left"),
-        "right":      ( 6, 1, (0, 0, 0), (65535, 0, 0), ("Degrees", "", ""), "Turn right"),
-        "velocity":   ( 7, 3, (1, 1, 1), (65535, 65535, 65535), ("Acceleration in mmPSPS", "Min mmPS", "Max mmPS"), "Set the velocity profile"),
+        "forward":    ( 3, 1, (0, 0, 0), (32767, 0, 0), ("Distance (mm)", "", ""), "Move forward"),
+        "backward":   ( 4, 1, (0, 0, 0), (32767, 0, 0), ("Distance (mm)", "", ""), "Move backward"),
+        "left":       ( 5, 1, (0, 0, 0), (32767, 0, 0), ("Degrees", "", ""), "Turn left"),
+        "right":      ( 6, 1, (0, 0, 0), (32767, 0, 0), ("Degrees", "", ""), "Turn right"),
+        "velocity":   ( 7, 3, (1, 1, 1), (32767, 32767, 32767), ("Acceleration in mmPSPS", "Min mmPS", "Max mmPS"), "Set the velocity profile"),
         "penup":      ( 8, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lift the pen up"),
         "pendown":    ( 9, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lower the pen down"),
         "left-eye":   (10, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the left eye"),
         "right-eye":  (11, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the right eye"),
+        "get-mv":  (12, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the voltage (mV)"),
+        "get-ma":   (13, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the current (mA)"),
+        "get-mw":  (14, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the power (mW)"),
+        "get-pen":    (15, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the pen position (0=down, 1=up)"),
     }
 
     # Class variable to store the command UID

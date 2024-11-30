@@ -96,6 +96,9 @@ def main():
             await ble_peripheral.command_queue_event.wait()
             ble_peripheral.command_queue_event.clear()
 
+            # Set the default command response to -1 (no response)
+            command_response = -1
+
             # Process the command
             if ble_peripheral.command_queue:
                 robot_command = ble_peripheral.command_queue.pop()
@@ -181,34 +184,32 @@ def main():
                 if robot_command.command == "right-eye":
                     led_fx.set_led_colour(_LED_right_eye, robot_command.parameters[0], robot_command.parameters[1], robot_command.parameters[2])
 
+                # Get power monitor voltage
+                if robot_command.command == "get-mv":
+                    command_response = int(ina260.voltage_mV)
+
+                # Get power monitor current
+                if robot_command.command == "get-ma":
+                    command_response = int(ina260.current_mA)
+
+                # Get power monitor watts
+                if robot_command.command == "get-mw":
+                    command_response = int(ina260.power_mW)
+
+                # Get pen position
+                if robot_command.command == "get-pen":
+                    if pen.is_servo_up:
+                        command_response = 1
+                    else:    
+                        command_response = 0
+
                 # Set the last processed command UID
                 ble_peripheral.last_processed_command_uid = robot_command.command_uid
+                ble_peripheral.last_processed_command_response = command_response
 
     # Async task to monitor the robot
     async def robot_monitor_task():
         while True:
-            # Update the BLE peripheral command status
-            if left_stepper.is_busy: ble_peripheral.command_status.left_motor_busy = True
-            else: ble_peripheral.command_status.left_motor_busy = False
-
-            if right_stepper.is_busy: ble_peripheral.command_status.right_motor_busy = True
-            else: ble_peripheral.command_status.right_motor_busy = False
-
-            if left_stepper.is_forwards: ble_peripheral.command_status.left_motor_direction = True
-            else: ble_peripheral.command_status.left_motor_direction = False
-
-            if right_stepper.is_forwards: ble_peripheral.command_status.right_motor_direction = True
-            else: ble_peripheral.command_status.right_motor_direction = False
-
-            if drv8825.is_enabled: ble_peripheral.command_status.motor_power_enabled = True
-            else: ble_peripheral.command_status.motor_power_enabled = False
-
-            if pen._is_servo_powered: ble_peripheral.command_status.pen_servo_on = True
-            else: ble_peripheral.command_status.pen_servo_on = False
-
-            if pen._is_servo_up: ble_peripheral.command_status.pen_servo_up = True
-            else: ble_peripheral.command_status.pen_servo_up = False
-
             # Update the stepper motor status LEDs
             if left_stepper.is_busy:
                 if left_stepper.is_forwards: led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
@@ -231,22 +232,12 @@ def main():
 
             await asyncio.sleep_ms(250)
 
-    # Async task to monitor power and send updates to BLE central
-    async def power_monitor_task():
-        while True:
-            # Wait 5 seconds before next update
-            await asyncio.sleep_ms(5000)
-
-            # Read the INA260 and send an update to BLE central
-            ble_peripheral.power_service_update(ina260.power_monitor)
-
     # Async I/O task generation and launch
     async def aio_main():
         tasks = [
             asyncio.create_task(ble_peripheral.ble_peripheral_task()), # BLE peripheral task
             asyncio.create_task(led_fx.process_leds_task()), # LED effects task
 
-            asyncio.create_task(power_monitor_task()), # Power monitoring task
             asyncio.create_task(robot_monitor_task()), # Robot status monitoring task
             asyncio.create_task(robot_control_task()), # Robot control task
         ]
