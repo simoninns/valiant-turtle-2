@@ -29,7 +29,6 @@ import library.logging as logging
 from pen import Pen
 from ina260 import Ina260
 from library.eeprom import Eeprom
-from library.robot_comms import PowerMonitor, RobotCommand
 from configuration import Configuration
 from velocity import Velocity, VelocityParameters
 from drv8825 import Drv8825
@@ -37,10 +36,7 @@ from stepper import Stepper
 from metric import Metric
 from ble_peripheral import BlePeripheral
 from led_fx import LedFx
-
-from time import sleep
 from machine import I2C, Pin
-
 import asyncio
 
 # GPIO hardware mapping
@@ -80,6 +76,8 @@ def main():
 
     # Async task to control the robot
     async def robot_control_task():
+        """ This task processes robot commands received from the BLE central device."""
+
         # Create a metric object for unit conversion with default calibration values
         metric = Metric()
 
@@ -209,27 +207,48 @@ def main():
 
     # Async task to monitor the robot
     async def robot_monitor_task():
+        """This task monitors the robot's status and updates the status LEDs accordingly.
+        
+        The status LED pulses green when BLE central is not connected.  If BLE central is connected,
+        the status LED pulses blue.  The left and right motor LEDs indicate the direction of the stepper
+        motors, with green indicating forwards and red indicating backwards.  If the motors are not in
+        motion but are powered and holding position, the LEDs are yellow. If the motors are disabled,
+        the LEDs are off.
+        """
+        loop = 0
         while True:
-            # Update the stepper motor status LEDs
-            if left_stepper.is_busy:
-                if left_stepper.is_forwards: led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
-                else: led_fx.set_led_colour(_LED_left_motor, 64, 0, 0)
+            if not drv8825.is_enabled:
+                led_fx.set_led_colour(_LED_left_motor, 0, 0, 0)
+                led_fx.set_led_colour(_LED_right_motor, 0, 0, 0)
             else:
-                led_fx.set_led_colour(_LED_left_motor, 8, 8, 8)
+                # Update the stepper motor status LEDs
+                if left_stepper.is_busy:
+                    if left_stepper.is_forwards: led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
+                    else: led_fx.set_led_colour(_LED_left_motor, 64, 0, 0)
+                else:
+                    led_fx.set_led_colour(_LED_left_motor, 20, 20, 0)
 
-            if right_stepper.is_busy:
-                # Green = forwards, red = backwards, grey = not in motion
-                if right_stepper.is_forwards: led_fx.set_led_colour(_LED_right_motor, 0, 64, 0)
-                else: led_fx.set_led_colour(_LED_right_motor, 64, 0, 0)
-            else:
-                led_fx.set_led_colour(_LED_right_motor, 8, 8, 8)
+                if right_stepper.is_busy:
+                    # Green = forwards, red = backwards, grey = not in motion
+                    if right_stepper.is_forwards: led_fx.set_led_colour(_LED_right_motor, 0, 64, 0)
+                    else: led_fx.set_led_colour(_LED_right_motor, 64, 0, 0)
+                else:
+                    led_fx.set_led_colour(_LED_right_motor, 20, 20, 0)
 
             # Update the BLE status
             if ble_peripheral.is_central_connected:
-                led_fx.set_led_colour(_LED_status, 0, 0, 64)
+                if loop < 2:
+                    led_fx.set_led_colour(_LED_status, 0, 0, 64)
+                else:
+                    led_fx.set_led_colour(_LED_status, 0, 0, 32)
             else:
-                led_fx.set_led_colour(_LED_status, 0, 64, 0)
+                if loop < 2:
+                    led_fx.set_led_colour(_LED_status, 0, 64, 0)
+                else:
+                    led_fx.set_led_colour(_LED_status, 0, 32, 0)
 
+            loop += 1
+            if loop > 3: loop = 0
             await asyncio.sleep_ms(250)
 
     # Async I/O task generation and launch
@@ -247,7 +266,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
     # Initialise the pen control
-    pen = Pen(_GPIO_PEN)
+    pen = Pen(Pin(_GPIO_PEN))
     pen.up()
 
     # Initialise the I2C buses
