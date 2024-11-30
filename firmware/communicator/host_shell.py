@@ -128,6 +128,7 @@ class HostShell:
             raise ValueError("Response must be an unsigned byte (0-255)")
 
         response_byte = response.to_bytes(1, 'little')
+        logging.debug(f"HostShell::send_response - Responding with {response_byte}")
 
         try:
             await self.writer.awrite(response_byte)

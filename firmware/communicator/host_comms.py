@@ -275,6 +275,7 @@ class HostComms:
             # Range check the required parameters
             for n in range(len(parameters)):
                 if not (RobotCommand.parameter_range(command, n)[0] <= parameters[n] <= RobotCommand.parameter_range(command, n)[1]):
+                    logging.debug(f"HostComms::process_command - Got out of range parameter {parameters[n]} for command {command}")
                     return CommandResult(CommandResult.result_invalid, f"Invalid parameter - {parameters[n]} must be between {RobotCommand.parameter_range(command, n)[0]} and {RobotCommand.parameter_range(command, n)[1]}")
                 
             # Queue the command
