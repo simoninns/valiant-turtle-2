@@ -139,10 +139,11 @@ class RobotCommand:
         "pendown":    ( 9, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lower the pen down"),
         "left-eye":   (10, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the left eye"),
         "right-eye":  (11, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the right eye"),
-        "get-mv":  (12, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the voltage (mV)"),
-        "get-ma":   (13, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the current (mA)"),
-        "get-mw":  (14, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the power (mW)"),
-        "get-pen":    (15, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the pen position (0=down, 1=up)"),
+        "get-mv":     (12, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the voltage (mV)"),
+        # 13 is reserved since it's used for <CR> in the shell
+        "get-ma":     (14, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the current (mA)"),
+        "get-mw":     (15, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the power (mW)"),
+        "get-pen":    (16, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the pen position (0=down, 1=up)"),
     }
 
     # Class variable to store the command UID
