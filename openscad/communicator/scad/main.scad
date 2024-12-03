@@ -52,6 +52,7 @@ display_panel_right = "No"; // [Yes, No]
 display_label = "No"; // [Yes, No]
 display_logo = "No"; // [Yes, No]
 display_led_holder = "No"; // [Yes, No]
+display_ir_cover_lock = "No"; // [Yes, No]
 
 /* [Support Enforcers] */
 
@@ -78,6 +79,7 @@ module main() {
     d_label = (display_label == "Yes") ? true:false;
     d_logo = (display_logo == "Yes") ? true:false;
     d_led_holder = (display_led_holder == "Yes") ? true:false;
+    d_ir_cover_lock = (display_ir_cover_lock == "Yes") ? true:false;
 
     // Support enforcers
     // Non-printable parts
@@ -98,6 +100,7 @@ module main() {
     if (d_label) render_label(toPrint);
     if (d_logo) render_logotype(toPrint);
     if (d_led_holder) render_holder(toPrint);
+    if (d_ir_cover_lock) render_ircover_lock(toPrint);
 
     // Render the support enforcers
     // Render the non-printable parts

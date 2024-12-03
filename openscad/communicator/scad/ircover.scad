@@ -28,7 +28,7 @@ use <BOSL/shapes.scad>
 
 module ircover(depth, width)
 {
-    move([-(depth/2)+2.5,0,(25/2) + 5 - 1.5]) cuboid([1,50,20]);
+    move([-(depth/2)+2,0,(25/2) + 5 - 1.5]) cuboid([1,50,20]);
 }
 
 module ircover_mask(depth, width)
@@ -39,11 +39,31 @@ module ircover_mask(depth, width)
     }
 }
 
+module ircover_lock(depth, width)
+{
+    difference() {
+        union() {
+            move([-(depth/2)+3.25,0,(25/2) + 5 - 1.5]) cuboid([1.5,51,21]);
+            move([-(depth/2)+3.5,0,(25/2) + 5 - 1.5]) cuboid([1,60,21]);
+        }
+        move([-(depth/2)+3.25,0,(25/2) + 5 - 1.5]) cuboid([5,50-2,20-2], fillet=1, edges=EDGES_X_ALL);
+    }
+}
+
 module render_ircover(toPrint)
 {
     if (!toPrint) {
         color([1,0,0]) ircover(80,122);
     } else {
         // Not printable - needs to be 1mm clear/red acrylic
+    }
+}
+
+module render_ircover_lock(toPrint)
+{
+    if (!toPrint) {
+        color([0.9,0.9,0.6,1]) ircover_lock(80,122);
+    } else {
+        move([-16,0,-36]) yrot(90) ircover_lock(80,122);
     }
 }

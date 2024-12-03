@@ -18,6 +18,8 @@ echo "  logo.stl"
 openscad -o ./stl/logo.stl -D 'for_printing="Printing"' -D 'display_logo="Yes"' ./scad/main.scad
 echo "  led_holder.stl"
 openscad -o ./stl/led_holder.stl -D 'for_printing="Printing"' -D 'display_led_holder="Yes"' ./scad/main.scad
+echo "  ir_cover_lock.stl"
+openscad -o ./stl/ir_cover_lock.stl -D 'for_printing="Printing"' -D 'display_ir_cover_lock="Yes"' ./scad/main.scad
 
 echo "Generating 2D DXF files for KiCAD..."
 echo "  pcb.dxf"
