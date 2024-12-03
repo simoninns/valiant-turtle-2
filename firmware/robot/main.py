@@ -86,7 +86,7 @@ def main():
         #   Minimum millimeters Per Second
         #   Maximum millimeters Per Second
         #   Update Intervals per second
-        velocity_parameters = VelocityParameters(metric.mm_to_steps(20), metric.mm_to_steps(4), metric.mm_to_steps(800), 16)
+        velocity_parameters = VelocityParameters(metric.mm_to_steps(20), metric.mm_to_steps(4), metric.mm_to_steps(400), 16)
         logging.debug(f"Main::robot_control_task - Velocity parameters (in steps) = {velocity_parameters}")
 
         while True:
