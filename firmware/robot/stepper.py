@@ -26,82 +26,40 @@
 #************************************************************************
 
 import library.logging as logging
-from velocity import Velocity
 from pulse_generator import PulseGenerator
+from drv8825 import Drv8825
 
 from machine import Pin
 
 class Stepper:
-    """
-    A class to represent a stepper motor controller.
-    Attributes
-    ----------
-    pio : int
-        The Programmable I/O (PIO) instance used for the stepper motor.
-    direction : Pin
-        The GPIO pin used to control the direction of the stepper motor.
-    is_left : bool
-        Indicates if the stepper motor is oriented to the left.
-    _is_forwards : bool
-        Indicates if the stepper motor is moving forwards.
-    steps_remaining : int
-        The number of steps remaining in the current sequence.
-    is_busy_flag : bool
-        Indicates if the stepper motor is currently busy.
-    sequence_index : int
-        The current index in the velocity sequence.
-    pulse_generator : PulseGenerator
-        The pulse generator used to control the step pin of the stepper motor.
-    velocity : Velocity
-        The velocity profile for the stepper motor.
-    Methods
-    -------
-    __init__(direction_pin, step_pin, is_left: bool):
-        Initializes the stepper motor with the given direction and step pins and orientation.
-    set_forwards():
-        Sets the stepper motor to move forwards.
-    set_backwards():
-        Sets the stepper motor to move backwards.
-    is_busy() -> bool:
-        Returns whether the stepper motor is currently busy.
-    is_forwards() -> bool:
-        Returns whether the stepper motor is moving forwards.
-    set_velocity(velocity: Velocity) -> bool:
-        Sets the velocity profile for the stepper motor and starts the pulse generator.
-    callback():
-        Callback function for the pulse generator to provide more sequence information.
-    """
-
     _sm_counter = 0 # Keep track of the next free state-machine
+    test_only = False # Set to True to test the acceleration sequence without moving the stepper
 
-    def __init__(self, direction_pin: int, step_pin: int, is_left: bool):
-        """
-        Initializes the Stepper object.
-        Args:
-            direction_pin (int): The GPIO pin number used to control the direction of the stepper motor.
-            step_pin (int): The GPIO pin number used to control the steps of the stepper motor.
-            is_left (bool): A flag indicating the orientation of the stepper motor.
-        Raises:
-            RuntimeError: If no more state machines are available.
-        """
-
+    def __init__(self, drv8825: Drv8825, step_pin: Pin, direction_pin: Pin, is_left: bool):
         self.pio = 0
 
-        # Configure the direction GPIO
-        self.direction = Pin(direction_pin, Pin.OUT)
-        self.direction.value(0)
-
-        # Orientation of stepper
-        self.is_left = is_left
-
-        # Direction of stepper
+        # Configure the stepper motor direction
+        self._direction_pin = direction_pin
         self._is_forwards = True
-        self.set_forwards()
+        self._is_left = is_left
+        self.set_direction_forwards()
 
-        # Tracking progress
-        self.steps_remaining = 0
-        self.is_busy_flag = False
-        self.sequence_index = 0
+        # Stepper busy flag
+        self._is_busy = False
+
+        # Stepper motion parameters (in steps per interval)
+        self._target_speed_spi = 1
+        self._acceleration_spi = 1
+        self._steps_remaining = 0
+        self._current_speed_spi = 1
+
+        # Tracking parameters
+        self._acceleration_steps = 0
+        self._running_steps = 0
+        self._track_actual_steps = 0
+
+        # The number of speed re-calculations per second
+        self._intervals_per_second = 16
 
         # Ensure we have a free state-machine
         if Stepper._sm_counter < 4:
@@ -111,111 +69,177 @@ class Stepper:
 
         # Initialise the pulse generator on PIO 1
         # Note: This controls the step GPIO
-        self.pulse_generator = PulseGenerator(self.pio, Stepper._sm_counter, step_pin)
+        self._state_machine = Stepper._sm_counter
         Stepper._sm_counter += 1
-
+        self.pulse_generator = PulseGenerator(self.pio, self._state_machine, step_pin)
+        
         # Set up the pulse generator callback
         self.pulse_generator.callback_subscribe(self.callback)
 
-    def set_forwards(self):
-        """
-        Sets the stepper motor to move forwards.
-        This method sets the internal flag `_is_forwards` to True and updates the 
-        direction of the motor based on whether it is configured as left or right.
-        If the motor is on the left, the direction value is set to 1.
-        If the motor is on the right, the direction value is set to 0.
-        """
-
-        self._is_forwards = True
-        if self.is_left: self.direction.value(1)
-        else: self.direction.value(0)
-
-    def set_backwards(self):
-        """
-        Sets the stepper motor to move backwards.
-        This method sets the internal flag `_is_forwards` to `False` and updates
-        the direction of the motor based on whether it is configured as left or right.
-        If the motor is on the left, the direction value is set to 0.
-        If the motor is on the right, the direction value is set to 1.
-        """
-
-        self._is_forwards = False
-        if self.is_left: self.direction.value(0)
-        else: self.direction.value(1)
-
     @property
-    def is_busy(self) -> bool:
-        """
-        Check if the stepper motor is currently busy.
-        Returns:
-            bool: True if the stepper motor is busy, False otherwise.
-        """
-        
-        return self.is_busy_flag
+    def is_busy(self):
+        return self._is_busy
     
     @property
-    def is_forwards(self) -> bool:
-        """
-        Check if the stepper motor is moving forwards.
-        Returns:
-            bool: True if the stepper motor is moving forwards, False otherwise.
-        """
-
+    def is_forwards(self):
         return self._is_forwards
 
-    def set_velocity(self, velocity: Velocity) -> bool:
-        """
-        Sets the velocity of the stepper motor.
-        This method configures the stepper motor to run at the specified velocity.
-        If the stepper motor is currently busy, the method will log a debug message
-        and return False. Otherwise, it will set the velocity, initialize the sequence
-        index, and start the pulse generator.
-        Args:
-            velocity (Velocity): The desired velocity settings for the stepper motor.
-        Returns:
-            bool: True if the velocity was successfully set, False if the stepper motor is busy.
-        """
+    def set_direction_forwards(self):
+        if self._is_left:
+            self._direction_pin.value(1)
+        else:
+            self._direction_pin.value(0)
+        self._is_forwards = True
 
-        if self.is_busy_flag:
-            logging.debug("Stepper::set_velocity - Failed... Stepper is busy")
-            return False
+    def set_direction_backwards(self):
+        if self._is_left:
+            self._direction_pin.value(0)
+        else:
+            self._direction_pin.value(1)
+        self._is_forwards = False
+
+    def set_acceleration_spsps(self, acceleration: float):
+        """Set the acceleration in steps per second per second"""
+        if acceleration < 1:
+            raise ValueError("Stepper::set_acceleration - Acceleration must be greater than 0")
+        self._acceleration_spi = acceleration / self._intervals_per_second
+        logging.debug(f"Stepper::set_acceleration - Acceleration set to {acceleration} steps per second per second ({self._acceleration_spi} steps per interval per interval)")
+
+    def set_target_speed_sps(self, target_speed: float):
+        """Set the target speed in steps per second"""
+        if target_speed < 1:
+            raise ValueError("Stepper::set_target_speed - Speed must be greater than 0")
+        self._target_speed_spi = target_speed / self._intervals_per_second
+        logging.debug(f"Stepper::set_target_speed - Target speed set to {target_speed} steps per second ({self._target_speed_spi} steps per interval)")
+
+    def move(self, steps: int):
+        # Check if the stepper is currently busy
+        if self._is_busy:
+            raise RuntimeError("Stepper::move - Stepper is currently busy")
         
-        self.velocity = velocity
-        self.sequence_index = 0
+        if (steps < 1):
+            raise ValueError("Stepper::move - Steps must be greater than 0")
+
+        # Set the stepper as busy
+        self._is_busy = True
+
+        logging.debug(f"Stepper::move - Moving {steps} steps using {self._intervals_per_second} calculation intervals per second")
+        logging.debug(f"Stepper::move - Maximum acceleration is {self._acceleration_spi} steps per interval and target speed is {self._target_speed_spi} steps per interval")
+
+        self._total_steps = steps
+        self._steps_remaining = self._total_steps
+        self._current_speed_spi = 0
+        self._maximum_available_acceleration_steps = self._total_steps / 2
+        one_shot = False
+        self._partial_steps = 0
+        self._track_actual_steps = 0
+
+        # Check the input parameters and decide if acceleration is required
+        if self._total_steps < (2 * self._acceleration_spi):
+            logging.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to twice the acceleration rate")
+            one_shot = True
         
-        # Set the remaining steps
-        self.steps_remaining = self.velocity.total_steps
+        if (self._target_speed_spi <= self._acceleration_spi):
+            logging.debug("Stepper::move - Cannot accelerate: Target speed must be greater than the acceleration rate")
+            one_shot = True
+        
+        if (self._total_steps < self._target_speed_spi):
+            logging.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to the target speed")
+            one_shot = True
 
-        # Start the pulse generator (updates are via callback)
-        self.is_busy_flag = True
-        self.pulse_generator.set(self.velocity.sequence_spi[self.sequence_index] * self.velocity.parameters.intervals_per_second, self.velocity.sequence_steps[self.sequence_index])
-        self.steps_remaining -= self.velocity.sequence_steps[self.sequence_index]
+        if one_shot:
+            # One-shot move
+            logging.debug(f"Stepper::move - Performing one-shot move of {self._total_steps} steps at {self._target_speed_spi} steps per interval ({self._target_speed_spi * self._intervals_per_second} steps per second)")
+            if not Stepper.test_only:
+                self.pulse_generator.set(int(self._target_speed_spi * self._intervals_per_second), self._total_steps)
+        else:
+            # Acceleration and deceleration move
+            logging.debug(f"Stepper::move - Beginning initial acceleration on SM {self._state_machine}")
+            if not Stepper.test_only:
+                self.calculate_next_command()
+            else:
+                # Just test the acceleration sequence
+                self._is_busy = True
+                while self._steps_remaining > 0:
+                    self.calculate_next_command()
+                
+                if self._total_steps == self._track_actual_steps:
+                    logging.debug(f"Stepper::move - Acceleration/deceleration sequence completed successfully on SM {self._state_machine}")
+                else:
+                    logging.error(f"Stepper::move - Acceleration/deceleration sequence failed on SM {self._state_machine} expected {self._total_steps} steps, performed {self._track_actual_steps} steps")
+                self._is_busy = False
 
-        return True
-    
+    def calculate_next_command(self):
+        steps = 0
+        speed = 0
+
+        # Accelerating?
+        if (self._steps_remaining - self._current_speed_spi) > self._maximum_available_acceleration_steps and (self._current_speed_spi + self._acceleration_spi) < self._target_speed_spi:
+            self._current_speed_spi += self._acceleration_spi
+            if (self._current_speed_spi > self._target_speed_spi):
+                self._current_speed_spi = self._target_speed_spi
+            self._steps_remaining -= self._current_speed_spi
+            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Accelerating - Current SPI = {self._current_speed_spi}, steps remaining = {self._steps_remaining}")
+            steps = self._current_speed_spi
+            speed = self._current_speed_spi
+
+            self._acceleration_steps = self._total_steps - self._steps_remaining
+            self._running_steps = self._total_steps - (2 * self._acceleration_steps)
+            self._final_acceleration_speed = self._current_speed_spi
+        elif (self._steps_remaining > self._acceleration_steps):
+            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Acceleration steps = {self._acceleration_steps}")
+
+            # If acceleration didn't reach target speed, accelerate one more time
+            self._current_speed_spi += self._acceleration_spi
+            if (self._current_speed_spi > self._target_speed_spi):
+                self._current_speed_spi = self._target_speed_spi
+
+            self._steps_remaining -= self._running_steps
+            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Running - Current speed = {self._current_speed_spi}, running steps = {self._running_steps}")
+            steps = self._running_steps
+            speed = self._current_speed_spi
+
+            # Adjust back to the final acceleration speed to ensure we decelerate correctly
+            self._current_speed_spi = self._final_acceleration_speed
+        else:
+            self._steps_remaining -= self._current_speed_spi
+            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Decelerating - Current speed = {self._current_speed_spi}, steps remaining = {self._steps_remaining}")
+            steps = self._current_speed_spi
+            speed = self._current_speed_spi
+
+            self._current_speed_spi -= self._acceleration_spi
+            if (self._current_speed_spi < 1):
+                self._current_speed_spi = 1
+
+        # Deal with a fractional number of steps
+        whole_steps = int(steps)
+        self._partial_steps += steps - whole_steps
+        steps = whole_steps
+
+        # If we have a fractional number of steps greater than 1, add them to the next command
+        if self._partial_steps >= 1:
+            additional_steps = int(self._partial_steps)
+            self._partial_steps -= additional_steps
+            steps += additional_steps
+
+        if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Steps = {steps}, Partial steps = {self._partial_steps}")
+
+        # Set the pulse generator
+        self._track_actual_steps += steps
+        if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Command result: Steps per second = {speed * self._intervals_per_second} ({speed} SPI), Steps = {steps}, Position = {self._track_actual_steps}")
+        if not Stepper.test_only: self.pulse_generator.set(int(speed * self._intervals_per_second), steps)
+
     # Callback when pulse generator needs more sequence information
     def callback(self):
-        """
-        Callback function to handle the stepper motor sequence.
-        This function is called to process the stepper motor's movement sequence.
-        It increments the sequence index and updates the pulse generator with the
-        next step and speed values if the sequence is still in progress. If the
-        sequence is completed, it sets the busy flag to False.
-        Returns:
-            None
-        """
-
         # Only process the callback if the stepper is currently busy
-        if self.is_busy_flag:
-            #print("Stepper callback - Steps remaining =", self.steps_remaining)
-            self.sequence_index += 1
-            if self.sequence_index < len(self.velocity.sequence_steps):
-                # Sequence in progress
-                self.pulse_generator.set(self.velocity.sequence_spi[self.sequence_index] * self.velocity.parameters.intervals_per_second, self.velocity.sequence_steps[self.sequence_index])
-                self.steps_remaining -= self.velocity.sequence_steps[self.sequence_index]
+        if self._steps_remaining > 0:       
+            self.calculate_next_command()
+        else:
+            self._is_busy = False
+            if self._total_steps == self._track_actual_steps:
+                logging.debug(f"Stepper::callback - Acceleration/deceleration sequence completed successfully on SM {self._state_machine}")
             else:
-                # Sequence completed
-                self.is_busy_flag = False
+                logging.error(f"Stepper::callback - Acceleration/deceleration sequence failed on SM {self._state_machine} expected {self._total_steps} steps, performed {self._track_actual_steps} steps")
 
 if __name__ == "__main__":
     from main import main

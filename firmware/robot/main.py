@@ -30,7 +30,6 @@ from pen import Pen
 from ina260 import Ina260
 from library.eeprom import Eeprom
 from configuration import Configuration
-from velocity import Velocity, VelocityParameters
 from drv8825 import Drv8825
 from stepper import Stepper
 from metric import Metric
@@ -78,16 +77,13 @@ def main():
     async def robot_control_task():
         """ This task processes robot commands received from the BLE central device."""
 
-        # Create a metric object for unit conversion with default calibration values
-        metric = Metric()
-
         # Velocity parameters:
         #   Acceleration in millimeters per second per second
         #   Minimum millimeters Per Second
         #   Maximum millimeters Per Second
         #   Update Intervals per second
-        velocity_parameters = VelocityParameters(metric.mm_to_steps(20), metric.mm_to_steps(4), metric.mm_to_steps(400), 16)
-        logging.debug(f"Main::robot_control_task - Velocity parameters (in steps) = {velocity_parameters}")
+        # velocity_parameters = VelocityParameters(metric.mm_to_steps(20), metric.mm_to_steps(4), metric.mm_to_steps(400), 16)
+        # logging.debug(f"Main::robot_control_task - Velocity parameters (in steps) = {velocity_parameters}")
 
         while True:
             # Wait for a command to be received
@@ -112,11 +108,10 @@ def main():
 
                 # Forwards
                 if robot_command.command == "forward":
-                    left_stepper.set_forwards()
-                    right_stepper.set_forwards()
-                    velocity = Velocity(metric.mm_to_steps(robot_command.parameters[0]), velocity_parameters)
-                    left_stepper.set_velocity(velocity)
-                    right_stepper.set_velocity(velocity)
+                    left_stepper.set_direction_forwards()
+                    right_stepper.set_direction_forwards()
+                    left_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
+                    right_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
 
                     # Wait for the stepper to finish
                     while left_stepper.is_busy or right_stepper.is_busy:
@@ -124,11 +119,10 @@ def main():
 
                 # Backwards
                 if robot_command.command == "backward":
-                    left_stepper.set_backwards()
-                    right_stepper.set_backwards()
-                    velocity = Velocity(metric.mm_to_steps(robot_command.parameters[0]), velocity_parameters)
-                    left_stepper.set_velocity(velocity)
-                    right_stepper.set_velocity(velocity)
+                    left_stepper.set_direction_backwards()
+                    right_stepper.set_direction_backwards()
+                    left_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
+                    right_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
 
                     # Wait for the stepper to finish
                     while left_stepper.is_busy or right_stepper.is_busy:
@@ -136,11 +130,10 @@ def main():
 
                 # Left
                 if robot_command.command == "left":
-                    left_stepper.set_forwards()
-                    right_stepper.set_backwards()
-                    velocity = Velocity(metric.degrees_to_steps(robot_command.parameters[0]), velocity_parameters)
-                    left_stepper.set_velocity(velocity)
-                    right_stepper.set_velocity(velocity)
+                    left_stepper.set_direction_forwards()
+                    right_stepper.set_direction_backwards()
+                    left_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
+                    right_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
 
                     # Wait for the stepper to finish
                     while left_stepper.is_busy or right_stepper.is_busy:
@@ -148,11 +141,10 @@ def main():
 
                 # Right
                 if robot_command.command == "right":
-                    left_stepper.set_backwards()
-                    right_stepper.set_forwards()
-                    velocity = Velocity(metric.degrees_to_steps(robot_command.parameters[0]), velocity_parameters)
-                    left_stepper.set_velocity(velocity)
-                    right_stepper.set_velocity(velocity)
+                    left_stepper.set_direction_backwards()
+                    right_stepper.set_direction_forwards()
+                    left_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
+                    right_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
 
                     # Wait for the stepper to finish
                     while left_stepper.is_busy or right_stepper.is_busy:
@@ -160,11 +152,12 @@ def main():
 
                 # Velocity
                 if robot_command.command == "velocity":
-                    # Update the velocity parameters (parameters are in mm, so we convert to steps)
-                    velocity_parameters.acc_spsps = metric.mm_to_steps(robot_command.parameters[0])
-                    velocity_parameters.minimum_sps = metric.mm_to_steps(robot_command.parameters[1])
-                    velocity_parameters.maximum_sps = metric.mm_to_steps(robot_command.parameters[2])
-                    logging.debug(f"Main::robot_control_task - velocity parameters (steps) = {velocity_parameters}")
+                    left_stepper.set_target_speed_sps(metric.mm_to_steps(robot_command.parameters[0]))
+                    left_stepper.set_acceleration_spsps(metric.mm_to_steps(robot_command.parameters[1]))
+                    right_stepper.set_target_speed_sps(metric.mm_to_steps(robot_command.parameters[0]))
+                    right_stepper.set_acceleration_spsps(metric.mm_to_steps(robot_command.parameters[1]))
+                    logging.debug(f"Main::robot_control_task - Setting target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
+                    pass
                 
                 # Pen up
                 if robot_command.command == "penup":
@@ -288,16 +281,38 @@ def main():
     # Initialise BLE peripheral
     ble_peripheral = BlePeripheral()
 
-    # Configure the DRV8825
-    drv8825 = Drv8825(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2)
+    # Create a metric object for unit conversion with default calibration values
+    metric = Metric()
+
+    # Configure the DRV8825 control GPIOs
+    drv8825_enable_pin = Pin(_GPIO_ENABLE, Pin.OUT)
+    drv8825_m0_pin = Pin(_GPIO_M0, Pin.OUT)
+    drv8825_m1_pin = Pin(_GPIO_M1, Pin.OUT)
+    drv8825_m2_pin = Pin(_GPIO_M2, Pin.OUT)
+
+    # Create the DRV8825 instance (The DRV8825 driver is shared between the two stepper motors
+    # as the enable line and microstepping mode pins are shared)
+    drv8825 = Drv8825(drv8825_enable_pin, drv8825_m0_pin, drv8825_m1_pin, drv8825_m2_pin)
     drv8825.set_steps_per_revolution(800)
     drv8825.set_enable(False)
 
-    # Configure the steppers
-    left_stepper = Stepper(_GPIO_LM_DIR, _GPIO_LM_STEP, True)
-    left_stepper.set_forwards()
-    right_stepper = Stepper(_GPIO_RM_DIR, _GPIO_RM_STEP, False)
-    right_stepper.set_forwards()
+    # Configure the stepper control GPIOs
+    left_step_pin = Pin(_GPIO_LM_STEP, Pin.OUT)
+    left_direction_pin = Pin(_GPIO_LM_DIR, Pin.OUT)
+    right_step_pin = Pin(_GPIO_RM_STEP, Pin.OUT)
+    right_direction_pin = Pin(_GPIO_RM_DIR, Pin.OUT)
+
+    # Create the left and right stepper motor instances
+    left_stepper = Stepper(drv8825, left_step_pin, left_direction_pin, True)
+    right_stepper = Stepper(drv8825, right_step_pin, right_direction_pin, False)
+    left_stepper.set_direction_forwards()
+    right_stepper.set_direction_forwards()
+    
+    # Set the default speed and acceleration for the left and right stepper motors
+    left_stepper.set_target_speed_sps(metric.mm_to_steps(200))
+    left_stepper.set_acceleration_spsps(metric.mm_to_steps(4))
+    right_stepper.set_target_speed_sps(metric.mm_to_steps(200))
+    right_stepper.set_acceleration_spsps(metric.mm_to_steps(4))
 
     # Configure the LEDs
     led_fx = LedFx(5, _GPIO_LEDS)

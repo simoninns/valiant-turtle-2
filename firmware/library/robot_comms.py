@@ -134,7 +134,7 @@ class RobotCommand:
         "backward":   ( 4, 1, (0, 0, 0), (32767, 0, 0), ("Distance (mm)", "", ""), "Move backward"),
         "left":       ( 5, 1, (0, 0, 0), (32767, 0, 0), ("Degrees", "", ""), "Turn left"),
         "right":      ( 6, 1, (0, 0, 0), (32767, 0, 0), ("Degrees", "", ""), "Turn right"),
-        "velocity":   ( 7, 3, (1, 1, 1), (32767, 32767, 32767), ("Acceleration in mmPSPS", "Min mmPS", "Max mmPS"), "Set the velocity profile"),
+        "velocity":   ( 7, 2, (1, 1, 0), (32767, 32767, 0), ("Max mm/s", "Acceleration in mm/s^2", ""), "Set the stepper velocity"),
         "penup":      ( 8, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lift the pen up"),
         "pendown":    ( 9, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lower the pen down"),
         "left-eye":   (10, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the left eye"),
