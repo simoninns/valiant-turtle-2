@@ -46,9 +46,9 @@ def main():
         drv8825.set_enable(True)
 
         logging.debug("Main - Running")
-        left_stepper.set_acceleration(100)
-        left_stepper.set_target_speed(800)
-        left_stepper.move(5000)
+        left_stepper.set_acceleration_spsps(16)
+        left_stepper.set_target_speed_sps(800)
+        left_stepper.move(800 * 4)
 
         while left_stepper.is_busy:
             time.sleep_ms(100)

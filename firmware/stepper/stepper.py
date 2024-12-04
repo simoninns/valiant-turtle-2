@@ -33,6 +33,7 @@ from machine import Pin
 
 class Stepper:
     _sm_counter = 0 # Keep track of the next free state-machine
+    test_only = False
 
     def __init__(self, drv8825: Drv8825, step_pin: Pin, direction_pin: Pin, is_left: bool):
         self.pio = 0
@@ -46,16 +47,19 @@ class Stepper:
         # Stepper busy flag
         self._is_busy = False
 
-        # Stepper motion parameters
-        self._target_speed_sps = 1
-        self._acceleration_sps = 1
+        # Stepper motion parameters (in steps per interval)
+        self._target_speed_spi = 1
+        self._acceleration_spi = 1
         self._steps_remaining = 0
-        self._current_speed_sps = 1
+        self._current_speed_spi = 1
 
         # Tracking parameters
         self._acceleration_steps = 0
         self._running_steps = 0
-        self._deceleration_steps = 0
+        self._track_actual_steps = 0
+
+        # The number of speed re-calculations per second
+        self._intervals_per_second = 16
 
         # Ensure we have a free state-machine
         if Stepper._sm_counter < 4:
@@ -65,9 +69,10 @@ class Stepper:
 
         # Initialise the pulse generator on PIO 1
         # Note: This controls the step GPIO
-        self.pulse_generator = PulseGenerator(self.pio, Stepper._sm_counter, step_pin)
+        self._state_machine = Stepper._sm_counter
         Stepper._sm_counter += 1
-
+        self.pulse_generator = PulseGenerator(self.pio, self._state_machine, step_pin)
+        
         # Set up the pulse generator callback
         self.pulse_generator.callback_subscribe(self.callback)
 
@@ -89,17 +94,19 @@ class Stepper:
             self._direction_pin.value(0)
         self._is_forwards = False
 
-    def set_acceleration(self, acceleration: int):
+    def set_acceleration_spsps(self, acceleration: float):
+        """Set the acceleration in steps per second per second"""
         if acceleration < 1:
             raise ValueError("Stepper::set_acceleration - Acceleration must be greater than 0")
-        self._acceleration_sps = acceleration
-        logging.debug(f"Stepper::set_acceleration - Acceleration set to {acceleration}")
+        self._acceleration_spi = acceleration / self._intervals_per_second
+        logging.debug(f"Stepper::set_acceleration - Acceleration set to {acceleration} steps per second per second ({self._acceleration_spi} steps per interval per interval)")
 
-    def set_target_speed(self, target_speed: int):
+    def set_target_speed_sps(self, target_speed: float):
+        """Set the target speed in steps per second"""
         if target_speed < 1:
             raise ValueError("Stepper::set_target_speed - Speed must be greater than 0")
-        self._target_speed_sps = target_speed
-        logging.debug(f"Stepper::set_target_speed - Target speed set to {target_speed}")
+        self._target_speed_spi = target_speed / self._intervals_per_second
+        logging.debug(f"Stepper::set_target_speed - Target speed set to {target_speed} steps per second ({self._target_speed_spi} steps per interval)")
 
     def move(self, steps: int):
         # Check if the stepper is currently busy
@@ -112,80 +119,110 @@ class Stepper:
         # Set the stepper as busy
         self._is_busy = True
 
-        logging.debug(f"Stepper::move - Moving {steps} steps")
-        logging.debug(f"Stepper::move - Maximum acceleration is {self._acceleration_sps} steps per second and target speed is {self._target_speed_sps} steps per second")
+        logging.debug(f"Stepper::move - Moving {steps} steps using {self._intervals_per_second} calculation intervals per second")
+        logging.debug(f"Stepper::move - Maximum acceleration is {self._acceleration_spi} steps per interval and target speed is {self._target_speed_spi} steps per interval")
 
         self._total_steps = steps
         self._steps_remaining = self._total_steps
-        self._current_speed_sps = 0
+        self._current_speed_spi = 0
         self._maximum_available_acceleration_steps = self._total_steps / 2
         one_shot = False
+        self._partial_steps = 0
 
         # Check the input parameters and decide if acceleration is required
-        if self._total_steps < (2 * self._acceleration_sps):
+        if self._total_steps < (2 * self._acceleration_spi):
             logging.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to twice the acceleration rate")
             one_shot = True
         
-        if (self._target_speed_sps <= self._acceleration_sps):
+        if (self._target_speed_spi <= self._acceleration_spi):
             logging.debug("Stepper::move - Cannot accelerate: Target speed must be greater than the acceleration rate")
             one_shot = True
         
-        if (self._total_steps < self._target_speed_sps):
+        if (self._total_steps < self._target_speed_spi):
             logging.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to the target speed")
             one_shot = True
 
         if one_shot:
             # One-shot move
-            self.pulse_generator.set(self._target_speed_sps, self._total_steps)
+            logging.debug(f"Stepper::move - Performing one-shot move of {self._total_steps} steps at {self._target_speed_spi} steps per interval ({self._target_speed_spi * self._intervals_per_second} steps per second)")
+            if not Stepper.test_only:
+                self.pulse_generator.set(int(self._target_speed_spi * self._intervals_per_second), self._total_steps)
         else:
             # Acceleration and deceleration move
-            self.calculate_next_command()
+            logging.debug(f"Stepper::move - Beginning initial acceleration on SM {self._state_machine}")
+            if not Stepper.test_only:
+                self.calculate_next_command()
+            else:
+                # Just test the acceleration sequence
+                self._is_busy = True
+                while self._steps_remaining > 0:
+                    self.calculate_next_command()
+                
+                if self._total_steps == self._track_actual_steps:
+                    logging.debug(f"Stepper::move - Acceleration/deceleration sequence completed successfully on SM {self._state_machine}")
+                else:
+                    logging.error(f"Stepper::move - Acceleration/deceleration sequence failed on SM {self._state_machine} expected {self._total_steps} steps, performed {self._track_actual_steps} steps")
+                self._is_busy = False
 
     def calculate_next_command(self):
         steps = 0
         speed = 0
 
         # Accelerating?
-        if (self._steps_remaining - self._current_speed_sps) > self._maximum_available_acceleration_steps and (self._current_speed_sps + self._acceleration_sps) < self._target_speed_sps:
-            self._current_speed_sps += self._acceleration_sps
-            if (self._current_speed_sps > self._target_speed_sps):
-                self._current_speed_sps = self._target_speed_sps
-            self._steps_remaining -= self._current_speed_sps
-            logging.debug(f"Stepper::calculate_next_command - Accelerating - Current speed = {self._current_speed_sps}, steps remaining = {self._steps_remaining}")
-            steps = self._current_speed_sps
-            speed = self._current_speed_sps
+        if (self._steps_remaining - self._current_speed_spi) > self._maximum_available_acceleration_steps and (self._current_speed_spi + self._acceleration_spi) < self._target_speed_spi:
+            self._current_speed_spi += self._acceleration_spi
+            if (self._current_speed_spi > self._target_speed_spi):
+                self._current_speed_spi = self._target_speed_spi
+            self._steps_remaining -= self._current_speed_spi
+            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Accelerating - Current SPI = {self._current_speed_spi}, steps remaining = {self._steps_remaining}")
+            steps = self._current_speed_spi
+            speed = self._current_speed_spi
 
             self._acceleration_steps = self._total_steps - self._steps_remaining
             self._running_steps = self._total_steps - (2 * self._acceleration_steps)
-            self._final_acceleration_speed = self._current_speed_sps
+            self._final_acceleration_speed = self._current_speed_spi
         elif (self._steps_remaining > self._acceleration_steps):
-            logging.debug(f"Stepper::calculate_next_command - Acceleration steps = {self._acceleration_steps}")
+            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Acceleration steps = {self._acceleration_steps}")
 
             # If acceleration didn't reach target speed, accelerate one more time
-            self._current_speed_sps += self._acceleration_sps
-            if (self._current_speed_sps > self._target_speed_sps):
-                self._current_speed_sps = self._target_speed_sps
+            self._current_speed_spi += self._acceleration_spi
+            if (self._current_speed_spi > self._target_speed_spi):
+                self._current_speed_spi = self._target_speed_spi
 
             self._steps_remaining -= self._running_steps
-            logging.debug(f"Stepper::calculate_next_command - Running - Current speed = {self._current_speed_sps}, running steps = {self._running_steps}")
+            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Running - Current speed = {self._current_speed_spi}, running steps = {self._running_steps}")
             steps = self._running_steps
-            speed = self._current_speed_sps
+            speed = self._current_speed_spi
 
             # Adjust back to the final acceleration speed to ensure we decelerate correctly
-            self._current_speed_sps = self._final_acceleration_speed
+            self._current_speed_spi = self._final_acceleration_speed
         else:
-            self._steps_remaining -= self._current_speed_sps
-            logging.debug(f"Stepper::calculate_next_command - Decelerating - Current speed = {self._current_speed_sps}, steps remaining = {self._steps_remaining}")
-            steps = self._current_speed_sps
-            speed = self._current_speed_sps
+            self._steps_remaining -= self._current_speed_spi
+            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Decelerating - Current speed = {self._current_speed_spi}, steps remaining = {self._steps_remaining}")
+            steps = self._current_speed_spi
+            speed = self._current_speed_spi
 
-            self._current_speed_sps -= self._acceleration_sps
-            if (self._current_speed_sps < 1):
-                self._current_speed_sps = 1
+            self._current_speed_spi -= self._acceleration_spi
+            if (self._current_speed_spi < 1):
+                self._current_speed_spi = 1
+
+        # Deal with a fractional number of steps
+        whole_steps = int(steps)
+        self._partial_steps += steps - whole_steps
+        steps = whole_steps
+
+        # If we have a fractional number of steps greater than 1, add them to the next command
+        if self._partial_steps >= 1:
+            additional_steps = int(self._partial_steps)
+            self._partial_steps -= additional_steps
+            steps += additional_steps
+
+        if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Steps = {steps}, Partial steps = {self._partial_steps}")
 
         # Set the pulse generator
-        logging.debug(f"Stepper::calculate_next_command - Command result: Speed = {speed}, Steps = {steps}")
-        self.pulse_generator.set(speed, steps)
+        self._track_actual_steps += steps
+        if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Command result: Steps per second = {speed * self._intervals_per_second} ({speed} SPI), Steps = {steps}, Position = {self._track_actual_steps}")
+        if not Stepper.test_only: self.pulse_generator.set(int(speed * self._intervals_per_second), steps)
 
     # Callback when pulse generator needs more sequence information
     def callback(self):
@@ -194,7 +231,10 @@ class Stepper:
             self.calculate_next_command()
         else:
             self._is_busy = False
-            logging.debug("Stepper::callback - Sequence completed")
+            if self._total_steps == self._track_actual_steps:
+                logging.debug(f"Stepper::callback - Acceleration/deceleration sequence completed successfully on SM {self._state_machine}")
+            else:
+                logging.error(f"Stepper::callback - Acceleration/deceleration sequence failed on SM {self._state_machine} expected {self._total_steps} steps, performed {self._track_actual_steps} steps")
 
 if __name__ == "__main__":
     from main import main
