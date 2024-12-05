@@ -41,7 +41,7 @@ module pcb_screw_holes()
 
 module pcb() 
 {
-    difference() {
+    move ([1.5,0,0]) difference() {
         move([0,0,8.75]) {
             color([0.0,0.6,0.0,1]) cuboid([68,99,1.5]); // Keep to 100x100 max
         }
@@ -55,11 +55,13 @@ module pcb()
             six_leds();
         }
     }
+
+    //move([-122.25 + 1.5,-105,3.75]) import("../pcb_model/vt2_communicator.stl");
 }
 
 module pcb_screws()
 {
-    move([1+12.5,0,8 + 1.6]) {
+    move([1+12.5 + 1.5,0,8 + 1.6]) {
         move([+(46/2)-20,+(90/2),0]) m3x6_screw();
         move([-(86/2),+(90/2),0]) m3x6_screw();
         move([+(46/2)-20,-(90/2),0]) m3x6_screw();

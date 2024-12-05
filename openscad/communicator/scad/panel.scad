@@ -43,7 +43,62 @@ module panel_mask_front(depth,width)
 
 module panel_back(depth,width) // back
 {
-    move([+(depth/2)-2,0,16]) cuboid([2,width-11,26], fillet=1, edges=EDGES_X_ALL);
+    move([+(depth/2)-2,0,16]) {
+        difference() {
+            // Panel
+            cuboid([2,width-11,26], fillet=1, edges=EDGES_X_ALL);
+
+            // Parallel port cut out
+            hull() {
+                move([0,-45.5,-0.5]) xcyl(h=10, d=6);
+                move([0,-12.25,-0.5]) xcyl(h=10, d=6);
+            }
+
+            move([0,-29,-0.5]) {
+                hull() {
+                    move([0,13,4]) xcyl(h=12, d=2);
+                    move([0,-13,4]) xcyl(h=12, d=2);
+
+                    move([0,11.75,-4]) xcyl(h=12, d=2);
+                    move([0,-11.75,-4]) xcyl(h=12, d=2);
+                }
+            }
+
+            // Serial port cut out
+            hull() {
+                move([0,45.5,-0.5]) xcyl(h=10, d=6);
+                move([0,21,-0.5]) xcyl(h=10, d=6);
+            }
+
+            move([0,33.5,-0.5]) {
+                hull() {
+                    move([0,9,4]) xcyl(h=12, d=2);
+                    move([0,-9,4]) xcyl(h=12, d=2);
+
+                    move([0,7.5,-4]) xcyl(h=12, d=2);
+                    move([0,-7.5,-4]) xcyl(h=12, d=2);
+                }
+            }
+            
+            // USB cut out
+            move([0,4.2,-4.25]) {
+                hull() {
+                    cuboid([10,8.25,2.5], fillet=1);
+                    move([0,0,-1]) cuboid([10,6.5,2.5], fillet=1);
+                }
+            }
+
+            move([5,4.2,-4.25]) {
+                hull() {
+                    move([0,0,2.5]) cuboid([10,8.25 + 6,2.5], chamfer=1, edges=EDGES_X_ALL+EDGES_LEFT);
+                    move([0,0,-1 -2.5]) cuboid([10,8.25 + 6,2.5], chamfer=1, edges=EDGES_X_ALL+EDGES_LEFT);
+                }
+            }
+        }
+
+
+        
+    }
 }
 
 module panel_mask_back(depth,width)
@@ -94,7 +149,7 @@ module render_panel_back(toPrint)
     if (!toPrint) {
         color([0.2,0.2,0.2]) panel_back(80,122);
     } else {
-        move([-16,0,39]) yrot(90) panel_back(80,122);
+        move([16,0,-37]) yrot(-90) panel_back(80,122);
     }
 }
 

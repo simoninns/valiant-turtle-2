@@ -520,7 +520,7 @@
       "plot": "gerbers/",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "vt2_communicator.step",
       "svg": "",
       "vrml": ""
     },
