@@ -31,22 +31,24 @@ from micropython import const, RingIO
 from mcp23017 import Mcp23017
 
 # Parallel port to MCP23017 GPIO mapping
-_PARALLEL_UN0 = const(0)
-_PARALLEL_UN1 = const(1)
-_PARALLEL_NACK = const(2)
-_PARALLEL_BUSY = const(3)
-_PARALLEL_NDATASTROBE = const(4)
-_PARALLEL_5 = const(5)
-_PARALLEL_6 = const(6)
-_PARALLEL_7 = const(7)
-_PARALLEL_DAT0 = const(8)
-_PARALLEL_DAT1 = const(9)
-_PARALLEL_DAT2 = const(10)
-_PARALLEL_DAT3 = const(11)
-_PARALLEL_DAT4 = const(12)
-_PARALLEL_DAT5 = const(13)
-_PARALLEL_DAT6 = const(14)
-_PARALLEL_DAT7 = const(15)
+_PARALLEL_DAT0 = const(0)
+_PARALLEL_DAT1 = const(1)
+_PARALLEL_DAT2 = const(2)
+_PARALLEL_DAT3 = const(3)
+_PARALLEL_DAT4 = const(4)
+_PARALLEL_DAT5 = const(5)
+_PARALLEL_DAT6 = const(6)
+_PARALLEL_DAT7 = const(7)
+
+_PARALLEL_UN0 = const(8)
+_PARALLEL_UN1 = const(9)
+_PARALLEL_NACK = const(10)
+_PARALLEL_BUSY = const(11)
+_PARALLEL_NDATASTROBE = const(12)
+
+_PARALLEL_5 = const(13)
+_PARALLEL_6 = const(14)
+_PARALLEL_7 = const(15)
 
 class ParallelPort:
     """

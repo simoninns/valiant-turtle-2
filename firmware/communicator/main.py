@@ -31,7 +31,6 @@ from machine import Pin, UART, I2C
 from leds import Leds
 from ir_uart import IrUart
 from parallel_port import ParallelPort
-from library.eeprom import Eeprom
 
 from vt1_mode import Vt1Mode
 from vt2_mode import Vt2Mode
@@ -76,9 +75,6 @@ def main():
     # Initialise LEDs
     leds = Leds([_GPIO_GREEN_LED, _GPIO_BLUE_LED])
 
-    # Initialise EEPROM
-    eeprom = Eeprom(i2c0, 0x50)
-
     # True = VT1 IR mode, False = VT2 bluetooth mode
     run_as_legacy = False
 
@@ -97,7 +93,7 @@ def main():
         uart = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
             #cts=Pin(_GPIO_UART1_CTS), rts=Pin(_GPIO_UART1_RTS), flow=(UART.RTS | UART.CTS),
             txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
-        vt2_mode = Vt2Mode(uart, parallel_port, leds, eeprom)
+        vt2_mode = Vt2Mode(uart, parallel_port, leds)
         while True:
             vt2_mode.process()
 

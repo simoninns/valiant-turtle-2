@@ -32,8 +32,6 @@ from machine import UART
 from leds import Leds
 from parallel_port import ParallelPort
 from ble_central import BleCentral
-from library.eeprom import Eeprom
-from configuration import Configuration
 from host_comms import HostComms
 
 import asyncio
@@ -50,7 +48,7 @@ class Vt2Mode:
         ble_central (Ble_central): BLE central interface.
     """
 
-    def __init__(self, uart: UART, parallel: ParallelPort, leds: Leds, eeprom: Eeprom):
+    def __init__(self, uart: UART, parallel: ParallelPort, leds: Leds):
         """
         Initialize the Vt2_mode class.
 
@@ -58,12 +56,10 @@ class Vt2Mode:
             uart (UART): The UART interface for communication.
             parallel (Parallel_port): The parallel port interface.
             leds (Leds): The LED control interface.
-            eeprom (Eeprom): The EEPROM interface for persistent storage.
         """
         self._uart = uart
         self._parallel = parallel
         self._leds = leds
-        self._eeprom = eeprom
 
         # Initialise BLE central
         self.ble_central = BleCentral()
@@ -74,14 +70,6 @@ class Vt2Mode:
         # Make the two communication objects aware of each other
         self.host_comms.ble_central = self.ble_central
         self.ble_central.host_comms = self.host_comms
-
-        # Initialise configuration 
-        self.configuration = Configuration()
-
-        # Read the configuration from EEPROM
-        if not self.configuration.unpack(self._eeprom.read(0, self.configuration.pack_size)):
-            # Current EEPROM image is invalid, write the default
-            self._eeprom.write(0, self.configuration.pack())
 
     # Async task to update status LEDs depending on various states and times
     async def status_led_task(self):
