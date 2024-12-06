@@ -8,6 +8,8 @@ echo "  panel_front.stl"
 openscad -o ./stl/panel_front.stl -D 'for_printing="Printing"' -D 'display_panel_front="Yes"' ./scad/main.scad
 echo "  panel_back.stl"
 openscad -o ./stl/panel_back.stl -D 'for_printing="Printing"' -D 'display_panel_back="Yes"' ./scad/main.scad
+echo "  panel_back_text.stl"
+openscad -o ./stl/panel_back_text.stl -D 'for_printing="Printing"' -D 'display_panel_back_text="Yes"' ./scad/main.scad
 echo "  panel_left.stl"
 openscad -o ./stl/panel_left.stl -D 'for_printing="Printing"' -D 'display_panel_left="Yes"' ./scad/main.scad
 echo "  panel_right.stl"

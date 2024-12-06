@@ -28,7 +28,7 @@ use <BOSL/shapes.scad>
 
 include <ircover.scad>
 
-module panel_front(depth,width) // front
+module panel_front(depth,width)
 {
     difference() {
         move([-(depth/2) + 2,0,16]) cuboid([2,width-11,26], fillet=1, edges=EDGES_X_ALL);
@@ -38,10 +38,10 @@ module panel_front(depth,width) // front
 
 module panel_mask_front(depth,width)
 {
-    move([-(depth/2)+2,0,16]) cuboid([2.25,width-11.25,26]); // Left
+    move([-(depth/2)+2,0,16]) cuboid([2.25,width-11.25,26]);
 }
 
-module panel_back(depth,width) // back
+module panel_back(depth,width)
 {
     move([+(depth/2)-2,0,16]) {
         difference() {
@@ -80,14 +80,15 @@ module panel_back(depth,width) // back
                 }
             }
             
-            // USB cut out
-            move([0,4.2,-4.25]) {
+            // USB port cut out
+            move([0,4.2,-4]) {
                 hull() {
-                    cuboid([10,8.25,2.5], fillet=1);
-                    move([0,0,-1]) cuboid([10,6.5,2.5], fillet=1);
+                    cuboid([10,8.5,2.5], fillet=1);
+                    move([0,0,-1.5]) cuboid([10,7,2.5], fillet=1);
                 }
             }
 
+            // USB port recess
             move([5,4.2,-4.25]) {
                 hull() {
                     move([0,0,2.5]) cuboid([10,8.25 + 6,2.5], chamfer=1, edges=EDGES_X_ALL+EDGES_LEFT);
@@ -95,18 +96,36 @@ module panel_back(depth,width) // back
                 }
             }
         }
-
-
-        
     }
 }
 
 module panel_mask_back(depth,width)
 {
-    move([+(depth/2)-2,0,16]) cuboid([2.25,width - 11.25,26]); // Right
+    move([+(depth/2)-2,0,16]) cuboid([2.25,width - 11.25,26]);
 }
 
-module panel_left(depth,width) // left
+module panel_back_text(depth,width)
+{
+    move([+(depth/2)-1.6 + 0.6,-2.25,21.5]) {
+        zrot(90) xrot(90) linear_extrude(0.8) {
+            text("USB", size=4.5, font="Arial:style=Bold", $fn=100);
+        }
+    }
+
+    move([+(depth/2)-1.6 + 0.6,-45,21.5]) {
+        zrot(90) xrot(90) linear_extrude(0.8) {
+            text("PARALLEL", size=4.5, font="Arial:style=Bold", $fn=100);
+        }
+    }
+
+    move([+(depth/2)-1.6 + 0.6,22,21.5]) {
+        zrot(90) xrot(90) linear_extrude(0.8) {
+            text("SERIAL", size=4.5, font="Arial:style=Bold", $fn=100);
+        }
+    }
+}
+
+module panel_left(depth,width)
 {
     move([0,(width/2)-2,16]) cuboid([depth-11,2,26], fillet=1, edges=EDGES_Y_ALL);
 }
@@ -116,7 +135,7 @@ module panel_mask_left(depth,width)
     move([0,(width/2)-2,16]) cuboid([depth-11,2.25,26]);
 }
 
-module panel_right(depth,width) // right
+module panel_right(depth,width)
 {
     move([0,-(width/2)+2,16]) cuboid([depth-11,2,26], fillet=1, edges=EDGES_Y_ALL);
 }
@@ -150,6 +169,15 @@ module render_panel_back(toPrint)
         color([0.2,0.2,0.2]) panel_back(80,122);
     } else {
         move([16,0,-37]) yrot(-90) panel_back(80,122);
+    }
+}
+
+module render_panel_back_text(toPrint)
+{
+    if (!toPrint) {
+        color([0.9,0.9,0.9]) panel_back_text(80,122);
+    } else {
+        move([16,0,-37]) yrot(-90) panel_back_text(80,122);
     }
 }
 
