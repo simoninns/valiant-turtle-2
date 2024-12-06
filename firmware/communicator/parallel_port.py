@@ -132,7 +132,7 @@ class ParallelPort:
     # MCP23017 INTB pin callback
     def __callback(self, p):
         # Get the databus value
-        rx_data = self.mcp.mgpio_get_all() >> 8
+        rx_data = self.mcp.mgpio_get_all() & 0xFF
         self.rx_rio.write(rx_data.to_bytes(1, 'big'))
         if self._auto_ack: self.ack()
         

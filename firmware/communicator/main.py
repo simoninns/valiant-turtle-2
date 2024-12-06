@@ -35,6 +35,8 @@ from parallel_port import ParallelPort
 from vt1_mode import Vt1Mode
 from vt2_mode import Vt2Mode
 
+from options import Options
+
 # GPIO Hardware mapping
 _GPIO_GREEN_LED = const(16)
 _GPIO_BLUE_LED = const(18)
@@ -58,12 +60,19 @@ _GPIO_BUTTON0 = const(21)
 _GPIO_BUTTON1 = const(20)
 _GPIO_BUTTON2 = const(19)
 
+_GPIO_OPTION0 = const(26)
+_GPIO_OPTION1 = const(27)
+_GPIO_OPTION2 = const(28)
+
 def main():
     """
     Main entry point for the Valiant Turtle 2 Communicator firmware.
     """
     # Configure the logging module
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+    # Configure the options
+    options = Options(_GPIO_OPTION0, _GPIO_OPTION1, _GPIO_OPTION2)
 
     i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000) # Internal I2C bus
     parallel_port = ParallelPort(i2c0, _GPIO_INT0)
@@ -76,7 +85,7 @@ def main():
     leds = Leds([_GPIO_GREEN_LED, _GPIO_BLUE_LED])
 
     # True = VT1 IR mode, False = VT2 bluetooth mode
-    run_as_legacy = False
+    run_as_legacy = options.option0
 
     # Which mode are we running in?
     if run_as_legacy:
