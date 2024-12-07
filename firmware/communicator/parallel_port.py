@@ -121,6 +121,9 @@ class ParallelPort:
             self.mcp.interrupt_enable(_PARALLEL_NDATASTROBE, True) # Enable interrupt
             self.mcp.interrupt_get_values() # Read INTCAP to clear any pending IRQs
 
+            # Show the MCP23017 registers
+            self.mcp.show_registers()
+
             # Configure Interrupt detection GPIO on RP2040
             self.interrupt_pin = Pin(interrupt_pin, Pin.IN, Pin.PULL_UP)
             self.interrupt_pin.irq(handler=self.__callback, trigger=self.interrupt_pin.IRQ_FALLING)

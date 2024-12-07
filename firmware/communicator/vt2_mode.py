@@ -127,7 +127,7 @@ class Vt2Mode:
 
     # Method to kick-off async process
     def process(self):
-        logging.info("Vt2Mode::process - Launching asynchronous tasks...")
+        logging.info("Vt2Mode::process - Running VT2 mode asynchronous tasks")
         asyncio.run(self.aio_process())
 
 if __name__ == "__main__":

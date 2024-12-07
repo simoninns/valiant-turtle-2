@@ -102,10 +102,8 @@ class BleCentral:
                 # See if it matches our name
                 if result.name() == self.peripheral_advertising_name:
                     logging.debug(f"BleCentral::scan_for_peripheral - Found peripheral with matching advertising name of {self.peripheral_advertising_name}")
-                    for item in result.services():
-                        logging.debug("BleCentral::scan_for_peripheral - Got advertised UUID:", item)
                     if self.peripheral_advertising_uuid in result.services():
-                        logging.debug("BleCentral::scan_for_peripheral - Peripheral advertises required UUID")
+                        logging.debug("BleCentral::scan_for_peripheral - Peripheral advertises expected BLE UUID")
                         return result.device
 
         return None
@@ -167,7 +165,7 @@ class BleCentral:
                     command = self._command_queue.pop(0)
                     if not isinstance(command, RobotCommand):
                         raise TypeError("Expected command to be of type RobotCommand")
-                    logging.debug(f"BleCentral::handle_command_service_task - Sending {command}")
+                    logging.info(f"BleCentral::handle_command_service_task - Sending {command}")
                     await self.rx_c2p_characteristic.write(command.get_packed_bytes())
                 else:
                     # No commands queued, send a nop command
