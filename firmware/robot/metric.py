@@ -48,11 +48,11 @@ class Metric:
         Converts an angle in degrees to the equivalent number of steps for the robot to turn on its axis.
     """
 
-    def __init__(self, wheel_diameter_mm = 54.0, axel_distance_mm = 230.0, steps_per_revolution = 800):
+    def __init__(self, wheel_diameter_mm = 55.53, axel_distance_mm = 230.0, steps_per_revolution = 800):
         """
         Initialize the Metric class with given parameters.
         Args:
-            wheel_diameter_mm (float): Diameter of the wheel in millimeters. Default is 54.0 mm.
+            wheel_diameter_mm (float): Diameter of the wheel in millimeters. Default is 55.53 mm.
             axel_distance_mm (float): Distance between the axles in millimeters. Default is 230.0 mm.
             steps_per_revolution (int): Number of steps per revolution of the wheel. Default is 800.
         """
@@ -62,23 +62,23 @@ class Metric:
         self._steps_per_revolution = steps_per_revolution
         self._pi = 3.14159
 
-        # Calibration values
+        # Calibration values (in micrometers / 1000th of a mm)
         self._wheel_calibration = 0
         self._axel_calibration = 0
 
     def get_wheel_calibration(self):
-        return self._wheel_calibration * 10 # Convert to tmm
+        return self._wheel_calibration * 1000 # Convert to um
     
     def set_wheel_calibration(self, value: float):
-        self._wheel_calibration = value / 10 # Convert to mm
-        logging.debug(f"Metric::set_wheel_calibration: Wheel diameter calibration set to {value} tmm (total wheel diameter: {self._wheel_diameter_mm + self._wheel_calibration} mm)")
+        self._wheel_calibration = value / 1000 # Convert to mm
+        logging.debug(f"Metric::set_wheel_calibration: Wheel diameter calibration set to {value} um (total wheel diameter: {self._wheel_diameter_mm + self._wheel_calibration} mm)")
 
     def get_axel_calibration(self) -> float:
-        return self._axel_calibration * 10 # Convert to tmm
+        return self._axel_calibration * 1000 # Convert to um
     
     def set_axel_calibration(self, value: float):
-        self._axel_calibration = value / 10 # Convert to mm
-        logging.debug(f"Metric::set_wheel_calibration: Axel distance calibration set to {value} tmm (total axel distance: {self._axel_distance_mm + self._axel_calibration} mm)")
+        self._axel_calibration = value / 1000 # Convert to mm
+        logging.debug(f"Metric::set_wheel_calibration: Axel distance calibration set to {value} um (total axel distance: {self._axel_distance_mm + self._axel_calibration} mm)")
 
     # Convert millimeters to steps
     def mm_to_steps(self, millimeters: float) -> int:

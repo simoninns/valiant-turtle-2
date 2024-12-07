@@ -76,11 +76,15 @@ module wheel_hub_decoration()
     }
 }
 
-// Tires consist of 2 o-rings
+// Tires are made from rubber O-rings
 module tire()
 {
     // O-ring Tire - R31 - AS 568 225 - ID=47.22, OD=54.28, section=3.53
-    move([8.5,0,0]) yrot(90) torus(id=47.22, od=54.28);
+
+    // Since the o-ring is rubber it will stretch to fit the wheel's outer diameter
+    // The o-ring is 3.53mm thick and the wheels outer diameter is 52mm so the 
+    // actual outer diameter of the o-ring will be 52mm * 3.53mm = 55.53mm
+    move([8.5,0,0]) yrot(90) torus(d=52, d2=3.53);
 }
 
 module wheel()

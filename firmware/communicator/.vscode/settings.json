@@ -11,5 +11,6 @@
     ],
     "python.analysis.extraPaths": [
         "~/.micropico-stubs/included"
-    ]
+    ],
+    "micropico.manualComDevice": ""
 }
