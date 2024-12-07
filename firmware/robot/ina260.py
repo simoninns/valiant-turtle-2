@@ -71,7 +71,7 @@ class Ina260:
             if devices[idx] == self.address: self._is_present = True
 
         if self._is_present:
-            logging.info(f"Ina260::__init__ - INA260 detected at address {hex(self.address)}")
+            logging.info(f"Ina260::__init__ - INA260 detected at I2C address {hex(self.address)}")
         else:
             logging.info("Ina260::__init__ - INA260 is not present... Cannot initialise!")
 

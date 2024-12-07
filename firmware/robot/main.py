@@ -30,11 +30,9 @@ from pen import Pen
 from ina260 import Ina260
 from library.eeprom import Eeprom
 from configuration import Configuration
-from drv8825 import Drv8825
-from stepper import Stepper
-from metric import Metric
 from ble_peripheral import BlePeripheral
 from led_fx import LedFx
+from diffdrive import DiffDrive
 from machine import I2C, Pin
 import asyncio
 
@@ -96,85 +94,77 @@ def main():
             # Process the command
             if ble_peripheral.command_queue:
                 robot_command = ble_peripheral.command_queue.pop()
-                logging.debug(f"Main::robot_control_task - processing {robot_command}")
+                logging.info(f"Main::robot_control_task - processing {robot_command}")
 
-                # Motor power on
-                if robot_command.command == "motors-on":
-                    drv8825.set_enable(True)
+                # Motor power control
+                if robot_command.command == "motors":
+                    if robot_command.parameters[0] == 1:
+                        diff_drive.set_enable(True)
+                    else:
+                        diff_drive.set_enable(False)
 
-                # Motor power off
-                if robot_command.command == "motors-off":
-                    drv8825.set_enable(False)
-
-                # Forwards
+                # Forward
                 if robot_command.command == "forward":
-                    left_stepper.set_direction_forwards()
-                    right_stepper.set_direction_forwards()
-                    left_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
-                    right_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
+                    diff_drive.drive_forward(robot_command.parameters[0])
 
-                    # Wait for the stepper to finish
-                    while left_stepper.is_busy or right_stepper.is_busy:
+                    # Wait for the drive to finish
+                    while diff_drive.is_moving:
                         await asyncio.sleep_ms(250)
 
-                # Backwards
+                # Backward
                 if robot_command.command == "backward":
-                    left_stepper.set_direction_backwards()
-                    right_stepper.set_direction_backwards()
-                    left_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
-                    right_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
+                    diff_drive.drive_backward(robot_command.parameters[0])
 
-                    # Wait for the stepper to finish
-                    while left_stepper.is_busy or right_stepper.is_busy:
+                    # Wait for the drive to finish
+                    while diff_drive.is_moving:
                         await asyncio.sleep_ms(250)
 
                 # Left
                 if robot_command.command == "left":
-                    left_stepper.set_direction_forwards()
-                    right_stepper.set_direction_backwards()
-                    left_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
-                    right_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
+                    diff_drive.turn_left(robot_command.parameters[0])
 
-                    # Wait for the stepper to finish
-                    while left_stepper.is_busy or right_stepper.is_busy:
+                    # Wait for the drive to finish
+                    while diff_drive.is_moving:
                         await asyncio.sleep_ms(250)
 
                 # Right
                 if robot_command.command == "right":
-                    left_stepper.set_direction_backwards()
-                    right_stepper.set_direction_forwards()
-                    left_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
-                    right_stepper.move(metric.degrees_to_steps(robot_command.parameters[0]))
+                    diff_drive.turn_right(robot_command.parameters[0])
 
-                    # Wait for the stepper to finish
-                    while left_stepper.is_busy or right_stepper.is_busy:
+                    # Wait for the drive to finish
+                    while diff_drive.is_moving:
                         await asyncio.sleep_ms(250)
 
-                # Velocity
-                if robot_command.command == "velocity":
-                    left_stepper.set_target_speed_sps(metric.mm_to_steps(robot_command.parameters[0]))
-                    left_stepper.set_acceleration_spsps(metric.mm_to_steps(robot_command.parameters[1]))
-                    right_stepper.set_target_speed_sps(metric.mm_to_steps(robot_command.parameters[0]))
-                    right_stepper.set_acceleration_spsps(metric.mm_to_steps(robot_command.parameters[1]))
-                    logging.debug(f"Main::robot_control_task - Setting target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
-                    pass
+                # Linear Velocity
+                if robot_command.command == "linear-v":
+                    diff_drive.set_linear_velocity(robot_command.parameters[0], robot_command.parameters[1])
+                    logging.debug(f"Main::robot_control_task - Setting linear target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
                 
-                # Pen up
-                if robot_command.command == "penup":
-                    pen.up()
+                # Rotational Velocity
+                if robot_command.command == "rotation-v":
+                    diff_drive.set_rotational_velocity(robot_command.parameters[0], robot_command.parameters[1])
+                    logging.debug(f"Main::robot_control_task - Setting rotational target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
 
-                # Pen down
-                if robot_command.command == "pendown":
-                    pen.down()
+                # Pen control
+                if robot_command.command == "pen":
+                    if robot_command.parameters[0] == 1:
+                        pen.up()
+                    else:
+                        pen.down()
 
-                # Left eye colour
-                if robot_command.command == "left-eye":
-                    led_fx.set_led_colour(_LED_left_eye, robot_command.parameters[0], robot_command.parameters[1], robot_command.parameters[2])
-
-                # Right eye colour
-                if robot_command.command == "right-eye":
-                    led_fx.set_led_colour(_LED_right_eye, robot_command.parameters[0], robot_command.parameters[1], robot_command.parameters[2])
-
+                # Eye colour
+                if robot_command.command == "eyes":
+                    if robot_command.parameters[0] == 0:
+                        # Both eyes
+                        led_fx.set_led_colour(_LED_left_eye, robot_command.parameters[1], robot_command.parameters[2], robot_command.parameters[3])
+                        led_fx.set_led_colour(_LED_right_eye, robot_command.parameters[1], robot_command.parameters[2], robot_command.parameters[3])
+                    elif robot_command.parameters[0] == 1:
+                        # Left eye
+                        led_fx.set_led_colour(_LED_left_eye, robot_command.parameters[1], robot_command.parameters[2], robot_command.parameters[3])
+                    else:
+                        # Right eye
+                        led_fx.set_led_colour(_LED_right_eye, robot_command.parameters[1], robot_command.parameters[2], robot_command.parameters[3])
+           
                 # Get power monitor voltage
                 if robot_command.command == "get-mv":
                     command_response = int(ina260.voltage_mV)
@@ -210,23 +200,31 @@ def main():
         """
         loop = 0
         while True:
-            if not drv8825.is_enabled:
+            # Show the differential drive status
+            if not diff_drive.is_enabled:
                 led_fx.set_led_colour(_LED_left_motor, 0, 0, 0)
                 led_fx.set_led_colour(_LED_right_motor, 0, 0, 0)
             else:
-                # Update the stepper motor status LEDs
-                if left_stepper.is_busy:
-                    if left_stepper.is_forwards: led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
-                    else: led_fx.set_led_colour(_LED_left_motor, 64, 0, 0)
-                else:
+                left_status, right_status = diff_drive.get_motor_status()
+                if left_status == 0:
+                    # Motor is idle
                     led_fx.set_led_colour(_LED_left_motor, 20, 20, 0)
-
-                if right_stepper.is_busy:
-                    # Green = forwards, red = backwards, grey = not in motion
-                    if right_stepper.is_forwards: led_fx.set_led_colour(_LED_right_motor, 0, 64, 0)
-                    else: led_fx.set_led_colour(_LED_right_motor, 64, 0, 0)
+                elif left_status == 1:
+                    # Motor is moving forwards
+                    led_fx.set_led_colour(_LED_left_motor, 0, 64, 0)
                 else:
+                    # Motor is moving backwards
+                    led_fx.set_led_colour(_LED_left_motor, 64, 0, 0)
+
+                if right_status == 0:
+                    # Motor is idle
                     led_fx.set_led_colour(_LED_right_motor, 20, 20, 0)
+                elif right_status == 1:
+                    # Motor is moving forwards
+                    led_fx.set_led_colour(_LED_right_motor, 0, 64, 0)
+                else:
+                    # Motor is moving backwards
+                    led_fx.set_led_colour(_LED_right_motor, 64, 0, 0)
 
             # Update the BLE status
             if ble_peripheral.is_central_connected:
@@ -281,41 +279,11 @@ def main():
     # Initialise BLE peripheral
     ble_peripheral = BlePeripheral()
 
-    # Create a metric object for unit conversion with default calibration values
-    metric = Metric()
-
-    # Configure the DRV8825 control GPIOs
-    drv8825_enable_pin = Pin(_GPIO_ENABLE, Pin.OUT)
-    drv8825_m0_pin = Pin(_GPIO_M0, Pin.OUT)
-    drv8825_m1_pin = Pin(_GPIO_M1, Pin.OUT)
-    drv8825_m2_pin = Pin(_GPIO_M2, Pin.OUT)
-
-    # Create the DRV8825 instance (The DRV8825 driver is shared between the two stepper motors
-    # as the enable line and microstepping mode pins are shared)
-    drv8825 = Drv8825(drv8825_enable_pin, drv8825_m0_pin, drv8825_m1_pin, drv8825_m2_pin)
-    drv8825.set_steps_per_revolution(800)
-    drv8825.set_enable(False)
-
-    # Configure the stepper control GPIOs
-    left_step_pin = Pin(_GPIO_LM_STEP, Pin.OUT)
-    left_direction_pin = Pin(_GPIO_LM_DIR, Pin.OUT)
-    right_step_pin = Pin(_GPIO_RM_STEP, Pin.OUT)
-    right_direction_pin = Pin(_GPIO_RM_DIR, Pin.OUT)
-
-    # Create the left and right stepper motor instances
-    left_stepper = Stepper(drv8825, left_step_pin, left_direction_pin, True)
-    right_stepper = Stepper(drv8825, right_step_pin, right_direction_pin, False)
-    left_stepper.set_direction_forwards()
-    right_stepper.set_direction_forwards()
-    
-    # Set the default speed and acceleration for the left and right stepper motors
-    left_stepper.set_target_speed_sps(metric.mm_to_steps(200))
-    left_stepper.set_acceleration_spsps(metric.mm_to_steps(4))
-    right_stepper.set_target_speed_sps(metric.mm_to_steps(200))
-    right_stepper.set_acceleration_spsps(metric.mm_to_steps(4))
-
     # Configure the LEDs
     led_fx = LedFx(5, _GPIO_LEDS)
+
+    # Initialise the differential drive motor control
+    diff_drive = DiffDrive(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2, _GPIO_LM_STEP, _GPIO_LM_DIR, _GPIO_RM_STEP, _GPIO_RM_DIR)
 
     logging.info("main - Launching asynchronous tasks...")
     # Run the main asynchronous I/O tasks

@@ -122,28 +122,26 @@ class RobotCommand:
     """
 
     # Command parameters: name (unique ID, number of parameters)
-    # Note: The maximum number of parameters supported is 3
-    # NOte: All numeric items are 16-bit unsigned integers
+    # Note: The maximum number of parameters supported is 4
+    # NOte: All parameters are 16-bit unsigned integers
     _command_dictionary = {
         # Dictionary of commands:
         # Command: "name" (unique ID, number of parameters, (param1_min, ...), (param1_max, ...), (param1_desc, ...), "help_text")
-        "nop":        ( 0, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "No operation"),
-        "motors-on":  ( 1, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Motors on"),
-        "motors-off": ( 2, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Motors off"),
-        "forward":    ( 3, 1, (0, 0, 0), (32767, 0, 0), ("Distance (mm)", "", ""), "Move forward"),
-        "backward":   ( 4, 1, (0, 0, 0), (32767, 0, 0), ("Distance (mm)", "", ""), "Move backward"),
-        "left":       ( 5, 1, (0, 0, 0), (32767, 0, 0), ("Degrees", "", ""), "Turn left"),
-        "right":      ( 6, 1, (0, 0, 0), (32767, 0, 0), ("Degrees", "", ""), "Turn right"),
-        "velocity":   ( 7, 2, (1, 1, 0), (32767, 32767, 0), ("Max mm/s", "Acceleration in mm/s^2", ""), "Set the stepper velocity"),
-        "penup":      ( 8, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lift the pen up"),
-        "pendown":    ( 9, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Lower the pen down"),
-        "left-eye":   (10, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the left eye"),
-        "right-eye":  (11, 3, (0, 0, 0), (255, 255, 255), ("Red", "Green", "Blue"), "Set the colour of the right eye"),
-        "get-mv":     (12, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the voltage (mV)"),
-        # 13 is reserved since it's used for <CR> in the shell
-        "get-ma":     (14, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the current (mA)"),
-        "get-mw":     (15, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the power (mW)"),
-        "get-pen":    (16, 0, (0, 0, 0), (0, 0, 0), ("" , "", ""), "Get the pen position (0=down, 1=up)"),
+        # Note: We start at 65 to avoid the ASCII control characters when using a terminal (65 = "A")
+        "nop":        ( 0, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "No operation"),
+        "motors":     (65, 1, (0, 0, 0, 0), (1, 0, 0, 0), ("State" , "", "", ""), "Motors (0=off, 1=powered)"),
+        "forward":    (66, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move forward"),
+        "backward":   (67, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move backward"),
+        "left":       (68, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Degrees", "", "", ""), "Turn left"),
+        "right":      (69, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Degrees", "", "", ""), "Turn right"),
+        "linear-v":   (70, 2, (1, 1, 0, 0), (32767, 32767, 0, 0), ("Max mm/s", "Acceleration in mm/s^2", "", ""), "Set the linear velocity"),
+        "rotation-v": (71, 2, (1, 1, 0, 0), (32767, 32767, 0, 0), ("Max mm/s", "Acceleration in mm/s^2", "", ""), "Set the rotational velocity"),
+        "pen":        (72, 1, (0, 0, 0, 0), (1, 0, 0, 0), ("Position" , "", "", ""), "Lift the pen up (0 = down, 1 = up)"),
+        "eyes":       (73, 4, (0, 0, 0, 0), (2, 255, 255, 255), ("Eye ID", "Red", "Green", "Blue"), "Set eye colour (0=both, 1=left, 2=right)"),
+        "get-mv":     (74, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the voltage (mV)"),
+        "get-ma":     (75, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the current (mA)"),
+        "get-mw":     (76, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the power (mW)"),
+        "get-pen":    (77, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the pen position (0=down, 1=up)"),
     }
 
     # Class variable to store the command UID
@@ -155,11 +153,11 @@ class RobotCommand:
         
         Args:
             command (str): The command name.
-            parameters (list): A list of parameters for the command (must be a maximum of 3 x 16-bit unsigned integers).
+            parameters (list): A list of parameters for the command (must be a maximum of 4 x 16-bit unsigned integers).
             command_uid (int): The command UID (unique identifier).
         
         Raises:
-            ValueError: If the command is not recognized or any parameter is not a 32-bit integer.
+            ValueError: If the command is not recognized or any parameter is not a 16-bit integer.
         """
         if command not in self._command_dictionary:
             raise ValueError(f"Command '{command}' is not recognized")
@@ -181,7 +179,7 @@ class RobotCommand:
         self._parameter_minimums = self._command_dictionary[command][2]
         self._parameter_maximums = self._command_dictionary[command][3]
 
-        # Ensure all parameters are 32-bit integers
+        # Ensure all parameters are 16-bit integers
         for param in self._parameters:
             if not (0 <= param < 2**16):
                 raise ValueError(f"Parameter {param} is not an unsigned 16-bit integer")
@@ -226,7 +224,7 @@ class RobotCommand:
         Returns:
             bytes: The packed byte array.
         """
-        packed_data = struct.pack('<HH3H', self._command_id, self._command_uid, *self._parameters)
+        packed_data = struct.pack('<HH4H', self._command_id, self._command_uid, *self._parameters)
         return packed_data
 
     def get_packed_bytes(self) -> bytes:
@@ -252,10 +250,10 @@ class RobotCommand:
         Raises:
             ValueError: If the byte array is not the correct length.
         """
-        if len(byte_array) != 10:  # 2 bytes for command ID + 3 * 2 bytes for parameters + 2 bytes for command UID
+        if len(byte_array) != 12:  # 2 bytes for command ID + 4 * 2 bytes for parameters + 2 bytes for command UID
             raise ValueError("Byte array length is incorrect")
         
-        command_id, command_uid, param1, param2, param3 = struct.unpack('<HH3H', byte_array)
+        command_id, command_uid, param1, param2, param3, param4 = struct.unpack('<HH4H', byte_array)
         
         command = cls.id_to_command(command_id)
         num_params = cls._command_dictionary[command][1]
@@ -266,8 +264,10 @@ class RobotCommand:
             return cls(command, [param1], command_uid)
         elif num_params == 2:
             return cls(command, [param1, param2], command_uid)
+        elif num_params == 3:
+            return cls(command, [param1, param2, param3], command_uid)
         
-        return cls(command, [param1, param2, param3], command_uid)
+        return cls(command, [param1, param2, param3, param4], command_uid)
             
     @classmethod
     def byte_length(cls):
@@ -277,7 +277,7 @@ class RobotCommand:
         Returns:
             int: The length of the packed byte array.
         """
-        return 10 # Note: BLE has a maximum packet size of 20 bytes
+        return 12 # Note: BLE has a maximum packet size of 20 bytes
     
     @classmethod
     def id_to_command(cls, command_id: int) -> str:
@@ -329,12 +329,12 @@ class RobotCommand:
             tuple: A tuple containing the minimum and maximum values for the parameter.
         
         Raises:
-            ValueError: If the command is not recognized or the parameter number is not between 0 and 2.
+            ValueError: If the command is not recognized or the parameter number is not between 0 and 3.
         """
         if command not in cls._command_dictionary:
             raise ValueError(f"Command '{command}' is not recognized")
-        if not (0 <= param_num <= 2):
-            raise ValueError("Parameter number must be between 0 and 2")
+        if not (0 <= param_num <= 3):
+            raise ValueError("Parameter number must be between 0 and 3")
         return cls._command_dictionary[command][2][param_num], cls._command_dictionary[command][3][param_num]
 
     @classmethod

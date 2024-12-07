@@ -72,7 +72,7 @@ class Eeprom:
             if devices[idx] == self.i2c_address: self._is_present = True
 
         if self._is_present:
-            logging.info(f"Eeprom::__init__ - 24LC16 EEPROM detected at address {hex(self.i2c_address)}")
+            logging.info(f"Eeprom::__init__ - 24LC16 EEPROM detected at I2C address {hex(self.i2c_address)}")
         else:
             logging.info("Eeprom::__init__ - 24LC16 EEPROM is not present... Cannot initialise!")
 

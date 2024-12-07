@@ -152,8 +152,9 @@ class HostComms:
                 # Interactive shell mode (for human interaction)
                 command, parameters = await self._interactive_shell.get_command()
 
-                if command:
+                if command and command != "nop":
                     send_command_result = await self.send_command(command, parameters)
+                    
                     if send_command_result.error_code == CommandResult.result_ok or send_command_result.error_code == CommandResult.result_nop:
                         # Just OK or NOP, so don't display any description
                         await self._interactive_shell.send_response(send_command_result.error_name, send_command_result.response)
@@ -242,7 +243,7 @@ class HostComms:
                 try:
                     parameters[n] = int(parameters[n])
                 except ValueError:
-                    return CommandResult(CommandResult.result_invalid, f"Invalid parameter - {parameters[n]} must be an integer"),
+                    return CommandResult(CommandResult.result_invalid, f"Invalid parameter - {parameters[n]} must be an integer")
             
             # Range check the required parameters
             for n in range(len(parameters)):
