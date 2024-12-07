@@ -25,6 +25,8 @@
 #
 #************************************************************************
 
+import library.logging as logging
+
 class Metric:
     """
     A class to represent the metric measurements and conversions for the robot's movement.
@@ -60,6 +62,24 @@ class Metric:
         self._steps_per_revolution = steps_per_revolution
         self._pi = 3.14159
 
+        # Calibration values
+        self._wheel_calibration = 0
+        self._axel_calibration = 0
+
+    def get_wheel_calibration(self):
+        return self._wheel_calibration * 10 # Convert to tmm
+    
+    def set_wheel_calibration(self, value: float):
+        self._wheel_calibration = value / 10 # Convert to mm
+        logging.debug(f"Metric::set_wheel_calibration: Wheel diameter calibration set to {value} tmm (total wheel diameter: {self._wheel_diameter_mm + self._wheel_calibration} mm)")
+
+    def get_axel_calibration(self) -> float:
+        return self._axel_calibration * 10 # Convert to tmm
+    
+    def set_axel_calibration(self, value: float):
+        self._axel_calibration = value / 10 # Convert to mm
+        logging.debug(f"Metric::set_wheel_calibration: Axel distance calibration set to {value} tmm (total axel distance: {self._axel_distance_mm + self._axel_calibration} mm)")
+
     # Convert millimeters to steps
     def mm_to_steps(self, millimeters: float) -> int:
         """
@@ -72,7 +92,7 @@ class Metric:
             int: The number of motor steps corresponding to the given distance in millimeters.
         """
 
-        circumference = (2.0 * self._pi) * (self._wheel_diameter_mm / 2.0) # C = 2pi x r 
+        circumference = (2.0 * self._pi) * ((self._wheel_diameter_mm + self._wheel_calibration) / 2.0) # C = 2pi x r 
         millimeters_per_step = (circumference / self._steps_per_revolution)
         return int(millimeters / millimeters_per_step)
     
@@ -87,7 +107,7 @@ class Metric:
             float: The distance in millimeters covered by the given number of motor steps.
         """
 
-        circumference = (2.0 * self._pi) * (self._wheel_diameter_mm / 2.0)
+        circumference = (2.0 * self._pi) * ((self._wheel_diameter_mm + self._wheel_calibration) / 2.0)
         millimeters_per_step = (circumference / self._steps_per_revolution)
         return steps * millimeters_per_step
 
@@ -102,7 +122,7 @@ class Metric:
             int: The equivalent number of motor steps.
         """
 
-        circumference = (2.0 * self._pi) * (self._axel_distance_mm / 2.0)
+        circumference = (2.0 * self._pi) * ((self._axel_distance_mm + self._axel_calibration) / 2.0)
         millimeters = (circumference / 360.0) * degrees
         return self.mm_to_steps(millimeters)
     
@@ -117,7 +137,7 @@ class Metric:
             float: The equivalent number of degrees of rotation.
         """
 
-        circumference = (2.0 * self._pi) * (self._axel_distance_mm / 2.0)
+        circumference = (2.0 * self._pi) * ((self._axel_distance_mm + self._axel_calibration) / 2.0)
         millimeters = self.steps_to_mm(steps)
         return (millimeters / circumference) * 360.0
     

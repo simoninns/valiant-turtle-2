@@ -123,7 +123,7 @@ class RobotCommand:
 
     # Command parameters: name (unique ID, number of parameters)
     # Note: The maximum number of parameters supported is 4
-    # NOte: All parameters are 16-bit unsigned integers
+    # NOte: All parameters are 16-bit signed integers
     _command_dictionary = {
         # Dictionary of commands:
         # Command: "name" (unique ID, number of parameters, (param1_min, ...), (param1_max, ...), (param1_desc, ...), "help_text")
@@ -142,6 +142,8 @@ class RobotCommand:
         "get-ma":     (75, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the current (mA)"),
         "get-mw":     (76, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the power (mW)"),
         "get-pen":    (77, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the pen position (0=down, 1=up)"),
+        "cali-wheel": (78, 1, (-60, 0, 0, 0), (60, 0, 0, 0), ("tmm" , "", "", ""), "Wheel diameter calibration (-60 to 60 tenths of a mm)"),
+        "cali-axel":  (79, 1, (-60, 0, 0, 0), (60, 0, 0, 0), ("tmm" , "", "", ""), "Axel distance calibration (-60 to 60 tenths of a mm)"),
     }
 
     # Class variable to store the command UID
@@ -153,7 +155,7 @@ class RobotCommand:
         
         Args:
             command (str): The command name.
-            parameters (list): A list of parameters for the command (must be a maximum of 4 x 16-bit unsigned integers).
+            parameters (list): A list of parameters for the command (must be a maximum of 4 x 16-bit signed integers).
             command_uid (int): The command UID (unique identifier).
         
         Raises:
@@ -181,8 +183,8 @@ class RobotCommand:
 
         # Ensure all parameters are 16-bit integers
         for param in self._parameters:
-            if not (0 <= param < 2**16):
-                raise ValueError(f"Parameter {param} is not an unsigned 16-bit integer")
+            if not (-32767 <= param < 32768):
+                raise ValueError(f"Parameter {param} is not a signed 16-bit integer")
 
         # Range check the parameters according to the dictionary
         for i in range(self._num_parameters):
@@ -224,7 +226,7 @@ class RobotCommand:
         Returns:
             bytes: The packed byte array.
         """
-        packed_data = struct.pack('<HH4H', self._command_id, self._command_uid, *self._parameters)
+        packed_data = struct.pack('<hh4h', self._command_id, self._command_uid, *self._parameters)
         return packed_data
 
     def get_packed_bytes(self) -> bytes:
@@ -253,7 +255,7 @@ class RobotCommand:
         if len(byte_array) != 12:  # 2 bytes for command ID + 4 * 2 bytes for parameters + 2 bytes for command UID
             raise ValueError("Byte array length is incorrect")
         
-        command_id, command_uid, param1, param2, param3, param4 = struct.unpack('<HH4H', byte_array)
+        command_id, command_uid, param1, param2, param3, param4 = struct.unpack('<hh4h', byte_array)
         
         command = cls.id_to_command(command_id)
         num_params = cls._command_dictionary[command][1]

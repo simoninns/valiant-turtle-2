@@ -149,9 +149,12 @@ class Stepper:
 
         if one_shot:
             # One-shot move
-            logging.debug(f"Stepper::move - Performing one-shot move of {self._total_steps} steps at {self._target_speed_spi} steps per interval ({self._target_speed_spi * self._intervals_per_second} steps per second)")
+            logging.debug(f"Stepper::move - Performing one-shot move of {self._total_steps} steps at {self._intervals_per_second} steps per second)")
             if not Stepper.test_only:
-                self.pulse_generator.set(int(self._target_speed_spi * self._intervals_per_second), self._total_steps)
+                # Move at the minimum speed for one-shot moves (16 pps)
+                self.pulse_generator.set(int(self._intervals_per_second), self._total_steps)
+                self._steps_remaining = 0
+                self._track_actual_steps = self._total_steps
         else:
             # Acceleration and deceleration move
             logging.debug(f"Stepper::move - Beginning initial acceleration on SM {self._state_machine}")

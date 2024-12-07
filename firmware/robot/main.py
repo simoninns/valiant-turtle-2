@@ -184,6 +184,14 @@ def main():
                     else:    
                         command_response = 0
 
+                # Calibrate wheel diameter
+                if robot_command.command == "cali-wheel":
+                    diff_drive.set_wheel_calibration(robot_command.parameters[0])
+
+                # Calibrate axel distance
+                if robot_command.command == "cali-axel":
+                    diff_drive.set_axel_calibration(robot_command.parameters[0])
+
                 # Set the last processed command UID
                 ble_peripheral.last_processed_command_uid = robot_command.command_uid
                 ble_peripheral.last_processed_command_response = command_response

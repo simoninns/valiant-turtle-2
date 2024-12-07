@@ -83,6 +83,14 @@ class DiffDrive:
         """Returns True if the motors are moving"""
         return self._left_stepper.is_busy or self._right_stepper.is_busy
     
+    def set_wheel_calibration(self, value: float):
+        """Set the wheel calibration"""
+        self._metric.set_wheel_calibration(value)
+
+    def set_axel_calibration(self, value: float):
+        """Set the axel calibration"""
+        self._metric.set_axel_calibration(value)
+    
     def drive_forward(self, distance_mm: float):
         """Linear motion forwards"""
         self.__configure_linear_velocity()
@@ -158,3 +166,7 @@ class DiffDrive:
                 right_motor_status = 2
 
         return (left_motor_status, right_motor_status)
+    
+if __name__ == "__main__":
+    from main import main
+    main()
