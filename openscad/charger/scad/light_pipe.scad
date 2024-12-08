@@ -28,11 +28,11 @@ use <BOSL/shapes.scad>
 
 module light_pipe()
 {
-    move([-0.5,0,0]) cuboid([3,3,2], chamfer=0.75, edges=EDGES_TOP);
+    move([0,0,0]) cuboid([6,3,2], chamfer=0.75, edges=EDGES_TOP);
 
     hull() {
-    move([-0.0,0,-8]) cuboid([2,3,15]);
-    move([0.5,0,-16.5]) cuboid([1,2,1]);
+        move([0,0,-8]) cuboid([4,3,15]);
+        move([0,0,-16.5]) cuboid([2,2,1]);
     }
 }
 
@@ -40,8 +40,7 @@ module render_light_pipe(toPrint)
 {
     if (!toPrint) {
         color([0.9,0.9,0.9,1]) move([25,-34,49]) {
-            move([-1.25,0,0]) light_pipe();
-            xflip() move([-1.5,0,0]) light_pipe();
+            move([0,0,0]) light_pipe();
         }
     } else {
         move([8.5,0,1]) yrot(90) light_pipe();

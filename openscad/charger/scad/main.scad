@@ -27,7 +27,7 @@ use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
 // Other project includes
-include <../../../robot/openscad/scad/battery.scad>
+include <../../robot/scad/battery.scad>
 
 // Local includes
 include <base.scad>

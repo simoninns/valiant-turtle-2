@@ -40,10 +40,10 @@ module charger_lid()
             //move([-1.5,0,0]) cuboid([50,100,10]);
 
             // Screw head recess
-            move([+((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=3, d=6);
-            move([+((110/2) - 4),-((78/2) - 2),3 - 2]) cyl(h=3, d=6);
-            move([-((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=3, d=6);
-            move([-((110/2) - 4),-((78/2) - 2),3 - 2]) cyl(h=3, d=6);
+            move([+((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=3, d=5.5);
+            move([+((110/2) - 4),-((78/2) - 2),3 - 2]) cyl(h=3, d=5.5);
+            move([-((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=3, d=5.5);
+            move([-((110/2) - 4),-((78/2) - 2),3 - 2]) cyl(h=3, d=5.5);
 
             // Screw holes
             move([+((110/2) - 4),+((74/2) - 4),3 - 3]) cyl(h=6, d=3.25);
@@ -52,24 +52,22 @@ module charger_lid()
             move([-((110/2) - 4),-((78/2) - 2),3 - 3]) cyl(h=6, d=3.25);
 
             // Light pipes recess
-            move([27,-34,1.25]) cuboid([3.25,3.25,2]);
-            move([27 -3.75,-34,1.25]) cuboid([3.25,3.25,2]);
+            move([25,-34,1.25]) cuboid([6.5,3.25,2]);
 
             // Light pipes hole
-            move([26.5,-34,0]) cuboid([2.25,3.25,6]);
-            move([23.75,-34,0]) cuboid([2.25,3.25,6]);
+            move([25,-34,0]) cuboid([4,3.25,6]);
         }
-
-        
 
         // Light pipe support
         difference() {
-            move([26.125 - 1,-34,-7.5]) cuboid([8,5,14], chamfer=1, edges=EDGES_Z_ALL);
-            move([26.125 - 1,-30.5,-7.5]) cuboid([8,4,17]);
+            move([26 - 1,-34,-7.5]) cuboid([8,5,14], chamfer=1, edges=EDGES_Z_ALL);
+            move([26 - 1,-30.5,-7.5]) cuboid([8,4,17]);
 
-            move([26.5,-33.75,-6]) cuboid([2.25,3.75,20]);
-            move([26.5-2.75,-33.75,-6]) cuboid([2.25,3.75,20]);
+            move([25,-33.75,-6]) cuboid([4.25,3.75,20]);
         }
+
+        // Front lip
+        move([0,-38,-2.5]) cuboid([40,2,2], chamfer=1, edges=EDGES_Z_ALL+EDGES_BOTTOM);
     }
 }
 
