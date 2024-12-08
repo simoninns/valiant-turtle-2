@@ -35,17 +35,18 @@ class Stepper:
     _sm_counter = 0 # Keep track of the next free state-machine
     test_only = False # Set to True to test the acceleration sequence without moving the stepper
 
-    def __init__(self, drv8825: Drv8825, step_pin: Pin, direction_pin: Pin, is_left: bool):
+    def __init__(self, drv8825: Drv8825, left_step_pin: Pin, left_direction_pin: Pin, right_step_pin: Pin, right_direction_pin: Pin):
         self.pio = 0
 
         # Configure the stepper motor direction
-        self._direction_pin = direction_pin
-        self._is_forwards = True
-        self._is_left = is_left
+        self._left_direction_pin = left_direction_pin
+        self._right_direction_pin = right_direction_pin
         self.set_direction_forwards()
 
         # Stepper busy flag
         self._is_busy = False
+        self._left_direction = True # True = forwards, False = backwards
+        self._right_direction = True # True = forwards, False = backwards
 
         # Stepper motion parameters (in steps per interval)
         self._target_speed_spi = 1
@@ -71,7 +72,7 @@ class Stepper:
         # Note: This controls the step GPIO
         self._state_machine = Stepper._sm_counter
         Stepper._sm_counter += 1
-        self.pulse_generator = PulseGenerator(self.pio, self._state_machine, step_pin)
+        self.pulse_generator = PulseGenerator(self.pio, self._state_machine, left_step_pin)
         
         # Set up the pulse generator callback
         self.pulse_generator.callback_subscribe(self.callback)
@@ -81,22 +82,36 @@ class Stepper:
         return self._is_busy
     
     @property
-    def is_forwards(self):
-        return self._is_forwards
+    def left_direction(self):
+        return self._left_direction
+    
+    @property
+    def right_direction(self):
+        return self._right_direction
 
     def set_direction_forwards(self):
-        if self._is_left:
-            self._direction_pin.value(1)
-        else:
-            self._direction_pin.value(0)
-        self._is_forwards = True
+        self._left_direction_pin.value(1)
+        self._right_direction_pin.value(0)
+        self._left_direction = True
+        self._right_direction = True
 
     def set_direction_backwards(self):
-        if self._is_left:
-            self._direction_pin.value(0)
-        else:
-            self._direction_pin.value(1)
-        self._is_forwards = False
+        self._left_direction_pin.value(0)
+        self._right_direction_pin.value(1)
+        self._left_direction = False
+        self._right_direction = False
+
+    def set_direction_left(self):
+        self._left_direction_pin.value(1)
+        self._right_direction_pin.value(1)
+        self._left_direction = True
+        self._right_direction = False
+
+    def set_direction_right(self):
+        self._left_direction_pin.value(0)
+        self._right_direction_pin.value(0)
+        self._left_direction = False
+        self._right_direction = True
 
     def set_acceleration_spsps(self, acceleration: float):
         """Set the acceleration in steps per second per second"""
