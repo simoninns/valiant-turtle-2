@@ -50,14 +50,15 @@ module wheel_hub()
     difference() {
         union() {
             move([4.5,0,0]) yrot(-90) cyl(h=9,d=22, chamfer=0.5);
-            move([5,0,1]) cuboid([6,7,20], chamfer=0.5);
+            move([5,0,0]) cuboid([6,7,22], chamfer=0.5);
         }
 
         // Setting screw hole
-        move([5,0,6]) xrot(180) cyl(h=12,d=3.25);
+        move([5,0,0]) xrot(180) cyl(h=24,d=3.25);
 
         // Threaded insert slot
         move([5,0,7+2]) xrot(180) cyl(h=8,d=4);
+        move([5,0,-7-2]) xrot(180) cyl(h=8,d=4);
     }
 }
 
@@ -98,8 +99,8 @@ module wheel()
 
             // Hub for D-shaped NEMA 17 5mm shaft (with 1mm D)
             difference() {
-                move([5,0,0]) yrot(-90) cyl(h=20,d=5.25);
-                move([5,0,3.25 - 0.5]) yrot(-90) cuboid([1,6,20]);
+                move([5,0,0]) yrot(-90) cyl(h=20,d=5.1);
+                move([5,0,3.1 - 0.5]) yrot(-90) cuboid([1,6,20]);
             }
 
             wheel_hub_decoration();

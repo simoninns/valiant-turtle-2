@@ -142,8 +142,8 @@ class RobotCommand:
         "get-ma":     (75, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the current (mA)"),
         "get-mw":     (76, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the power (mW)"),
         "get-pen":    (77, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the pen position (0=down, 1=up)"),
-        "cali-wheel": (78, 1, (-2000, 0, 0, 0), (2000, 0, 0, 0), ("um" , "", "", ""), "Wheel diameter calibration (in micrometers)"),
-        "cali-axel":  (79, 1, (-2000, 0, 0, 0), (2000, 0, 0, 0), ("um" , "", "", ""), "Axel distance calibration (in micrometers)"),
+        "cali-wheel": (78, 1, (-10000, 0, 0, 0), (10000, 0, 0, 0), ("um" , "", "", ""), "Wheel diameter calibration (in micrometers)"),
+        "cali-axel":  (79, 1, (-10000, 0, 0, 0), (10000, 0, 0, 0), ("um" , "", "", ""), "Axel distance calibration (in micrometers)"),
     }
 
     # Class variable to store the command UID

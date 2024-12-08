@@ -48,7 +48,7 @@ class Metric:
         Converts an angle in degrees to the equivalent number of steps for the robot to turn on its axis.
     """
 
-    def __init__(self, wheel_diameter_mm = 55.53, axel_distance_mm = 230.0, steps_per_revolution = 800):
+    def __init__(self, wheel_diameter_mm = 55.53, axel_distance_mm = 224.0, steps_per_revolution = 800):
         """
         Initialize the Metric class with given parameters.
         Args:
