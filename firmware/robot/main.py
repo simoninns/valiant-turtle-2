@@ -74,17 +74,8 @@ def main():
     # Async task to control the robot
     async def robot_control_task():
         """ This task processes robot commands received from the BLE central device."""
-
-        # Velocity parameters:
-        #   Acceleration in millimeters per second per second
-        #   Minimum millimeters Per Second
-        #   Maximum millimeters Per Second
-        #   Update Intervals per second
-        # velocity_parameters = VelocityParameters(metric.mm_to_steps(20), metric.mm_to_steps(4), metric.mm_to_steps(400), 16)
-        # logging.debug(f"Main::robot_control_task - Velocity parameters (in steps) = {velocity_parameters}")
-
         while True:
-            # Wait for a command to be received
+            # If the central device is connected, wait for, and process, commands
             await ble_peripheral.command_queue_event.wait()
             ble_peripheral.command_queue_event.clear()
 
@@ -164,7 +155,7 @@ def main():
                     else:
                         # Right eye
                         led_fx.set_led_colour(_LED_right_eye, robot_command.parameters[1], robot_command.parameters[2], robot_command.parameters[3])
-           
+        
                 # Get power monitor voltage
                 if robot_command.command == "get-mv":
                     command_response = int(ina260.voltage_mV)
@@ -245,6 +236,17 @@ def main():
                     led_fx.set_led_colour(_LED_status, 0, 64, 0)
                 else:
                     led_fx.set_led_colour(_LED_status, 0, 32, 0)
+
+                # If the central device is not connected, remain in an idle state
+                if diff_drive.is_enabled:
+                    diff_drive.set_enable(False)
+
+                if (led_fx.is_led_on(_LED_left_eye) or led_fx.is_led_on(_LED_right_eye)):
+                    led_fx.set_led_colour(_LED_left_eye, 0, 0, 0)
+                    led_fx.set_led_colour(_LED_right_eye, 0, 0, 0)
+
+                if not pen.is_servo_up:
+                    pen.up()
 
             loop += 1
             if loop > 3: loop = 0

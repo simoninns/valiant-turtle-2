@@ -273,7 +273,7 @@ class BleCentral:
         """Wait for the command with the specified UID to be processed
         Returns 0 on success, 1 on timeout and 2 on peripheral disconnect"""
         sleep_time_ms = 100
-        timeout_ms = 1000 * 30 # 30 seconds
+        timeout_ms = 1000 * 60 * 2 # 2 minutes until timeout reported
         current_wait_duration_ms = 0
         while self._last_processed_command_uid < command.command_uid and self._connected == True and current_wait_duration_ms < timeout_ms:
             await asyncio.sleep_ms(sleep_time_ms)

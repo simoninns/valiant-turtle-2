@@ -108,6 +108,13 @@ class LedFx:
         self.neopixel.fill((0,0,0))
         self.neopixel.write()
 
+    def is_led_on(self, led_number) -> bool:
+        active = False
+        if self.target_red[led_number] != 0: active = True
+        if self.target_green[led_number] != 0: active = True
+        if self.target_blue[led_number] != 0: active = True
+        return active
+
     def set_led_colour(self, led_number, red, green, blue):
         """
         Sets the color of a specific LED by its number.
