@@ -168,11 +168,15 @@ def main():
                 # Linear Velocity
                 if robot_command.command == "set-linear-v":
                     diff_drive.set_linear_velocity(robot_command.parameters[0], robot_command.parameters[1])
+                    configuration.linear_target_speed_mmps = robot_command.parameters[0]
+                    configuration.linear_acceleration_mmpss = robot_command.parameters[1]
                     logging.debug(f"Main::robot_control_task - Setting linear target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
                 
                 # Rotational Velocity
                 if robot_command.command == "set-rotation-v":
                     diff_drive.set_rotational_velocity(robot_command.parameters[0], robot_command.parameters[1])
+                    configuration.rotational_target_speed_mmps = robot_command.parameters[0]
+                    configuration.rotational_acceleration_mmpss = robot_command.parameters[1]
                     logging.debug(f"Main::robot_control_task - Setting rotational target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
 
                 # Get the linear max speed (in mm/s)
@@ -198,10 +202,12 @@ def main():
                 # Calibrate wheel diameter
                 if robot_command.command == "set-cali-wheel":
                     diff_drive.set_wheel_calibration(robot_command.parameters[0])
+                    configuration.wheel_calibration_um = robot_command.parameters[0]
 
                 # Calibrate axel distance
                 if robot_command.command == "set-cali-axel":
                     diff_drive.set_axel_calibration(robot_command.parameters[0])
+                    configuration.axel_calibration_um = robot_command.parameters[0]
 
                  # Get the wheel diameter calibration
                 if robot_command.command == "get-cali-wheel":
@@ -213,19 +219,31 @@ def main():
 
                 # Set the Turtle ID
                 if robot_command.command == "set-turtle-id":
-                    pass
+                    configuration.turtle_id = robot_command.parameters[0]
 
                 # Get the Turtle ID
                 if robot_command.command == "get-turtle-id":
-                    pass
+                    return configuration.turtle_id
 
                 # Load the configuration from EEPROM
                 if robot_command.command == "load-config":
-                    pass
+                    configuration.unpack(eeprom.read(0, configuration.pack_size))
+                    diff_drive.set_linear_velocity(configuration.linear_target_speed_mmps, configuration.linear_acceleration_mmpss)
+                    diff_drive.set_rotational_velocity(configuration.rotational_target_speed_mmps, configuration.rotational_acceleration_mmpss)
+                    diff_drive.set_wheel_calibration(configuration.wheel_calibration_um)
+                    diff_drive.set_axel_calibration(configuration.axel_calibration_um)
 
-                # Save the configuration to EEPROM
+                # Save the running configuration to EEPROM
                 if robot_command.command == "save-config":
-                    pass
+                    eeprom.write(0, configuration.pack())
+
+                # Set the running configuration to default
+                if robot_command.command == "reset-config":
+                    configuration.default()
+                    diff_drive.set_linear_velocity(configuration.linear_target_speed_mmps, configuration.linear_acceleration_mmpss)
+                    diff_drive.set_rotational_velocity(configuration.rotational_target_speed_mmps, configuration.rotational_acceleration_mmpss)
+                    diff_drive.set_wheel_calibration(configuration.wheel_calibration_um)
+                    diff_drive.set_axel_calibration(configuration.axel_calibration_um)
 
                 # Set the last processed command UID
                 ble_peripheral.last_processed_command_uid = robot_command.command_uid
@@ -324,12 +342,6 @@ def main():
     # Initialise the EEPROM
     eeprom = Eeprom(i2c_internal, 0x50)
 
-    # Read the configuration from EEPROM
-    configuration = Configuration()
-    if not configuration.unpack(eeprom.read(0, configuration.pack_size)):
-        # Current EEPROM image is invalid, write the default
-        eeprom.write(0, configuration.pack())
-
     # Initialise BLE peripheral
     ble_peripheral = BlePeripheral()
 
@@ -338,6 +350,18 @@ def main():
 
     # Initialise the differential drive motor control
     diff_drive = DiffDrive(_GPIO_ENABLE, _GPIO_M0, _GPIO_M1, _GPIO_M2, _GPIO_LM_STEP, _GPIO_LM_DIR, _GPIO_RM_STEP, _GPIO_RM_DIR)
+
+    # Read the configuration from EEPROM
+    configuration = Configuration()
+    if not configuration.unpack(eeprom.read(0, configuration.pack_size)):
+        # Current EEPROM image is invalid, write the default
+        eeprom.write(0, configuration.pack())
+
+    # Process the configuration
+    diff_drive.set_linear_velocity(configuration.linear_target_speed_mmps, configuration.linear_acceleration_mmpss)
+    diff_drive.set_rotational_velocity(configuration.rotational_target_speed_mmps, configuration.rotational_acceleration_mmpss)
+    diff_drive.set_wheel_calibration(configuration.wheel_calibration_um)
+    diff_drive.set_axel_calibration(configuration.axel_calibration_um)
 
     logging.info("main - Launching asynchronous tasks...")
     # Run the main asynchronous I/O tasks

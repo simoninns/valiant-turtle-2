@@ -161,6 +161,7 @@ class RobotCommand:
 
         "load-config":     (88, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Reload configuration from EEPROM"),
         "save-config":     (89, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Save configuration to EEPROM"),
+        "reset-config":    (90, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Reset configuration to defaults"),
     }
 
     # Class variable to store the command UID

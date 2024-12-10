@@ -30,32 +30,36 @@ import ustruct
 from micropython import const
 
 class Configuration:
-    CONFIGURATION_VERSION = const(0x03)
+    CONFIGURATION_VERSION = const(0x02)
 
     def __init__(self):
         self._configuration_version = 0
-        self._is_legacy_mode = False
-        self._serial_speed = 0
-        self._serial_rtscts = False
+        self._linear_target_speed_mmps = 0
+        self._linear_acceleration_mmpss = 0
+        self._rotational_target_speed_mmps = 0
+        self._rotational_acceleration_mmpss = 0
+        self._wheel_calibration_um = 0
+        self._axel_calibration_um = 0
+        self._turtle_id = 0
 
         # Set default configuration
         self.default()
 
         # ustruct format
         # See: https://docs.micropython.org/en/latest/library/struct.html
-        # Format: i = 4 byte int
-        # 1st int: configuration version
-        # 2nd int: is legacy mode (boolean as int)
-        # 3rd int: serial speed
-        # 4th int: serial RTS/CTS (boolean as int)
-        self.format = 'iiii'
+        # 8 x int16_t (2 bytes) = 16 bytes
+        self.format = 'hhhhhhhh'
 
     def pack(self) -> bytes:
         buffer = ustruct.pack(self.format,
-            Configuration.CONFIGURATION_VERSION,
-            int(self._is_legacy_mode),
-            self._serial_speed,
-            int(self._serial_rtscts)
+            int(Configuration.CONFIGURATION_VERSION),
+            int(self._linear_target_speed_mmps),
+            int(self._linear_acceleration_mmpss),
+            int(self._rotational_target_speed_mmps),
+            int(self._rotational_acceleration_mmpss),
+            int(self._wheel_calibration_um),
+            int(self._axel_calibration_um),
+            int(self._turtle_id),
             )
         return buffer
     
@@ -67,9 +71,13 @@ class Configuration:
 
         # Place the resulting tuple into the configuration parameters
         self._configuration_version = result[0]
-        self._is_legacy_mode = bool(result[1])
-        self._serial_speed = result[2]
-        self._serial_rtscts = bool(result[3])
+        self._linear_target_speed_mmps = result[1]
+        self._linear_acceleration_mmpss = result[2]
+        self._rotational_target_speed_mmps = result[3]
+        self._rotational_acceleration_mmpss = result[4]
+        self._wheel_calibration_um = result[5]
+        self._axel_calibration_um = result[6]
+        self._turtle_id = result[7]
 
         # Check configuration is valid
         if self._configuration_version != Configuration.CONFIGURATION_VERSION:
@@ -82,9 +90,21 @@ class Configuration:
     
     def default(self):
         self._configuration_version = Configuration.CONFIGURATION_VERSION
-        self._is_legacy_mode = True
-        self._serial_speed = 4800
-        self._serial_rtscts = False
+
+        # Linear velocity
+        self._linear_target_speed_mmps = 200 # mm per second
+        self._linear_acceleration_mmpss = 4 # mm per second per second
+
+        # Rotational velocity
+        self._rotational_target_speed_mmps = 100 # mm per second
+        self._rotational_acceleration_mmpss = 4 # mm per second per second
+
+        # Wheel and axel calibration
+        self._wheel_calibration_um = 0 # micrometers
+        self._axel_calibration_um = 0 # micrometers
+
+        # Turtle ID
+        self._turtle_id = 0
 
     # Return the size (in bytes) of the packed configuration
     @property
@@ -99,28 +119,81 @@ class Configuration:
         return self._configuration_version
 
     @property
-    def is_legacy_mode(self) -> bool:
-        return self._is_legacy_mode 
-    
-    @is_legacy_mode.setter
-    def is_legacy_mode(self, value: bool):
-        self._is_legacy_mode = value
-    
+    def linear_target_speed_mmps(self) -> int:
+        return self._linear_target_speed_mmps
+
+    @linear_target_speed_mmps.setter
+    def linear_target_speed_mmps(self, value: int):
+        if 0 <= value <= 32767:
+            self._linear_target_speed_mmps = value
+        else:
+            raise ValueError("linear_target_speed_mmps must be an integer between 0 and 32767")
+
     @property
-    def serial_speed(self) -> int:
-        return self._serial_speed
-    
-    @serial_speed.setter
-    def serial_speed(self, value: int):
-        self._serial_speed = value
-    
+    def linear_acceleration_mmpss(self) -> int:
+        return self._linear_acceleration_mmpss
+
+    @linear_acceleration_mmpss.setter
+    def linear_acceleration_mmpss(self, value: int):
+        if 0 <= value <= 32767:
+            self._linear_acceleration_mmpss = value
+        else:
+            raise ValueError("linear_acceleration_mmpss must be an integer between 0 and 32767")
+
     @property
-    def serial_rtscts(self) -> bool:
-        return self._serial_rtscts
-    
-    @serial_rtscts.setter
-    def serial_rtscts(self, value: bool):
-        self._serial_rtscts = value
+    def rotational_target_speed_mmps(self) -> int:
+        return self._rotational_target_speed_mmps
+
+    @rotational_target_speed_mmps.setter
+    def rotational_target_speed_mmps(self, value: int):
+        if 0 <= value <= 32767:
+            self._rotational_target_speed_mmps = value
+        else:
+            raise ValueError("rotational_target_speed_mmps must be an integer between 0 and 32767")
+
+    @property
+    def rotational_acceleration_mmpss(self) -> int:
+        return self._rotational_acceleration_mmpss
+
+    @rotational_acceleration_mmpss.setter
+    def rotational_acceleration_mmpss(self, value: int):
+        if 1 <= value <= 32767:
+            self._rotational_acceleration_mmpss = value
+        else:
+            raise ValueError("rotational_acceleration_mmpss must be an integer between 1 and 32767")
+
+    @property
+    def wheel_calibration_um(self) -> int:
+        return self._wheel_calibration_um
+
+    @wheel_calibration_um.setter
+    def wheel_calibration_um(self, value: int):
+        if -32768 <= value <= 32767:
+            self._wheel_calibration_um = value
+        else:
+            raise ValueError("wheel_calibration_um must be an integer between -32768 and 32767")
+
+    @property
+    def axel_calibration_um(self) -> int:
+        return self._axel_calibration_um
+
+    @axel_calibration_um.setter
+    def axel_calibration_um(self, value: int):
+        if -32768 <= value <= 32767:
+            self._axel_calibration_um = value
+        else:
+            raise ValueError("axel_calibration_um must be an integer between -32768 and 32767")
+
+    @property
+    def turtle_id(self) -> int:
+        return self._turtle_id
+
+    @turtle_id.setter
+    def turtle_id(self, value: int):
+        if 0 <= value <= 7:
+            self._turtle_id = value
+        else:
+            raise ValueError("turtle_id must be an integer between 0 and 7")
 
 if __name__ == "__main__":
     from main import main
