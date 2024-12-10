@@ -223,7 +223,7 @@ def main():
 
                 # Get the Turtle ID
                 if robot_command.command == "get-turtle-id":
-                    return configuration.turtle_id
+                    command_response = configuration.turtle_id
 
                 # Load the configuration from EEPROM
                 if robot_command.command == "load-config":
