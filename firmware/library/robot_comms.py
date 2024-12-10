@@ -128,22 +128,39 @@ class RobotCommand:
         # Dictionary of commands:
         # Command: "name" (unique ID, number of parameters, (param1_min, ...), (param1_max, ...), (param1_desc, ...), "help_text")
         # Note: We start at 65 to avoid the ASCII control characters when using a terminal (65 = "A")
-        "nop":        ( 0, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "No operation"),
-        "motors":     (65, 1, (0, 0, 0, 0), (1, 0, 0, 0), ("State" , "", "", ""), "Motors (0=off, 1=powered)"),
-        "forward":    (66, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move forward"),
-        "backward":   (67, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move backward"),
-        "left":       (68, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Degrees", "", "", ""), "Turn left"),
-        "right":      (69, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Degrees", "", "", ""), "Turn right"),
-        "linear-v":   (70, 2, (1, 1, 0, 0), (32767, 32767, 0, 0), ("Max mm/s", "Acceleration in mm/s^2", "", ""), "Set the linear velocity"),
-        "rotation-v": (71, 2, (1, 1, 0, 0), (32767, 32767, 0, 0), ("Max mm/s", "Acceleration in mm/s^2", "", ""), "Set the rotational velocity"),
-        "pen":        (72, 1, (0, 0, 0, 0), (1, 0, 0, 0), ("Position" , "", "", ""), "Lift the pen up (0 = down, 1 = up)"),
-        "eyes":       (73, 4, (0, 0, 0, 0), (2, 255, 255, 255), ("Eye ID", "Red", "Green", "Blue"), "Set eye colour (0=both, 1=left, 2=right)"),
-        "get-mv":     (74, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the voltage (mV)"),
-        "get-ma":     (75, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the current (mA)"),
-        "get-mw":     (76, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the power (mW)"),
-        "get-pen":    (77, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the pen position (0=down, 1=up)"),
-        "cali-wheel": (78, 1, (-10000, 0, 0, 0), (10000, 0, 0, 0), ("um" , "", "", ""), "Wheel diameter calibration (in micrometers)"),
-        "cali-axel":  (79, 1, (-10000, 0, 0, 0), (10000, 0, 0, 0), ("um" , "", "", ""), "Axel distance calibration (in micrometers)"),
+        "nop":             ( 0, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "No operation"),
+        
+        "motors":          (65, 1, (0, 0, 0, 0), (1, 0, 0, 0), ("State" , "", "", ""), "Motors (0=off, 1=powered)"),
+        "forward":         (66, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move forward"),
+        "backward":        (67, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Distance (mm)", "", "", ""), "Move backward"),
+        "left":            (68, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Degrees", "", "", ""), "Turn left"),
+        "right":           (69, 1, (0, 0, 0, 0), (32767, 0, 0, 0), ("Degrees", "", "", ""), "Turn right"),
+        
+        "pen":             (70, 1, (0, 0, 0, 0), (1, 0, 0, 0), ("Position" , "", "", ""), "Lift the pen up (0 = down, 1 = up)"),
+        "eyes":            (71, 4, (0, 0, 0, 0), (2, 255, 255, 255), ("Eye ID", "Red", "Green", "Blue"), "Set eye colour (0=both, 1=left, 2=right)"),
+
+        "get-mv":          (72, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the voltage (mV)"),
+        "get-ma":          (73, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the current (mA)"),
+        "get-mw":          (74, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the power (mW)"),
+        "get-pen":         (75, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the pen position (0=down, 1=up)"),
+
+        "set-linear-v":    (76, 2, (1, 1, 0, 0), (32767, 32767, 0, 0), ("Max mm/s", "Acceleration in mm/s^2", "", ""), "Set the linear velocity"),
+        "set-rotation-v":  (77, 2, (1, 1, 0, 0), (32767, 32767, 0, 0), ("Max mm/s", "Acceleration in mm/s^2", "", ""), "Set the rotational velocity"),
+        "get-linear-m":    (78, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the linear max speed (in mm/s)"),
+        "get-linear-a":    (79, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the linear acceleration (in mm/s^2)"),
+        "get-rotation-m":  (80, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the rotational max speed (in mm/s)"),
+        "get-rotation-a":  (81, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the rotational acceleration (in mm/s^2)"),
+
+        "set-cali-wheel":  (82, 1, (-10000, 0, 0, 0), (10000, 0, 0, 0), ("um" , "", "", ""), "Wheel diameter calibration (in micrometers)"),
+        "set-cali-axel":   (83, 1, (-10000, 0, 0, 0), (10000, 0, 0, 0), ("um" , "", "", ""), "Axel distance calibration (in micrometers)"),
+        "get-cali-wheel":  (84, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the wheel diameter calibration (in micrometers)"),
+        "get-cali-axel":   (85, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the axel distance calibration (in micrometers)"),
+
+        "set-turtle-id":   (86, 1, (0, 0, 0, 0), (7, 0, 0, 0), ("ID" , "", "", ""), "Set the turtle ID (0-7)"),
+        "get-turtle-id":   (87, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Get the turtle ID"),
+
+        "load-config":     (88, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Reload configuration from EEPROM"),
+        "save-config":     (89, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Save configuration to EEPROM"),
     }
 
     # Class variable to store the command UID

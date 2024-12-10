@@ -126,16 +126,6 @@ def main():
                     while diff_drive.is_moving:
                         await asyncio.sleep_ms(250)
 
-                # Linear Velocity
-                if robot_command.command == "linear-v":
-                    diff_drive.set_linear_velocity(robot_command.parameters[0], robot_command.parameters[1])
-                    logging.debug(f"Main::robot_control_task - Setting linear target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
-                
-                # Rotational Velocity
-                if robot_command.command == "rotation-v":
-                    diff_drive.set_rotational_velocity(robot_command.parameters[0], robot_command.parameters[1])
-                    logging.debug(f"Main::robot_control_task - Setting rotational target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
-
                 # Pen control
                 if robot_command.command == "pen":
                     if robot_command.parameters[0] == 1:
@@ -175,13 +165,67 @@ def main():
                     else:    
                         command_response = 0
 
+                # Linear Velocity
+                if robot_command.command == "set-linear-v":
+                    diff_drive.set_linear_velocity(robot_command.parameters[0], robot_command.parameters[1])
+                    logging.debug(f"Main::robot_control_task - Setting linear target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
+                
+                # Rotational Velocity
+                if robot_command.command == "set-rotation-v":
+                    diff_drive.set_rotational_velocity(robot_command.parameters[0], robot_command.parameters[1])
+                    logging.debug(f"Main::robot_control_task - Setting rotational target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
+
+                # Get the linear max speed (in mm/s)
+                if robot_command.command == "get-linear-m":
+                    target_speed, max_accel = diff_drive.get_linear_velocity()
+                    command_response = round(target_speed)
+
+                # Get the linear acceleration (in mm/s^2)
+                if robot_command.command == "get-linear-a":
+                    target_speed, max_accel = diff_drive.get_linear_velocity()
+                    command_response = round(max_accel)
+
+                # Get the rotational max speed (in mm/s)
+                if robot_command.command == "get-rotation-m":
+                    target_speed, max_accel = diff_drive.get_rotational_velocity()
+                    command_response = round(target_speed)
+
+                # Get the rotational acceleration (in mm/s^2)
+                if robot_command.command == "get-rotation-a":
+                    target_speed, max_accel = diff_drive.get_rotational_velocity()
+                    command_response = round(max_accel)
+
                 # Calibrate wheel diameter
-                if robot_command.command == "cali-wheel":
+                if robot_command.command == "set-cali-wheel":
                     diff_drive.set_wheel_calibration(robot_command.parameters[0])
 
                 # Calibrate axel distance
-                if robot_command.command == "cali-axel":
+                if robot_command.command == "set-cali-axel":
                     diff_drive.set_axel_calibration(robot_command.parameters[0])
+
+                 # Get the wheel diameter calibration
+                if robot_command.command == "get-cali-wheel":
+                    command_response = round(diff_drive.get_wheel_calibration())
+
+                # Get the axel distance calibration
+                if robot_command.command == "get-cali-axel":
+                    command_response = round(diff_drive.get_axel_calibration())
+
+                # Set the Turtle ID
+                if robot_command.command == "set-turtle-id":
+                    pass
+
+                # Get the Turtle ID
+                if robot_command.command == "get-turtle-id":
+                    pass
+
+                # Load the configuration from EEPROM
+                if robot_command.command == "load-config":
+                    pass
+
+                # Save the configuration to EEPROM
+                if robot_command.command == "save-config":
+                    pass
 
                 # Set the last processed command UID
                 ble_peripheral.last_processed_command_uid = robot_command.command_uid

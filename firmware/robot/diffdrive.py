@@ -28,15 +28,11 @@
 import library.logging as logging
 from drv8825 import Drv8825
 from stepper import Stepper
-from metric import Metric
 
 from machine import Pin
 
 class DiffDrive:
     def __init__(self, drv8825_enable_gpio: int, drv8825_m0_gpio :int, drv8825_m1_gpio :int, drv8825_m2_gpio :int, left_step_gpio :int, left_direction_gpio :int, right_step_gpio :int, right_direction_gpio :int):
-        # Create a metric object for unit conversion with default calibration values
-        self._metric = Metric()
-
         # Configure the DRV8825 control GPIOs
         self._drv8825_enable_pin = Pin(drv8825_enable_gpio, Pin.OUT)
         self._drv8825_m0_pin = Pin(drv8825_m0_gpio, Pin.OUT)
@@ -45,8 +41,9 @@ class DiffDrive:
 
         # Create the DRV8825 instance (The DRV8825 driver is shared between the two stepper motors
         # as the enable line and microstepping mode pins are shared)
+        self._steps_per_revolution = 800
         self._drv8825 = Drv8825(self._drv8825_enable_pin, self._drv8825_m0_pin, self._drv8825_m1_pin, self._drv8825_m2_pin)
-        self._drv8825.set_steps_per_revolution(800)
+        self._drv8825.set_steps_per_revolution(self._steps_per_revolution)
         self._drv8825.set_enable(False)
 
         # Configure the stepper control GPIOs
@@ -60,12 +57,23 @@ class DiffDrive:
         self._stepper.set_direction_forwards()
 
         # Default linear velocity
-        self._linear_target_speed_sps = self._metric.mm_to_steps(200)
-        self._linear_acceleration_spsps = self._metric.mm_to_steps(4)
+        self._linear_target_speed_mmps = 200 # mm per second
+        self._linear_acceleration_mmpss = 4 # mm per second per second
 
         # Default rotational velocity
-        self._rotational_target_speed_sps = self._metric.mm_to_steps(100)
-        self._rotational_acceleration_spsps = self._metric.mm_to_steps(4)
+        self._rotational_target_speed_mmps = 100 # mm per second
+        self._rotational_acceleration_mmpss = 4 # mm per second per second
+
+        # Default wheel diameter and axel distance
+        self._wheel_diameter_mm = 55.53
+        self._axel_distance_mm = 224.0
+
+        # Default wheel and axel calibration
+        self._wheel_calibration_um = 0 # micrometers
+        self._axel_calibration_um = 0 # micrometers
+
+        # Value of pi
+        self._pi = 3.14159
 
     def set_enable(self, enable: bool):
         """Enable or disable the motor driver"""
@@ -81,57 +89,73 @@ class DiffDrive:
         """Returns True if the motors are moving"""
         return self._stepper.is_busy
     
-    def set_wheel_calibration(self, value: float):
-        """Set the wheel calibration"""
-        self._metric.set_wheel_calibration(value)
+    def set_wheel_calibration(self, value: int):
+        """Set the wheel calibration in micrometers"""
+        self._wheel_calibration_um = value
 
-    def set_axel_calibration(self, value: float):
-        """Set the axel calibration"""
-        self._metric.set_axel_calibration(value)
+    def get_wheel_calibration(self) -> int:
+        """Get the wheel calibration in micrometers"""
+        return self._wheel_calibration_um
+
+    def set_axel_calibration(self, value: int):
+        """Set the axel calibration in micrometers"""
+        self._axel_calibration_um = value
+
+    def get_axel_calibration(self) -> int:
+        """Get the axel calibration in micrometers"""
+        return self._axel_calibration_um
     
     def drive_forward(self, distance_mm: float):
         """Linear motion forwards"""
         self.__configure_linear_velocity()
         self._stepper.set_direction_forwards()
-        self._stepper.move(self._metric.mm_to_steps(distance_mm))
+        self._stepper.move(self.__mm_to_steps(distance_mm))
 
     def drive_backward(self, distance_mm: float):
         """Linear motion backwards"""
         self.__configure_linear_velocity()
         self._stepper.set_direction_backwards()
-        self._stepper.move(self._metric.mm_to_steps(distance_mm))
+        self._stepper.move(self.__mm_to_steps(distance_mm))
 
     def turn_left(self, degrees: float):
         """Rotational motion to the left"""
         self.__configure_rotational_velocity()
         self._stepper.set_direction_left()
-        self._stepper.move(self._metric.degrees_to_steps(degrees))
+        self._stepper.move(self.__degrees_to_steps(degrees))
 
     def turn_right(self, degrees: float):
         """Rotational motion to the right"""
         self.__configure_rotational_velocity()
         self._stepper.set_direction_right()
-        self._stepper.move(self._metric.degrees_to_steps(degrees))
+        self._stepper.move(self.__degrees_to_steps(degrees))
 
     def __configure_linear_velocity(self):
         """Configure the steppers for the linear velocity"""
-        self._stepper.set_target_speed_sps(self._linear_target_speed_sps)
-        self._stepper.set_acceleration_spsps(self._linear_acceleration_spsps)
+        self._stepper.set_target_speed_sps(self.__mm_to_steps(self._linear_target_speed_mmps))
+        self._stepper.set_acceleration_spsps(self.__mm_to_steps(self._linear_acceleration_mmpss))
 
     def __configure_rotational_velocity(self):
         """Configure the steppers for the rotational velocity"""
-        self._stepper.set_target_speed_sps(self._rotational_target_speed_sps)
-        self._stepper.set_acceleration_spsps(self._rotational_acceleration_spsps)
+        self._stepper.set_target_speed_sps(self.__mm_to_steps(self._rotational_target_speed_mmps))
+        self._stepper.set_acceleration_spsps(self.__mm_to_steps(self._rotational_acceleration_mmpss))
 
     def set_linear_velocity(self, velocity_mm_s: float, acceleration_mm_s2: float):
         """Set the linear velocity"""
-        self._linear_target_speed_sps = self._metric.mm_to_steps(velocity_mm_s)
-        self._linear_acceleration_spsps = self._metric.mm_to_steps(acceleration_mm_s2)
+        self._linear_target_speed_mmps = velocity_mm_s
+        self._linear_acceleration_mmpss = acceleration_mm_s2
+
+    def get_linear_velocity(self) -> tuple:
+        """Get the linear target velocity and acceleration"""
+        return self._linear_target_speed_mmps, self._linear_acceleration_mmpss
 
     def set_rotational_velocity(self, velocity_mm_s: float, acceleration_mm_s2: float):
         """Set the rotational velocity"""
-        self._rotational_target_speed_sps = self._metric.mm_to_steps(velocity_mm_s)
-        self._rotational_acceleration_spsps = self._metric.mm_to_steps(acceleration_mm_s2)
+        self._rotational_target_speed_mmps = velocity_mm_s
+        self._rotational_acceleration_mmpss = acceleration_mm_s2
+
+    def get_rotational_velocity(self) -> tuple:
+        """Get the rotational target velocity and acceleration"""
+        return self._rotational_target_speed_mmps, self._rotational_acceleration_mmpss
 
     def get_motor_status(self) -> tuple:
         """Returns a tuple containing the status of the stepper motors with
@@ -151,6 +175,19 @@ class DiffDrive:
                 right_stepper_status = 2
 
         return left_stepper_status, right_stepper_status
+    
+    # Convert millimeters to steps
+    def __mm_to_steps(self, millimeters: float) -> int:
+        circumference = self._pi * (self._wheel_diameter_mm + (self._wheel_calibration_um / 1000))
+        millimeters_per_step = (circumference / self._steps_per_revolution)
+        return int(millimeters / millimeters_per_step)
+    
+    # Convert degrees to steps
+    # Note: This is only for when the robot turns on it's axis
+    def __degrees_to_steps(self, degrees: float) -> int:
+        circumference = self._pi * (self._axel_distance_mm + (self._axel_calibration_um / 1000))
+        millimeters = (circumference / 360.0) * degrees
+        return self.__mm_to_steps(millimeters)
     
 if __name__ == "__main__":
     from main import main

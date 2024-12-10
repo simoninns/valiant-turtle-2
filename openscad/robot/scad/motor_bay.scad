@@ -155,14 +155,29 @@ module motor_bay_shape()
         }
 
         // Cut-out to allow wheel to come through
-        move([112.5,pos + 42,-28]) cuboid([15,40,10], chamfer=1);
+        move([116,pos + 42,-28]) cuboid([15,40,10], chamfer=1);
 
         // Additional motor clearance
         move([74,pos + 42,-22.75]) cuboid([45,44,10], chamfer=1);
 
         // Wheel position marker to align wheel on axel
-        axel_length = 224; // See render_turning_circle()
-        move([axel_length/2,pos + 42,-30]) cuboid([3,43,2], chamfer=1);
+        // axel_length = 224; // See render_turning_circle()
+        // move([axel_length/2,pos + 42,-30]) cuboid([3,43,2], chamfer=1);
+    }
+
+    axel_length = 224; // See render_turning_circle()
+    move([axel_length/2,pos+20.75,-28.5]) {
+        hull() {
+            move([0,1,-0.5]) zrot(45) cuboid([3,3,2]);
+            move([0,0,0]) cuboid([3,2,3]);
+        }
+    }
+
+    move([axel_length/2,pos+62.25,-28.5]) {
+        hull() {
+            move([0,0,-0.5]) zrot(45) cuboid([3,3,2]);
+            move([0,1,0]) cuboid([3,2,3]);
+        }
     }
     
     // Back part

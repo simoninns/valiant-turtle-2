@@ -140,13 +140,13 @@ class BlePeripheral:
     # Send command service characteristics update
     def command_service_update(self):
         if self.__connected and self.__connection:
-            try:
-                # Send from p2c - int16_t last processed command response and uint16_t last processed command UID
-                self.tx_p2c_characteristic.notify(self.__connection, struct.pack("<hH", self._last_processed_command_response, self._last_processed_command_uid))
+            # try:
+            # Send from p2c - int16_t last processed command response and uint16_t last processed command UID
+            self.tx_p2c_characteristic.notify(self.__connection, struct.pack("<hH", self._last_processed_command_response, self._last_processed_command_uid))
                 
-            except Exception as e:
-                logging.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
-                self.__connected = False
+            # except Exception as e:
+            #     logging.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
+            #     self.__connected = False
 
     # Advertise peripheral to central
     async def advertise_to_central(self):
