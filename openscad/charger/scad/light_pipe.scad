@@ -43,6 +43,6 @@ module render_light_pipe(toPrint)
             move([0,0,0]) light_pipe();
         }
     } else {
-        move([8.5,0,1]) yrot(90) light_pipe();
+        move([8.5,0,1.5]) yrot(90) zrot(90) light_pipe();
     }
 }

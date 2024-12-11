@@ -11,6 +11,10 @@ openscad -o ./stl/connector_back.stl -D 'for_printing="Printing"' -D 'display_co
 echo "  light_pipe.stl"
 openscad -o ./stl/light_pipe.stl -D 'for_printing="Printing"' -D 'display_light_pipe="Yes"' ./scad/main.scad
 
+echo "Generating 3D STL support enforcer files..."
+echo "  charger_lid_support_enforcers.stl"
+openscad -o ./stl_support_enforcers/charger_lid_support_enforcers.stl -D 'for_printing="Printing"' -D 'display_charger_lid_support_enforcers="Yes"' ./scad/main.scad
+
 echo "Script complete"
 
 

@@ -37,8 +37,6 @@ module charger_lid()
             move([0,-2,0]) cuboid([110,78,3], chamfer=1, edges=EDGES_TOP+EDGES_Z_ALL);
             move([0,-12 + 8,0]) xrot(180) battery_access_hole_top();
 
-            //move([-1.5,0,0]) cuboid([50,100,10]);
-
             // Screw head recess
             move([+((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=3, d=5.5);
             move([+((110/2) - 4),-((78/2) - 2),3 - 2]) cyl(h=3, d=5.5);
@@ -62,7 +60,6 @@ module charger_lid()
         difference() {
             move([26 - 1,-34,-7.5]) cuboid([8,5,14], chamfer=1, edges=EDGES_Z_ALL);
             move([26 - 1,-30.5,-7.5]) cuboid([8,4,17]);
-
             move([25,-33.75,-6]) cuboid([4.25,3.75,20]);
         }
 
@@ -81,6 +78,20 @@ module charger_lid_screws()
     }
 }
 
+module charger_lid_support_enforcers()
+{
+    move([0,0,46]) {
+        // Screw head recesses
+        move([+((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=4, d=5.5);
+        move([+((110/2) - 4),-((78/2) - 2),3 - 2]) cyl(h=4, d=5.5);
+        move([-((110/2) - 4),+((74/2) - 4),3 - 2]) cyl(h=4, d=5.5);
+        move([-((110/2) - 4),-((78/2) - 2),3 - 2]) cyl(h=4, d=5.5);
+
+        // Light pipes recess
+        move([25,-34,1]) cuboid([6.5,3.25,4]);
+    }           
+}
+
 module render_charger_lid(toPrint)
 {
     if (!toPrint) {
@@ -94,5 +105,12 @@ module render_charger_lid_screws(toPrint)
 {
     if (!toPrint) {
         charger_lid_screws();
+    }
+}
+
+module render_charger_lid_support_enforcers(toPrint)
+{
+    if (toPrint) {
+        move([0,0,49]) xrot(180) charger_lid_support_enforcers();
     }
 }
