@@ -47,6 +47,7 @@ include <pen_holder_cap.scad>
 include <logotype.scad>
 include <toggle_switch.scad>
 include <stand.scad>
+include <shell2.scad>
 
 // // Viewport translation
 // $vpt = [0, 0, 0];
@@ -107,6 +108,7 @@ display_stand_upper_cover = "No"; // [Yes, No]
 display_eye_pcb_jig = "No"; // [Yes, No]
 display_aux_pcb_mount = "No"; // [Yes, No]
 display_aux_pcb_screw_washer = "No"; // [Yes, No]
+display_shell2 = "No"; // [Yes, No]
 
 /* [Support Enforcers] */
 display_shell_supports = "No"; // [Yes, No]
@@ -206,6 +208,7 @@ module main() {
     d_eye_pcb_jig = (display_eye_pcb_jig == "Yes") ? true:false;
     d_aux_pcb_mount = (display_aux_pcb_mount == "Yes") ? true:false;
     d_aux_pcb_screw_washer = (display_aux_pcb_screw_washer == "Yes") ? true:false;
+    d_shell2 = (display_shell2 == "Yes") ? true:false;
 
     // Support enforcers
     d_shell_supports = (display_shell_supports == "Yes") ? true:false;
@@ -296,6 +299,7 @@ module main() {
         if (d_eye_pcb_jig) render_eye_pcb_jig(toPrint);
         if (d_aux_pcb_mount) render_aux_pcb_mount(toPrint);
         if (d_aux_pcb_screw_washer) render_aux_pcb_screw_washer(toPrint);
+        if (d_shell2) render_shell2(toPrint);
 
         // Render the support enforcers
         if (d_shell_supports) render_shell_supports(toPrint);
