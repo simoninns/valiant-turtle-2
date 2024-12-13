@@ -26,58 +26,166 @@ include <BOSL/constants.scad>
 use <BOSL/transforms.scad>
 use <BOSL/shapes.scad>
 
-module pentagon_top(thickness, fillet) {
+module pentagon_top(line, thickness, fillet) {
     // Calculate the points of the pentagon (with a radius of 57)
+    // The fillet is subtracted from the radius to maintain the outer diameter
+    radius = 57 - fillet / 2;
     points = [
-        [57 * cos(0), 57 * sin(0)],
-        [57 * cos(72), 57 * sin(72)],
-        [57 * cos(144), 57 * sin(144)],
-        [57 * cos(216), 57 * sin(216)],
-        [57 * cos(288), 57 * sin(288)]
+        [radius * cos(0), radius * sin(0)],
+        [radius * cos(72), radius * sin(72)],
+        [radius * cos(144), radius * sin(144)],
+        [radius * cos(216), radius * sin(216)],
+        [radius * cos(288), radius * sin(288)]
     ];
     
-    // Render the pentagon
-    for (i = [0 : len(points) - 1]) {
-        next_i = (i + 1) % len(points);
+    // Render the pentagon line
+    next_i = (line + 1) % len(points);
+    hull() {
+        translate([points[line][0], points[line][1], 0])
+            cylinder(d=fillet, h=thickness, center=true);
+        translate([points[next_i][0], points[next_i][1], 0])
+            cylinder(d=fillet, h=thickness, center=true);
+    }
+}
+
+module pentagon_side(line, thickness, fillet) {
+    // Calculate the points of the irregular pentagon (radii of 52, 57 and 62)
+    // The fillet is subtracted from the radius to maintain the outer diameter
+    radius1 = 52 - fillet / 2;
+    radius2 = 57 - fillet / 2;
+    radius3 = 62 - fillet / 2;
+
+    points = [
+        [radius1 * cos(0), 0],
+        [radius2 * cos(72), radius3 * sin(72)],
+        [radius2 * cos(144), radius2 * sin(144)],
+        [radius2 * cos(216), radius2 * sin(216)],
+        [radius2 * cos(288), radius3 * sin(288)]
+    ];
+    
+    // Render the pentagon line
+    next_i = (line + 1) % len(points);
+    hull() {
+        translate([points[line][0], points[line][1], 0])
+            cylinder(d=fillet, h=thickness, center=true);
+        translate([points[next_i][0], points[next_i][1], 0])
+            cylinder(d=fillet, h=thickness, center=true);
+    }
+}
+
+module shell3_top() {
+    // Render the top of the shell by combining the top and side pentagons using hulls
+    for (i=[0:4]) {
         hull() {
-            translate([points[i][0], points[i][1], 0])
-                cylinder(d=fillet, h=thickness, center=true);
-            translate([points[next_i][0], points[next_i][1], 0])
-                cylinder(d=fillet, h=thickness, center=true);
+            pentagon_top(i, 3, 4);
+            zrot((72 * i) + (72 / 2)) {
+                move([71, 0, -38.5]) {
+                    rotate([0, 57, 0]) {
+                        pentagon_side(2, 3, 4);
+                    }
+                }
+            }
+        }
+    }
+
+    // Render the sides of the shell by combining the side pentagons using hulls
+    for (i=[0:4]) {
+        hull() {
+            zrot((72 * i) + (72 / 2)) {
+                move([71, 0, -38.5]) {
+                    rotate([0, 57, 0]) {
+                        pentagon_side(1, 3, 4);
+                    }
+                }
+            }
+
+            zrot((72 * (i + 1)) + (72 / 2)) {
+                move([71, 0, -38.5]) {
+                    rotate([0, 57, 0]) {
+                        pentagon_side(3, 3, 4);
+                    }
+                }
+            }
+        }
+    }
+
+    // Render the lower sides of the shell
+    for (i=[0:4]) {
+        zrot((72 * i) + (72 / 2)) {
+            move([71, 0, -38.5]) {
+                rotate([0, 57, 0]) {
+                    pentagon_side(0, 3, 4);
+                    pentagon_side(4, 3, 4);
+                }
+            }
         }
     }
 }
 
-module pentagon_side(thickness, fillet) {
-    // Calculate the points of the irregular pentagon (radii of 52, 57 and 62)
-    points = [
-        [52 * cos(0), 0],
-        [57 * cos(72), 62 * sin(72)],
-        [57 * cos(144), 57 * sin(144)],
-        [57 * cos(216), 57 * sin(216)],
-        [57 * cos(288), 62 * sin(288)]
-    ];
-    
-    // Render the pentagon
-    for (i = [0 : len(points) - 1]) {
-        next_i = (i + 1) % len(points);
+module shell2_top() {
+    // Render the top of the shell by combining the top and side pentagons using hulls
+    for (i=[0:4]) {
         hull() {
-            translate([points[i][0], points[i][1], 0])
-                cylinder(d=fillet, h=thickness, center=true);
-            translate([points[next_i][0], points[next_i][1], 0])
-                cylinder(d=fillet, h=thickness, center=true);
+            pentagon_top(i,3,4);
+            zrot((72*i)+(72/2)) {
+                move([71,0,-38.5]) {
+                    rotate([0, 57, 0]) {
+                        //pentagon_side(0, 3, 4);
+                        //pentagon_side(1, 3, 4);
+                        pentagon_side(2, 3, 4);
+                        //pentagon_side(3, 3, 4);
+                        //pentagon_side(4, 3, 4);
+                    }
+                }
+            }
+        }
+    }
+
+    // Render the sides of the shell by combining the side pentagons using hulls
+    for (i=[0:4]) {
+        hull() {
+            zrot((72*i)+(72/2)) {
+                move([71,0,-38.5]) {
+                    rotate([0, 57, 0]) {
+                        //pentagon_side(0, 3, 4);
+                        pentagon_side(1, 3, 4);
+                        //pentagon_side(2, 3, 4);
+                        //pentagon_side(3, 3, 4);
+                        //pentagon_side(4, 3, 4);
+                    }
+                }
+            }
+
+            zrot((72*(i+1))+(72/2)) {
+                move([71,0,-38.5]) {
+                    rotate([0, 57, 0]) {
+                        //pentagon_side(0, 3, 4);
+                        //pentagon_side(1, 3, 4);
+                        //pentagon_side(2, 3, 4);
+                        pentagon_side(3, 3, 4);
+                        //pentagon_side(4, 3, 4);
+                    }
+                }
+            }
+        }
+    }
+
+    // Render the lower sides of the shell
+    for (i=[0:4]) {
+        zrot((72*i)+(72/2)) {
+            move([71,0,-38.5]) {
+                rotate([0, 57, 0]) {
+                    pentagon_side(0, 3, 4);
+                    //pentagon_side(1, 3, 4);
+                    //pentagon_side(2, 3, 4);
+                    //pentagon_side(3, 3, 4);
+                    pentagon_side(4, 3, 4);
+                }
+            }
         }
     }
 }
 
 module render_shell2(toPrint) {
-    radial_width = 68 / (2 * sin(36));
-    radial_height = 62 / (2 * sin(36));
-    echo("radial_width = ", radial_width);
-    echo("radial_height = ", radial_height);
-
-    pentagon_top(3,1);
-    pentagon_side(3, 1);
-
-    //move([5,0,-2]) cuboid([100,10,2]);
+    shell3_top();
 }
