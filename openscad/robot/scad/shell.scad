@@ -1,6 +1,6 @@
 /************************************************************************
 
-    shell2.scad
+    shell.scad
     
     Valiant Turtle 2
     Copyright (C) 2024 Simon Inns
@@ -366,10 +366,31 @@ module shell_base()
 
         // Mask for the front screw mounts
         front_screw_mount_mask();
+
+        // Clearance for the motor bay screw heads
+        move([114,28,-4]) cuboid([8,80,10], chamfer=1);
+        move([71,28,-4]) cuboid([8,80,10], chamfer=1);
+        move([-114,28,-4]) cuboid([8,80,10], chamfer=1);
+        move([-71,28,-4]) cuboid([8,80,10], chamfer=1);
     }
 
     back_screw_mounts();
     front_screw_mount();
+}
+
+module shell_support_enforcers()
+{
+    move([0,0.5,60]) {
+        difference() {
+            zrot(360/20) cyl(h=120,d=112, $fn=5);
+            zrot(360/20) cyl(h=125,d=99, $fn=5);
+        }
+    }
+
+    move([0,-88.5,10]) cyl(h=20,d=20);
+
+    move([101,30,15]) cuboid([30,4,30]);
+    move([-101,30,15]) cuboid([30,4,30]);
 }
 
 module render_shell(toPrint) {
@@ -386,4 +407,9 @@ module render_shell_screws(toPrint)
         move([48.5,56,-3]) xrot(180) m3x10_screw();
         move([-48.5,56,-3]) xrot(180) m3x10_screw();
     }
+}
+
+module render_shell_supports(toPrint)
+{
+    if (toPrint) shell_support_enforcers();
 }
