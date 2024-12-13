@@ -8,12 +8,8 @@ echo "  head.stl"
 openscad -o ./stl/head.stl -D 'for_printing="Printing"' -D 'display_head="Yes"' ./scad/main.scad
 echo "  head_cover.stl"
 openscad -o ./stl/head_cover.stl -D 'for_printing="Printing"' -D 'display_head_cover="Yes"' ./scad/main.scad
-echo "  shell_lid.stl"
-openscad -o ./stl/shell_lid.stl -D 'for_printing="Printing"' -D 'display_shell_lid="Yes"' ./scad/main.scad
 echo "  shell.stl"
 openscad -o ./stl/shell.stl -D 'for_printing="Printing"' -D 'display_shell="Yes"' ./scad/main.scad
-echo "  shell_dot.stl"
-openscad -o ./stl/shell_dot.stl -D 'for_printing="Printing"' -D 'display_shell_dot="Yes"' ./scad/main.scad
 echo "  motor_bay_left.stl"
 openscad -o ./stl/motor_bay_left.stl -D 'for_printing="Printing"' -D 'display_motor_bay_left="Yes"' ./scad/main.scad
 echo "  motor_bay_right.stl"

@@ -47,7 +47,6 @@ include <pen_holder_cap.scad>
 include <logotype.scad>
 include <toggle_switch.scad>
 include <stand.scad>
-include <shell2.scad>
 
 // // Viewport translation
 // $vpt = [0, 0, 0];
@@ -71,9 +70,7 @@ display_body_left = "No"; // [Yes, No]
 display_body_right = "No"; // [Yes, No]
 display_head = "No"; // [Yes, No]
 display_head_cover = "No"; // [Yes, No]
-display_shell_lid = "No"; // [Yes, No]
 display_shell = "No"; // [Yes, No]
-display_shell_dot = "No"; // [Yes, No]
 display_motor_bay_left = "No"; // [Yes, No]
 display_motor_bay_right = "No"; // [Yes, No]
 display_motor_mount_left = "No"; // [Yes, No]
@@ -170,9 +167,7 @@ module main() {
     d_body_left = (display_body_left == "Yes") ? true:false;
     d_body_right = (display_body_right == "Yes") ? true:false;
     d_head = (display_head == "Yes") ? true:false;
-    d_shell_lid = (display_shell_lid == "Yes") ? true:false;
     d_shell = (display_shell == "Yes") ? true:false;
-    d_shell_dot = (display_shell_dot == "Yes") ? true:false;
     d_motor_bay_left = (display_motor_bay_left == "Yes") ? true:false;
     d_motor_bay_right = (display_motor_bay_right == "Yes") ? true:false;
     d_motor_mount_left = (display_motor_mount_left == "Yes") ? true:false;
@@ -261,9 +256,7 @@ module main() {
         if (d_body_left) render_body_left(toPrint);
         if (d_body_right) render_body_right(toPrint);
         if (d_head) render_head(toPrint);
-        if (d_shell_lid) render_shell_lid(toPrint);
         if (d_shell) render_shell(toPrint);
-        if (d_shell_dot) render_shell_dot(toPrint);
         if (d_motor_bay_left) render_motor_bay_left(toPrint);
         if (d_motor_bay_right) render_motor_bay_right(toPrint);
         if (d_motor_mount_left) render_motor_mount_left(toPrint);
@@ -299,7 +292,6 @@ module main() {
         if (d_eye_pcb_jig) render_eye_pcb_jig(toPrint);
         if (d_aux_pcb_mount) render_aux_pcb_mount(toPrint);
         if (d_aux_pcb_screw_washer) render_aux_pcb_screw_washer(toPrint);
-        if (d_shell2) render_shell2(toPrint);
 
         // Render the support enforcers
         if (d_shell_supports) render_shell_supports(toPrint);
