@@ -73,7 +73,7 @@ module pentagon_side(line, thickness, fillet) {
     }
 }
 
-module shell3_top() {
+module shell2_body() {
     // Render the top of the shell by combining the top and side pentagons using hulls
     for (i=[0:4]) {
         hull() {
@@ -81,7 +81,7 @@ module shell3_top() {
             zrot((72 * i) + (72 / 2)) {
                 move([71, 0, -38.5]) {
                     rotate([0, 57, 0]) {
-                        pentagon_side(2, 3, 4);
+                        pentagon_side(2, 4, 4);
                     }
                 }
             }
@@ -94,7 +94,7 @@ module shell3_top() {
             zrot((72 * i) + (72 / 2)) {
                 move([71, 0, -38.5]) {
                     rotate([0, 57, 0]) {
-                        pentagon_side(1, 3, 4);
+                        pentagon_side(1, 4, 4);
                     }
                 }
             }
@@ -102,7 +102,7 @@ module shell3_top() {
             zrot((72 * (i + 1)) + (72 / 2)) {
                 move([71, 0, -38.5]) {
                     rotate([0, 57, 0]) {
-                        pentagon_side(3, 3, 4);
+                        pentagon_side(3, 4, 4);
                     }
                 }
             }
@@ -111,81 +111,84 @@ module shell3_top() {
 
     // Render the lower sides of the shell
     for (i=[0:4]) {
-        zrot((72 * i) + (72 / 2)) {
-            move([71, 0, -38.5]) {
-                rotate([0, 57, 0]) {
-                    pentagon_side(0, 3, 4);
-                    pentagon_side(4, 3, 4);
+        hull() {
+            zrot((72 * i) + (72 / 2)) {
+                move([71, 0, -38.5]) {
+                    rotate([0, 57, 0]) {
+                        pentagon_side(0, 4, 4);
+                    }
+                }
+            }
+
+            zrot(72/2) {
+                zrot((72 * i) + (72 / 2)) {
+                    move([71, 0, (-38.5 * 2.5)]) {
+                        rotate([0, -57, 0]) {
+                            pentagon_side(4, 4, 4);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Bottom part of the shell
+    for (i=[0:4]) {
+        hull() {
+            zrot((72 * (i+1)) + (72 / 2)) {
+                move([71, 0, -38.5]) {
+                    rotate([0, 57, 0]) {
+                        pentagon_side(4, 4, 4);
+                    }
+                }
+            }
+
+            zrot(72/2) {
+                zrot((72 * i) + (72 / 2)) {
+                    move([71, 0, (-38.5 * 2.5)]) {
+                        rotate([0, -57, 0]) {
+                            pentagon_side(0, 4, 4);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (i=[0:4]) {
+        hull() {
+            zrot(72/2) {
+                zrot((72 * i) + (72 / 2)) {
+                    move([71, 0, (-38.5 * 2.5)]) {
+                        rotate([0, -57, 0]) {
+                            pentagon_side(1, 4, 4);
+                        }
+                    }
+                }
+            }
+
+            zrot(72/2) {
+                zrot((72 * (i+1)) + (72 / 2)) {
+                    move([71, 0, (-38.5 * 2.5)]) {
+                        rotate([0, -57, 0]) {
+                            pentagon_side(3, 4, 4);
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-module shell2_top() {
-    // Render the top of the shell by combining the top and side pentagons using hulls
-    for (i=[0:4]) {
-        hull() {
-            pentagon_top(i,3,4);
-            zrot((72*i)+(72/2)) {
-                move([71,0,-38.5]) {
-                    rotate([0, 57, 0]) {
-                        //pentagon_side(0, 3, 4);
-                        //pentagon_side(1, 3, 4);
-                        pentagon_side(2, 3, 4);
-                        //pentagon_side(3, 3, 4);
-                        //pentagon_side(4, 3, 4);
-                    }
-                }
-            }
-        }
-    }
-
-    // Render the sides of the shell by combining the side pentagons using hulls
-    for (i=[0:4]) {
-        hull() {
-            zrot((72*i)+(72/2)) {
-                move([71,0,-38.5]) {
-                    rotate([0, 57, 0]) {
-                        //pentagon_side(0, 3, 4);
-                        pentagon_side(1, 3, 4);
-                        //pentagon_side(2, 3, 4);
-                        //pentagon_side(3, 3, 4);
-                        //pentagon_side(4, 3, 4);
-                    }
-                }
-            }
-
-            zrot((72*(i+1))+(72/2)) {
-                move([71,0,-38.5]) {
-                    rotate([0, 57, 0]) {
-                        //pentagon_side(0, 3, 4);
-                        //pentagon_side(1, 3, 4);
-                        //pentagon_side(2, 3, 4);
-                        pentagon_side(3, 3, 4);
-                        //pentagon_side(4, 3, 4);
-                    }
-                }
-            }
-        }
-    }
-
-    // Render the lower sides of the shell
-    for (i=[0:4]) {
-        zrot((72*i)+(72/2)) {
-            move([71,0,-38.5]) {
-                rotate([0, 57, 0]) {
-                    pentagon_side(0, 3, 4);
-                    //pentagon_side(1, 3, 4);
-                    //pentagon_side(2, 3, 4);
-                    //pentagon_side(3, 3, 4);
-                    pentagon_side(4, 3, 4);
-                }
-            }
-        }
+module shell2_base()
+{
+    // Slice the bottom of the dodecahedron to create the base
+    difference() {
+        move([0,1,112]) zrot(360/20) shell2_body();
+        move([0,0,-129 + 104]) cuboid([180,180,50]);
     }
 }
 
 module render_shell2(toPrint) {
-    shell3_top();
+    shell2_base();
 }
