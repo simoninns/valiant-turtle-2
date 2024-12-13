@@ -204,17 +204,115 @@ module shell2_body() {
     }
 }
 
-module shell2_base()
+module shell2_wheel_arches()
 {
-    // Slice the bottom of the dodecahedron to create the base
-    difference() {
-        move([0,0.5,106]) zrot(360/20) shell2_body();
-        move([0,0,-129 + 104]) cuboid([180,180,50]);
+    // Rear lower wall
+    move([0,60.75,2.5]) {
+        hull() {
+            move([(242/2) - 3,0,0]) cyl(h=5, d=6);
+            move([-((242/2) - 3),0,0]) cyl(h=5, d=6);
+        }
     }
 
-    zrot((360/20) * 3) move([0,0,2.5]) pentagon_bottom(5, 6);
+    // Right front wall
+    move([0,-10,2.5]) {
+        hull() {
+            move([(242/2) - 3,0,0]) cyl(h=5, d=6);
+            move([((242/2) - 3) - 50,0,0]) cyl(h=5, d=6);
+        }
+    }
+
+    // Left front wall
+    move([0,-10,2.5]) {
+        hull() {
+            move([-((242/2) - 3),0,0]) cyl(h=5, d=6);
+            move([-((242/2) - 3) + 50,0,0]) cyl(h=5, d=6);
+        }
+    }
+
+    // Right outside wall
+    hull() {
+        move([0,-10,2.5]) move([(242/2) - 2,0,0]) cyl(h=5, d=4);
+        move([0,60.75,2.5]) move([(242/2) - 2,0,0]) cyl(h=5, d=4);
+    }
+
+    // Left outside wall
+    hull() {
+        move([0,-10,2.5]) move([-((242/2) - 2),0,0]) cyl(h=5, d=4);
+        move([0,60.75,2.5]) move([-((242/2) - 2),0,0]) cyl(h=5, d=4);
+    }
+
+    // Right outside triangle
+    hull() {
+        move([0,-10,2.5]) move([(242/2) - 2,0,0]) cyl(h=5, d=4);
+        move([0,30,25]) move([(242/2) - 2,0,0]) cyl(h=5, d=4);
+    }
+
+    hull() {
+        move([0,60.75,2.5]) move([(242/2) - 2,0,0]) cyl(h=5, d=4);
+        move([0,30,25]) move([(242/2) - 2,0,0]) cyl(h=5, d=4);
+    }
+
+    // Right over wheel
+    hull() {
+        move([-30,30,32]) move([(242/2) - 2,0,0]) cyl(h=5, d=4);
+        move([0,30,25]) move([(242/2) - 2,0,0]) cyl(h=5, d=4);
+    }
+    hull() {
+        move([-30,30,42]) move([(242/2) - 2,0,0]) cyl(h=20, d=4);
+        move([-27.5,30,42]) move([(242/2) - 2,0,0]) cyl(h=26, d=4);
+    }
+
+    // Left outside triangle
+    hull() {
+        move([0,-10,2.5]) move([-((242/2) - 2),0,0]) cyl(h=5, d=4);
+        move([0,30,25]) move([-((242/2) - 2),0,0]) cyl(h=5, d=4);
+    }
+
+    hull() {
+        move([0,60.75,2.5]) move([-((242/2) - 2),0,0]) cyl(h=5, d=4);
+        move([0,30,25]) move([-((242/2) - 2),0,0]) cyl(h=5, d=4);
+    }
+
+    // Left over wheel
+    hull() {
+        move([30,30,32]) move([-((242/2) - 2),0,0]) cyl(h=5, d=4);
+        move([0,30,25]) move([-((242/2) - 2),0,0]) cyl(h=5, d=4);
+    }
+    hull() {
+        move([30,30,42]) move([-((242/2) - 2),0,0]) cyl(h=20, d=4);
+        move([27.5,30,42]) move([-((242/2) - 2),0,0]) cyl(h=26, d=4);
+    }
+}
+
+module shell2_base()
+{
+    difference() {
+        
+        union() {
+            // Render the dodecahedron and slice the lower part to create the base
+            difference() {
+                move([0,0.5,106]) zrot(360/20) shell2_body();
+                move([0,0,-129 + 104]) cuboid([180,180,50]);
+            }
+
+            // Add a pentagon around the base of the shell
+            zrot((360/20) * 3) move([0,0,2.5]) pentagon_bottom(5, 6);
+
+            // Render the wheel arches
+            shell2_wheel_arches();
+        }
+    
+        // Gap for the head
+        move([0,-80,-1]) prismoid(size1=[45,50], size2=[25,50], h=19);
+
+        // Slice the base behind the wheel arches
+        move([0,25.25 + 0.125,2]) cuboid([180,64.5 + 0.25,10]);
+    }
+
+    
 }
 
 module render_shell2(toPrint) {
-    shell2_base();
+    color([0.0,0.8,0.0,1]) shell2_base();
 }
