@@ -337,16 +337,21 @@ module back_screw_mounts_mask()
     }
 }
 
+module shell_top()
+{
+    // Render the dodecahedron and slice the lower part to create the base
+    difference() {
+        move([0,0.5,106]) zrot(360/20) shell_body();
+        move([0,0,-129 + 104]) cuboid([180,180,50]);
+    }
+}
+
 module shell_base()
 {
     difference() {
         
         union() {
-            // Render the dodecahedron and slice the lower part to create the base
-            difference() {
-                move([0,0.5,106]) zrot(360/20) shell_body();
-                move([0,0,-129 + 104]) cuboid([180,180,50]);
-            }
+            shell_top();
 
             // Add a pentagon around the base of the shell
             zrot((360/20) * 3) move([0,0,2.5]) pentagon_bottom(5, 6);
@@ -395,7 +400,8 @@ module shell_support_enforcers()
 
 module render_shell(toPrint) {
     if (!toPrint) {
-        color([0.0,0.8,0.0,1]) shell_base();
+        // Colour green and move up slightly to avoid z-fighting
+        color([0.0,0.8,0.0,1]) move([0,0,0.001]) shell_base();
     } else {
         shell_base();
     }
