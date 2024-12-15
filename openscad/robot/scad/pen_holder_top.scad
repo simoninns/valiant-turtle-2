@@ -69,8 +69,14 @@ module holder_insert_small()
             }
         }
 
-    // Cut a 20 degree angle from the base
-    move([0,0,-16]) rotate([0,15,0]) cyl(h=12,d=38);
+        // Cut a 20 degree angle from the base
+        move([0,0,-16]) rotate([0,15,0]) cyl(h=12,d=38);
+
+        // Add the letter "S" as text
+        move([11, -1.5, -7.5]) rotate([90, 0, 0]) { 
+            linear_extrude(height=2) 
+            text("S", size=8, valign="center", halign="center");
+        }
     }
 }
 
@@ -101,8 +107,14 @@ module holder_insert_medium()
             }
         }
 
-    // Cut a 20 degree angle from the base
-    move([0,0,-16]) rotate([0,15,0]) cyl(h=12,d=38);
+        // Cut a 20 degree angle from the base
+        move([0,0,-16]) rotate([0,15,0]) cyl(h=12,d=38);
+
+        // Add the letter "M" as text
+        move([11, -1.5, -7.5]) rotate([90, 0, 0]) { 
+            linear_extrude(height=2) 
+            text("M", size=8, valign="center", halign="center");
+        }
     }
 }
 
@@ -128,8 +140,14 @@ module holder_insert_large()
             }
         }
 
-    // Cut a 20 degree angle from the base
-    move([0,0,-16]) rotate([0,15,0]) cyl(h=12,d=38);
+        // Cut a 20 degree angle from the base
+        move([0,0,-16]) rotate([0,15,0]) cyl(h=12,d=38);
+
+        // Add the letter "L" as text
+        move([11, -1.5, -7.5]) rotate([90, 0, 0]) { 
+            linear_extrude(height=2) 
+            text("L", size=8, valign="center", halign="center");
+        }
     }
 }
 
