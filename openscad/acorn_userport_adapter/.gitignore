@@ -1,11 +1,4 @@
 # OpenSCAD ignores
 
-# STL files
-*.stl
 
-# DXF files
-*.dxf
-
-# SVG files
-*.svg
 
