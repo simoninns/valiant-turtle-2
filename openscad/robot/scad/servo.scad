@@ -104,3 +104,10 @@ module render_micro_servo_horn(toPrint, penUp)
         move([0,0,2]) micro_servo_horn(0);
     }
 }
+
+module render_micro_servo_horn_support(toPrint)
+{
+    if (toPrint) {
+        move([0,0,1.5]) cyl(h=3, d=5.5);
+    }
+}

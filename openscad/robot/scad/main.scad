@@ -115,6 +115,7 @@ display_body_left_supports = "No"; // [Yes, No]
 display_body_right_supports = "No"; // [Yes, No]
 display_stand_lower_cover_supports = "No"; // [Yes, No]
 display_stand_upper_cover_supports = "No"; // [Yes, No]
+display_servo_horn_support = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
 display_motor_left = "No"; // [Yes, No]
@@ -212,6 +213,7 @@ module main() {
     d_body_right_supports = (display_body_right_supports == "Yes") ? true:false;
     d_stand_lower_cover_supports = (display_stand_lower_cover_supports == "Yes") ? true:false;
     d_stand_upper_cover_supports = (display_stand_upper_cover_supports == "Yes") ? true:false;
+    d_servo_horn_support = (display_servo_horn_support == "Yes") ? true:false;
 
     // Non-printable parts
     d_motor_left = (display_motor_left == "Yes") ? true:false;
@@ -300,6 +302,7 @@ module main() {
         if (d_body_right_supports) render_body_right_supports(toPrint);
         if (d_stand_lower_cover_supports) render_stand_lower_cover_supports(toPrint);
         if (d_stand_upper_cover_supports) render_stand_upper_cover_supports(toPrint);
+        if (d_servo_horn_support) render_micro_servo_horn_support(toPrint);
 
         // Render the non-printable parts
         if (d_motor_left) render_motor_left(toPrint);

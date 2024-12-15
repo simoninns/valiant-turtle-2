@@ -94,6 +94,8 @@ echo "  stand_lower_cover_support_enforcer.stl"
 openscad -o ./stl_support_enforcers/stand_lower_cover_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_stand_lower_cover_supports="Yes"' ./scad/main.scad
 echo "  stand_upper_cover_support_enforcer.stl"
 openscad -o ./stl_support_enforcers/stand_upper_cover_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_stand_upper_cover_supports="Yes"' ./scad/main.scad
+echo "  servo_horn_support_enforcer.stl"
+openscad -o ./stl_support_enforcers/servo_horn_support_enforcer.stl -D 'for_printing="Printing"' -D 'display_servo_horn_support="Yes"' ./scad/main.scad
 
 echo "Generating 2D DXF files for KiCAD..."
 echo "  main_pcb.dxf"
