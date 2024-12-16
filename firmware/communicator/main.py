@@ -68,11 +68,22 @@ def main():
     """
     Main entry point for the Valiant Turtle 2 Communicator firmware.
     """
-    # Configure the logging module
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-
-    # Configure the options
+    # Configure the options object
     options = Options(_GPIO_OPTION0, _GPIO_OPTION1, _GPIO_OPTION2)
+
+    # If the option 2 header is closed, output debug information to UART0
+    # otherwise output to the REPL
+    if options.option2:
+        uart = UART(0, baudrate=115200, tx=Pin(_GPIO_UART0_TX), rx=Pin(_GPIO_UART0_RX),
+            txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
+    else:
+        uart = None
+
+    # Configure the logging module
+    logging.basicConfig(level=logging.DEBUG, uart=uart)
+
+    # Show the options now debug is running
+    options.show_options()
 
     i2c0 = I2C(0, scl=Pin(_GPIO_SCL0), sda=Pin(_GPIO_SDA0), freq=400000) # Internal I2C bus
     parallel_port = ParallelPort(i2c0, _GPIO_INT0)

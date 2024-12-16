@@ -326,7 +326,7 @@ def main():
         await asyncio.gather(*tasks)
 
     # Configure the logging module
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level=logging.DEBUG)
 
     # Initialise the pen control
     pen = Pen(Pin(_GPIO_PEN))

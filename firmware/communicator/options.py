@@ -39,9 +39,10 @@ class Options:
         self._option0_value = self._option0.value()
         self._option1_value = self._option1.value()
         self._option2_value = self._option2.value()
+    
+    def show_options(self):
+        logging.info(f"Options::show_options - Jumpers = Option0: {self.option0}, Option1: {self.option1}, Option2: {self.option2}")
 
-        logging.info(f"Options::__init__ - Jumpers = Option0: {self.option0}, Option1: {self.option1}, Option2: {self.option2}")
-        
     @property
     def option0(self):
         if self._option0_value == 0:

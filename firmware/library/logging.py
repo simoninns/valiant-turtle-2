@@ -25,6 +25,8 @@
 #
 #************************************************************************
 
+import sys
+
 DEBUG = 10
 INFO = 20
 WARNING = 30
@@ -32,27 +34,44 @@ ERROR = 40
 CRITICAL = 50
 
 _level = INFO
+_uart = None
 
-def basicConfig(level=INFO, format=None):
-    global _level
+def basicConfig(level=INFO, uart=None):
+    global _level, _uart
     _level = level
+    _uart = uart
 
 def debug(msg, *args):
     if _level <= DEBUG:
-        print("[DEBUG]", msg.format(*args))
+        if not _uart:
+            sys.stdout.write("[DEBUG] " + msg.format(*args) + "\n")
+        else:
+            _uart.write("[DEBUG] " + msg.format(*args) + "\r\n")
 
 def info(msg, *args):
     if _level <= INFO:
-        print("[INFO]", msg.format(*args))
+        if not _uart:
+            sys.stdout.write("[INFO] " + msg.format(*args) + "\n")
+        else:
+            _uart.write("[INFO] " + msg.format(*args) + "\r\n")
 
 def warning(msg, *args):
     if _level <= WARNING:
-        print("[WARNING]", msg.format(*args))
+        if not _uart:
+            sys.stdout.write("[WARNING] " + msg.format(*args) + "\n")
+        else:
+            _uart.write("[WARNING] " + msg.format(*args) + "\r\n")
 
 def error(msg, *args):
     if _level <= ERROR:
-        print("[ERROR]", msg.format(*args))
+        if not _uart:
+            sys.stdout.write("[ERROR] " + msg.format(*args) + "\n")
+        else:
+            _uart.write("[ERROR] " + msg.format(*args) + "\r\n")
 
 def critical(msg, *args):
     if _level <= CRITICAL:
-        print("[CRITICAL]", msg.format(*args))
+        if not _uart:
+            sys.stdout.write("[CRITICAL] " + msg.format(*args) + "\n")
+        else:
+            _uart.write("[CRITICAL] " + msg.format(*args) + "\r\n")
