@@ -319,3 +319,27 @@ module render_servo_holder_screws(toPrint)
         }
     }
 }
+
+module render_male_connector_back_support(toPrint)
+{
+    if (toPrint) {
+        move([10.5,-2,2]) {
+            cuboid([2,11,4]);
+        }
+        move([-11.5,-2,2]) {
+            cuboid([2,11,4]);
+        }
+    }
+}
+
+module render_male_connector_front_support(toPrint)
+{
+    if (toPrint) {
+        move([10.5,2,1.75]) {
+            cuboid([2,11,3.5]);
+        }
+        move([-11.5,2,1.75]) {
+            cuboid([2,11,3.5]);
+        }
+    }
+}
