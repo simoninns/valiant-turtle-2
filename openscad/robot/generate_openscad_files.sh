@@ -25,7 +25,7 @@ openscad -o ./stl/wheel_right.stl -D 'for_printing="Printing"' -D 'display_wheel
 echo "  main_pcb_mounts_front.stl"
 openscad -o ./stl/main_pcb_mounts_front.stl -D 'for_printing="Printing"' -D 'display_main_pcb_mounts_front="Yes"' ./scad/main.scad
 echo "  main_pcb_mounts_back.stl"
-openscad -o ./stl/main_pcb_mounts_front.stl -D 'for_printing="Printing"' -D 'display_main_pcb_mounts_front="Yes"' ./scad/main.scad
+openscad -o ./stl/main_pcb_mounts_back.stl -D 'for_printing="Printing"' -D 'display_main_pcb_mounts_back="Yes"' ./scad/main.scad
 echo "  main_pcb_screw_washer.stl"
 openscad -o ./stl/main_pcb_screw_washer.stl -D 'for_printing="Printing"' -D 'display_main_pcb_screw_washer="Yes"' ./scad/main.scad
 echo "  pen_holder_base.stl"
