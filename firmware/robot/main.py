@@ -28,7 +28,7 @@ import library.picolog as picolog
 
 from pen import Pen
 from ina260 import Ina260
-from library.eeprom import Eeprom
+from eeprom import Eeprom
 from configuration import Configuration
 from ble_peripheral import BlePeripheral
 from led_fx import LedFx
