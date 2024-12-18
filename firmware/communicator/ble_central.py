@@ -33,7 +33,7 @@ from machine import unique_id
 import asyncio
 import struct
 
-from library.robot_comms import PowerMonitor, RobotCommand
+from library.robot_comms import RobotCommand
 
 class BleCentral:
     __CONNECTION_CONFIRMATION_CODE = 12345

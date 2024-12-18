@@ -244,7 +244,17 @@ class RobotCommand:
         Returns:
             bytes: The packed byte array.
         """
-        packed_data = struct.pack('<hh4h', self._command_id, self._command_uid, *self._parameters)
+        if self._num_parameters == 0:
+            packed_data = struct.pack('<hh4h', self._command_id, self._command_uid, 0, 0, 0, 0)
+        elif self._num_parameters == 1:
+            packed_data = struct.pack('<hh4h', self._command_id, self._command_uid, self._parameters[0], 0, 0, 0)
+        elif self._num_parameters == 2:
+            packed_data = struct.pack('<hh4h', self._command_id, self._command_uid, self._parameters[0], self._parameters[1], 0, 0)
+        elif self._num_parameters == 3:
+            packed_data = struct.pack('<hh4h', self._command_id, self._command_uid, self._parameters[0], self._parameters[1], self._parameters[2], 0)
+        else:
+            packed_data = struct.pack('<hh4h', self._command_id, self._command_uid, self._parameters[0], self._parameters[1], self._parameters[2], self._parameters[3])
+
         return packed_data
 
     def get_packed_bytes(self) -> bytes:
