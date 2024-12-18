@@ -26,7 +26,7 @@
 #************************************************************************
 
 import asyncio
-import dlogging as dlogging
+import library.picolog as picolog
 from library.robot_comms import RobotCommand
 import struct
 
@@ -51,7 +51,7 @@ class HostShell:
                 break
             command_bytes.extend(data)
 
-        dlogging.debug(f"HostShell::read_command - Host mode command bytes = {command_bytes}")
+        picolog.debug(f"HostShell::read_command - Host mode command bytes = {command_bytes}")
         return command_bytes
     
     def parse_command(self, command_data: bytearray) -> tuple:
@@ -61,7 +61,7 @@ class HostShell:
 
         # Command data must be at least 2 bytes long
         if len(command_data) < 2:
-            dlogging.debug(f"HostShell::parse_command - Command data was too short to be valid")
+            picolog.debug(f"HostShell::parse_command - Command data was too short to be valid")
             return None, None, False
 
         # The first two bytes are the command ID
@@ -75,7 +75,7 @@ class HostShell:
                 parameters.append(param)
 
             if len(parameters) > 3:
-                dlogging.debug(f"HostShell::parse_command - Command data was too long to be valid {command_data}")
+                picolog.debug(f"HostShell::parse_command - Command data was too long to be valid {command_data}")
                 return None, None, False
 
         # Check to see if this is a local command to switch back to interactive mode (host sends ii<CR> or 0x69, 0x69, 0x0D or
@@ -85,20 +85,20 @@ class HostShell:
         # Check to see if the magic word "shell" or "SHELL" has been sent.
         # This is used to switch back to interactive mode from a terminal.
         if command_data == b'shell' or command_data == b'SHELL':
-            dlogging.debug(f"HostShell::parse_command - Switching back to interactive mode")
+            picolog.debug(f"HostShell::parse_command - Switching back to interactive mode")
             return RobotCommand(), None, True
         
         # If the host issues "HOST" or "host" when we are already in host mode, we ignore it
         # This is to prevent the host from getting confused if it sends "HOST" when we are already in host mode
         if command_data == b'host' or command_data == b'HOST':
-            dlogging.debug(f"HostShell::parse_command - Got 'host' command when already in host mode - ignoring")
+            picolog.debug(f"HostShell::parse_command - Got 'host' command when already in host mode - ignoring")
             return RobotCommand(), None, False
 
         # To keep this compatible with the InteractiveShell class we convert the command_id to a command string
         try:
             command = RobotCommand.id_to_command(command_id)
         except ValueError:
-            dlogging.debug(f"HostShell::parse_command - Command ID {command_id} not recognised")
+            picolog.debug(f"HostShell::parse_command - Command ID {command_id} not recognised")
             return None, None, False
 
         return command, parameters, False
@@ -117,7 +117,7 @@ class HostShell:
                     command, parameters, switch_mode = self.parse_command(command_data)
                         
         except Exception as e:
-            dlogging.debug(f"HostShell::get_command - Error: {e}")
+            picolog.debug(f"HostShell::get_command - Error: {e}")
             return None, None, False
 
         return command, parameters, switch_mode
@@ -133,13 +133,13 @@ class HostShell:
             raise ValueError("Command response must be a signed 16-bit integer (0 to 32767)")
 
         response_bytes = struct.pack("<Bh", result_code, command_response)
-        dlogging.debug(f"HostShell::send_response - Responding with {response_bytes}")
+        picolog.debug(f"HostShell::send_response - Responding with {response_bytes}")
 
         try:
             self.writer.write(response_bytes)
             await self.writer.drain()
         except Exception as e:
-            dlogging.debug(f"HostShell::send_response - Failed to send response: {e}")
+            picolog.debug(f"HostShell::send_response - Failed to send response: {e}")
 
 if __name__ == "__main__":
     from main import main

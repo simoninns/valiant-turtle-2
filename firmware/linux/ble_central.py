@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import dlogging as dlogging
+import library.picolog as picolog
 import asyncio
 import struct
 
@@ -129,7 +129,6 @@ class BleCentral:
 
     def notification_handler(self, characteristic: BleakGATTCharacteristic, data: bytearray):
         """Handle notifications from the peripheral."""
-        #dlogging.info("%s: %r", characteristic.description, data)
         self._last_processed_command_response, self._last_processed_command_uid = struct.unpack("<hH", data)
 
         # Set the notification received event
@@ -177,27 +176,27 @@ class BleCentral:
     async def scan_for_peripheral(self):
         """Scan for a peripheral."""
         while self._device is None:
-            dlogging.info("BleCentral::scan_for_peripheral - Performing BLE scan for peripheral...")
+            picolog.info("BleCentral::scan_for_peripheral - Performing BLE scan for peripheral...")
             scanner = BleakScanner()
             self._device = await scanner.find_device_by_name(self._peripheral_advertising_name, timeout=5, return_adv=True)
             if self._device:
-                dlogging.info(f"BleCentral::scan_for_peripheral - peripheral found with address {self._device.address}.")
+                picolog.info(f"BleCentral::scan_for_peripheral - peripheral found with address {self._device.address}.")
             else:
-                dlogging.info("BleCentral::scan_for_peripheral - peripheral not found.")
+                picolog.info("BleCentral::scan_for_peripheral - peripheral not found.")
                 await asyncio.sleep(1)
 
     async def connect_to_peripheral(self):
-        dlogging.info("BleCentral::connect_to_peripheral - Attempting to connect to peripheral...")
+        picolog.info("BleCentral::connect_to_peripheral - Attempting to connect to peripheral...")
         try:
             async with BleakClient(self._device.address) as self._client:
                 if self._client.is_connected:
                     # We should probably pair here... but bleak doesn't support pairing correctly yet
-                    dlogging.info("BleCentral::connect_to_peripheral - Connected to peripheral.")
+                    picolog.info("BleCentral::connect_to_peripheral - Connected to peripheral.")
                     self._connected = True
 
                     # Show the available services and characteristics
                     for service in self._client.services:
-                        dlogging.info("BleCentral::connect_to_peripheral - [Service] %s", service)
+                        picolog.info(f"BleCentral::connect_to_peripheral - [Service] {service}")
 
                         for char in service.characteristics:
                             if "read" in char.properties:
@@ -212,19 +211,14 @@ class BleCentral:
                             if "write-without-response" in char.properties:
                                 extra += f", Max write w/o rsp size: {char.max_write_without_response_size}"
 
-                            dlogging.info(
-                                "BleCentral::connect_to_peripheral -   [Characteristic] %s (%s)%s",
-                                char,
-                                ",".join(char.properties),
-                                extra,
-                            )
+                            picolog.info(f"BleCentral::connect_to_peripheral -   [Characteristic] {char} ({','.join(char.properties)}){extra}")
 
                             for descriptor in char.descriptors:
                                 try:
                                     value = await self._client.read_gatt_descriptor(descriptor.handle)
-                                    dlogging.info("BleCentral::connect_to_peripheral -     [Descriptor] %s, Value: %r", descriptor, value)
+                                    picolog.info(f"BleCentral::connect_to_peripheral -     [Descriptor] {descriptor}, Value: {value}")
                                 except Exception as e:
-                                    dlogging.error("BleCentral::connect_to_peripheral -     [Descriptor] %s, Error: %s", descriptor, e)
+                                    picolog.error(f"BleCentral::connect_to_peripheral -     [Descriptor] {descriptor}, Error: {e}")
 
                 # Send the connection confirmation code to the peripheral on rx_c2p_characteristic
                 await self._client.write_gatt_char(self._rx_c2p_characteristic_uuid, struct.pack("<L", int(BleCentral.__CONNECTION_CONFIRMATION_CODE)), response=False)
@@ -236,7 +230,7 @@ class BleCentral:
                 while self._client.is_connected:
                     # Wait for a notification to be received
                     await self._notification_event.wait()
-                    #dlogging.info("BleCentral::connect_to_peripheral - Got notification event")
+                    #picolog.info("BleCentral::connect_to_peripheral - Got notification event")
 
                     # Check for any commands to send to the peripheral and, if there aren't any, send a nop command
                     if len(self._command_queue) > 0:
@@ -244,26 +238,26 @@ class BleCentral:
                         command = self._command_queue.pop(0)
                         if not isinstance(command, RobotCommand):
                             raise TypeError("Expected command to be of type RobotCommand")
-                        dlogging.info(f"BleCentral::connect_to_peripheral - Sending {command}")
+                        picolog.info(f"BleCentral::connect_to_peripheral - Sending {command}")
                         await self._client.write_gatt_char(self._rx_c2p_characteristic_uuid, command.get_packed_bytes(), response=False)
                     else:
                         # No commands queued, send a nop command
                         command = RobotCommand("nop")
-                        #dlogging.info("BleCentral::connect_to_peripheral - No queued commands, sending nop command")
+                        #picolog.info("BleCentral::connect_to_peripheral - No queued commands, sending nop command")
                         await self._client.write_gatt_char(self._rx_c2p_characteristic_uuid, command.get_packed_bytes(), response=False)
 
                     # Clear the notification event
                     self._notification_event.clear()
-                dlogging.info("BleCentral::connect_to_peripheral - Client has disconnected.")
+                picolog.info("BleCentral::connect_to_peripheral - Client has disconnected.")
                 self._connected = False
 
                 # Unsubscribe from notifications on the tx_p2c_characteristic
                 await self._client.stop_notify(self._tx_p2c_characteristic_uuid)
         except Exception as e:
-            dlogging.info(e)
+            picolog.info(f"{e}")
 
     async def disconnect_from_peripheral(self):
-        dlogging.info("BleCentral::disconnect_from_peripheral - Disconnecting from peripheral...")
+        picolog.info("BleCentral::disconnect_from_peripheral - Disconnecting from peripheral...")
         pass
 
     async def ble_central_tasks(self):

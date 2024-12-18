@@ -24,15 +24,15 @@
 #
 #************************************************************************
 
-import dlogging as dlogging
+import library.picolog as picolog
 from vt2_mode import Vt2Mode
 
 def main():
     """
     Main entry point for the Valiant Turtle 2 Communicator Linux Firmware.
     """
-    # Configure the dlogging module
-    dlogging.basicConfig(level=dlogging.DEBUG)
+    # Configure the picolog module
+    picolog.basicConfig(level=picolog.DEBUG)
 
     # Run in VT2 mode
     vt2_mode = Vt2Mode()

@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import dlogging as dlogging
+import library.picolog as picolog
 
 from ble_central import BleCentral
 from host_comms import HostComms
@@ -67,7 +67,7 @@ class Vt2Mode:
 
     # Method to kick-off async process
     def process(self):
-        dlogging.info("Vt2Mode::process - Running VT2 mode asynchronous tasks")
+        picolog.info("Vt2Mode::process - Running VT2 mode asynchronous tasks")
         asyncio.run(self.aio_process())
 
 if __name__ == "__main__":
