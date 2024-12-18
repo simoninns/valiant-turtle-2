@@ -24,7 +24,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 from micropython import const
 from machine import Pin, UART, I2C
 
@@ -79,8 +79,8 @@ def main():
     else:
         uart = None
 
-    # Configure the logging module
-    logging.basicConfig(level=logging.DEBUG, uart=uart)
+    # Configure the picolog module
+    picolog.basicConfig(level=picolog.DEBUG, uart=uart)
 
     # Show the options now debug is running
     options.show_options()

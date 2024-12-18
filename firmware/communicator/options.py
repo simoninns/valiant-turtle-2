@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 from machine import Pin
 
 class Options:
@@ -41,7 +41,7 @@ class Options:
         self._option2_value = self._option2.value()
     
     def show_options(self):
-        logging.info(f"Options::show_options - Jumpers = Option0: {self.option0}, Option1: {self.option1}, Option2: {self.option2}")
+        picolog.info(f"Options::show_options - Jumpers = Option0: {self.option0}, Option1: {self.option1}, Option2: {self.option2}")
 
     @property
     def option0(self):

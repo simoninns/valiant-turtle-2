@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 from machine import PWM, Pin, Timer
 
 class Leds:
@@ -64,7 +64,7 @@ class Leds:
         """
         self.period_ms = 25
         self.number_of_leds = len(data_gpio_pins)
-        logging.debug(f"Leds::__init__ - Initialising with {self.number_of_leds} leds")
+        picolog.debug(f"Leds::__init__ - Initialising with {self.number_of_leds} leds")
 
         # Set up led values
         self.current_brightness = []

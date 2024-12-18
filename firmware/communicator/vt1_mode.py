@@ -32,7 +32,7 @@
 # To avoid this, legacy mode works as synchronously as possible to avoid
 # introducing unnecessary delay
 
-import library.logging as logging
+import library.picolog as picolog
 from machine import UART
 from leds import Leds
 from ir_uart import IrUart
@@ -68,7 +68,7 @@ class Vt1Mode:
         """
         Run the VT1 legacy mode process for serial and parallel to IR communication.
         """
-        logging.info("Vt1Mode::process - Running VT1 legacy mode process for serial and parallel to IR")
+        picolog.info("Vt1Mode::process - Running VT1 legacy mode process for serial and parallel to IR")
         self._leds.set_brightness(0, 255) # Power LED on
         self._parallel.auto_ack(False) # Turn off auto-ACK
         
@@ -79,7 +79,7 @@ class Vt1Mode:
                 ch = self._parallel.read(1)[0]
                 self._ir_uart.ir_putc(ch)
                 self._parallel.ack()
-                #logging.debug("Parallel Rx =", ch)
+                #picolog.debug("Parallel Rx =", ch)
                 self._leds.set_brightness(1, 0)
 
             # Send any received serial data via IR
@@ -87,7 +87,7 @@ class Vt1Mode:
                 self._leds.set_brightness(1, 255)
                 ch = int(self._uart.read(1)[0])
                 self._ir_uart.ir_putc(ch)
-                #logging.debug("Serial Rx =", ch)
+                #picolog.debug("Serial Rx =", ch)
                 self._leds.set_brightness(1, 0)
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 
 from machine import Pin
 import rp2
@@ -85,7 +85,7 @@ class IrUart:
         # Note: This SM counter is a little rough... it assumes that only this class will
         # consume SMs...
         if IrUart._sm_counter < 4:
-            logging.info(f"IrUart::__init__ - Initialised using state-machine {IrUart._sm_counter}")
+            picolog.info(f"IrUart::__init__ - Initialised using state-machine {IrUart._sm_counter}")
         else:
             raise RuntimeError("Pulse_generator::__init__ - No more state machines available!")
         

@@ -24,7 +24,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 
 from pen import Pen
 from ina260 import Ina260
@@ -67,7 +67,7 @@ def main():
     
     This function initializes various components such as the pen control, I2C buses,
     power monitoring chip, EEPROM, BLE peripheral, stepper motor drivers, and LEDs.
-    It also configures logging and launches asynchronous tasks for status LED updates,
+    It also configures picolog and launches asynchronous tasks for status LED updates,
     power monitoring, and BLE peripheral tasks.
     """
 
@@ -85,7 +85,7 @@ def main():
             # Process the command
             if ble_peripheral.command_queue:
                 robot_command = ble_peripheral.command_queue.pop()
-                logging.info(f"Main::robot_control_task - processing {robot_command}")
+                picolog.info(f"Main::robot_control_task - processing {robot_command}")
 
                 # Motor power control
                 if robot_command.command == "motors":
@@ -170,14 +170,14 @@ def main():
                     diff_drive.set_linear_velocity(robot_command.parameters[0], robot_command.parameters[1])
                     configuration.linear_target_speed_mmps = robot_command.parameters[0]
                     configuration.linear_acceleration_mmpss = robot_command.parameters[1]
-                    logging.debug(f"Main::robot_control_task - Setting linear target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
+                    picolog.debug(f"Main::robot_control_task - Setting linear target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
                 
                 # Rotational Velocity
                 if robot_command.command == "set-rotation-v":
                     diff_drive.set_rotational_velocity(robot_command.parameters[0], robot_command.parameters[1])
                     configuration.rotational_target_speed_mmps = robot_command.parameters[0]
                     configuration.rotational_acceleration_mmpss = robot_command.parameters[1]
-                    logging.debug(f"Main::robot_control_task - Setting rotational target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
+                    picolog.debug(f"Main::robot_control_task - Setting rotational target speed to = {robot_command.parameters[0]} mm/s and acceleration to = {robot_command.parameters[1]} mm/s^2")
 
                 # Get the linear max speed (in mm/s)
                 if robot_command.command == "get-linear-m":
@@ -325,8 +325,8 @@ def main():
         ]
         await asyncio.gather(*tasks)
 
-    # Configure the logging module
-    logging.basicConfig(level=logging.DEBUG)
+    # Configure the picolog module
+    picolog.basicConfig(level=picolog.DEBUG)
 
     # Initialise the pen control
     pen = Pen(Pin(_GPIO_PEN))
@@ -363,7 +363,7 @@ def main():
     diff_drive.set_wheel_calibration(configuration.wheel_calibration_um)
     diff_drive.set_axel_calibration(configuration.axel_calibration_um)
 
-    logging.info("main - Launching asynchronous tasks...")
+    picolog.info("main - Launching asynchronous tasks...")
     # Run the main asynchronous I/O tasks
     asyncio.run(aio_main())
 

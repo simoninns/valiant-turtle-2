@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 import ustruct
 from micropython import const
 
@@ -81,11 +81,11 @@ class Configuration:
 
         # Check configuration is valid
         if self._configuration_version != Configuration.CONFIGURATION_VERSION:
-            logging.info("Configuration::unpack - Configuration invalid... Using default")
+            picolog.info("Configuration::unpack - Configuration invalid... Using default")
             self.default()
             return False
 
-        logging.info("Configuration::unpack - Configuration valid")
+        picolog.info("Configuration::unpack - Configuration valid")
         return True
     
     def default(self):

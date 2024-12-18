@@ -27,7 +27,7 @@
 
 from servo import Servo
 from machine import Pin
-import library.logging as logging
+import library.picolog as picolog
 
 class Pen:
     """
@@ -87,7 +87,7 @@ class Pen:
         self.servo.set_power(True)
         self._is_servo_up = True
         self._is_servo_powered = True
-        logging.debug("Pen::up - Pen raised")
+        picolog.debug("Pen::up - Pen raised")
     
     def down(self):
         """
@@ -98,7 +98,7 @@ class Pen:
         self.servo.set_power(True)
         self._is_servo_up = False
         self._is_servo_powered = True
-        logging.debug("Pen::down - Pen lowered")
+        picolog.debug("Pen::down - Pen lowered")
 
     def off(self):
         """
@@ -107,7 +107,7 @@ class Pen:
 
         self.servo.set_power(False)
         self._is_servo_powered = False
-        logging.debug("Pen::off - Servo powered off")
+        picolog.debug("Pen::off - Servo powered off")
 
 if __name__ == "__main__":
     from main import main

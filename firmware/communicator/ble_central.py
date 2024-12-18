@@ -26,7 +26,7 @@
 #************************************************************************
 
 import aioble.device
-import library.logging as logging
+import library.picolog as picolog
 import aioble
 import bluetooth
 from machine import unique_id
@@ -96,14 +96,14 @@ class BleCentral:
         """Scan for a BLE peripheral
         Scan for 5 seconds, in active mode, with very low interval/window (to maximize detection rate)."""
 
-        logging.debug("BleCentral::scan_for_peripheral - Scanning for peripheral...")
+        picolog.debug("BleCentral::scan_for_peripheral - Scanning for peripheral...")
         async with aioble.scan(duration_ms = 5000, interval_us = 30000, window_us = 30000, active = True) as scanner:
             async for result in scanner:
                 # See if it matches our name
                 if result.name() == self.peripheral_advertising_name:
-                    logging.debug(f"BleCentral::scan_for_peripheral - Found peripheral with matching advertising name of {self.peripheral_advertising_name}")
+                    picolog.debug(f"BleCentral::scan_for_peripheral - Found peripheral with matching advertising name of {self.peripheral_advertising_name}")
                     if self.peripheral_advertising_uuid in result.services():
-                        logging.debug("BleCentral::scan_for_peripheral - Peripheral advertises expected BLE UUID")
+                        picolog.debug("BleCentral::scan_for_peripheral - Peripheral advertises expected BLE UUID")
                         return result.device
 
         return None
@@ -113,16 +113,16 @@ class BleCentral:
         self._connected = False
         device = await self.scan_for_peripheral()
         if not device:
-            logging.debug("BleCentral::connect_to_peripheral - Peripheral not found")
+            picolog.debug("BleCentral::connect_to_peripheral - Peripheral not found")
             return
         try:
-            logging.debug(f"BleCentral::connect_to_peripheral - Peripheral with address {device.addr_hex()} found.  Attempting to connect")
+            picolog.debug(f"BleCentral::connect_to_peripheral - Peripheral with address {device.addr_hex()} found.  Attempting to connect")
             self._connection = await device.connect()
-            logging.info(f"BleCentral::connect_to_peripheral - Connected to peripheral with address {device.addr_hex()}")
+            picolog.info(f"BleCentral::connect_to_peripheral - Connected to peripheral with address {device.addr_hex()}")
             self._connected = True
             
         except asyncio.TimeoutError:
-            logging.debug("BleCentral::connect_to_peripheral - Connection attempt timed out!")
+            picolog.debug("BleCentral::connect_to_peripheral - Connection attempt timed out!")
             return
 
     def command_service_notification(self, last_processed_command_response, last_processed_command_uid):
@@ -150,7 +150,7 @@ class BleCentral:
         that show the peripheral's current state.
         """
         
-        logging.debug("BleCentral::handle_command_service_task - command_service notification handler running")
+        picolog.debug("BleCentral::handle_command_service_task - command_service notification handler running")
 
         try:
             # Loop waiting for service notifications
@@ -165,22 +165,22 @@ class BleCentral:
                     command = self._command_queue.pop(0)
                     if not isinstance(command, RobotCommand):
                         raise TypeError("Expected command to be of type RobotCommand")
-                    logging.info(f"BleCentral::handle_command_service_task - Sending {command}")
+                    picolog.info(f"BleCentral::handle_command_service_task - Sending {command}")
                     await self.rx_c2p_characteristic.write(command.get_packed_bytes())
                 else:
                     # No commands queued, send a nop command
                     command = RobotCommand("nop")
-                    #logging.debug("BleCentral::handle_command_service_task - No queued commands, sending nop command")
+                    #picolog.debug("BleCentral::handle_command_service_task - No queued commands, sending nop command")
                     await self.rx_c2p_characteristic.write(command.get_packed_bytes())
                                                         
         except Exception as e:
-            logging.debug("BleCentral::handle_command_service_task - Exception was flagged (Peripheral probably disappeared)")
-            logging.debug(f"BleCentral::handle_command_service_task - Exception: {e}")
+            picolog.debug("BleCentral::handle_command_service_task - Exception was flagged (Peripheral probably disappeared)")
+            picolog.debug(f"BleCentral::handle_command_service_task - Exception: {e}")
             self._connected = False
 
     async def connected_to_peripheral(self):
         """Tasks to perform when connected to a peripheral"""
-        logging.debug("BleCentral::connected_to_peripheral - Connected to peripheral")
+        picolog.debug("BleCentral::connected_to_peripheral - Connected to peripheral")
 
         # Command service setup
         command_service_uuid = bluetooth.UUID(0xFA20)
@@ -188,12 +188,12 @@ class BleCentral:
         try:
             command_service = await self._connection.service(command_service_uuid)
             if command_service == None:
-                logging.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral command_service is missing!")
+                picolog.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral command_service is missing!")
                 self._connected = False
                 return
             
         except asyncio.TimeoutError:
-            logging.debug("BleCentral::connected_to_peripheral - FATAL: Timeout discovering services/characteristics")
+            picolog.debug("BleCentral::connected_to_peripheral - FATAL: Timeout discovering services/characteristics")
             self._connected = False
             return
 
@@ -204,12 +204,12 @@ class BleCentral:
             self.tx_p2c_characteristic = await command_service.characteristic(tx_p2c_characteristic_uuid)
             
             if self.tx_p2c_characteristic == None:
-                logging.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral command_service tx_p2c_characteristic missing!")
+                picolog.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral command_service tx_p2c_characteristic missing!")
                 self._connected = False
                 return
 
         except asyncio.TimeoutError:
-            logging.debug("BleCentral::connected_to_peripheral - FATAL: Timeout discovering characteristics")
+            picolog.debug("BleCentral::connected_to_peripheral - FATAL: Timeout discovering characteristics")
             self._connected = False
             return
 
@@ -217,12 +217,12 @@ class BleCentral:
             self.rx_c2p_characteristic = await command_service.characteristic(rx_c2p_characteristic_uuid)
             
             if self.rx_c2p_characteristic == None:
-                logging.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral command_service rx_c2p_characteristic missing!")
+                picolog.debug("BleCentral::connected_to_peripheral - FATAL: Peripheral command_service rx_c2p_characteristic missing!")
                 self._connected = False
                 return
 
         except asyncio.TimeoutError:
-            logging.debug("BleCentral::connected_to_peripheral - FATAL: Timeout discovering characteristics")
+            picolog.debug("BleCentral::connected_to_peripheral - FATAL: Timeout discovering characteristics")
             self._connected = False
             return
 
@@ -243,16 +243,16 @@ class BleCentral:
         try:
             await self.flush_command_queue()
             await self._connection.disconnected(timeout_ms=2000)
-            logging.info("BleCentral::wait_for_disconnection_from_peripheral - Peripheral disconnected")
+            picolog.info("BleCentral::wait_for_disconnection_from_peripheral - Peripheral disconnected")
         except asyncio.TimeoutError:
-            logging.info("BleCentral::wait_for_disconnection_from_peripheral - Disconnection timeout")
+            picolog.info("BleCentral::wait_for_disconnection_from_peripheral - Disconnection timeout")
 
         self._connection = None
         self._connected = False
 
     async def ble_central_task(self):
         """Main BLE central task"""
-        logging.debug("BleCentral::ble_central_task - Task started")
+        picolog.debug("BleCentral::ble_central_task - Task started")
 
         while True:
             await self.connect_to_peripheral()

@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 
 from machine import Pin, unique_id
 from micropython import const
@@ -133,7 +133,7 @@ class BlePeripheral:
             _, data = await characteristic.written(timeout_ms=t_ms)
             return data
         except asyncio.TimeoutError:
-            logging.debug("BlePeripheral::wait_for_data - Data timed-out - (Central probably disappeared)")
+            picolog.debug("BlePeripheral::wait_for_data - Data timed-out - (Central probably disappeared)")
             self.__connected = False
             return None
     
@@ -145,7 +145,7 @@ class BlePeripheral:
             self.tx_p2c_characteristic.notify(self.__connection, struct.pack("<hH", self._last_processed_command_response, self._last_processed_command_uid))
                 
             # except Exception as e:
-            #     logging.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
+            #     picolog.debug("BlePeripheral::command_service_update - Exception was flagged (Central probably disappeared)")
             #     self.__connected = False
 
     # Advertise peripheral to central
@@ -154,7 +154,7 @@ class BlePeripheral:
         ble_advertising_frequency_us = const(250000)
 
         # Wait for something to connect
-        logging.debug("BlePeripheral::advertise_to_central - Advertising and waiting for connection from central...")
+        picolog.debug("BlePeripheral::advertise_to_central - Advertising and waiting for connection from central...")
         self.__connection = await aioble.advertise(
             ble_advertising_frequency_us,
             name=self.peripheral_advertising_name,
@@ -162,22 +162,22 @@ class BlePeripheral:
             appearance=self.peripheral_appearance_generic_remote_control,
             manufacturer=self.peripheral_manufacturer,
         )
-        logging.info(f"BlePeripheral::advertise_to_central - Central with address {self.__connection.device.addr_hex()} has connected - advertising stopped")
+        picolog.info(f"BlePeripheral::advertise_to_central - Central with address {self.__connection.device.addr_hex()} has connected - advertising stopped")
 
         # It takes a while for the central to really connect.  So, to avoid data dropping into a black hole
         # the central will start by sending us a byte of data.  Once received, we can mark it as connected for real
-        logging.debug("BlePeripheral::advertise_to_central - Waiting for central to confirm connection...")
+        picolog.debug("BlePeripheral::advertise_to_central - Waiting for central to confirm connection...")
         reply_data = await self.wait_for_data(self.rx_c2p_characteristic)
         if reply_data != None:
             # Get the 32-bit unsigned integer from the reply data and check it
             if struct.unpack("<L", reply_data)[0] == BlePeripheral.__CONNECTION_CONFIRMATION_CODE:
-                logging.debug("BlePeripheral::advertise_to_central - Central has confirmed as connected")
+                picolog.debug("BlePeripheral::advertise_to_central - Central has confirmed as connected")
                 self.__connected = True
             else:
-                logging.debug("BlePeripheral::advertise_to_central - Central did not respond with 12345 - Reverting to disconnected state")
+                picolog.debug("BlePeripheral::advertise_to_central - Central did not respond with 12345 - Reverting to disconnected state")
                 self.__connected = False
         else:
-            logging.debug("BlePeripheral::advertise_to_central - Central did not respond - Reverting to disconnected state")
+            picolog.debug("BlePeripheral::advertise_to_central - Central did not respond - Reverting to disconnected state")
             self.__connected = False
 
     # Task to run whilst connected to central
@@ -192,7 +192,7 @@ class BlePeripheral:
                 command_data = await self.wait_for_data(self.rx_c2p_characteristic)
                 if command_data != None:
                     if len(command_data) != RobotCommand.byte_length():
-                        logging.debug("BlePeripheral::connected_to_central - Invalid reply data length")
+                        picolog.debug("BlePeripheral::connected_to_central - Invalid reply data length")
                         self.__connected = False
                         continue
                     else:
@@ -201,7 +201,7 @@ class BlePeripheral:
 
                     # nop commands are not logged as they are used to keep the peripheral polling the central
                     if robot_command.command != "nop":
-                        logging.debug(f"BlePeripheral::connected_to_central - Received {robot_command}")
+                        picolog.debug(f"BlePeripheral::connected_to_central - Received {robot_command}")
                         self._command_queue.append(robot_command)
                         self._command_queue_event.set()
 
@@ -212,11 +212,11 @@ class BlePeripheral:
         await self.__connection.disconnected()
         self.__connected = False
         self.__connection = None
-        logging.info("BlePeripheral::wait_for_disconnection_from_central - Central disconnected")
+        picolog.info("BlePeripheral::wait_for_disconnection_from_central - Central disconnected")
 
     # Main BLE peripheral task
     async def ble_peripheral_task(self):
-        logging.debug("BlePeripheral::ble_peripheral_task - Task started")
+        picolog.debug("BlePeripheral::ble_peripheral_task - Task started")
         while True:
             await self.advertise_to_central() # Advertise and wait for connection
 

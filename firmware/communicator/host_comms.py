@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 from machine import UART
 import asyncio
 from interactive_shell import InteractiveShell
@@ -130,7 +130,7 @@ class HostComms:
         return self._host_event
 
     async def ble_command_service_listener(self):
-        logging.debug("HostComms::ble_event_listener_task - Task started")
+        picolog.debug("HostComms::ble_event_listener_task - Task started")
 
         while True:
             # Check if BLE central is available
@@ -141,7 +141,7 @@ class HostComms:
                 await asyncio.sleep_ms(250)
 
     async def cli_task(self):
-        logging.debug("HostComms::cli_task - Task started")
+        picolog.debug("HostComms::cli_task - Task started")
 
         if self._uart == None:
             # Initialise streams to stdin and stdout
@@ -181,7 +181,7 @@ class HostComms:
                 
                 if switch_mode:
                     # Switch back to interactive shell mode
-                    logging.debug("HostComms::cli_task - Switching back to interactive shell mode")
+                    picolog.debug("HostComms::cli_task - Switching back to interactive shell mode")
                     self._is_shell_interactive = True
                     await self._interactive_shell.start_shell()
                 else:
@@ -190,10 +190,10 @@ class HostComms:
                         send_command_result = await self.send_command(command, parameters)
                         await self._host_shell.send_response(send_command_result.error_code, send_command_result.response)
                     else:
-                        logging.debug("HostComms::cli_task - Got NOP command - ignoring")
+                        picolog.debug("HostComms::cli_task - Got NOP command - ignoring")
 
     async def host_task(self):
-        logging.debug("HostComms::host_task - Starting async host communication tasks")
+        picolog.debug("HostComms::host_task - Starting async host communication tasks")
 
         tasks = [
             # Host communication CLI task
@@ -224,7 +224,7 @@ class HostComms:
             # Note: This works even if the robot isn't connected
             if command == 'host':
                 # Switch to host shell mode (data-based communication)
-                logging.debug("HostComms::process_command - Switching to host shell mode")
+                picolog.debug("HostComms::process_command - Switching to host shell mode")
                 self._is_shell_interactive = False
                 return CommandResult(CommandResult.result_ok, "OK")
 
@@ -262,7 +262,7 @@ class HostComms:
             # Range check the required parameters
             for n in range(len(parameters)):
                 if not (RobotCommand.parameter_range(command, n)[0] <= parameters[n] <= RobotCommand.parameter_range(command, n)[1]):
-                    logging.debug(f"HostComms::process_command - Got out of range parameter {parameters[n]} for command {command}")
+                    picolog.debug(f"HostComms::process_command - Got out of range parameter {parameters[n]} for command {command}")
                     return CommandResult(CommandResult.result_invalid, f"Invalid parameter - {parameters[n]} must be between {RobotCommand.parameter_range(command, n)[0]} and {RobotCommand.parameter_range(command, n)[1]}")
                 
             # Queue the command
@@ -280,7 +280,7 @@ class HostComms:
             return CommandResult(CommandResult.result_ok, "OK", self.ble_central.get_command_response())
         
         # The command was not recognised
-        logging.debug(f"HostComms::process_command - Command [{command}] was not recognised")
+        picolog.debug(f"HostComms::process_command - Command [{command}] was not recognised")
         return CommandResult(CommandResult.result_unknown, f"Unknown command: {command}")
     
     async def initialise_streams(self, limit=1024, loop=None):

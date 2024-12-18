@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 import machine, neopixel
 import asyncio
 
@@ -158,7 +158,7 @@ class LedFx:
         at regular intervals.
         """
 
-        logging.debug("LedFx::process_leds_task - Task started")
+        picolog.debug("LedFx::process_leds_task - Task started")
         while True:
             for idx in range(self.number_of_leds):
                 if (self.target_red[idx] > self.current_red[idx]): self.current_red[idx] += self.fade_speed[idx]

@@ -26,7 +26,7 @@
 #************************************************************************
 
 from machine import I2C
-import library.logging as logging
+import library.picolog as picolog
 from library.robot_comms import PowerMonitor
 
 # INA260 Registers
@@ -71,9 +71,9 @@ class Ina260:
             if devices[idx] == self.address: self._is_present = True
 
         if self._is_present:
-            logging.info(f"Ina260::__init__ - INA260 detected at I2C address {hex(self.address)}")
+            picolog.info(f"Ina260::__init__ - INA260 detected at I2C address {hex(self.address)}")
         else:
-            logging.info("Ina260::__init__ - INA260 is not present... Cannot initialise!")
+            picolog.info("Ina260::__init__ - INA260 is not present... Cannot initialise!")
 
         if self._is_present:
             # Reg: Config - 16 bit - Set bit 15 = reset

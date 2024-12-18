@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 from pulse_generator import PulseGenerator
 from drv8825 import Drv8825
 
@@ -64,7 +64,7 @@ class Stepper:
 
         # Ensure we have a free state-machine
         if Stepper._sm_counter < 4:
-            logging.debug(f"Stepper::__init__ - Using PIO {self.pio} SM {Stepper._sm_counter}")
+            picolog.debug(f"Stepper::__init__ - Using PIO {self.pio} SM {Stepper._sm_counter}")
         else:
             raise RuntimeError("Stepper::__init__ - No more state machines available!")
 
@@ -118,14 +118,14 @@ class Stepper:
         if acceleration < 1:
             raise ValueError("Stepper::set_acceleration - Acceleration must be greater than 0")
         self._acceleration_spi = acceleration / self._intervals_per_second
-        logging.debug(f"Stepper::set_acceleration - Acceleration set to {acceleration} steps per second per second ({self._acceleration_spi} steps per interval per interval)")
+        picolog.debug(f"Stepper::set_acceleration - Acceleration set to {acceleration} steps per second per second ({self._acceleration_spi} steps per interval per interval)")
 
     def set_target_speed_sps(self, target_speed: float):
         """Set the target speed in steps per second"""
         if target_speed < 1:
             raise ValueError("Stepper::set_target_speed - Speed must be greater than 0")
         self._target_speed_spi = target_speed / self._intervals_per_second
-        logging.debug(f"Stepper::set_target_speed - Target speed set to {target_speed} steps per second ({self._target_speed_spi} steps per interval)")
+        picolog.debug(f"Stepper::set_target_speed - Target speed set to {target_speed} steps per second ({self._target_speed_spi} steps per interval)")
 
     def move(self, steps: int):
         # Check if the stepper is currently busy
@@ -138,8 +138,8 @@ class Stepper:
         # Set the stepper as busy
         self._is_busy = True
 
-        logging.debug(f"Stepper::move - Moving {steps} steps using {self._intervals_per_second} calculation intervals per second")
-        logging.debug(f"Stepper::move - Maximum acceleration is {self._acceleration_spi} steps per interval and target speed is {self._target_speed_spi} steps per interval")
+        picolog.debug(f"Stepper::move - Moving {steps} steps using {self._intervals_per_second} calculation intervals per second")
+        picolog.debug(f"Stepper::move - Maximum acceleration is {self._acceleration_spi} steps per interval and target speed is {self._target_speed_spi} steps per interval")
 
         self._total_steps = steps
         self._steps_remaining = self._total_steps
@@ -151,20 +151,20 @@ class Stepper:
 
         # Check the input parameters and decide if acceleration is required
         if self._total_steps < (2 * self._acceleration_spi):
-            logging.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to twice the acceleration rate")
+            picolog.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to twice the acceleration rate")
             one_shot = True
         
         if (self._target_speed_spi <= self._acceleration_spi):
-            logging.debug("Stepper::move - Cannot accelerate: Target speed must be greater than the acceleration rate")
+            picolog.debug("Stepper::move - Cannot accelerate: Target speed must be greater than the acceleration rate")
             one_shot = True
         
         if (self._total_steps < self._target_speed_spi):
-            logging.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to the target speed")
+            picolog.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to the target speed")
             one_shot = True
 
         if one_shot:
             # One-shot move
-            logging.debug(f"Stepper::move - Performing one-shot move of {self._total_steps} steps at {self._intervals_per_second} steps per second)")
+            picolog.debug(f"Stepper::move - Performing one-shot move of {self._total_steps} steps at {self._intervals_per_second} steps per second)")
             if not Stepper.test_only:
                 # Move at the minimum speed for one-shot moves (16 pps)
                 self.pulse_generator.set(int(self._intervals_per_second), self._total_steps)
@@ -172,7 +172,7 @@ class Stepper:
                 self._track_actual_steps = self._total_steps
         else:
             # Acceleration and deceleration move
-            logging.debug(f"Stepper::move - Beginning initial acceleration on SM {self._state_machine}")
+            picolog.debug(f"Stepper::move - Beginning initial acceleration on SM {self._state_machine}")
             if not Stepper.test_only:
                 self.calculate_next_command()
             else:
@@ -182,9 +182,9 @@ class Stepper:
                     self.calculate_next_command()
                 
                 if self._total_steps == self._track_actual_steps:
-                    logging.debug(f"Stepper::move - Acceleration/deceleration sequence completed successfully on SM {self._state_machine}")
+                    picolog.debug(f"Stepper::move - Acceleration/deceleration sequence completed successfully on SM {self._state_machine}")
                 else:
-                    logging.error(f"Stepper::move - Acceleration/deceleration sequence failed on SM {self._state_machine} expected {self._total_steps} steps, performed {self._track_actual_steps} steps")
+                    picolog.error(f"Stepper::move - Acceleration/deceleration sequence failed on SM {self._state_machine} expected {self._total_steps} steps, performed {self._track_actual_steps} steps")
                 self._is_busy = False
 
     def calculate_next_command(self):
@@ -197,7 +197,7 @@ class Stepper:
             if (self._current_speed_spi > self._target_speed_spi):
                 self._current_speed_spi = self._target_speed_spi
             self._steps_remaining -= self._current_speed_spi
-            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Accelerating - Current SPI = {self._current_speed_spi}, steps remaining = {self._steps_remaining}")
+            if Stepper.test_only: picolog.debug(f"Stepper::calculate_next_command - Accelerating - Current SPI = {self._current_speed_spi}, steps remaining = {self._steps_remaining}")
             steps = self._current_speed_spi
             speed = self._current_speed_spi
 
@@ -205,7 +205,7 @@ class Stepper:
             self._running_steps = self._total_steps - (2 * self._acceleration_steps)
             self._final_acceleration_speed = self._current_speed_spi
         elif (self._steps_remaining > self._acceleration_steps):
-            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Acceleration steps = {self._acceleration_steps}")
+            if Stepper.test_only: picolog.debug(f"Stepper::calculate_next_command - Acceleration steps = {self._acceleration_steps}")
 
             # If acceleration didn't reach target speed, accelerate one more time
             self._current_speed_spi += self._acceleration_spi
@@ -213,7 +213,7 @@ class Stepper:
                 self._current_speed_spi = self._target_speed_spi
 
             self._steps_remaining -= self._running_steps
-            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Running - Current speed = {self._current_speed_spi}, running steps = {self._running_steps}")
+            if Stepper.test_only: picolog.debug(f"Stepper::calculate_next_command - Running - Current speed = {self._current_speed_spi}, running steps = {self._running_steps}")
             steps = self._running_steps
             speed = self._current_speed_spi
 
@@ -221,7 +221,7 @@ class Stepper:
             self._current_speed_spi = self._final_acceleration_speed
         else:
             self._steps_remaining -= self._current_speed_spi
-            if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Decelerating - Current speed = {self._current_speed_spi}, steps remaining = {self._steps_remaining}")
+            if Stepper.test_only: picolog.debug(f"Stepper::calculate_next_command - Decelerating - Current speed = {self._current_speed_spi}, steps remaining = {self._steps_remaining}")
             steps = self._current_speed_spi
             speed = self._current_speed_spi
 
@@ -240,11 +240,11 @@ class Stepper:
             self._partial_steps -= additional_steps
             steps += additional_steps
 
-        if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Steps = {steps}, Partial steps = {self._partial_steps}")
+        if Stepper.test_only: picolog.debug(f"Stepper::calculate_next_command - Steps = {steps}, Partial steps = {self._partial_steps}")
 
         # Set the pulse generator
         self._track_actual_steps += steps
-        if Stepper.test_only: logging.debug(f"Stepper::calculate_next_command - Command result: Steps per second = {speed * self._intervals_per_second} ({speed} SPI), Steps = {steps}, Position = {self._track_actual_steps}")
+        if Stepper.test_only: picolog.debug(f"Stepper::calculate_next_command - Command result: Steps per second = {speed * self._intervals_per_second} ({speed} SPI), Steps = {steps}, Position = {self._track_actual_steps}")
         if not Stepper.test_only: self.pulse_generator.set(int(speed * self._intervals_per_second), steps)
 
     # Callback when pulse generator needs more sequence information
@@ -255,9 +255,9 @@ class Stepper:
         else:
             self._is_busy = False
             if self._total_steps == self._track_actual_steps:
-                logging.debug(f"Stepper::callback - Acceleration/deceleration sequence completed successfully on SM {self._state_machine}")
+                picolog.debug(f"Stepper::callback - Acceleration/deceleration sequence completed successfully on SM {self._state_machine}")
             else:
-                logging.error(f"Stepper::callback - Acceleration/deceleration sequence failed on SM {self._state_machine} expected {self._total_steps} steps, performed {self._track_actual_steps} steps")
+                picolog.error(f"Stepper::callback - Acceleration/deceleration sequence failed on SM {self._state_machine} expected {self._total_steps} steps, performed {self._track_actual_steps} steps")
 
 if __name__ == "__main__":
     from main import main

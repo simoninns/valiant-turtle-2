@@ -1,8 +1,8 @@
 #************************************************************************ 
 #
-#   logging.py
+#   picolog.py
 #
-#   Simple logging module for MicroPython
+#   Simple logging module for Pico MicroPython
 #   Valiant Turtle 2 - Library class
 #   Copyright (C) 2024 Simon Inns
 #

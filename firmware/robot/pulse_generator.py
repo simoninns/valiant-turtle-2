@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 from machine import Pin
 import rp2
 
@@ -99,10 +99,10 @@ class PulseGenerator:
         if _state_machine > 3 or _state_machine < 0:
             raise ValueError("PulseGenerator::__init__ - State-machine ID must be 0-3")
 
-        logging.info(f"PulseGenerator::__init__ - Pulse generator initialising on PIO {_pio} state-machine {_state_machine}")
+        picolog.info(f"PulseGenerator::__init__ - Pulse generator initialising on PIO {_pio} state-machine {_state_machine}")
         if _pio == 1: _state_machine += 4 # PIO 0 is SM 0-3 and PIO 1 is SM 4-7
 
-        logging.debug(f"PulseGenerator::__init__ - Micropython state-machine ID is {_state_machine}")
+        picolog.debug(f"PulseGenerator::__init__ - Micropython state-machine ID is {_state_machine}")
         self._sm = rp2.StateMachine(_state_machine, pulse_generator, freq=2500000, set_base=step_pin)
         
         # Set interrupt for SM on IRQ 0
@@ -131,7 +131,7 @@ class PulseGenerator:
 
         # Place the values into the TX FIFO towards the required state machine
         # Note: The FIFO is 4x32-bit
-        #logging.debug("Pulse_generator::set: Pulses =", pulses, ", PIO delay =", pio_delay)
+        #picolog.debug("Pulse_generator::set: Pulses =", pulses, ", PIO delay =", pio_delay)
         self._sm.put(pulses)
         self._sm.put(pio_delay)
 
@@ -150,7 +150,7 @@ class PulseGenerator:
 
         # Range check our input
         if pps > 250000:
-            logging.debug("PulseGenerator::__pps_to_pio_delay: Maximum PPS is 250,000 - limiting!")
+            picolog.debug("PulseGenerator::__pps_to_pio_delay: Maximum PPS is 250,000 - limiting!")
             pps = 250000
         
         # The loop overhead in PIO clock ticks

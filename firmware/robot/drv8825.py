@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 from machine import Pin
 
 class Drv8825:
@@ -77,37 +77,37 @@ class Drv8825:
             self._m1_pin.value(0)
             self._m2_pin.value(0)
             self._steps_per_revolution = 200
-            logging.debug("Drv8825::set_steps_per_revolution - Full step mode set (200 steps/rev)")
+            picolog.debug("Drv8825::set_steps_per_revolution - Full step mode set (200 steps/rev)")
         elif steps_per_revolution == 400: # Half step
             self._m0_pin.value(1)
             self._m1_pin.value(0)
             self._m2_pin.value(0)
             self._steps_per_revolution = 400
-            logging.debug("Drv8825::set_steps_per_revolution - Half step mode set (400 steps/rev)")
+            picolog.debug("Drv8825::set_steps_per_revolution - Half step mode set (400 steps/rev)")
         elif steps_per_revolution == 800: # 1/4 step
             self._m0_pin.value(0)
             self._m1_pin.value(1)
             self._m2_pin.value(0)
             self._steps_per_revolution = 800
-            logging.debug("Drv8825::set_steps_per_revolution - 1/4 step mode set (800 steps/rev)")
+            picolog.debug("Drv8825::set_steps_per_revolution - 1/4 step mode set (800 steps/rev)")
         elif steps_per_revolution == 1600: # 1/8 step
             self._m0_pin.value(1)
             self._m1_pin.value(1)
             self._m2_pin.value(0)
             self._steps_per_revolution = 1600
-            logging.debug("Drv8825::set_steps_per_revolution - 1/8 step mode set (1600 steps/rev)")
+            picolog.debug("Drv8825::set_steps_per_revolution - 1/8 step mode set (1600 steps/rev)")
         elif steps_per_revolution == 3200: # 1/16 step
             self._m0_pin.value(0)
             self._m1_pin.value(0)
             self._m2_pin.value(1)
             self._steps_per_revolution = 3200
-            logging.debug("Drv8825::set_steps_per_revolution - 1/16 step mode set (3200 steps/rev)")
+            picolog.debug("Drv8825::set_steps_per_revolution - 1/16 step mode set (3200 steps/rev)")
         elif steps_per_revolution == 6400: # 1/32 step
             self._m0_pin.value(1)
             self._m1_pin.value(0)
             self._m2_pin.value(1)
             self._steps_per_revolution = 6400
-            logging.debug("Drv8825::set_steps_per_revolution - 1/32 step mode set (6400 steps/rev)")
+            picolog.debug("Drv8825::set_steps_per_revolution - 1/32 step mode set (6400 steps/rev)")
         else:
             raise RuntimeError("Drv8825::set_steps_per_revolution - ERROR - Steps per revolution must be 200, 400, 800, 1600, 3200 or 6400")
     
@@ -129,11 +129,11 @@ class Drv8825:
         if (is_enabled): 
             self._enable_pin.value(1)
             self._is_enabled = True
-            logging.debug("Drv8825::set_enable - DRV8825 Enabled")
+            picolog.debug("Drv8825::set_enable - DRV8825 Enabled")
         else: 
             self._enable_pin.value(0)
             self._is_enabled = False
-            logging.debug("Drv8825::set_enable - DRV8825 Disabled")
+            picolog.debug("Drv8825::set_enable - DRV8825 Disabled")
 
 if __name__ == "__main__":
     from main import main
