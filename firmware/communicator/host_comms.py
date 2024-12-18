@@ -138,7 +138,7 @@ class HostComms:
                 await self.ble_command_service_event.wait()
                 self._ble_central.acknowledge_command_service_response()
             else:
-                await asyncio.sleep_ms(250)
+                await asyncio.sleep(250 / 1000) # 250ms
 
     async def cli_task(self):
         picolog.debug("HostComms::cli_task - Task started")

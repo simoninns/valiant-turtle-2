@@ -137,7 +137,8 @@ class HostShell:
         picolog.debug(f"HostShell::send_response - Responding with {response_bytes}")
 
         try:
-            await self.writer.awrite(response_bytes)
+            self.writer.write(response_bytes)
+            await self.writer.drain()
         except Exception as e:
             picolog.debug(f"HostShell::send_response - Failed to send response: {e}")
 

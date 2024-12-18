@@ -47,16 +47,19 @@ class InteractiveShell:
         """Send a response back over UART."""
         try:
             if command_response == -1:
-                await self.writer.awrite(f"{message}\r\n")
+                self.writer.write(f"{message}\r\n".encode())
+                await self.writer.drain()
             else:
-                await self.writer.awrite(f"{message} {command_response}\r\n")
+                self.writer.write(f"{message} {command_response}\r\n".encode())
+                await self.writer.drain()
         except Exception as e:
             picolog.debug(f"InteractiveShell::send_response - Failed to send response: {e}")
 
     async def clear_line(self) -> None:
         """Clear the current line completely."""
         try:
-            await self.writer.awrite('\r' + ' ' * 80 + '\r')
+            self.writer.write(('\r' + ' ' * 80 + '\r').encode())
+            await self.writer.drain()
         except Exception as e:
             picolog.debug(f"InteractiveShell::clear_line - Failed to clear line: {e}")
 
@@ -64,7 +67,8 @@ class InteractiveShell:
         """Move the cursor to the left."""
         if positions > 0:
             try:
-                await self.writer.awrite(f'\x1b[{positions}D')
+                self.writer.write(f'\x1b[{positions}D'.encode())
+                await self.writer.drain()
             except Exception as e:
                 picolog.debug(f"InteractiveShell::move_cursor_left - Failed to move cursor left: {e}")
 
@@ -72,7 +76,8 @@ class InteractiveShell:
         """Move the cursor to the right."""
         if positions > 0:
             try:
-                await self.writer.awrite(f'\x1b[{positions}C')
+                self.writer.write(f'\x1b[{positions}C'.encode())
+                await self.writer.drain()
             except Exception as e:
                 picolog.debug(f"InteractiveShell::move_cursor_right - Failed to move cursor right: {e}")
 
@@ -80,7 +85,8 @@ class InteractiveShell:
         """Display the command with the cursor at the correct position."""
         await self.clear_command_line()
         try:
-            await self.writer.awrite(f"\r{self.prompt}{''.join(command)}")
+            self.writer.write(f"\r{self.prompt}{''.join(command)}".encode())
+            await self.writer.drain()
             await self.move_cursor_left(len(command) - cursor_pos)
             self.current_display_length = len(command)  # Update current display length
         except Exception as e:
@@ -89,11 +95,13 @@ class InteractiveShell:
     async def clear_command_line(self) -> None:
         """Clear the line based on the length of the previously displayed command."""
         try:
-            await self.writer.awrite('\r')
+            self.writer.write(('\r' + ' ' * self.current_display_length + '\r').encode())
+            await self.writer.drain()
         except Exception as e:
             picolog.debug(f"InteractiveShell::clear_command_line - Failed to clear command line: {e}")
-        await self.writer.awrite(' ' * (len(self.prompt) + self.current_display_length))
-        await self.writer.awrite('\r')
+        self.writer.write((' ' * (len(self.prompt) + self.current_display_length)).encode())
+        self.writer.write('\r'.encode())
+        await self.writer.drain()
 
     async def read_command(self):
         """Asynchronously read and edit a command from the UART stream with arrow key support and history."""
@@ -101,7 +109,8 @@ class InteractiveShell:
         cursor_pos = 0
         self.history_index = None
         self.current_input = ""
-        await self.writer.awrite(self.prompt)
+        self.writer.write(self.prompt.encode())
+        await self.writer.drain()
 
         def is_printable(char):
             """Check if a character is printable (basic ASCII range)."""
@@ -116,7 +125,8 @@ class InteractiveShell:
 
             # Handle Enter key
             if char == '\r' or char == '\n':
-                await self.writer.awrite("\r\n")
+                self.writer.write("\r\n".encode())
+                await self.writer.drain()
                 break
 
             # Handle backspace
@@ -125,7 +135,8 @@ class InteractiveShell:
                     cursor_pos -= 1
                     command.pop(cursor_pos)
                     await self.move_cursor_left(1)
-                    await self.writer.awrite(''.join(command[cursor_pos:]) + ' ')
+                    self.writer.write((''.join(command[cursor_pos:]) + ' ').encode())
+                    await self.writer.drain()
                     await self.move_cursor_left(len(command) - cursor_pos + 1)
 
             # Handle escape sequences for arrow keys
@@ -166,8 +177,9 @@ class InteractiveShell:
             elif is_printable(char):
                 command.insert(cursor_pos, char)
                 cursor_pos += 1
-                await self.writer.awrite(char)
-                await self.writer.awrite(''.join(command[cursor_pos:]))
+                self.writer.write(char.encode())
+                self.writer.write(''.join(command[cursor_pos:]).encode())
+                await self.writer.drain()
                 await self.move_cursor_left(len(command) - cursor_pos)
                 self.current_display_length = len(command)
 
