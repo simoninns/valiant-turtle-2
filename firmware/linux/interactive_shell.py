@@ -27,17 +27,13 @@
 
 import asyncio
 import library.picolog as picolog
-import sys
-import os
 
 class InteractiveShell:
     def __init__(self, reader:  asyncio.StreamReader, writer: asyncio.StreamWriter, prompt: str = ">", intro: str = None, 
                  history_limit: int = 10) -> None:
-        """A simple command shell using asyncio streams via stdio"""
-
+        """A simple command shell using asyncio streams"""
         self.reader = reader
         self.writer = writer
-
         self.prompt = prompt
         self.intro = intro
         self.history = []
@@ -48,15 +44,15 @@ class InteractiveShell:
 
     async def send_response(self, message: str, command_response: int = -1) -> None:
         """Send a response back over UART."""
-        #try:
-        if command_response == -1:
-            self.writer.write(f"{message}\r\n".encode())
-            await self.writer.drain()
-        else:
-            self.writer.write(f"{message} {command_response}\r\n".encode())
-            await self.writer.drain()
-        # except Exception as e:
-        #     picolog.debug(f"InteractiveShell::send_response - Failed to send response: {e}")
+        try:
+            if command_response == -1:
+                self.writer.write(f"{message}\r\n".encode())
+                await self.writer.drain()
+            else:
+                self.writer.write(f"{message} {command_response}\r\n".encode())
+                await self.writer.drain()
+        except Exception as e:
+            picolog.debug(f"InteractiveShell::send_response - Failed to send response: {e}")
 
     async def clear_line(self) -> None:
         """Clear the current line completely."""
@@ -98,7 +94,7 @@ class InteractiveShell:
     async def clear_command_line(self) -> None:
         """Clear the line based on the length of the previously displayed command."""
         try:
-            self.writer.write('\r')
+            self.writer.write(('\r' + ' ' * self.current_display_length + '\r').encode())
             await self.writer.drain()
         except Exception as e:
             picolog.debug(f"InteractiveShell::clear_command_line - Failed to clear command line: {e}")
@@ -212,22 +208,22 @@ class InteractiveShell:
 
     async def get_command(self):
         """Get a command from the user and return it"""
-        #try:
-        command = None
-        parameters = None
-        while not command:
-            input_line = await self.read_command()
+        try:
+            command = None
+            parameters = None
+            while not command:
+                input_line = await self.read_command()
 
-            if input_line:
-                if input_line.strip():
-                    self.add_to_history(input_line)
+                if input_line:
+                    if input_line.strip():
+                        self.add_to_history(input_line)
 
-                # Parse the command (into lower case) and parameters (into a list)
-                command, parameters = self.parse_command(input_line)
+                    # Parse the command (into lower case) and parameters (into a list)
+                    command, parameters = self.parse_command(input_line)
                         
-        # except Exception as e:
-        #     await self.send_response(f"Error: {e}")
-        #     picolog.debug(f"InteractiveShell::get_command - Error: {e}")
+        except Exception as e:
+            await self.send_response(f"Error: {e}")
+            picolog.debug(f"InteractiveShell::get_command - Error: {e}")
 
         return command, parameters
 

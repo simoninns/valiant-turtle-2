@@ -38,12 +38,12 @@ class HostShell:
     """
     def __init__(self, reader:  asyncio.StreamReader, writer: asyncio.StreamWriter, prompt: str = ">", intro: str = None, 
                     history_limit: int = 10) -> None:
-            """A simple command shell using asyncio streams via stdio"""
+            """A simple command shell using asyncio streams via UART"""
             self.reader = reader
             self.writer = writer
 
     async def read_command(self) -> bytearray:
-        """Read bytes from the stream until the host sends 0x0D (CR) or the command is too long"""
+        """Read bytes from the UART until the host sends 0x0D (CR) or the command is too long"""
         command_bytes = bytearray()
         while True and len(command_bytes) < 32:
             data = await self.reader.read(1)

@@ -43,7 +43,7 @@ def basicConfig(level=INFO, uart=None):
     _uart = uart
 
     # Configure the logging module
-    logging.basicConfig(level=logging.INFO, filename="vt2comm.log")
+    logging.basicConfig(level=logging.INFO, filename="vt2comms.log")
 
 def debug(msg, *args):
     if _level <= DEBUG:
