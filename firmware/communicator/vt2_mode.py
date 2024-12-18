@@ -107,7 +107,7 @@ class Vt2Mode:
             if interval == 6: interval = 0
 
             # Wait before next interval
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(250 / 1000) # 250ms
 
     # Async I/O task generation and launch
     async def aio_process(self):

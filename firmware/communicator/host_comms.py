@@ -32,6 +32,8 @@ from interactive_shell import InteractiveShell
 from host_shell import HostShell
 from library.robot_comms import RobotCommand
 
+import sys, os
+
 class CommandResult:
     """Class to store the result of a command"""
 
@@ -94,19 +96,15 @@ class CommandResult:
 
 class HostComms:
     """Class to manage host communication tasks"""
-    def __init__(self, uart: UART):
+    def __init__(self, uart=None):
         self._uart = uart
         self._ble_central = None
         self._ble_command_service_event = None
         self._host_event = asyncio.Event()
 
-        # Create an interactive command shell
-        cli_prompt="VT2> "
-        cli_intro="\r\nWelcome to the Valiant Turtle 2 Communicator\r\nType your commands below. Type 'help' for help."
-        self._interactive_shell = InteractiveShell(self._uart, prompt=cli_prompt, intro=cli_intro, history_limit=10)
-
-        # Create a host shell
-        self._host_shell = HostShell(self._uart)
+        # Prepare for the shells
+        self._interactive_shell = None
+        self._host_shell = None
 
         # Flag to track current shell mode (interactive or host)
         self._is_shell_interactive = True
@@ -144,6 +142,22 @@ class HostComms:
 
     async def cli_task(self):
         logging.debug("HostComms::cli_task - Task started")
+
+        if self._uart == None:
+            # Initialise streams to stdin and stdout
+            self.reader, self.writer = await self.initialise_streams()
+        else:
+            # Use the UART stream
+            self.reader = asyncio.StreamReader(self._uart)
+            self.writer = asyncio.StreamWriter(self._uart)
+
+        # Create a host shell
+        self._host_shell = HostShell(self.reader, self.writer)
+
+        # Create an interactive command shell
+        cli_prompt="VT2> "
+        cli_intro="\r\nWelcome to the Valiant Turtle 2 Communicator\r\nType your commands below. Type 'help' for help."
+        self._interactive_shell = InteractiveShell(self.reader, self.writer, prompt=cli_prompt, intro=cli_intro, history_limit=10)
         await self._interactive_shell.start_shell()
         
         # Get commands and then process them
@@ -268,6 +282,23 @@ class HostComms:
         # The command was not recognised
         logging.debug(f"HostComms::process_command - Command [{command}] was not recognised")
         return CommandResult(CommandResult.result_unknown, f"Unknown command: {command}")
+    
+    async def initialise_streams(self, limit=1024, loop=None):
+        """Initialise the asyncio connection for reader and writer via stdio"""
+        if loop is None:
+            loop = asyncio.get_event_loop()
+
+        reader = asyncio.StreamReader(limit=limit, loop=loop)
+        await loop.connect_read_pipe(
+            lambda: asyncio.StreamReaderProtocol(reader, loop=loop), sys.stdin)
+
+        writer_transport, writer_protocol = await loop.connect_write_pipe(
+            lambda: asyncio.streams.FlowControlMixin(loop=loop),
+            os.fdopen(sys.stdout.fileno(), 'wb'))
+        writer = asyncio.streams.StreamWriter(
+            writer_transport, writer_protocol, None, loop)
+        
+        return reader, writer
 
 if __name__ == "__main__":
     from main import main

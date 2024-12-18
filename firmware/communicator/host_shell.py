@@ -37,11 +37,11 @@ class HostShell:
     rather than a person. It is used to interact with hosts using a data-based
     protocol rather than a human-readable one.
     """
-    def __init__(self, uart: UART, prompt: str = ">", intro: str = None, 
+    def __init__(self, reader:  asyncio.StreamReader, writer: asyncio.StreamWriter, prompt: str = ">", intro: str = None, 
                     history_limit: int = 10) -> None:
             """A simple command shell using asyncio streams via UART"""
-            self.reader = asyncio.StreamReader(uart)
-            self.writer = asyncio.StreamWriter(uart)
+            self.reader = reader
+            self.writer = writer
 
     async def read_command(self) -> bytearray:
         """Read bytes from the UART until the host sends 0x0D (CR) or the command is too long"""

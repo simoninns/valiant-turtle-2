@@ -30,11 +30,11 @@ import library.logging as logging
 from machine import UART
 
 class InteractiveShell:
-    def __init__(self, uart: UART, prompt: str = ">", intro: str = None, 
+    def __init__(self, reader:  asyncio.StreamReader, writer: asyncio.StreamWriter, prompt: str = ">", intro: str = None, 
                  history_limit: int = 10) -> None:
-        """A simple command shell using asyncio streams via UART"""
-        self.reader = asyncio.StreamReader(uart)
-        self.writer = asyncio.StreamWriter(uart)
+        """A simple command shell using asyncio streams"""
+        self.reader = reader
+        self.writer = writer
         self.prompt = prompt
         self.intro = intro
         self.history = []
