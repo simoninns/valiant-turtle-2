@@ -141,3 +141,27 @@ module render_connector_front(toPrint)
         move([23,-33,-16.5]) xrot(-90) connector_front();
     }
 }
+
+module render_male_connector_back_support(toPrint)
+{
+    if (toPrint) {
+        move([10.5,-4,2]) {
+            cuboid([2,11,4]);
+        }
+        move([-11.5,-4,2]) {
+            cuboid([2,11,4]);
+        }
+    }
+}
+
+module render_male_connector_front_support(toPrint)
+{
+    if (toPrint) {
+        move([10.5,8,1.75]) {
+            cuboid([2,11,3.5]);
+        }
+        move([-11.5,8,1.75]) {
+            cuboid([2,11,3.5]);
+        }
+    }
+}

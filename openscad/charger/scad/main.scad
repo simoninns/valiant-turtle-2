@@ -52,6 +52,8 @@ display_light_pipe = "No"; // [Yes, No]
 
 /* [Support Enforcers] */
 display_charger_lid_support_enforcers = "No"; // [Yes, No]
+display_connector_back_support = "No"; // [Yes, No]
+display_connector_front_support = "No"; // [Yes, No]
 
 /* [Non-Printable Parts] */
 display_battery = "No"; // [Yes, No]
@@ -74,6 +76,8 @@ module main() {
 
     // Support enforcers
     d_charger_lid_support_enforcers = (display_charger_lid_support_enforcers == "Yes") ? true:false;
+    d_connector_back_support = (display_connector_back_support == "Yes") ? true:false;
+    d_connector_front_support = (display_connector_front_support == "Yes") ? true:false;
 
     // Non-printable parts
     d_battery = (display_battery == "Yes") ? true:false;
@@ -91,6 +95,8 @@ module main() {
 
     // Render the support enforcers
     if (d_charger_lid_support_enforcers) render_charger_lid_support_enforcers(toPrint);
+    if (d_connector_back_support) render_male_connector_back_support(toPrint);
+    if (d_connector_front_support) render_male_connector_front_support(toPrint);
 
     // Render the non-printable parts
     if (d_battery) {
