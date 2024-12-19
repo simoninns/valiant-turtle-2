@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.logging as logging
+import library.picolog as picolog
 from machine import I2C
 from time import sleep
 
@@ -72,9 +72,9 @@ class Eeprom:
             if devices[idx] == self.i2c_address: self._is_present = True
 
         if self._is_present:
-            logging.info(f"Eeprom::__init__ - 24LC16 EEPROM detected at I2C address {hex(self.i2c_address)}")
+            picolog.info(f"Eeprom::__init__ - 24LC16 EEPROM detected at I2C address {hex(self.i2c_address)}")
         else:
-            logging.info("Eeprom::__init__ - 24LC16 EEPROM is not present... Cannot initialise!")
+            picolog.info("Eeprom::__init__ - 24LC16 EEPROM is not present... Cannot initialise!")
 
         self._maximum_address = 2048 # Maximum address value for the 24LC16
         self._page_size = 16 # The page size for the 24LC16
@@ -98,7 +98,7 @@ class Eeprom:
         self._blockaddr[0] = (address & 0xFF); # Block address
 
         # Read from the EEPROM and return the collected data
-        logging.debug(f"Eeprom::read - Address = {address} - number of bytes = {number_of_bytes}")
+        picolog.debug(f"Eeprom::read - Address = {address} - number of bytes = {number_of_bytes}")
 
         sleep(0.01)
         self.i2c.writeto(self._devaddr[0], self._blockaddr, False)
@@ -113,7 +113,7 @@ class Eeprom:
         
         remaining_data = len(data) # Keep track of what's left to write
         data_pointer = 0
-        logging.debug(f"Eeprom::write - Writing address = {address} - write length = {remaining_data}")
+        picolog.debug(f"Eeprom::write - Writing address = {address} - write length = {remaining_data}")
 
         while remaining_data > 0:
             # Determine the device address (including the block) and intra-block address
@@ -138,7 +138,7 @@ class Eeprom:
                 page_buffer[i+1] = data[data_pointer]
                 data_pointer += 1
 
-            logging.debug(f"Eeprom::write - Page write @ address = {address} - write length = {write_length}")
+            picolog.debug(f"Eeprom::write - Page write @ address = {address} - write length = {write_length}")
 
             # Perform a write
             sleep(0.01)

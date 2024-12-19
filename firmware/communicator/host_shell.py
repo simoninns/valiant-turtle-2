@@ -75,8 +75,8 @@ class HostShell:
                 param = int.from_bytes(command_data[i:i+2], 'little')
                 parameters.append(param)
 
-            if len(parameters) > 3:
-                picolog.debug(f"HostShell::parse_command - Command data was too long to be valid {command_data}")
+            if len(parameters) > 4:
+                picolog.debug(f"HostShell::parse_command - Command data was too long to be valid {command_data} - {len(parameters)} parameters")
                 return None, None, False
 
         # Check to see if this is a local command to switch back to interactive mode (host sends ii<CR> or 0x69, 0x69, 0x0D or
