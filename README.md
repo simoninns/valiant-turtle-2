@@ -1,6 +1,8 @@
 # Valiant Turtle 2
 The Valiant Turtle 2 is a modern re-creation of the Valiant Turtle robot from the 1980s.  The project is fully open-hardware and open-software and is designed to be 3D printed and constructed from widely available parts.
 
+![Valiant Turtle 2](./documents/VT2_photo.jpg)
+
 Please see the project Wiki for details of the project and for access to the project documentation.
 
 ## Project status
