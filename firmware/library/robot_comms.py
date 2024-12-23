@@ -162,6 +162,14 @@ class RobotCommand:
         "load-config":     (88, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Reload configuration from EEPROM"),
         "save-config":     (89, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Save configuration to EEPROM"),
         "reset-config":    (90, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("" , "", "", ""), "Reset configuration to defaults"),
+
+        "position-x":      (91, 1, (-32767, 0, 0, 0), (32767, 0, 0, 0), ("X Position (mm)", "", "", ""), "Set the X position"),
+        "position-y":      (92, 1, (-32767, 0, 0, 0), (32767, 0, 0, 0), ("Y Position (mm)", "", "", ""), "Set the Y position"),
+        "position":        (93, 2, (-32767, -32767, 0, 0), (32767, 32767, 0, 0), ("X Position (mm)", "Y Position (mm)", "", ""), "Set the X, Y position"),
+        "towards":         (94, 2, (-32767, -32767, 0, 0), (32767, 32767, 0, 0), ("X Position (mm)", "Y Position (mm)", "", ""), "Turn towards the X, Y position"),
+        "get-position-x":  (95, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("", "", "", ""), "Get the X position"),
+        "get-position-y":  (96, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("", "", "", ""), "Get the Y position"),
+        "reset-origin":    (97, 0, (0, 0, 0, 0), (0, 0, 0, 0), ("", "", "", ""), "Reset the X, Y origin position"),
     }
 
     # Class variable to store the command UID
