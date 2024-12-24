@@ -169,6 +169,10 @@ class DiffDrive:
 
     def set_heading(self, degrees: float):
         """Set the heading in degrees"""
+        if self._heading == degrees:
+            picolog.debug(f"DiffDrive::set_heading - Already at required heading")
+            return
+        
         # Calculate the angle difference and the go the shortest way to the required heading
         angle_difference = (degrees - self._heading) % 360
         if angle_difference > 180:
@@ -208,28 +212,34 @@ class DiffDrive:
         
         delta_x = x - self._x_pos
         delta_y = y - self._y_pos
-        distance = math.sqrt(delta_x**2 + delta_y**2)
-        target_heading = math.atan2(delta_x, delta_y)
-        angle_to_turn = (target_heading - math.radians(self._heading)) % (2 * math.pi)
-        picolog.debug(f"DiffDrive::set_cartesian_position - Target heading: {math.degrees(target_heading) % 360} degrees requires turning {math.degrees(angle_to_turn) % 360} degrees")
 
-        if angle_to_turn > math.pi:
-            picolog.debug(f"DiffDrive::set_cartesian_position - Turning left {math.degrees(angle_to_turn)} degrees")
-            if math.degrees(angle_to_turn) > 0:
-                self.turn_left(360 - math.degrees(angle_to_turn))
+        distance = math.sqrt(delta_x**2 + delta_y**2)
+        target_heading_forwards = math.degrees(math.atan2(delta_x, delta_y))
+        target_heading_forwards = target_heading_forwards % 360
+        target_heading_backwards = (target_heading_forwards + 180) % 360
+
+        picolog.debug(f"DiffDrive::set_cartesian_position - Target heading forwards: {target_heading_forwards} degrees, target heading backwards: {target_heading_backwards} degrees")
+
+        is_direction_forwards = True
+        if min(abs(self._heading - target_heading_forwards), 360 - abs(self._heading - target_heading_forwards)) <= min(abs(self._heading - target_heading_backwards), 360 - abs(self._heading - target_heading_backwards)):
+            picolog.debug(f"DiffDrive::set_cartesian_position - Turning towards target heading forwards")
+            self.set_heading(target_heading_forwards)
         else:
-            picolog.debug(f"DiffDrive::set_cartesian_position - Turning right {math.degrees(angle_to_turn)} degrees")
-            if math.degrees(angle_to_turn) > 0:
-                self.turn_right(math.degrees(angle_to_turn))
+            picolog.debug(f"DiffDrive::set_cartesian_position - Turning towards target heading backwards")
+            self.set_heading(target_heading_backwards)
+            is_direction_forwards = False
         
         if not turn_only:
             # Wait for the turn to complete
             while self._stepper.is_busy:
                 pass
 
-            picolog.debug(f"DiffDrive::set_cartesian_position - Driving forward {distance} mm")
-            if distance > 0:
+            if is_direction_forwards:
+                picolog.debug(f"DiffDrive::set_cartesian_position - Driving forward {distance} mm")
                 self.__forward(distance)
+            else:
+                picolog.debug(f"DiffDrive::set_cartesian_position - Driving backward {distance} mm")
+                self.__backward(distance)
 
             # Update the Cartesian position
             self._x_pos = x
