@@ -126,6 +126,64 @@ def main():
                     while diff_drive.is_moving:
                         await asyncio.sleep_ms(250)
 
+                # Heading
+                if robot_command.command == "heading":
+                    diff_drive.set_heading(robot_command.parameters[0])
+
+                    # Wait for the drive to finish
+                    while diff_drive.is_moving:
+                        await asyncio.sleep_ms(250)
+
+                # Set X position (Cartesian coordinate control)
+                if robot_command.command == "position-x":
+                    diff_drive.set_cartesian_x_position(robot_command.parameters[0])
+
+                    # Wait for the drive to finish
+                    while diff_drive.is_moving:
+                        await asyncio.sleep_ms(250)
+
+                # Set Y position (Cartesian coordinate control)
+                if robot_command.command == "position-y":
+                    diff_drive.set_cartesian_y_position(robot_command.parameters[0])
+
+                    # Wait for the drive to finish
+                    while diff_drive.is_moving:
+                        await asyncio.sleep_ms(250)
+
+                # Set X, Y position (Cartesian coordinate control)
+                if robot_command.command == "position":
+                    diff_drive.set_cartesian_position(robot_command.parameters[0], robot_command.parameters[1])
+
+                    # Wait for the drive to finish
+                    while diff_drive.is_moving:
+                        await asyncio.sleep_ms(250)
+
+                # Point towards X, Y (Cartesian coordinate control)
+                if robot_command.command == "towards":
+                    diff_drive.turn_towards_cartesian_point(robot_command.parameters[0], robot_command.parameters[1])
+                    
+                    # Wait for the drive to finish
+                    while diff_drive.is_moving:
+                        await asyncio.sleep_ms(250)
+
+                # Reset the X, Y origin (Cartesian coordinate control)
+                if robot_command.command == "reset-origin":
+                    diff_drive.reset_origin()
+
+                # Get current heading
+                if robot_command.command == "get-heading":
+                    command_response = int(diff_drive.get_heading())
+
+                # Get X position (Cartesian coordinate control)
+                if robot_command.command == "get-position-x":
+                    x_pos, y_pos = diff_drive.get_cartesian_position()
+                    command_response = int(x_pos)
+
+                # Get Y position (Cartesian coordinate control)
+                if robot_command.command == "get-position-y":
+                    x_pos, y_pos = diff_drive.get_cartesian_position()
+                    command_response = int(y_pos)
+
                 # Pen control
                 if robot_command.command == "pen":
                     if robot_command.parameters[0] == 1:
@@ -244,49 +302,6 @@ def main():
                     diff_drive.set_rotational_velocity(configuration.rotational_target_speed_mmps, configuration.rotational_acceleration_mmpss)
                     diff_drive.set_wheel_calibration(configuration.wheel_calibration_um)
                     diff_drive.set_axel_calibration(configuration.axel_calibration_um)
-
-                # Set X position (Cartesian coordinate control)
-                if robot_command.command == "position-x":
-                    diff_drive.set_cartesian_x_position(robot_command.parameters[0])
-
-                    # Wait for the drive to finish
-                    while diff_drive.is_moving:
-                        await asyncio.sleep_ms(250)
-
-                # Set Y position (Cartesian coordinate control)
-                if robot_command.command == "position-y":
-                    diff_drive.set_cartesian_y_position(robot_command.parameters[0])
-
-                    # Wait for the drive to finish
-                    while diff_drive.is_moving:
-                        await asyncio.sleep_ms(250)
-
-                # Set X, Y position (Cartesian coordinate control)
-                if robot_command.command == "position":
-                    diff_drive.set_cartesian_position(robot_command.parameters[0], robot_command.parameters[1])
-
-                    # Wait for the drive to finish
-                    while diff_drive.is_moving:
-                        await asyncio.sleep_ms(250)
-
-                # Point towards X, Y (Cartesian coordinate control)
-                if robot_command.command == "towards":
-                    #diff_drive.turn_towards_cartesian_point(robot_command.parameters[0], robot_command.parameters[1])
-                    pass
-
-                # Get X position (Cartesian coordinate control)
-                if robot_command.command == "get-position-x":
-                    x_pos, y_pos = diff_drive.get_cartesian_position()
-                    command_response = int(x_pos)
-
-                # Get Y position (Cartesian coordinate control)
-                if robot_command.command == "get-position-y":
-                    x_pos, y_pos = diff_drive.get_cartesian_position()
-                    command_response = int(y_pos)
-
-                # Reset the X, Y origin (Cartesian coordinate control)
-                if robot_command.command == "reset-origin":
-                    diff_drive.reset_origin()
 
                 # Set the last processed command UID
                 ble_peripheral.last_processed_command_uid = robot_command.command_uid

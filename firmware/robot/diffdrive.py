@@ -134,14 +134,14 @@ class DiffDrive:
         self.__left(degrees)
         
         # Update the heading
-        self._heading -= degrees
+        self._heading = (self._heading - degrees) % 360
 
     def turn_right(self, degrees: float):
         """Rotational motion to the right"""
         self.__right(degrees)
 
         # Update the heading
-        self._heading += degrees
+        self._heading = (self._heading + degrees) % 360
 
     def __forward(self, distance_mm: float):
         """Linear motion forwards"""
@@ -172,8 +172,10 @@ class DiffDrive:
         # Calculate the angle difference and the go the shortest way to the required heading
         angle_difference = (degrees - self._heading) % 360
         if angle_difference > 180:
+            picolog.debug(f"DiffDrive::set_heading - Setting heading to {degrees} degrees by turning left {360 - angle_difference} degrees")
             self.turn_left(360 - angle_difference)
         else:
+            picolog.debug(f"DiffDrive::set_heading - Setting heading to {degrees} degrees by turning right {angle_difference} degrees")
             self.turn_right(angle_difference)
 
     def get_heading(self) -> float:
@@ -187,103 +189,62 @@ class DiffDrive:
         return r, theta
 
     def set_cartesian_x_position(self, x: float):
-        """Move to the specified x-coordinate using forward movement"""
-        if x == self._x_pos:
-            return
-        
-        delta_x = x - self._x_pos
-        direction = 0 if delta_x >= 0 else math.pi
-        angle_to_turn = (direction - self._heading) % (2 * math.pi)
-        if angle_to_turn > math.pi:
-            picolog.debug(f"DiffDrive::set_cartesian_x_position - Turning right {math.degrees(angle_to_turn)} degrees")
-            if math.degrees(angle_to_turn) > 0:
-                self.__right(360 - math.degrees(angle_to_turn))
-        else:
-            picolog.debug(f"DiffDrive::set_cartesian_x_position - Turning left {math.degrees(angle_to_turn)} degrees")
-            if math.degrees(angle_to_turn) > 0:
-                self.__left(math.degrees(angle_to_turn))
-
-        # Wait for the turn to complete
-        while self._stepper.is_busy:
-            pass
-
-        picolog.debug(f"DiffDrive::set_cartesian_x_position - Driving forward {abs(delta_x)} mm")
-        if abs(delta_x) > 0:
-            self.__forward(abs(delta_x))
-
-        # Update the Cartesian position
-        self._x_pos = x
-        self._heading = direction
+        """Move to the specified x-coordinate"""
+        self.set_cartesian_position(x, self._y_pos, False)
 
     def set_cartesian_y_position(self, y: float):
-        """Move to the specified y-coordinate using forward movement"""
-        if y == self._y_pos:
-            return
-        
-        delta_y = y - self._y_pos
-        direction = math.pi / 2 if delta_y >= 0 else 3 * math.pi / 2
-        angle_to_turn = (direction - self._heading) % (2 * math.pi)
-        if angle_to_turn > math.pi:
-            picolog.debug(f"DiffDrive::set_cartesian_y_position - Turning right {math.degrees(angle_to_turn)} degrees")
-            if math.degrees(angle_to_turn) > 0:
-                self.__right(360 - math.degrees(angle_to_turn))
-        else:
-            picolog.debug(f"DiffDrive::set_cartesian_y_position - Turning left {math.degrees(angle_to_turn)} degrees")
-            if math.degrees(angle_to_turn) > 0:
-                self.__left(math.degrees(angle_to_turn))
+        """Move to the specified y-coordinate"""
+        self.set_cartesian_position(self._x_pos, y, False)
 
-        # Wait for the turn to complete
-        while self._stepper.is_busy:
-            pass
+    def turn_towards_cartesian_point(self, x: float, y: float):
+        """Turn towards the specified Cartesian point"""
+        self.set_cartesian_position(x, y, True)
 
-        picolog.debug(f"DiffDrive::set_cartesian_y_position - Driving forward {abs(delta_y)} mm")
-        if abs(delta_y) > 0:
-            self.__forward(abs(delta_y))
-
-        # Update the Cartesian position
-        self._y_pos = y
-        self._heading = direction
-
-    def set_cartesian_position(self, x: float, y: float):
+    def set_cartesian_position(self, x: float, y: float, turn_only: bool = False):
         """Move to the specified x and y coordinates in one motion"""
         if x == self._x_pos and y == self._y_pos:
+            picolog.debug(f"DiffDrive::set_cartesian_position - Already at required position")
             return
         
         delta_x = x - self._x_pos
         delta_y = y - self._y_pos
         distance = math.sqrt(delta_x**2 + delta_y**2)
-        target_heading = math.atan2(delta_y, delta_x)
-        angle_to_turn = (target_heading - self._heading) % (2 * math.pi)
+        target_heading = math.atan2(delta_x, delta_y)
+        angle_to_turn = (target_heading - math.radians(self._heading)) % (2 * math.pi)
+        picolog.debug(f"DiffDrive::set_cartesian_position - Target heading: {math.degrees(target_heading) % 360} degrees requires turning {math.degrees(angle_to_turn) % 360} degrees")
+
         if angle_to_turn > math.pi:
-            picolog.debug(f"DiffDrive::set_cartesian_position - Turning right {math.degrees(angle_to_turn)} degrees")
-            if math.degrees(angle_to_turn) > 0:
-                self.__right(360 - math.degrees(angle_to_turn))
-        else:
             picolog.debug(f"DiffDrive::set_cartesian_position - Turning left {math.degrees(angle_to_turn)} degrees")
             if math.degrees(angle_to_turn) > 0:
-                self.__left(math.degrees(angle_to_turn))
+                self.turn_left(360 - math.degrees(angle_to_turn))
+        else:
+            picolog.debug(f"DiffDrive::set_cartesian_position - Turning right {math.degrees(angle_to_turn)} degrees")
+            if math.degrees(angle_to_turn) > 0:
+                self.turn_right(math.degrees(angle_to_turn))
         
-        # Wait for the turn to complete
-        while self._stepper.is_busy:
-            pass
+        if not turn_only:
+            # Wait for the turn to complete
+            while self._stepper.is_busy:
+                pass
 
-        picolog.debug(f"DiffDrive::set_cartesian_position - Driving forward {distance} mm")
-        if distance > 0:
-            self.__forward(distance)
+            picolog.debug(f"DiffDrive::set_cartesian_position - Driving forward {distance} mm")
+            if distance > 0:
+                self.__forward(distance)
 
-        # Update the Cartesian position
-        self._x_pos = x
-        self._y_pos = y
-        self._heading = target_heading
+            # Update the Cartesian position
+            self._x_pos = x
+            self._y_pos = y
 
     def get_cartesian_position(self) -> tuple:
         """Get the Cartesian x and y position"""
         return self._x_pos, self._y_pos
 
     def reset_origin(self):
-        """Reset the Cartesian origin to the current position"""
+        """Reset the Cartesian origin and heading to the current position"""
+        picolog.debug(f"DiffDrive::reset_origin - Resetting origin and heading")
         self._x_pos = 0
         self._y_pos = 0
+        self._heading = 0
 
     def __configure_linear_velocity(self):
         """Configure the steppers for the linear velocity"""
