@@ -27,7 +27,7 @@
 
 from servo import Servo
 from machine import Pin
-import library.picolog as picolog
+import picolog
 
 class Pen:
     """

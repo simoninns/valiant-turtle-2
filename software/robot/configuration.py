@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.picolog as picolog
+import picolog
 import ustruct
 from micropython import const
 

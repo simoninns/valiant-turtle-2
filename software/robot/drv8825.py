@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.picolog as picolog
+import picolog
 from machine import Pin
 
 class Drv8825:

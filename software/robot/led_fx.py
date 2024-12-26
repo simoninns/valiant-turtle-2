@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.picolog as picolog
+import picolog
 import machine, neopixel
 import asyncio
 
@@ -148,7 +148,7 @@ class LedFx:
         self.fade_speed[pixel_num] = fade_speed
 
     # Process the LED effects
-    async def process_leds_task(self):
+    async def run(self):
         """
         Asynchronous task to process and update the LED colors.
         This task continuously adjusts the current color values of the LEDs towards their target values
@@ -158,7 +158,7 @@ class LedFx:
         at regular intervals.
         """
 
-        picolog.debug("LedFx::process_leds_task - Task started")
+        picolog.debug("LedFx::run - Running")
         while True:
             for idx in range(self.number_of_leds):
                 if (self.target_red[idx] > self.current_red[idx]): self.current_red[idx] += self.fade_speed[idx]

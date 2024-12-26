@@ -26,8 +26,7 @@
 #************************************************************************
 
 from machine import I2C
-import library.picolog as picolog
-from library.robot_comms import PowerMonitor
+import picolog
 
 # INA260 Registers
 _INA260_REG_CONFIG = const(0x00)
@@ -130,12 +129,6 @@ class Ina260:
         self.i2c.writeto(self.address, buffer, False)
         response = int.from_bytes(self.i2c.readfrom(self.address, 2, True), "big")
         return response
-    
-    # Return a PowerMonitor object
-    @property
-    def power_monitor(self) -> PowerMonitor:
-        """Return a PowerMonitor object"""
-        return PowerMonitor(self.voltage_mV, self.current_mA, self.power_mW)
     
 if __name__ == "__main__":
     from main import main

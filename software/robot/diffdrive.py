@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.picolog as picolog
+import picolog
 from drv8825 import Drv8825
 from stepper import Stepper
 

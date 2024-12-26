@@ -25,7 +25,7 @@
 #
 #************************************************************************
 
-import library.picolog as picolog
+import picolog
 from pulse_generator import PulseGenerator
 from drv8825 import Drv8825
 
