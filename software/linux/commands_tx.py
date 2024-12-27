@@ -33,26 +33,35 @@ from ble_central import BleCentral
 class CommandsTx:
     def __init__(self, ble_central: BleCentral):
         self._ble_central = ble_central
-        self._command_sequence = 0
+        self._command_sequence = 1
+
+        self._short_timeout = 5.0
+        self._long_timeout = 60.0
 
     def __next_seq(self) -> int:
         self._command_sequence += 1
         if self._command_sequence > 255:
-            self._command_sequence = 0
+            self._command_sequence = 1
         return self._command_sequence
     
     async def __wait_for_command_response(self, seq_id: int) -> bytes:
         while True:
             await self._ble_central._p2c_queue_event.wait()
             data = self._ble_central._p2c_queue.pop(0)
-            _, seq_id_rx = struct.unpack("BB", data[:2])
+            self._ble_central._p2c_queue_event.clear()
+            seq_id_rx = data[0]
 
             # Check if the sequence ID matches
             if seq_id_rx == seq_id:
+                logging.info(f"Commands::__wait_for_command_response - Sequence ID = {seq_id_rx} matched")
                 return data
 
     # Command ID = 1
-    async def motors(self, enable: bool):
+    async def motors(self, enable: bool) -> bool:
+        if not self._ble_central.is_connected:
+            logging.info("Commands::motors - Not connected to a robot")
+            return False
+
         # Command to enable or disable the motors
         if enable:
             parameter = 1
@@ -61,95 +70,120 @@ class CommandsTx:
 
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("BBB", 1, seq_id, parameter)
+        data = struct.pack("<BBB", 1, seq_id, parameter)
         self._ble_central.add_to_c2p_queue(data)
-        logging.debug(f"Commands::motors - Command ID = 1, Sequence ID = {seq_id}, enable = {enable}")
+        logging.info(f"Commands::motors - Command ID = 1, Sequence ID = {seq_id}, enable = {enable}")
         
-        # Wait for the command to be processed with a 60 second timeout
+        # Wait for the command to be processed with a short timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=60.0)
-            logging.error(f"Commands::motors - Command ID = 1, Sequence ID = {seq_id} response received")
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"Commands::motors - Command ID = 1, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
 
-        # This command does not return any data, so we don't need to return anything
-        return
+        # This command does not return any data, so we don't need to return any
+        return True
 
     # Command ID = 2
-    async def forward(self, distance_mm: float):
+    async def forward(self, distance_mm: float) -> bool:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::forward - Not connected to a robot")
+            return False
+        
         # Command to move the robot forward
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("BBf", 2, seq_id, distance_mm)
+        data = struct.pack("<BBf", 2, seq_id, distance_mm)
         self._ble_central.add_to_c2p_queue(data)
         logging.debug(f"Commands::forward - Command ID = 2, Sequence ID = {seq_id}, distance = {distance_mm}")
 
-        # Wait for the command to be processed with a 60 second timeout
+        # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=60.0)
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
             logging.error(f"Commands::motors - Command ID = 2, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
             logging.error(f"Commands::motors - Command ID = 2, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
 
-        # This command does not return any data, so we don't need to return anything
-        return
+        # This command does not return any data, so we don't need to return any
+        return True
     
     # Command ID = 3
-    async def backward(self, distance_mm: float):
+    async def backward(self, distance_mm: float) -> bool:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::backward - Not connected to a robot")
+            return False
+        
         # Command to move the robot backward
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("BBf", 3, seq_id, distance_mm)
+        data = struct.pack("<BBf", 3, seq_id, distance_mm)
         self._ble_central.add_to_c2p_queue(data)
         logging.debug(f"Commands::backward - Command ID = 3, Sequence ID = {seq_id}, distance = {distance_mm}")
         
-        # Wait for the command to be processed with a 60 second timeout
+        # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=60.0)
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
             logging.error(f"Commands::motors - Command ID = 3, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
             logging.error(f"Commands::motors - Command ID = 3, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
 
-        # This command does not return any data, so we don't need to return anything
-        return
+        # This command does not return any data, so we don't need to return any
+        return True
     
     # Command ID = 4
-    async def left(self, angle_degrees: float):
+    async def left(self, angle_degrees: float) -> bool:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::left - Not connected to a robot")
+            return False
+        
         # Command to turn the robot left
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("BBf", 4, seq_id, angle_degrees)
+        data = struct.pack("<BBf", 4, seq_id, angle_degrees)
         self._ble_central.add_to_c2p_queue(data)
         logging.debug(f"Commands::left - Command ID = 4, Sequence ID = {seq_id}, angle = {angle_degrees}")
         
-        # Wait for the command to be processed with a 60 second timeout
+        # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=60.0)
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
             logging.error(f"Commands::motors - Command ID = 4, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
             logging.error(f"Commands::motors - Command ID = 4, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
 
-        # This command does not return any data, so we don't need to return anything
-        return
+        # This command does not return any data, so we don't need to return any
+        return True
     
     # Command ID = 5
-    async def right(self, angle_degrees: float):
+    async def right(self, angle_degrees: float) -> bool:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::right - Not connected to a robot")
+            return False
+        
         # Command to turn the robot right
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("BBf", 5, seq_id, angle_degrees)
+        data = struct.pack("<BBf", 5, seq_id, angle_degrees)
         self._ble_central.add_to_c2p_queue(data)
         logging.debug(f"Commands::right - Command ID = 5, Sequence ID = {seq_id}, angle = {angle_degrees}")
         
-        # Wait for the command to be processed with a 60 second timeout
+        # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=60.0)
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
             logging.error(f"Commands::motors - Command ID = 5, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
             logging.error(f"Commands::motors - Command ID = 5, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
 
-        # This command does not return any data, so we don't need to return anything
-        return
+        # This command does not return any data, so we don't need to return any
+        return True
 
     # async def heading(self, heading_degrees: float):
     #     self._diff_drive.set_heading(heading_degrees)

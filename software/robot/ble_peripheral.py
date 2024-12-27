@@ -25,10 +25,12 @@
 #
 #************************************************************************
 
+import aioble.device
 import picolog
 import aioble
 import bluetooth
 import asyncio
+import struct
 
 from machine import unique_id
 from micropython import const
@@ -40,6 +42,9 @@ class BlePeripheral:
     def __init__(self):
         # Get the local device's Unique ID (used as the serial number)
         self._uid = "{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}".format(*unique_id())
+
+        # Advertising flag
+        self._is_advertising = True
 
         # Flag to show connected status
         self._connected = False
@@ -115,7 +120,7 @@ class BlePeripheral:
         picolog.debug("BlePeripheral::__maintain_connection - running")
         while True:
             # If we are not connected, clear the queues then advertise and wait for connection
-            if not self._connected:
+            if self._is_advertising:
                 # Clear the queues
                 self._c2p_queue.clear()
                 self._p2c_queue.clear()
@@ -125,65 +130,78 @@ class BlePeripheral:
 
                 # Wait for something to connect
                 picolog.debug("BlePeripheral::__maintain_connection - Advertising and waiting for connection from central...")
-                self.__connection = await aioble.advertise(
+                self._ble_connection = await aioble.advertise(
                     ble_advertising_frequency_us,
                     name=self.peripheral_advertising_name,
                     services=[self.peripheral_advertising_uuid],
                     appearance=self.peripheral_appearance_generic_remote_control,
                     manufacturer=self.peripheral_manufacturer,
                 )
-                picolog.info(f"BlePeripheral::__maintain_connection - Central with address {self.__connection.device.addr_hex()} has connected - advertising stopped")
+                picolog.info(f"BlePeripheral::__maintain_connection - Central with address {self._ble_connection.device.addr_hex()} has connected - advertising stopped")
+                self._is_advertising = False
+                self._connected = True
             else:
                 # If we are connected, wait for disconnection
-                asyncio.sleep_ms(250)
+                await asyncio.sleep(0.25)
 
-    async def __wait_for_data(self, characteristic, t_ms=5000):
+    async def send_data_p2c(self, p2c_data_packet: bytearray):
+        if p2c_data_packet is not None:
+            self.tx_p2c_characteristic.notify(self._ble_connection, p2c_data_packet)
+        else:
+            TypeError("BlePeripheral::send_data_p2c - p2c_data_packet is None")
+
+    async def get_data_c2p(self, characteristic, timeout_ms=2000):
         try:
-            _, data = await characteristic.written(timeout_ms=t_ms)
-            return data
+            _, c2p_data_packet = await characteristic.written(timeout_ms=timeout_ms)
+            return c2p_data_packet
         except asyncio.TimeoutError:
-            picolog.debug("BlePeripheral::wait_for_data - Data timed-out - (Central probably disappeared)")
-            self.__connected = False
+            picolog.debug(f"BlePeripheral::get_data_c2p - Timed-out")
             return None
+
+    # Note: We use an atomic exchange of data with the central to ensure that the data is received and processed
+    # as, after the initial connection, the central can sometimes miss data packets
+    async def exchange_data(self, p2c_data_packet: bytearray):
+        for attempt in range(1, 4):
+            await self.send_data_p2c(p2c_data_packet)
+            c2p_data_packet = await self.get_data_c2p(self.rx_c2p_characteristic)
+            if c2p_data_packet is not None:
+                return c2p_data_packet
+            picolog.debug(f"BlePeripheral::exchange_data - No response from central after attempt {attempt}")
+
+        picolog.error("BlePeripheral::exchange_data - All 3 attempts failed")
+        return None
 
     async def __handle_commands(self):
         picolog.debug("BlePeripheral::__handle_commands - running")
         while True:
             # If we are connected, poll central for data
             if self._connected:
-                # Send a command service update (which causes central to reply)
-                try:
-                    # Check the p2c queue and send any data to central (send blank data if no data)
-                    if len(self._p2c_queue) == 0:
-                        data_packet = bytearray(20)
-                        self.tx_p2c_characteristic.notify(self.__connection, data_packet)
+                # If a response is available, send it to central, otherwise send a NOP
+                p2c_data_packet = bytearray(20)
+                if len(self._p2c_queue) > 0:
+                    p2c_data_packet = self._p2c_queue.pop(0)
+
+                    # Just temporarily log the sequence number for testing
+                    p2c_sequence = struct.unpack("<B", p2c_data_packet[0:1])[0]
+                    picolog.debug(f"BlePeripheral::__handle_commands - Sending data to central with sequence = {p2c_sequence}")
+
+                # Exchange data with central
+                c2p_data_packet = await self.exchange_data(p2c_data_packet)
+
+                # If we have received data from central, add it to the queue
+                if c2p_data_packet is not None:
+                    if len(self._c2p_queue) < self._max_queue_elements:
+                        self._c2p_queue.append(c2p_data_packet)
+                        self._c2p_queue_event.set()
                     else:
-                        data_packet = self._p2c_queue.pop(0)
-                        self.tx_p2c_characteristic.notify(self.__connection, data_packet)
-                        
-                except Exception as e:
-                    picolog.debug("BlePeripheral::__handle_commands - Exception was flagged (Central has probably disappeared)")
-                    self.__connected = False
+                        picolog.debug("BlePeripheral::__handle_commands - c2p queue is full - data not added")
+                else:
+                    self._connected = False
+                    self._is_advertising = True
+                    picolog.info("BlePeripheral::__handle_commands - No response from central... Flagged as disconnected")
 
-                # Since disconnection is asynchronous, we need to check if we are still connected
-                if self.__connected:
-                    # Wait for poll response from central
-                    service_data = await self.__wait_for_data(self.rx_c2p_characteristic)
-                    if service_data != None:
-                        # Check the length of the data packet - if it is not 20 bytes, then it is a nop command
-                        if len(service_data) == 20:
-                            # Queue the data packet for processing
-                            if len(self._c2p_queue) < self._max_queue_elements:
-                                self._c2p_queue.append(service_data)
-                                self._c2p_queue_event.set()
-                            else:
-                                picolog.debug("BlePeripheral::__handle_commands - c2p queue is full - data not added")
-
-                # Poll central 5 times a second
-                if self.__connected: await asyncio.sleep_ms(200)
-            
-            # If we are not connected, wait for 250ms
-            asyncio.sleep_ms(250)
+            # Poll central a maximum of 5 times a second
+            await asyncio.sleep(0.2)
 
 if __name__ == "__main__":
     from main import main

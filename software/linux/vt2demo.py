@@ -33,20 +33,21 @@ async def demo(ble_central: BleCentral, commands_tx: CommandsTx):
     while True:
         if ble_central.is_connected:
             logging.info("Motors on")
-            await commands_tx.motors(True)
+            result = await commands_tx.motors(True)
+            if result:
+                for i in range(4):
+                    logging.info("Forward 500mm")
+                    await commands_tx.forward(500)
+                    logging.info("Turn right 90 degrees")
+                    await commands_tx.right(90)
 
-            for i in range(4):
-                logging.info("Forward 500mm")
-                await commands_tx.forward(500)
-                logging.info("Turn right 90 degrees")
-                await commands_tx.right(90)
+                logging.info("Motors off")
+                await commands_tx.motors(False)
 
-            logging.info("Motors off")
-            await commands_tx.motors(False)
-            await asyncio.sleep(5)
+                logging.info("Pausing for 5 seconds before repeating")
+                await asyncio.sleep(5)
         else:
-            logging.info("Waiting for connection")
-            await asyncio.sleep(2)
+            await asyncio.sleep(1)
 
 async def aio_main():
     logging.info("Running BLE central async tasks") 

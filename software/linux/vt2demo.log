@@ -1,0 +1,253 @@
+[2024-12-27 16:31:43,325 vt2demo.py::aio_main():53]INFO: Running BLE central async tasks
+[2024-12-27 16:31:43,325 ble_central.py::run():84]INFO: Running BLE central async tasks
+[2024-12-27 16:31:43,326 ble_central.py::__maintain_connection():93]INFO: Running maintain connection task
+[2024-12-27 16:31:43,326 ble_central.py::__maintain_connection():98]INFO: Scanning for BLE peripheral...
+[2024-12-27 16:31:43,339 ble_central.py::__handle_commands():139]INFO: Running handle commands task
+[2024-12-27 16:31:44,139 ble_central.py::__maintain_connection():102]INFO: BLE peripheral found with address 2C:CF:67:98:6C:F7
+[2024-12-27 16:31:47,690 ble_central.py::__maintain_connection():115]INFO: Subscribed to P2C notifications
+[2024-12-27 16:31:48,329 vt2demo.py::demo():35]INFO: Motors on
+[2024-12-27 16:31:48,329 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 2, enable = True
+[2024-12-27 16:31:48,770 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x02\x01'
+[2024-12-27 16:31:49,040 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 2 matched
+[2024-12-27 16:31:49,040 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:31:49,040 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x03\x00\x00\xfaC'
+[2024-12-27 16:31:54,981 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 3 matched
+[2024-12-27 16:31:54,981 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 3 response received
+[2024-12-27 16:31:54,981 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:31:54,981 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x04\x00\x00\xb4B'
+[2024-12-27 16:31:58,760 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 4 matched
+[2024-12-27 16:31:58,760 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 4 response received
+[2024-12-27 16:31:58,760 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:31:58,760 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x05\x00\x00\xfaC'
+[2024-12-27 16:32:04,745 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 5 matched
+[2024-12-27 16:32:04,745 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 5 response received
+[2024-12-27 16:32:04,745 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:32:04,745 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x06\x00\x00\xb4B'
+[2024-12-27 16:32:08,255 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 6 matched
+[2024-12-27 16:32:08,255 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 6 response received
+[2024-12-27 16:32:08,255 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:32:08,255 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x07\x00\x00\xfaC'
+[2024-12-27 16:32:14,240 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 7 matched
+[2024-12-27 16:32:14,240 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 7 response received
+[2024-12-27 16:32:14,240 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:32:14,240 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x08\x00\x00\xb4B'
+[2024-12-27 16:32:18,065 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 8 matched
+[2024-12-27 16:32:18,065 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 8 response received
+[2024-12-27 16:32:18,070 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:32:18,070 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\t\x00\x00\xfaC'
+[2024-12-27 16:32:24,005 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 9 matched
+[2024-12-27 16:32:24,005 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 9 response received
+[2024-12-27 16:32:24,010 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:32:24,010 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\n\x00\x00\xb4B'
+[2024-12-27 16:32:27,516 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 10 matched
+[2024-12-27 16:32:27,516 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 10 response received
+[2024-12-27 16:32:27,516 vt2demo.py::demo():44]INFO: Motors off
+[2024-12-27 16:32:27,516 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 11, enable = False
+[2024-12-27 16:32:27,516 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x0b\x00'
+[2024-12-27 16:32:27,786 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 11 matched
+[2024-12-27 16:33:28,187 base_events.py::default_exception_handler():1821]ERROR: Task exception was never retrieved
+future: <Task finished name='Task-1' coro=<aio_main() done, defined at /home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py:52> exception=KeyboardInterrupt()>
+Traceback (most recent call last):
+  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 71, in <module>
+    main()
+  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 68, in main
+    asyncio.run(aio_main())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 193, in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+  File "/usr/lib/python3.12/asyncio/runners.py", line 62, in __exit__
+    self.close()
+  File "/usr/lib/python3.12/asyncio/runners.py", line 70, in close
+    _cancel_all_tasks(loop)
+  File "/usr/lib/python3.12/asyncio/runners.py", line 205, in _cancel_all_tasks
+    loop.run_until_complete(tasks.gather(*to_cancel, return_exceptions=True))
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 61, in aio_main
+    await asyncio.gather(*tasks)
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 47, in demo
+    while True:
+          ^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 157, in _on_sigint
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+[2024-12-27 16:33:28,189 base_events.py::default_exception_handler():1821]ERROR: Task was destroyed but it is pending!
+task: <Task cancelling name='Task-2' coro=<BleCentral.run() running at /home/sdi/github/valiant-turtle-2/software/linux/ble_central.py:90> wait_for=<_GatheringFuture finished exception=CancelledError()> cb=[gather.<locals>._done_callback() at /usr/lib/python3.12/asyncio/tasks.py:767, gather.<locals>._done_callback() at /usr/lib/python3.12/asyncio/tasks.py:767]>
+[2024-12-27 16:33:28,189 base_events.py::default_exception_handler():1821]ERROR: Task was destroyed but it is pending!
+task: <Task cancelling name='Task-4' coro=<BleCentral.__maintain_connection() running at /home/sdi/github/valiant-turtle-2/software/linux/ble_central.py:105> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[gather.<locals>._done_callback() at /usr/lib/python3.12/asyncio/tasks.py:767, gather.<locals>._done_callback() at /usr/lib/python3.12/asyncio/tasks.py:767]>
+[2024-12-27 16:33:28,189 base_events.py::default_exception_handler():1821]ERROR: _GatheringFuture exception was never retrieved
+future: <_GatheringFuture finished exception=CancelledError()>
+Traceback (most recent call last):
+  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 71, in <module>
+    main()
+  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 68, in main
+    asyncio.run(aio_main())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 193, in run
+    with Runner(debug=debug, loop_factory=loop_factory) as runner:
+  File "/usr/lib/python3.12/asyncio/runners.py", line 62, in __exit__
+    self.close()
+  File "/usr/lib/python3.12/asyncio/runners.py", line 70, in close
+    _cancel_all_tasks(loop)
+  File "/usr/lib/python3.12/asyncio/runners.py", line 205, in _cancel_all_tasks
+    loop.run_until_complete(tasks.gather(*to_cancel, return_exceptions=True))
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 61, in aio_main
+    await asyncio.gather(*tasks)
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 47, in demo
+    while True:
+          ^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 157, in _on_sigint
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/sdi/github/valiant-turtle-2/software/linux/ble_central.py", line 144, in __handle_commands
+    await self._p2c_notification_event.wait()
+  File "/usr/lib/python3.12/asyncio/locks.py", line 212, in wait
+    await fut
+asyncio.exceptions.CancelledError
+[2024-12-27 16:33:59,815 vt2demo.py::aio_main():53]INFO: Running BLE central async tasks
+[2024-12-27 16:33:59,815 ble_central.py::run():84]INFO: Running BLE central async tasks
+[2024-12-27 16:33:59,815 ble_central.py::__maintain_connection():93]INFO: Running maintain connection task
+[2024-12-27 16:33:59,815 ble_central.py::__maintain_connection():98]INFO: Scanning for BLE peripheral...
+[2024-12-27 16:33:59,829 ble_central.py::__handle_commands():139]INFO: Running handle commands task
+[2024-12-27 16:34:00,201 ble_central.py::__maintain_connection():102]INFO: BLE peripheral found with address 2C:CF:67:98:6C:F7
+[2024-12-27 16:34:02,128 ble_central.py::__maintain_connection():115]INFO: Subscribed to P2C notifications
+[2024-12-27 16:34:02,817 vt2demo.py::demo():35]INFO: Motors on
+[2024-12-27 16:34:02,817 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 2, enable = True
+[2024-12-27 16:34:03,299 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x02\x01'
+[2024-12-27 16:34:03,569 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 2 matched
+[2024-12-27 16:34:03,569 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:34:03,569 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x03\x00\x00\xfaC'
+[2024-12-27 16:34:09,285 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 3 matched
+[2024-12-27 16:34:09,285 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 3 response received
+[2024-12-27 16:34:09,285 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:34:09,285 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x04\x00\x00\xb4B'
+[2024-12-27 16:34:12,794 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 4 matched
+[2024-12-27 16:34:12,794 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 4 response received
+[2024-12-27 16:34:12,794 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:34:12,794 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x05\x00\x00\xfaC'
+[2024-12-27 16:34:18,509 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 5 matched
+[2024-12-27 16:34:18,509 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 5 response received
+[2024-12-27 16:34:18,509 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:34:18,509 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x06\x00\x00\xb4B'
+[2024-12-27 16:34:22,020 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 6 matched
+[2024-12-27 16:34:22,020 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 6 response received
+[2024-12-27 16:34:22,020 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:34:22,020 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x07\x00\x00\xfaC'
+[2024-12-27 16:34:28,004 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 7 matched
+[2024-12-27 16:34:28,004 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 7 response received
+[2024-12-27 16:34:28,004 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:34:28,004 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x08\x00\x00\xb4B'
+[2024-12-27 16:34:31,784 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 8 matched
+[2024-12-27 16:34:31,784 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 8 response received
+[2024-12-27 16:34:31,789 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:34:31,789 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\t\x00\x00\xfaC'
+[2024-12-27 16:34:37,769 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 9 matched
+[2024-12-27 16:34:37,769 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 9 response received
+[2024-12-27 16:34:37,769 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:34:37,769 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\n\x00\x00\xb4B'
+[2024-12-27 16:34:41,280 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 10 matched
+[2024-12-27 16:34:41,280 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 10 response received
+[2024-12-27 16:34:41,280 vt2demo.py::demo():44]INFO: Motors off
+[2024-12-27 16:34:41,280 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 11, enable = False
+[2024-12-27 16:34:41,280 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x0b\x00'
+[2024-12-27 16:34:41,550 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 11 matched
+[2024-12-27 16:35:38,375 vt2demo.py::aio_main():53]INFO: Running BLE central async tasks
+[2024-12-27 16:35:38,375 ble_central.py::run():84]INFO: Running BLE central async tasks
+[2024-12-27 16:35:38,376 ble_central.py::__maintain_connection():93]INFO: Running maintain connection task
+[2024-12-27 16:35:38,376 ble_central.py::__maintain_connection():98]INFO: Scanning for BLE peripheral...
+[2024-12-27 16:35:38,389 ble_central.py::__handle_commands():139]INFO: Running handle commands task
+[2024-12-27 16:35:38,928 ble_central.py::__maintain_connection():102]INFO: BLE peripheral found with address 2C:CF:67:98:6C:F7
+[2024-12-27 16:35:41,533 ble_central.py::__maintain_connection():115]INFO: Subscribed to P2C notifications
+[2024-12-27 16:35:42,379 vt2demo.py::demo():35]INFO: Motors on
+[2024-12-27 16:35:42,379 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 2, enable = True
+[2024-12-27 16:35:42,884 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x02\x01'
+[2024-12-27 16:35:43,154 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 2 matched
+[2024-12-27 16:35:43,154 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:35:43,154 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x03\x00\x00\xfaC'
+[2024-12-27 16:35:48,825 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 3 matched
+[2024-12-27 16:35:48,825 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 3 response received
+[2024-12-27 16:35:48,825 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:35:48,825 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x04\x00\x00\xb4B'
+[2024-12-27 16:35:52,335 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 4 matched
+[2024-12-27 16:35:52,335 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 4 response received
+[2024-12-27 16:35:52,335 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:35:52,335 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x05\x00\x00\xfaC'
+[2024-12-27 16:35:58,274 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 5 matched
+[2024-12-27 16:35:58,274 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 5 response received
+[2024-12-27 16:35:58,274 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:35:58,274 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x06\x00\x00\xb4B'
+[2024-12-27 16:36:02,054 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 6 matched
+[2024-12-27 16:36:02,054 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 6 response received
+[2024-12-27 16:36:02,054 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:36:02,054 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x07\x00\x00\xfaC'
+[2024-12-27 16:36:07,770 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 7 matched
+[2024-12-27 16:36:07,770 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 7 response received
+[2024-12-27 16:36:07,770 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:36:07,770 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x08\x00\x00\xb4B'
+[2024-12-27 16:36:11,279 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 8 matched
+[2024-12-27 16:36:11,279 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 8 response received
+[2024-12-27 16:36:11,279 vt2demo.py::demo():39]INFO: Forward 500mm
+[2024-12-27 16:36:11,279 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\t\x00\x00\xfaC'
+[2024-12-27 16:36:17,219 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 9 matched
+[2024-12-27 16:36:17,219 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 9 response received
+[2024-12-27 16:36:17,219 vt2demo.py::demo():41]INFO: Turn right 90 degrees
+[2024-12-27 16:36:17,219 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\n\x00\x00\xb4B'
+[2024-12-27 16:36:20,999 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 10 matched
+[2024-12-27 16:36:20,999 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 10 response received
+[2024-12-27 16:36:20,999 vt2demo.py::demo():44]INFO: Motors off
+[2024-12-27 16:36:20,999 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 11, enable = False
+[2024-12-27 16:36:20,999 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x0b\x00'
+[2024-12-27 16:36:21,269 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 11 matched
+[2024-12-27 16:36:21,269 vt2demo.py::demo():47]INFO: Pausing for 5 seconds before repeating
+[2024-12-27 16:36:26,270 vt2demo.py::demo():35]INFO: Motors on
+[2024-12-27 16:36:26,270 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 12, enable = True
+[2024-12-27 16:36:26,444 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x0c\x01'
+[2024-12-27 16:36:31,271 commands_tx.py::motors():81]ERROR: Commands::motors - Command ID = 1, Sequence ID = 12 timed out
+[2024-12-27 16:36:31,271 ble_central.py::flag_disconnection():80]INFO: Application has flagged disconnection from the peripheral
+[2024-12-27 16:36:34,048 ble_central.py::__maintain_connection():126]INFO: Disconnected from peripheral
+[2024-12-27 16:36:35,051 ble_central.py::__maintain_connection():98]INFO: Scanning for BLE peripheral...
+[2024-12-27 16:36:35,401 ble_central.py::__maintain_connection():102]INFO: BLE peripheral found with address 2C:CF:67:98:6C:F7

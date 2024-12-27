@@ -76,6 +76,10 @@ class BleCentral:
         else:
             logging.info("C2P queue is full - data not added")
 
+    def flag_disconnection(self):
+        logging.info("Application has flagged disconnection from the peripheral")
+        self._connected = False
+
     async def run(self):
         logging.info("Running BLE central async tasks") 
 
@@ -88,12 +92,8 @@ class BleCentral:
     async def __maintain_connection(self):
         logging.info("Running maintain connection task")
         while True:
-            # If we are not connected, clear the queues then advertise and wait for connection
+            # If we are not connected, advertise and wait for connection
             if not self._connected:
-                # Clear the queues
-                self._c2p_queue.clear()
-                self._p2c_queue.clear()
-
                 # Scan for the peripheral
                 logging.info("Scanning for BLE peripheral...")
                 scanner = BleakScanner()
@@ -106,26 +106,43 @@ class BleCentral:
                         if self._client.is_connected:
                             # We should probably pair here... but bleak doesn't support programmatic pairing
 
+                            # Clear the queues
+                            self._c2p_queue.clear()
+                            self._p2c_queue.clear()
+
                             # Subscribe to notifications on the tx_p2c_characteristic
                             await self._client.start_notify(self._tx_p2c_characteristic_uuid, self.__p2c_notification_handler)
-
-                            logging.info("Connected to peripheral")
+                            logging.info("Subscribed to P2C notifications")
                             self._connected = True
+
+                            # Wait for disconnection
+                            while self._client.is_connected and self._connected:
+                                await asyncio.sleep(0.25)
+
+                            # Ensure that we are disconnected at the BLE level
+                            if self._client.is_connected:
+                                await self._client.disconnect()
+
+                            logging.info("Disconnected from peripheral")
+                            self._connected = False
                         else:
                             logging.info("Failed to connect to peripheral")
+                            self._connected = False
                 else:
                     logging.info("BLE peripheral not found")
-            else:
-                # If we are connected, wait for disconnection
-                await asyncio.sleep(0.25)
+                    self._connected = False
+
+            # Wait for 1 second before checking again
+            await asyncio.sleep(1)
 
     async def __handle_commands(self):
         logging.info("Running handle commands task")
         while True:
             while self._connected:
                 # Wait for a notification to be received
+                #logging.info("Waiting for P2C notification event")
                 await self._p2c_notification_event.wait()
-                self._p2c_notification_event.clear()
+                #logging.info("P2C notification event received")
     
                 # Send any data in the c2p queue to the peripheral
                 if len(self._c2p_queue) > 0:
@@ -136,6 +153,9 @@ class BleCentral:
                     # If the queue is empty, send a nop
                     data_packet = bytearray(20)
                     await self._client.write_gatt_char(self._rx_c2p_characteristic_uuid, data_packet, response=False)
+
+                # Clear the notification event
+                self._p2c_notification_event.clear()
             else:
                 # If we are not connected, wait for 250ms
                 await asyncio.sleep(0.25)
@@ -146,7 +166,10 @@ class BleCentral:
             # Queue the data packet for processing
             if len(self._p2c_queue) < self._max_queue_elements:
                 self._p2c_queue.append(service_data)
+                #logging.info(f"Received data from peripheral: {service_data}, appended to queue ({len(self._p2c_queue)} elements)")
                 self._p2c_queue_event.set()
+        else:
+            logging.info(f"Received data from peripheral: {service_data} - invalid length")
 
         # Notify the main async task that data has been received
         self._p2c_notification_event.set()

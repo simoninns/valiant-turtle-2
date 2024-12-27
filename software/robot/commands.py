@@ -26,6 +26,7 @@
 #************************************************************************
 
 import picolog
+import asyncio
 
 from pen import Pen
 from ina260 import Ina260
@@ -33,8 +34,6 @@ from eeprom import Eeprom
 from configuration import Configuration
 from led_fx import LedFx
 from diffdrive import DiffDrive
-
-import asyncio
 
 class Commands:
     def __init__(self, pen :Pen, ina260 :Ina260, eeprom :Eeprom, led_fx :LedFx, diff_drive :DiffDrive, configuration :Configuration):
@@ -56,55 +55,55 @@ class Commands:
         self._diff_drive.drive_forward(distance_mm)
         # Wait for the drive to finish
         while self._diff_drive.is_moving:
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(0.25)
 
     async def backward(self, distance_mm: float):
         self._diff_drive.drive_backward(distance_mm)
         # Wait for the drive to finish
         while self._diff_drive.is_moving:
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(0.25)
 
     async def left(self, angle_degrees: float):
         self._diff_drive.turn_left(angle_degrees)
         # Wait for the drive to finish
         while self._diff_drive.is_moving:
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(0.25)
 
     async def right(self, angle_degrees: float):
         self._diff_drive.turn_right(angle_degrees)
         # Wait for the drive to finish
         while self._diff_drive.is_moving:
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(0.25)
 
     async def heading(self, heading_degrees: float):
         self._diff_drive.set_heading(heading_degrees)
         # Wait for the drive to finish
         while self._diff_drive.is_moving:
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(0.25)
 
     async def position_x(self, x_mm: float):
         self._diff_drive.set_cartesian_x_position(x_mm)
         # Wait for the drive to finish
         while self._diff_drive.is_moving:
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(0.25)
 
     async def position_y(self, y_mm: float):
         self._diff_drive.set_cartesian_y_position(y_mm)
         # Wait for the drive to finish
         while self._diff_drive.is_moving:
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(0.25)
 
     async def position(self, x_mm: float, y_mm: float):
         self._diff_drive.set_cartesian_position(x_mm, y_mm)
         # Wait for the drive to finish
         while self._diff_drive.is_moving:
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(0.25)
 
     async def towards(self, x_mm: float, y_mm: float):
         self._diff_drive.turn_towards_cartesian_point(x_mm, y_mm)
         # Wait for the drive to finish
         while self._diff_drive.is_moving:
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(0.25)
 
     async def reset_origin(self):
         self._diff_drive.reset_origin()
