@@ -76,7 +76,7 @@ class BlePeripheral:
         if len(self._p2c_queue) < self._max_queue_elements:
             self._p2c_queue.append(data)
         else:
-            picolog.debug("BlePeripheral::add_to_p2c_queue - Queue is full - data not added")
+            picolog.debug("BlePeripheral::add_to_p2c_queue - P2C queue is full - data not added")
 
     def __ble_advertising_definitions(self):
         # Definitions used for advertising via BLE
