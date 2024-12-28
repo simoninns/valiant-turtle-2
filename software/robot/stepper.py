@@ -132,8 +132,9 @@ class Stepper:
         if self._is_busy:
             raise RuntimeError("Stepper::move - Stepper is currently busy")
         
-        if (steps < 1):
-            raise ValueError("Stepper::move - Steps must be greater than 0")
+        if (steps == 0):
+            picolog.debug("Stepper::move - Steps must be greater than 0 - not moving")
+            return
 
         # Set the stepper as busy
         self._is_busy = True
@@ -166,8 +167,8 @@ class Stepper:
             # One-shot move
             picolog.debug(f"Stepper::move - Performing one-shot move of {self._total_steps} steps at {self._intervals_per_second} steps per second)")
             if not Stepper.test_only:
-                # Move at the minimum speed for one-shot moves (16 pps)
-                self.pulse_generator.set(int(self._intervals_per_second), self._total_steps)
+                # Move at a low speed during a one-shot move
+                self.pulse_generator.set(int(self._intervals_per_second * 4), self._total_steps)
                 self._steps_remaining = 0
                 self._track_actual_steps = self._total_steps
         else:

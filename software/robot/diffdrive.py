@@ -177,10 +177,12 @@ class DiffDrive:
         angle_difference = (degrees - self._heading) % 360
         if angle_difference > 180:
             picolog.debug(f"DiffDrive::set_heading - Setting heading to {degrees} degrees by turning left {360 - angle_difference} degrees")
-            self.turn_left(360 - angle_difference)
+            if (360 - angle_difference) > 0: 
+                self.turn_left(360 - angle_difference)
         else:
             picolog.debug(f"DiffDrive::set_heading - Setting heading to {degrees} degrees by turning right {angle_difference} degrees")
-            self.turn_right(angle_difference)
+            if angle_difference > 0:
+                self.turn_right(angle_difference)
 
     def get_heading(self) -> float:
         """Get the heading in degrees"""

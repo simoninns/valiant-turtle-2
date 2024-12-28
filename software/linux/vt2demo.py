@@ -31,6 +31,8 @@ import csv
 from ble_central import BleCentral
 from commands_tx import CommandsTx
 
+import cat
+
 async def command_test(ble_central: BleCentral, commands_tx: CommandsTx):
     while True:
         if ble_central.is_connected:
@@ -129,7 +131,7 @@ async def command_test(ble_central: BleCentral, commands_tx: CommandsTx):
         else:
             await asyncio.sleep(1)
 
-async def battery_test(ble_central: BleCentral, commands_tx: CommandsTx):
+async def battery_discharge_test(ble_central: BleCentral, commands_tx: CommandsTx):
     distance = 0
 
     # Open CSV file to store the output
@@ -165,7 +167,8 @@ async def aio_main():
     tasks = [
         asyncio.create_task(ble_central.run()),
         #asyncio.create_task(command_test(ble_central, commands_tx)),
-        asyncio.create_task(battery_test(ble_central, commands_tx)),
+        #asyncio.create_task(battery_discharge_test(ble_central, commands_tx)),
+        asyncio.create_task(cat.draw_cat(ble_central, commands_tx)),
     ]
     await asyncio.gather(*tasks)
 
