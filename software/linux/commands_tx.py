@@ -359,7 +359,11 @@ class CommandsTx:
             return False, 0.0
 
         # Extract the heading from the response
-        seq_id, heading = struct.unpack("<Bf", response[:5])
+        try:
+            seq_id, heading = struct.unpack("<Bf", response[:5])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_heading - Error unpacking response: {e}")
+            return False, 0.0
         logging.info(f"CommandsTx::get_heading - Heading = {heading}")
         return True, heading
     
@@ -385,7 +389,11 @@ class CommandsTx:
             return False, 0.0, 0.0
 
         # Extract the position from the response
-        seq_id, x, y = struct.unpack("<Bff", response[:9])
+        try:
+            seq_id, x, y = struct.unpack("<Bff", response[:9])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0
         logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
         return True, x, y
     
@@ -446,7 +454,7 @@ class CommandsTx:
     async def get_power(self) -> tuple[bool, int, int, int]:
         if not self._ble_central.is_connected:
             logging.error("CommandsTx::get_power - Not connected to a robot")
-            return False, 0.0
+            return False, 0, 0, 0
         
         # Command to get the robot power
         # Generate a sequence ID and queue the command
@@ -461,10 +469,14 @@ class CommandsTx:
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::get_power - Command ID = 16, Sequence ID = {seq_id} timed out")
             self._ble_central.flag_disconnection()
-            return False, 0.0
+            return False, 0, 0, 0
 
         # Extract the power from the response
-        seq_id, mv, ma, mw = struct.unpack("<Blll", response[:13])
+        try:
+            seq_id, mv, ma, mw = struct.unpack("<Blll", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_power - Error unpacking response: {e}")
+            return False, 0, 0, 0
         logging.info(f"CommandsTx::get_power - mV = {mv}, mA = {ma}, mW = {mw}")
         return True, mv, ma, mw 
     
@@ -490,7 +502,11 @@ class CommandsTx:
             return False, False
 
         # Extract the pen status from the response
-        seq_id, pen_up = struct.unpack("<BB", response[:2])
+        try:
+            seq_id, pen_up = struct.unpack("<BB", response[:2])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_pen - Error unpacking response: {e}")
+            return False, False
         logging.info(f"CommandsTx::get_pen - Pen up = {pen_up}")
         return True, pen_up
     
@@ -564,7 +580,11 @@ class CommandsTx:
             return False, 0, 0
 
         # Extract the linear velocity from the response
-        seq_id, target_speed, acceleration = struct.unpack("<Bll", response[:9])
+        try:
+            seq_id, target_speed, acceleration = struct.unpack("<Bll", response[:9])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_linear_velocity - Error unpacking response: {e}")
+            return False, 0, 0
         logging.info(f"CommandsTx::get_linear_velocity - Target speed = {target_speed}, Acceleration = {acceleration}")
         return True, target_speed, acceleration
     
@@ -590,7 +610,11 @@ class CommandsTx:
             return False, 0, 0
 
         # Extract the rotational velocity from the response
-        seq_id, target_speed, acceleration = struct.unpack("<Bll", response[:9])
+        try:
+            seq_id, target_speed, acceleration = struct.unpack("<Bll", response[:9])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_rotational_velocity - Error unpacking response: {e}")
+            return False, 0, 0
         logging.info(f"CommandsTx::get_rotational_velocity - Target speed = {target_speed}, Acceleration = {acceleration}")
         return True, target_speed, acceleration
 
@@ -655,7 +679,11 @@ class CommandsTx:
             self._ble_central.flag_disconnection()
             return False, 0
 
-        seq_id, cali_wheel = struct.unpack("<Bi", response[:5])
+        try:
+            seq_id, cali_wheel = struct.unpack("<Bi", response[:5])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_wheel_diameter_calibration - Error unpacking response: {e}")
+            return False, 0
         logging.info(f"CommandsTx::get_wheel_diameter_calibration - Calibration wheel diameter = {cali_wheel}")
         return True, cali_wheel
 
@@ -678,7 +706,11 @@ class CommandsTx:
             self._ble_central.flag_disconnection()
             return False, 0
 
-        seq_id, cali_axel = struct.unpack("<Bi", response[:5])
+        try:
+            seq_id, cali_axel = struct.unpack("<Bi", response[:5])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_axel_distance_calibration - Error unpacking response: {e}")
+            return False, 0
         logging.info(f"CommandsTx::get_axel_distance_calibration - Calibration axel distance = {cali_axel}")
         return True, cali_axel
 
@@ -722,7 +754,11 @@ class CommandsTx:
             self._ble_central.flag_disconnection()
             return False, 0
 
-        seq_id, turtle_id = struct.unpack("<BB", response[:2])
+        try:
+            seq_id, turtle_id = struct.unpack("<BB", response[:2])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_turtle_id - Error unpacking response: {e}")
+            return False, 0
         logging.info(f"CommandsTx::get_turtle_id - Turtle ID = {turtle_id}")
         return True, turtle_id
 

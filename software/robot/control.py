@@ -70,7 +70,7 @@ class Control:
 
                 if command_id == 0:
                     # NOP command
-                    picolog.debug(f"Control::run - NOP command received from central - sequence = {command_seq}")
+                    pass
                 elif command_id == 1:
                     # Command ID 1 = motors
                     # Expect a single byte parameter (1 = enable, 0 = disable)
@@ -79,7 +79,6 @@ class Control:
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                    picolog.debug(f"Control::run - Motors command received from central - sequence = {command_seq}")
                 elif command_id == 2:
                     # Command ID 2 = forward
                     # Expect a single float parameter (distance in mm)
@@ -88,7 +87,6 @@ class Control:
 
                     response = struct.pack('B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                    picolog.debug(f"Control::run - Forward command received from central - sequence = {command_seq}")
                 elif command_id == 3:
                     # Command ID 3 = backward
                     # Expect a single float parameter (distance in mm)
@@ -97,7 +95,6 @@ class Control:
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                    picolog.debug(f"Control::run - Backward command received from central - sequence = {command_seq}")
                 elif command_id == 4:
                     # Command ID 4 = left
                     # Expect a single float parameter (angle in degrees)
@@ -106,7 +103,6 @@ class Control:
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                    picolog.debug(f"Control::run - Left command received from central - sequence = {command_seq}")
                 elif command_id == 5:
                     # Command ID 5 = right
                     # Expect a single float parameter (angle in degrees)
@@ -115,7 +111,6 @@ class Control:
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                    picolog.debug(f"Control::run - Right command received from central - sequence = {command_seq}")
                 elif command_id == 6:
                     # Command ID 6 = heading
                     # Expect a single float parameter (heading in degrees)
@@ -124,7 +119,6 @@ class Control:
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                    picolog.debug(f"Control::run - Heading command received from central - sequence = {command_seq}")
                 elif command_id == 7:
                     # Command ID 7 = position_x
                     # Expect a single float parameter (x position in mm)
