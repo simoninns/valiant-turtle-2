@@ -52,6 +52,26 @@ async def command_test(ble_central: BleCentral, commands_tx: CommandsTx):
             print(f"Position: {x}, {y}")
 
             result = await commands_tx.reset_origin() # 11
+
+            # Pen servo test
+            result = await commands_tx.pen(False) # 14
+            await asyncio.sleep(1)
+            result = await commands_tx.pen(True) # 14
+
+            # Eyes test
+            result = await commands_tx.eyes(0, 255, 0, 0) # 15
+            await asyncio.sleep(1)
+            result = await commands_tx.eyes(1, 0, 255, 0)
+            await asyncio.sleep(1)
+            result = await commands_tx.eyes(2, 0, 0, 255)
+            await asyncio.sleep(1)
+            result = await commands_tx.eyes(0, 0, 0, 0)
+            await asyncio.sleep(1)
+
+            # Power test
+            result, mv, ma, mw = await commands_tx.get_power() # 16
+            print(f"Power: {mv}mV, {ma}mA, {mw}mW")
+
         else:
             await asyncio.sleep(1)
 

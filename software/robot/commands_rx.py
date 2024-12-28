@@ -35,6 +35,13 @@ from configuration import Configuration
 from led_fx import LedFx
 from diffdrive import DiffDrive
 
+# WS2812b led number mapping
+_LED_status = const(0)
+_LED_left_motor = const(1)
+_LED_right_motor = const(2)
+_LED_right_eye = const(3)
+_LED_left_eye = const(4)
+
 class CommandsRx:
     def __init__(self, pen :Pen, ina260 :Ina260, eeprom :Eeprom, led_fx :LedFx, diff_drive :DiffDrive, configuration :Configuration):
         self._pen = pen
@@ -130,18 +137,24 @@ class CommandsRx:
         return self._pen.is_servo_up
 
     async def eyes(self, eye: int, red: int, green: int, blue: int):
-        picolog.info(f"Commands::eyes - Setting eye {eye} color to ({red}, {green}, {blue})")
         if eye == 0:
-            self._led_fx.set_led_colour(0, red, green, blue)
-            self._led_fx.set_led_colour(1, red, green, blue)
+            picolog.info(f"Commands::eyes - Setting both eyes to colour ({red}, {green}, {blue})")
+            self._led_fx.set_led_colour(_LED_left_eye, red, green, blue)
+            self._led_fx.set_led_colour(_LED_right_eye, red, green, blue)
         elif eye == 1:
-            self._led_fx.set_led_colour(0, red, green, blue)
+            picolog.info(f"Commands::eyes - Setting left eye colour to ({red}, {green}, {blue})")
+            self._led_fx.set_led_colour(_LED_left_eye, red, green, blue)
         else:
-            self._led_fx.set_led_colour(1, red, green, blue)
+            picolog.info(f"Commands::eyes - Setting right eye colour to ({red}, {green}, {blue})")
+            self._led_fx.set_led_colour(_LED_right_eye, red, green, blue)
 
     async def get_power(self) -> tuple[int, int, int]:
-        picolog.info("Commands::get_power - Getting power readings")
-        return int(self._ina260.voltage_mV), int(self._ina260.current_mA), int(self._ina260.power_mW)
+        mv = int(self._ina260.voltage_mV)
+        ma = int(self._ina260.current_mA)
+        mw = int(self._ina260.power_mW)
+
+        picolog.info(f"Commands::get_power - Power readings: {mv} mV, {ma} mA, {mw} mW")
+        return mv, ma, mw
     
     async def set_linear_velocity(self, target_speed: int, acceleration: int):
         picolog.info(f"Commands::set_linear_velocity - Setting linear target speed to {target_speed} mm/s and acceleration to {acceleration} mm/s^2")
