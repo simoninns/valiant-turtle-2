@@ -94,6 +94,10 @@ class BleCentral:
         while True:
             # If we are not connected, advertise and wait for connection
             if not self._connected:
+                # Clear the queues
+                self._c2p_queue.clear()
+                self._p2c_queue.clear()
+
                 # Scan for the peripheral
                 logging.info("Scanning for BLE peripheral...")
                 scanner = BleakScanner()
@@ -105,10 +109,6 @@ class BleCentral:
                     async with BleakClient(self._device.address) as self._client:
                         if self._client.is_connected:
                             # We should probably pair here... but bleak doesn't support programmatic pairing
-
-                            # Clear the queues
-                            self._c2p_queue.clear()
-                            self._p2c_queue.clear()
 
                             # Subscribe to notifications on the tx_p2c_characteristic
                             await self._client.start_notify(self._tx_p2c_characteristic_uuid, self.__p2c_notification_handler)
@@ -146,9 +146,11 @@ class BleCentral:
     
                 # Send any data in the c2p queue to the peripheral
                 if len(self._c2p_queue) > 0:
-                    data_packet = self._c2p_queue.pop(0)
-                    logging.info(f"Sending data to peripheral: {data_packet}")
-                    await self._client.write_gatt_char(self._rx_c2p_characteristic_uuid, data_packet, response=False)
+                    # Send all waiting data
+                    while len(self._c2p_queue) > 0:
+                        data_packet = self._c2p_queue.pop(0)
+                        #logging.info(f"Sending data to peripheral: {data_packet}")
+                        await self._client.write_gatt_char(self._rx_c2p_characteristic_uuid, data_packet, response=False)
                 else:
                     # If the queue is empty, send a nop
                     data_packet = bytearray(20)
@@ -163,11 +165,14 @@ class BleCentral:
     def __p2c_notification_handler(self, characteristic: BleakGATTCharacteristic, service_data: bytearray):
         """Handle notifications from the peripheral."""
         if len(service_data) == 20:
-            # Queue the data packet for processing
-            if len(self._p2c_queue) < self._max_queue_elements:
-                self._p2c_queue.append(service_data)
-                #logging.info(f"Received data from peripheral: {service_data}, appended to queue ({len(self._p2c_queue)} elements)")
-                self._p2c_queue_event.set()
+            # Check the first byte to see if it is a valid commmand response
+            # If the first byte is 0x00, then it is a NOP response
+            if service_data[0] != 0x00:
+                # Queue the data packet for processing
+                if len(self._p2c_queue) < self._max_queue_elements:
+                    self._p2c_queue.append(service_data)
+                    #logging.info(f"Received data from peripheral: {service_data}, appended to queue ({len(self._p2c_queue)} elements)")
+                    self._p2c_queue_event.set()
         else:
             logging.info(f"Received data from peripheral: {service_data} - invalid length")
 

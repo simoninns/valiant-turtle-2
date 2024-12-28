@@ -32,20 +32,20 @@ from commands_tx import CommandsTx
 async def demo(ble_central: BleCentral, commands_tx: CommandsTx):
     while True:
         if ble_central.is_connected:
-            logging.info("Motors on")
-            result = await commands_tx.motors(True)
+            logging.info("Sending command: Motors on")
+            result = await commands_tx.motors(False)
             if result:
                 for i in range(4):
-                    logging.info("Forward 500mm")
-                    await commands_tx.forward(500)
-                    logging.info("Turn right 90 degrees")
-                    await commands_tx.right(90)
+                    logging.info("Sending command: Forward 50mm")
+                    await commands_tx.forward(50)
+                    logging.info("Sending command: Turn right 9 degrees")
+                    await commands_tx.right(9)
 
-                logging.info("Motors off")
+                logging.info("Sending command: Motors off")
                 await commands_tx.motors(False)
 
-                logging.info("Pausing for 5 seconds before repeating")
-                await asyncio.sleep(5)
+                logging.info("Waiting for 10 seconds before repeating")
+                await asyncio.sleep(10)
         else:
             await asyncio.sleep(1)
 

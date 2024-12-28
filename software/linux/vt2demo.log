@@ -1,253 +1,767 @@
-[2024-12-27 16:31:43,325 vt2demo.py::aio_main():53]INFO: Running BLE central async tasks
-[2024-12-27 16:31:43,325 ble_central.py::run():84]INFO: Running BLE central async tasks
-[2024-12-27 16:31:43,326 ble_central.py::__maintain_connection():93]INFO: Running maintain connection task
-[2024-12-27 16:31:43,326 ble_central.py::__maintain_connection():98]INFO: Scanning for BLE peripheral...
-[2024-12-27 16:31:43,339 ble_central.py::__handle_commands():139]INFO: Running handle commands task
-[2024-12-27 16:31:44,139 ble_central.py::__maintain_connection():102]INFO: BLE peripheral found with address 2C:CF:67:98:6C:F7
-[2024-12-27 16:31:47,690 ble_central.py::__maintain_connection():115]INFO: Subscribed to P2C notifications
-[2024-12-27 16:31:48,329 vt2demo.py::demo():35]INFO: Motors on
-[2024-12-27 16:31:48,329 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 2, enable = True
-[2024-12-27 16:31:48,770 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x02\x01'
-[2024-12-27 16:31:49,040 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 2 matched
-[2024-12-27 16:31:49,040 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:31:49,040 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x03\x00\x00\xfaC'
-[2024-12-27 16:31:54,981 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 3 matched
-[2024-12-27 16:31:54,981 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 3 response received
-[2024-12-27 16:31:54,981 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:31:54,981 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x04\x00\x00\xb4B'
-[2024-12-27 16:31:58,760 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 4 matched
-[2024-12-27 16:31:58,760 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 4 response received
-[2024-12-27 16:31:58,760 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:31:58,760 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x05\x00\x00\xfaC'
-[2024-12-27 16:32:04,745 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 5 matched
-[2024-12-27 16:32:04,745 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 5 response received
-[2024-12-27 16:32:04,745 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:32:04,745 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x06\x00\x00\xb4B'
-[2024-12-27 16:32:08,255 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 6 matched
-[2024-12-27 16:32:08,255 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 6 response received
-[2024-12-27 16:32:08,255 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:32:08,255 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x07\x00\x00\xfaC'
-[2024-12-27 16:32:14,240 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 7 matched
-[2024-12-27 16:32:14,240 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 7 response received
-[2024-12-27 16:32:14,240 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:32:14,240 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x08\x00\x00\xb4B'
-[2024-12-27 16:32:18,065 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 8 matched
-[2024-12-27 16:32:18,065 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 8 response received
-[2024-12-27 16:32:18,070 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:32:18,070 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\t\x00\x00\xfaC'
-[2024-12-27 16:32:24,005 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 9 matched
-[2024-12-27 16:32:24,005 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 9 response received
-[2024-12-27 16:32:24,010 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:32:24,010 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\n\x00\x00\xb4B'
-[2024-12-27 16:32:27,516 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 10 matched
-[2024-12-27 16:32:27,516 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 10 response received
-[2024-12-27 16:32:27,516 vt2demo.py::demo():44]INFO: Motors off
-[2024-12-27 16:32:27,516 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 11, enable = False
-[2024-12-27 16:32:27,516 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x0b\x00'
-[2024-12-27 16:32:27,786 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 11 matched
-[2024-12-27 16:33:28,187 base_events.py::default_exception_handler():1821]ERROR: Task exception was never retrieved
-future: <Task finished name='Task-1' coro=<aio_main() done, defined at /home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py:52> exception=KeyboardInterrupt()>
-Traceback (most recent call last):
-  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 71, in <module>
-    main()
-  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 68, in main
-    asyncio.run(aio_main())
-  File "/usr/lib/python3.12/asyncio/runners.py", line 193, in run
-    with Runner(debug=debug, loop_factory=loop_factory) as runner:
-  File "/usr/lib/python3.12/asyncio/runners.py", line 62, in __exit__
-    self.close()
-  File "/usr/lib/python3.12/asyncio/runners.py", line 70, in close
-    _cancel_all_tasks(loop)
-  File "/usr/lib/python3.12/asyncio/runners.py", line 205, in _cancel_all_tasks
-    loop.run_until_complete(tasks.gather(*to_cancel, return_exceptions=True))
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
-    self.run_forever()
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
-    self._run_once()
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
-    handle._run()
-  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
-    self._context.run(self._callback, *self._args)
-  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 61, in aio_main
-    await asyncio.gather(*tasks)
-  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
-    self.run_forever()
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
-    self._run_once()
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
-    handle._run()
-  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
-    self._context.run(self._callback, *self._args)
-  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 47, in demo
-    while True:
-          ^^^^
-  File "/usr/lib/python3.12/asyncio/runners.py", line 157, in _on_sigint
-    raise KeyboardInterrupt()
-KeyboardInterrupt
-[2024-12-27 16:33:28,189 base_events.py::default_exception_handler():1821]ERROR: Task was destroyed but it is pending!
-task: <Task cancelling name='Task-2' coro=<BleCentral.run() running at /home/sdi/github/valiant-turtle-2/software/linux/ble_central.py:90> wait_for=<_GatheringFuture finished exception=CancelledError()> cb=[gather.<locals>._done_callback() at /usr/lib/python3.12/asyncio/tasks.py:767, gather.<locals>._done_callback() at /usr/lib/python3.12/asyncio/tasks.py:767]>
-[2024-12-27 16:33:28,189 base_events.py::default_exception_handler():1821]ERROR: Task was destroyed but it is pending!
-task: <Task cancelling name='Task-4' coro=<BleCentral.__maintain_connection() running at /home/sdi/github/valiant-turtle-2/software/linux/ble_central.py:105> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[gather.<locals>._done_callback() at /usr/lib/python3.12/asyncio/tasks.py:767, gather.<locals>._done_callback() at /usr/lib/python3.12/asyncio/tasks.py:767]>
-[2024-12-27 16:33:28,189 base_events.py::default_exception_handler():1821]ERROR: _GatheringFuture exception was never retrieved
-future: <_GatheringFuture finished exception=CancelledError()>
-Traceback (most recent call last):
-  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 71, in <module>
-    main()
-  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 68, in main
-    asyncio.run(aio_main())
-  File "/usr/lib/python3.12/asyncio/runners.py", line 193, in run
-    with Runner(debug=debug, loop_factory=loop_factory) as runner:
-  File "/usr/lib/python3.12/asyncio/runners.py", line 62, in __exit__
-    self.close()
-  File "/usr/lib/python3.12/asyncio/runners.py", line 70, in close
-    _cancel_all_tasks(loop)
-  File "/usr/lib/python3.12/asyncio/runners.py", line 205, in _cancel_all_tasks
-    loop.run_until_complete(tasks.gather(*to_cancel, return_exceptions=True))
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
-    self.run_forever()
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
-    self._run_once()
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
-    handle._run()
-  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
-    self._context.run(self._callback, *self._args)
-  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 61, in aio_main
-    await asyncio.gather(*tasks)
-  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
-    self.run_forever()
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
-    self._run_once()
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
-    handle._run()
-  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
-    self._context.run(self._callback, *self._args)
-  File "/home/sdi/github/valiant-turtle-2/software/linux/./vt2demo.py", line 47, in demo
-    while True:
-          ^^^^
-  File "/usr/lib/python3.12/asyncio/runners.py", line 157, in _on_sigint
-    raise KeyboardInterrupt()
-KeyboardInterrupt
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/sdi/github/valiant-turtle-2/software/linux/ble_central.py", line 144, in __handle_commands
-    await self._p2c_notification_event.wait()
-  File "/usr/lib/python3.12/asyncio/locks.py", line 212, in wait
-    await fut
-asyncio.exceptions.CancelledError
-[2024-12-27 16:33:59,815 vt2demo.py::aio_main():53]INFO: Running BLE central async tasks
-[2024-12-27 16:33:59,815 ble_central.py::run():84]INFO: Running BLE central async tasks
-[2024-12-27 16:33:59,815 ble_central.py::__maintain_connection():93]INFO: Running maintain connection task
-[2024-12-27 16:33:59,815 ble_central.py::__maintain_connection():98]INFO: Scanning for BLE peripheral...
-[2024-12-27 16:33:59,829 ble_central.py::__handle_commands():139]INFO: Running handle commands task
-[2024-12-27 16:34:00,201 ble_central.py::__maintain_connection():102]INFO: BLE peripheral found with address 2C:CF:67:98:6C:F7
-[2024-12-27 16:34:02,128 ble_central.py::__maintain_connection():115]INFO: Subscribed to P2C notifications
-[2024-12-27 16:34:02,817 vt2demo.py::demo():35]INFO: Motors on
-[2024-12-27 16:34:02,817 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 2, enable = True
-[2024-12-27 16:34:03,299 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x02\x01'
-[2024-12-27 16:34:03,569 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 2 matched
-[2024-12-27 16:34:03,569 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:34:03,569 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x03\x00\x00\xfaC'
-[2024-12-27 16:34:09,285 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 3 matched
-[2024-12-27 16:34:09,285 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 3 response received
-[2024-12-27 16:34:09,285 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:34:09,285 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x04\x00\x00\xb4B'
-[2024-12-27 16:34:12,794 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 4 matched
-[2024-12-27 16:34:12,794 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 4 response received
-[2024-12-27 16:34:12,794 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:34:12,794 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x05\x00\x00\xfaC'
-[2024-12-27 16:34:18,509 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 5 matched
-[2024-12-27 16:34:18,509 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 5 response received
-[2024-12-27 16:34:18,509 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:34:18,509 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x06\x00\x00\xb4B'
-[2024-12-27 16:34:22,020 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 6 matched
-[2024-12-27 16:34:22,020 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 6 response received
-[2024-12-27 16:34:22,020 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:34:22,020 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x07\x00\x00\xfaC'
-[2024-12-27 16:34:28,004 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 7 matched
-[2024-12-27 16:34:28,004 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 7 response received
-[2024-12-27 16:34:28,004 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:34:28,004 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x08\x00\x00\xb4B'
-[2024-12-27 16:34:31,784 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 8 matched
-[2024-12-27 16:34:31,784 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 8 response received
-[2024-12-27 16:34:31,789 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:34:31,789 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\t\x00\x00\xfaC'
-[2024-12-27 16:34:37,769 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 9 matched
-[2024-12-27 16:34:37,769 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 9 response received
-[2024-12-27 16:34:37,769 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:34:37,769 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\n\x00\x00\xb4B'
-[2024-12-27 16:34:41,280 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 10 matched
-[2024-12-27 16:34:41,280 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 10 response received
-[2024-12-27 16:34:41,280 vt2demo.py::demo():44]INFO: Motors off
-[2024-12-27 16:34:41,280 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 11, enable = False
-[2024-12-27 16:34:41,280 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x0b\x00'
-[2024-12-27 16:34:41,550 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 11 matched
-[2024-12-27 16:35:38,375 vt2demo.py::aio_main():53]INFO: Running BLE central async tasks
-[2024-12-27 16:35:38,375 ble_central.py::run():84]INFO: Running BLE central async tasks
-[2024-12-27 16:35:38,376 ble_central.py::__maintain_connection():93]INFO: Running maintain connection task
-[2024-12-27 16:35:38,376 ble_central.py::__maintain_connection():98]INFO: Scanning for BLE peripheral...
-[2024-12-27 16:35:38,389 ble_central.py::__handle_commands():139]INFO: Running handle commands task
-[2024-12-27 16:35:38,928 ble_central.py::__maintain_connection():102]INFO: BLE peripheral found with address 2C:CF:67:98:6C:F7
-[2024-12-27 16:35:41,533 ble_central.py::__maintain_connection():115]INFO: Subscribed to P2C notifications
-[2024-12-27 16:35:42,379 vt2demo.py::demo():35]INFO: Motors on
-[2024-12-27 16:35:42,379 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 2, enable = True
-[2024-12-27 16:35:42,884 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x02\x01'
-[2024-12-27 16:35:43,154 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 2 matched
-[2024-12-27 16:35:43,154 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:35:43,154 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x03\x00\x00\xfaC'
-[2024-12-27 16:35:48,825 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 3 matched
-[2024-12-27 16:35:48,825 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 3 response received
-[2024-12-27 16:35:48,825 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:35:48,825 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x04\x00\x00\xb4B'
-[2024-12-27 16:35:52,335 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 4 matched
-[2024-12-27 16:35:52,335 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 4 response received
-[2024-12-27 16:35:52,335 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:35:52,335 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x05\x00\x00\xfaC'
-[2024-12-27 16:35:58,274 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 5 matched
-[2024-12-27 16:35:58,274 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 5 response received
-[2024-12-27 16:35:58,274 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:35:58,274 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x06\x00\x00\xb4B'
-[2024-12-27 16:36:02,054 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 6 matched
-[2024-12-27 16:36:02,054 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 6 response received
-[2024-12-27 16:36:02,054 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:36:02,054 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\x07\x00\x00\xfaC'
-[2024-12-27 16:36:07,770 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 7 matched
-[2024-12-27 16:36:07,770 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 7 response received
-[2024-12-27 16:36:07,770 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:36:07,770 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\x08\x00\x00\xb4B'
-[2024-12-27 16:36:11,279 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 8 matched
-[2024-12-27 16:36:11,279 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 8 response received
-[2024-12-27 16:36:11,279 vt2demo.py::demo():39]INFO: Forward 500mm
-[2024-12-27 16:36:11,279 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x02\t\x00\x00\xfaC'
-[2024-12-27 16:36:17,219 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 9 matched
-[2024-12-27 16:36:17,219 commands_tx.py::forward():104]ERROR: Commands::motors - Command ID = 2, Sequence ID = 9 response received
-[2024-12-27 16:36:17,219 vt2demo.py::demo():41]INFO: Turn right 90 degrees
-[2024-12-27 16:36:17,219 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x05\n\x00\x00\xb4B'
-[2024-12-27 16:36:20,999 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 10 matched
-[2024-12-27 16:36:20,999 commands_tx.py::right():179]ERROR: Commands::motors - Command ID = 5, Sequence ID = 10 response received
-[2024-12-27 16:36:20,999 vt2demo.py::demo():44]INFO: Motors off
-[2024-12-27 16:36:20,999 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 11, enable = False
-[2024-12-27 16:36:20,999 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x0b\x00'
-[2024-12-27 16:36:21,269 commands_tx.py::__wait_for_command_response():56]INFO: Commands::__wait_for_command_response - Sequence ID = 11 matched
-[2024-12-27 16:36:21,269 vt2demo.py::demo():47]INFO: Pausing for 5 seconds before repeating
-[2024-12-27 16:36:26,270 vt2demo.py::demo():35]INFO: Motors on
-[2024-12-27 16:36:26,270 commands_tx.py::motors():75]INFO: Commands::motors - Command ID = 1, Sequence ID = 12, enable = True
-[2024-12-27 16:36:26,444 ble_central.py::__handle_commands():150]INFO: Sending data to peripheral: b'\x01\x0c\x01'
-[2024-12-27 16:36:31,271 commands_tx.py::motors():81]ERROR: Commands::motors - Command ID = 1, Sequence ID = 12 timed out
-[2024-12-27 16:36:31,271 ble_central.py::flag_disconnection():80]INFO: Application has flagged disconnection from the peripheral
-[2024-12-27 16:36:34,048 ble_central.py::__maintain_connection():126]INFO: Disconnected from peripheral
-[2024-12-27 16:36:35,051 ble_central.py::__maintain_connection():98]INFO: Scanning for BLE peripheral...
-[2024-12-27 16:36:35,401 ble_central.py::__maintain_connection():102]INFO: BLE peripheral found with address 2C:CF:67:98:6C:F7
+[2024-12-28 07:52:38,289 vt2demo.py::aio_main():53]INFO: Running BLE central async tasks
+[2024-12-28 07:52:38,289 ble_central.py::run():84]INFO: Running BLE central async tasks
+[2024-12-28 07:52:38,289 ble_central.py::__maintain_connection():93]INFO: Running maintain connection task
+[2024-12-28 07:52:38,289 ble_central.py::__maintain_connection():102]INFO: Scanning for BLE peripheral...
+[2024-12-28 07:52:38,303 ble_central.py::__handle_commands():139]INFO: Running handle commands task
+[2024-12-28 07:52:43,430 ble_central.py::__maintain_connection():132]INFO: BLE peripheral not found
+[2024-12-28 07:52:44,431 ble_central.py::__maintain_connection():102]INFO: Scanning for BLE peripheral...
+[2024-12-28 07:52:49,458 ble_central.py::__maintain_connection():132]INFO: BLE peripheral not found
+[2024-12-28 07:52:50,460 ble_central.py::__maintain_connection():102]INFO: Scanning for BLE peripheral...
+[2024-12-28 07:52:55,494 ble_central.py::__maintain_connection():132]INFO: BLE peripheral not found
+[2024-12-28 07:52:56,494 ble_central.py::__maintain_connection():102]INFO: Scanning for BLE peripheral...
+[2024-12-28 07:53:01,034 ble_central.py::__maintain_connection():106]INFO: BLE peripheral found with address 2C:CF:67:98:6C:F7
+[2024-12-28 07:53:03,252 ble_central.py::__maintain_connection():115]INFO: Subscribed to P2C notifications
+[2024-12-28 07:53:03,306 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:53:03,306 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 2, enable = False
+[2024-12-28 07:53:05,096 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:53:05,097 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 3, distance = 50
+[2024-12-28 07:53:07,257 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 3 response received
+[2024-12-28 07:53:07,257 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:53:07,257 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 4, angle = 9
+[2024-12-28 07:53:08,606 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 4 response received
+[2024-12-28 07:53:08,607 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:53:08,611 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 5, distance = 50
+[2024-12-28 07:53:10,767 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 5 response received
+[2024-12-28 07:53:10,767 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:53:10,767 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 6, angle = 9
+[2024-12-28 07:53:12,116 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 6 response received
+[2024-12-28 07:53:12,117 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:53:12,117 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 7, distance = 50
+[2024-12-28 07:53:14,276 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 7 response received
+[2024-12-28 07:53:14,277 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:53:14,277 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 8, angle = 9
+[2024-12-28 07:53:15,627 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 8 response received
+[2024-12-28 07:53:15,627 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:53:15,627 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 9, distance = 50
+[2024-12-28 07:53:17,831 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 9 response received
+[2024-12-28 07:53:17,832 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:53:17,832 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 10, angle = 9
+[2024-12-28 07:53:19,181 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 10 response received
+[2024-12-28 07:53:19,182 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:53:19,182 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 11, enable = False
+[2024-12-28 07:53:19,451 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:53:29,452 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:53:29,452 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 12, enable = False
+[2024-12-28 07:53:29,757 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:53:29,757 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 13, distance = 50
+[2024-12-28 07:53:31,917 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 13 response received
+[2024-12-28 07:53:31,917 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:53:31,917 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 14, angle = 9
+[2024-12-28 07:53:33,266 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 14 response received
+[2024-12-28 07:53:33,267 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:53:33,267 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 15, distance = 50
+[2024-12-28 07:53:35,428 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 15 response received
+[2024-12-28 07:53:35,428 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:53:35,428 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 16, angle = 9
+[2024-12-28 07:53:36,777 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 16 response received
+[2024-12-28 07:53:36,777 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:53:36,777 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 17, distance = 50
+[2024-12-28 07:53:38,937 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 17 response received
+[2024-12-28 07:53:38,937 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:53:38,937 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 18, angle = 9
+[2024-12-28 07:53:40,332 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 18 response received
+[2024-12-28 07:53:40,332 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:53:40,332 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 19, distance = 50
+[2024-12-28 07:53:42,491 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 19 response received
+[2024-12-28 07:53:42,491 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:53:42,491 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 20, angle = 9
+[2024-12-28 07:53:43,841 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 20 response received
+[2024-12-28 07:53:43,842 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:53:43,846 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 21, enable = False
+[2024-12-28 07:53:44,156 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:53:54,159 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:53:54,159 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 22, enable = False
+[2024-12-28 07:53:54,731 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:53:54,732 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 23, distance = 50
+[2024-12-28 07:53:56,892 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 23 response received
+[2024-12-28 07:53:56,892 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:53:56,892 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 24, angle = 9
+[2024-12-28 07:53:58,241 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 24 response received
+[2024-12-28 07:53:58,242 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:53:58,242 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 25, distance = 50
+[2024-12-28 07:54:00,402 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 25 response received
+[2024-12-28 07:54:00,402 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:00,402 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 26, angle = 9
+[2024-12-28 07:54:01,751 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 26 response received
+[2024-12-28 07:54:01,751 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:54:01,752 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 27, distance = 50
+[2024-12-28 07:54:03,911 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 27 response received
+[2024-12-28 07:54:03,912 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:03,912 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 28, angle = 9
+[2024-12-28 07:54:05,262 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 28 response received
+[2024-12-28 07:54:05,262 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:54:05,262 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 29, distance = 50
+[2024-12-28 07:54:07,422 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 29 response received
+[2024-12-28 07:54:07,423 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:07,423 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 30, angle = 9
+[2024-12-28 07:54:08,772 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 30 response received
+[2024-12-28 07:54:08,773 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:54:08,773 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 31, enable = False
+[2024-12-28 07:54:09,312 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:54:19,314 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:54:19,314 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 32, enable = False
+[2024-12-28 07:54:19,618 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:54:19,618 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 33, distance = 50
+[2024-12-28 07:54:21,776 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 33 response received
+[2024-12-28 07:54:21,776 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:21,777 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 34, angle = 9
+[2024-12-28 07:54:23,127 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 34 response received
+[2024-12-28 07:54:23,127 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:54:23,127 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 35, distance = 50
+[2024-12-28 07:54:25,286 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 35 response received
+[2024-12-28 07:54:25,286 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:25,287 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 36, angle = 9
+[2024-12-28 07:54:26,637 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 36 response received
+[2024-12-28 07:54:26,638 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:54:26,638 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 37, distance = 50
+[2024-12-28 07:54:28,796 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 37 response received
+[2024-12-28 07:54:28,797 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:28,797 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 38, angle = 9
+[2024-12-28 07:54:30,146 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 38 response received
+[2024-12-28 07:54:30,146 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:54:30,147 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 39, distance = 50
+[2024-12-28 07:54:32,308 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 39 response received
+[2024-12-28 07:54:32,308 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:32,312 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 40, angle = 9
+[2024-12-28 07:54:33,657 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 40 response received
+[2024-12-28 07:54:33,657 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:54:33,657 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 41, enable = False
+[2024-12-28 07:54:33,926 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:54:43,927 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:54:43,928 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 42, enable = False
+[2024-12-28 07:54:44,501 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:54:44,502 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 43, distance = 50
+[2024-12-28 07:54:46,662 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 43 response received
+[2024-12-28 07:54:46,662 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:46,662 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 44, angle = 9
+[2024-12-28 07:54:48,012 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 44 response received
+[2024-12-28 07:54:48,012 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:54:48,012 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 45, distance = 50
+[2024-12-28 07:54:50,216 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 45 response received
+[2024-12-28 07:54:50,216 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:50,216 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 46, angle = 9
+[2024-12-28 07:54:51,567 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 46 response received
+[2024-12-28 07:54:51,567 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:54:51,567 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 47, distance = 50
+[2024-12-28 07:54:53,727 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 47 response received
+[2024-12-28 07:54:53,727 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:53,731 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 48, angle = 9
+[2024-12-28 07:54:55,077 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 48 response received
+[2024-12-28 07:54:55,077 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:54:55,077 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 49, distance = 50
+[2024-12-28 07:54:57,237 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 49 response received
+[2024-12-28 07:54:57,237 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:54:57,237 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 50, angle = 9
+[2024-12-28 07:54:58,587 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 50 response received
+[2024-12-28 07:54:58,587 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:54:58,587 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 51, enable = False
+[2024-12-28 07:54:58,856 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:55:08,858 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:55:08,858 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 52, enable = False
+[2024-12-28 07:55:09,208 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:55:09,209 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 53, distance = 50
+[2024-12-28 07:55:11,366 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 53 response received
+[2024-12-28 07:55:11,367 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:55:11,367 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 54, angle = 9
+[2024-12-28 07:55:12,717 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 54 response received
+[2024-12-28 07:55:12,717 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:55:12,717 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 55, distance = 50
+[2024-12-28 07:55:14,878 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 55 response received
+[2024-12-28 07:55:14,878 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:55:14,878 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 56, angle = 9
+[2024-12-28 07:55:16,271 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 56 response received
+[2024-12-28 07:55:16,272 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:55:16,272 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 57, distance = 50
+[2024-12-28 07:55:18,433 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 57 response received
+[2024-12-28 07:55:18,433 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:55:18,437 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 58, angle = 9
+[2024-12-28 07:55:19,783 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 58 response received
+[2024-12-28 07:55:19,783 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:55:19,783 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 59, distance = 50
+[2024-12-28 07:55:21,943 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 59 response received
+[2024-12-28 07:55:21,943 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:55:21,943 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 60, angle = 9
+[2024-12-28 07:55:23,293 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 60 response received
+[2024-12-28 07:55:23,293 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:55:23,293 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 61, enable = False
+[2024-12-28 07:55:23,832 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:55:33,833 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:55:33,834 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 62, enable = False
+[2024-12-28 07:55:34,406 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:55:34,407 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 63, distance = 50
+[2024-12-28 07:55:36,568 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 63 response received
+[2024-12-28 07:55:36,568 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:55:36,568 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 64, angle = 9
+[2024-12-28 07:55:37,918 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 64 response received
+[2024-12-28 07:55:37,918 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:55:37,918 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 65, distance = 50
+[2024-12-28 07:55:40,078 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 65 response received
+[2024-12-28 07:55:40,078 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:55:40,078 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 66, angle = 9
+[2024-12-28 07:55:41,428 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 66 response received
+[2024-12-28 07:55:41,428 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:55:41,428 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 67, distance = 50
+[2024-12-28 07:55:43,588 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 67 response received
+[2024-12-28 07:55:43,588 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:55:43,588 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 68, angle = 9
+[2024-12-28 07:55:44,938 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 68 response received
+[2024-12-28 07:55:44,938 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:55:44,938 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 69, distance = 50
+[2024-12-28 07:55:46,874 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 69 response received
+[2024-12-28 07:55:46,874 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:55:46,874 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 70, angle = 9
+[2024-12-28 07:55:48,222 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 70 response received
+[2024-12-28 07:55:48,223 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:55:48,223 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 71, enable = False
+[2024-12-28 07:55:48,493 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:55:58,494 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:55:58,494 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 72, enable = False
+[2024-12-28 07:55:59,337 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:55:59,338 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 73, distance = 50
+[2024-12-28 07:56:01,498 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 73 response received
+[2024-12-28 07:56:01,498 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:01,498 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 74, angle = 9
+[2024-12-28 07:56:02,623 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 74 response received
+[2024-12-28 07:56:02,623 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:02,623 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 75, distance = 50
+[2024-12-28 07:56:04,782 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 75 response received
+[2024-12-28 07:56:04,782 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:04,783 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 76, angle = 9
+[2024-12-28 07:56:06,132 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 76 response received
+[2024-12-28 07:56:06,132 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:06,133 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 77, distance = 50
+[2024-12-28 07:56:08,339 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 77 response received
+[2024-12-28 07:56:08,339 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:08,339 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 78, angle = 9
+[2024-12-28 07:56:09,687 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 78 response received
+[2024-12-28 07:56:09,687 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:09,692 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 79, distance = 50
+[2024-12-28 07:56:11,848 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 79 response received
+[2024-12-28 07:56:11,849 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:11,849 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 80, angle = 9
+[2024-12-28 07:56:13,198 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 80 response received
+[2024-12-28 07:56:13,199 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:56:13,199 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 81, enable = False
+[2024-12-28 07:56:13,738 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:56:23,739 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:56:23,739 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 82, enable = False
+[2024-12-28 07:56:24,087 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:24,088 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 83, distance = 50
+[2024-12-28 07:56:26,247 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 83 response received
+[2024-12-28 07:56:26,247 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:26,248 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 84, angle = 9
+[2024-12-28 07:56:27,597 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 84 response received
+[2024-12-28 07:56:27,597 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:27,598 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 85, distance = 50
+[2024-12-28 07:56:29,758 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 85 response received
+[2024-12-28 07:56:29,758 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:29,758 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 86, angle = 9
+[2024-12-28 07:56:31,108 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 86 response received
+[2024-12-28 07:56:31,108 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:31,108 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 87, distance = 50
+[2024-12-28 07:56:33,267 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 87 response received
+[2024-12-28 07:56:33,268 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:33,268 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 88, angle = 9
+[2024-12-28 07:56:34,618 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 88 response received
+[2024-12-28 07:56:34,618 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:34,618 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 89, distance = 50
+[2024-12-28 07:56:36,777 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 89 response received
+[2024-12-28 07:56:36,777 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:36,778 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 90, angle = 9
+[2024-12-28 07:56:38,128 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 90 response received
+[2024-12-28 07:56:38,128 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:56:38,128 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 91, enable = False
+[2024-12-28 07:56:38,668 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:56:48,669 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:56:48,669 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 92, enable = False
+[2024-12-28 07:56:49,017 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:49,018 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 93, distance = 50
+[2024-12-28 07:56:51,178 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 93 response received
+[2024-12-28 07:56:51,178 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:51,178 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 94, angle = 9
+[2024-12-28 07:56:52,528 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 94 response received
+[2024-12-28 07:56:52,528 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:52,528 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 95, distance = 50
+[2024-12-28 07:56:54,688 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 95 response received
+[2024-12-28 07:56:54,688 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:54,688 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 96, angle = 9
+[2024-12-28 07:56:56,038 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 96 response received
+[2024-12-28 07:56:56,038 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:56,038 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 97, distance = 50
+[2024-12-28 07:56:58,198 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 97 response received
+[2024-12-28 07:56:58,198 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:56:58,198 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 98, angle = 9
+[2024-12-28 07:56:59,548 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 98 response received
+[2024-12-28 07:56:59,548 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:56:59,548 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 99, distance = 50
+[2024-12-28 07:57:01,708 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 99 response received
+[2024-12-28 07:57:01,708 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:57:01,708 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 100, angle = 9
+[2024-12-28 07:57:03,058 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 100 response received
+[2024-12-28 07:57:03,058 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:57:03,062 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 101, enable = False
+[2024-12-28 07:57:03,328 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:57:13,330 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:57:13,330 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 102, enable = False
+[2024-12-28 07:57:13,678 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:57:13,679 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 103, distance = 50
+[2024-12-28 07:57:15,837 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 103 response received
+[2024-12-28 07:57:15,838 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:57:15,838 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 104, angle = 9
+[2024-12-28 07:57:17,188 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 104 response received
+[2024-12-28 07:57:17,188 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:57:17,188 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 105, distance = 50
+[2024-12-28 07:57:19,349 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 105 response received
+[2024-12-28 07:57:19,349 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:57:19,349 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 106, angle = 9
+[2024-12-28 07:57:20,744 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 106 response received
+[2024-12-28 07:57:20,744 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:57:20,744 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 107, distance = 50
+[2024-12-28 07:57:22,903 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 107 response received
+[2024-12-28 07:57:22,903 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:57:22,903 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 108, angle = 9
+[2024-12-28 07:57:24,253 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 108 response received
+[2024-12-28 07:57:24,253 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:57:24,253 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 109, distance = 50
+[2024-12-28 07:57:26,458 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 109 response received
+[2024-12-28 07:57:26,458 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:57:26,458 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 110, angle = 9
+[2024-12-28 07:57:27,627 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 110 response received
+[2024-12-28 07:57:27,628 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:57:27,628 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 111, enable = False
+[2024-12-28 07:57:27,897 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:57:37,899 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:57:37,899 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 112, enable = False
+[2024-12-28 07:57:38,293 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:57:38,293 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 113, distance = 50
+[2024-12-28 07:57:40,183 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 113 response received
+[2024-12-28 07:57:40,183 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:57:40,188 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 114, angle = 9
+[2024-12-28 07:57:41,533 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 114 response received
+[2024-12-28 07:57:41,533 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:57:41,534 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 115, distance = 50
+[2024-12-28 07:57:43,694 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 115 response received
+[2024-12-28 07:57:43,694 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:57:43,694 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 116, angle = 9
+[2024-12-28 07:57:45,042 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 116 response received
+[2024-12-28 07:57:45,043 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:57:45,043 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 117, distance = 50
+[2024-12-28 07:57:47,203 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 117 response received
+[2024-12-28 07:57:47,203 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:57:47,203 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 118, angle = 9
+[2024-12-28 07:57:48,552 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 118 response received
+[2024-12-28 07:57:48,553 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:57:48,553 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 119, distance = 50
+[2024-12-28 07:57:50,804 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 119 response received
+[2024-12-28 07:57:50,804 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:57:50,804 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 120, angle = 9
+[2024-12-28 07:57:52,152 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 120 response received
+[2024-12-28 07:57:52,152 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:57:52,153 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 121, enable = False
+[2024-12-28 07:57:52,422 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:58:02,424 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:58:02,424 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 122, enable = False
+[2024-12-28 07:58:02,817 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:02,817 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 123, distance = 50
+[2024-12-28 07:58:04,978 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 123 response received
+[2024-12-28 07:58:04,978 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:58:04,978 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 124, angle = 9
+[2024-12-28 07:58:06,327 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 124 response received
+[2024-12-28 07:58:06,328 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:06,328 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 125, distance = 50
+[2024-12-28 07:58:08,488 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 125 response received
+[2024-12-28 07:58:08,489 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:58:08,489 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 126, angle = 9
+[2024-12-28 07:58:09,838 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 126 response received
+[2024-12-28 07:58:09,838 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:09,838 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 127, distance = 50
+[2024-12-28 07:58:12,043 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 127 response received
+[2024-12-28 07:58:12,043 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:58:12,043 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 128, angle = 9
+[2024-12-28 07:58:13,167 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 128 response received
+[2024-12-28 07:58:13,168 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:13,168 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 129, distance = 50
+[2024-12-28 07:58:15,372 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 129 response received
+[2024-12-28 07:58:15,373 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:58:15,373 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 130, angle = 9
+[2024-12-28 07:58:16,722 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 130 response received
+[2024-12-28 07:58:16,723 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:58:16,723 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 131, enable = False
+[2024-12-28 07:58:16,992 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:58:26,993 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:58:26,993 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 132, enable = False
+[2024-12-28 07:58:27,298 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:27,298 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 133, distance = 50
+[2024-12-28 07:58:29,504 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 133 response received
+[2024-12-28 07:58:29,504 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:58:29,504 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 134, angle = 9
+[2024-12-28 07:58:30,853 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 134 response received
+[2024-12-28 07:58:30,854 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:30,854 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 135, distance = 50
+[2024-12-28 07:58:33,058 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 135 response received
+[2024-12-28 07:58:33,058 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:58:33,058 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 136, angle = 9
+[2024-12-28 07:58:34,408 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 136 response received
+[2024-12-28 07:58:34,408 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:34,408 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 137, distance = 50
+[2024-12-28 07:58:36,567 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 137 response received
+[2024-12-28 07:58:36,568 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:58:36,568 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 138, angle = 9
+[2024-12-28 07:58:37,918 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 138 response received
+[2024-12-28 07:58:37,918 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:37,918 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 139, distance = 50
+[2024-12-28 07:58:40,078 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 139 response received
+[2024-12-28 07:58:40,078 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:58:40,082 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 140, angle = 9
+[2024-12-28 07:58:41,428 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 140 response received
+[2024-12-28 07:58:41,428 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:58:41,428 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 141, enable = False
+[2024-12-28 07:58:41,698 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:58:51,699 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:58:51,699 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 142, enable = False
+[2024-12-28 07:58:52,273 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:52,274 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 143, distance = 50
+[2024-12-28 07:58:54,208 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 143 response received
+[2024-12-28 07:58:54,208 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:58:54,208 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 144, angle = 9
+[2024-12-28 07:58:55,557 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 144 response received
+[2024-12-28 07:58:55,558 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:55,558 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 145, distance = 50
+[2024-12-28 07:58:57,717 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 145 response received
+[2024-12-28 07:58:57,717 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:58:57,722 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 146, angle = 9
+[2024-12-28 07:58:59,067 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 146 response received
+[2024-12-28 07:58:59,068 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:58:59,068 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 147, distance = 50
+[2024-12-28 07:59:01,228 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 147 response received
+[2024-12-28 07:59:01,228 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:59:01,228 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 148, angle = 9
+[2024-12-28 07:59:02,578 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 148 response received
+[2024-12-28 07:59:02,578 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:59:02,578 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 149, distance = 50
+[2024-12-28 07:59:04,738 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 149 response received
+[2024-12-28 07:59:04,738 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:59:04,738 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 150, angle = 9
+[2024-12-28 07:59:06,087 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 150 response received
+[2024-12-28 07:59:06,088 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:59:06,088 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 151, enable = False
+[2024-12-28 07:59:06,357 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:59:16,358 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:59:16,358 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 152, enable = False
+[2024-12-28 07:59:16,662 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:59:16,663 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 153, distance = 50
+[2024-12-28 07:59:18,823 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 153 response received
+[2024-12-28 07:59:18,823 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:59:18,823 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 154, angle = 9
+[2024-12-28 07:59:20,172 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 154 response received
+[2024-12-28 07:59:20,173 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:59:20,173 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 155, distance = 50
+[2024-12-28 07:59:22,378 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 155 response received
+[2024-12-28 07:59:22,378 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:59:22,378 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 156, angle = 9
+[2024-12-28 07:59:23,728 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 156 response received
+[2024-12-28 07:59:23,728 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:59:23,728 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 157, distance = 50
+[2024-12-28 07:59:25,888 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 157 response received
+[2024-12-28 07:59:25,888 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:59:25,888 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 158, angle = 9
+[2024-12-28 07:59:27,238 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 158 response received
+[2024-12-28 07:59:27,238 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:59:27,238 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 159, distance = 50
+[2024-12-28 07:59:29,397 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 159 response received
+[2024-12-28 07:59:29,397 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:59:29,397 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 160, angle = 9
+[2024-12-28 07:59:30,748 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 160 response received
+[2024-12-28 07:59:30,748 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:59:30,748 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 161, enable = False
+[2024-12-28 07:59:31,018 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 07:59:41,019 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 07:59:41,019 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 162, enable = False
+[2024-12-28 07:59:41,862 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:59:41,863 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 163, distance = 50
+[2024-12-28 07:59:44,022 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 163 response received
+[2024-12-28 07:59:44,022 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:59:44,022 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 164, angle = 9
+[2024-12-28 07:59:45,372 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 164 response received
+[2024-12-28 07:59:45,373 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:59:45,373 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 165, distance = 50
+[2024-12-28 07:59:47,532 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 165 response received
+[2024-12-28 07:59:47,533 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:59:47,533 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 166, angle = 9
+[2024-12-28 07:59:48,883 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 166 response received
+[2024-12-28 07:59:48,883 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:59:48,883 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 167, distance = 50
+[2024-12-28 07:59:51,042 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 167 response received
+[2024-12-28 07:59:51,042 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:59:51,042 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 168, angle = 9
+[2024-12-28 07:59:52,395 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 168 response received
+[2024-12-28 07:59:52,396 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 07:59:52,396 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 169, distance = 50
+[2024-12-28 07:59:54,597 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 169 response received
+[2024-12-28 07:59:54,597 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 07:59:54,597 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 170, angle = 9
+[2024-12-28 07:59:55,947 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 170 response received
+[2024-12-28 07:59:55,947 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 07:59:55,947 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 171, enable = False
+[2024-12-28 07:59:56,218 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 08:00:06,218 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 08:00:06,219 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 172, enable = False
+[2024-12-28 08:00:06,522 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:00:06,523 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 173, distance = 50
+[2024-12-28 08:00:08,682 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 173 response received
+[2024-12-28 08:00:08,683 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:00:08,683 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 174, angle = 9
+[2024-12-28 08:00:09,807 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 174 response received
+[2024-12-28 08:00:09,808 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:00:09,808 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 175, distance = 50
+[2024-12-28 08:00:11,968 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 175 response received
+[2024-12-28 08:00:11,968 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:00:11,968 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 176, angle = 9
+[2024-12-28 08:00:13,318 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 176 response received
+[2024-12-28 08:00:13,318 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:00:13,318 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 177, distance = 50
+[2024-12-28 08:00:15,477 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 177 response received
+[2024-12-28 08:00:15,477 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:00:15,478 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 178, angle = 9
+[2024-12-28 08:00:16,829 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 178 response received
+[2024-12-28 08:00:16,829 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:00:16,829 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 179, distance = 50
+[2024-12-28 08:00:18,988 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 179 response received
+[2024-12-28 08:00:18,988 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:00:18,988 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 180, angle = 9
+[2024-12-28 08:00:20,337 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 180 response received
+[2024-12-28 08:00:20,338 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 08:00:20,338 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 181, enable = False
+[2024-12-28 08:00:20,877 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 08:00:30,879 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 08:00:30,879 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 182, enable = False
+[2024-12-28 08:00:31,227 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:00:31,228 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 183, distance = 50
+[2024-12-28 08:00:33,433 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 183 response received
+[2024-12-28 08:00:33,433 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:00:33,433 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 184, angle = 9
+[2024-12-28 08:00:34,782 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 184 response received
+[2024-12-28 08:00:34,783 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:00:34,783 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 185, distance = 50
+[2024-12-28 08:00:36,943 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 185 response received
+[2024-12-28 08:00:36,943 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:00:36,944 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 186, angle = 9
+[2024-12-28 08:00:38,294 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 186 response received
+[2024-12-28 08:00:38,294 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:00:38,294 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 187, distance = 50
+[2024-12-28 08:00:40,453 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 187 response received
+[2024-12-28 08:00:40,453 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:00:40,458 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 188, angle = 9
+[2024-12-28 08:00:41,803 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 188 response received
+[2024-12-28 08:00:41,803 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:00:41,803 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 189, distance = 50
+[2024-12-28 08:00:43,962 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 189 response received
+[2024-12-28 08:00:43,962 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:00:43,963 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 190, angle = 9
+[2024-12-28 08:00:45,312 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 190 response received
+[2024-12-28 08:00:45,312 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 08:00:45,312 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 191, enable = False
+[2024-12-28 08:00:45,852 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 08:00:55,854 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 08:00:55,854 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 192, enable = False
+[2024-12-28 08:00:56,247 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:00:56,247 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 193, distance = 50
+[2024-12-28 08:00:58,407 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 193 response received
+[2024-12-28 08:00:58,407 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:00:58,407 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 194, angle = 9
+[2024-12-28 08:00:59,757 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 194 response received
+[2024-12-28 08:00:59,757 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:00:59,758 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 195, distance = 50
+[2024-12-28 08:01:01,918 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 195 response received
+[2024-12-28 08:01:01,918 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:01,918 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 196, angle = 9
+[2024-12-28 08:01:03,267 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 196 response received
+[2024-12-28 08:01:03,268 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:01:03,268 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 197, distance = 50
+[2024-12-28 08:01:05,428 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 197 response received
+[2024-12-28 08:01:05,428 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:05,428 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 198, angle = 9
+[2024-12-28 08:01:06,777 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 198 response received
+[2024-12-28 08:01:06,778 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:01:06,778 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 199, distance = 50
+[2024-12-28 08:01:08,937 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 199 response received
+[2024-12-28 08:01:08,937 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:08,937 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 200, angle = 9
+[2024-12-28 08:01:10,288 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 200 response received
+[2024-12-28 08:01:10,288 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 08:01:10,288 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 201, enable = False
+[2024-12-28 08:01:10,557 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 08:01:20,559 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 08:01:20,559 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 202, enable = False
+[2024-12-28 08:01:21,087 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:01:21,088 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 203, distance = 50
+[2024-12-28 08:01:23,247 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 203 response received
+[2024-12-28 08:01:23,248 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:23,248 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 204, angle = 9
+[2024-12-28 08:01:24,598 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 204 response received
+[2024-12-28 08:01:24,598 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:01:24,599 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 205, distance = 50
+[2024-12-28 08:01:26,758 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 205 response received
+[2024-12-28 08:01:26,758 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:26,758 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 206, angle = 9
+[2024-12-28 08:01:28,108 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 206 response received
+[2024-12-28 08:01:28,108 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:01:28,108 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 207, distance = 50
+[2024-12-28 08:01:30,268 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 207 response received
+[2024-12-28 08:01:30,268 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:30,268 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 208, angle = 9
+[2024-12-28 08:01:31,619 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 208 response received
+[2024-12-28 08:01:31,619 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:01:31,619 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 209, distance = 50
+[2024-12-28 08:01:33,508 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 209 response received
+[2024-12-28 08:01:33,508 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:33,508 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 210, angle = 9
+[2024-12-28 08:01:34,857 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 210 response received
+[2024-12-28 08:01:34,858 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 08:01:34,858 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 211, enable = False
+[2024-12-28 08:01:35,127 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 08:01:45,129 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 08:01:45,129 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 212, enable = False
+[2024-12-28 08:01:45,432 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:01:45,433 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 213, distance = 50
+[2024-12-28 08:01:47,322 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 213 response received
+[2024-12-28 08:01:47,323 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:47,323 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 214, angle = 9
+[2024-12-28 08:01:48,672 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 214 response received
+[2024-12-28 08:01:48,672 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:01:48,672 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 215, distance = 50
+[2024-12-28 08:01:50,833 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 215 response received
+[2024-12-28 08:01:50,833 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:50,833 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 216, angle = 9
+[2024-12-28 08:01:52,182 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 216 response received
+[2024-12-28 08:01:52,183 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:01:52,183 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 217, distance = 50
+[2024-12-28 08:01:54,343 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 217 response received
+[2024-12-28 08:01:54,344 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:54,344 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 218, angle = 9
+[2024-12-28 08:01:55,692 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 218 response received
+[2024-12-28 08:01:55,693 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:01:55,693 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 219, distance = 50
+[2024-12-28 08:01:57,853 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 219 response received
+[2024-12-28 08:01:57,854 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:01:57,854 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 220, angle = 9
+[2024-12-28 08:01:59,202 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 220 response received
+[2024-12-28 08:01:59,203 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 08:01:59,203 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 221, enable = False
+[2024-12-28 08:01:59,472 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 08:02:09,474 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 08:02:09,474 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 222, enable = False
+[2024-12-28 08:02:09,822 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:02:09,823 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 223, distance = 50
+[2024-12-28 08:02:11,982 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 223 response received
+[2024-12-28 08:02:11,983 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:02:11,983 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 224, angle = 9
+[2024-12-28 08:02:13,333 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 224 response received
+[2024-12-28 08:02:13,333 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:02:13,333 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 225, distance = 50
+[2024-12-28 08:02:15,493 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 225 response received
+[2024-12-28 08:02:15,493 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:02:15,493 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 226, angle = 9
+[2024-12-28 08:02:16,843 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 226 response received
+[2024-12-28 08:02:16,844 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:02:16,844 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 227, distance = 50
+[2024-12-28 08:02:18,823 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 227 response received
+[2024-12-28 08:02:18,823 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:02:18,823 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 228, angle = 9
+[2024-12-28 08:02:20,173 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 228 response received
+[2024-12-28 08:02:20,173 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:02:20,173 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 229, distance = 50
+[2024-12-28 08:02:22,152 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 229 response received
+[2024-12-28 08:02:22,153 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:02:22,153 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 230, angle = 9
+[2024-12-28 08:02:23,503 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 230 response received
+[2024-12-28 08:02:23,503 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 08:02:23,503 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 231, enable = False
+[2024-12-28 08:02:23,773 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 08:02:33,774 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 08:02:33,774 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 232, enable = False
+[2024-12-28 08:02:34,392 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:02:34,392 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 233, distance = 50
+[2024-12-28 08:02:36,553 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 233 response received
+[2024-12-28 08:02:36,553 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:02:36,553 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 234, angle = 9
+[2024-12-28 08:02:37,903 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 234 response received
+[2024-12-28 08:02:37,903 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:02:37,903 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 235, distance = 50
+[2024-12-28 08:02:40,062 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 235 response received
+[2024-12-28 08:02:40,062 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:02:40,067 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 236, angle = 9
+[2024-12-28 08:02:41,412 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 236 response received
+[2024-12-28 08:02:41,413 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:02:41,413 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 237, distance = 50
+[2024-12-28 08:02:43,573 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 237 response received
+[2024-12-28 08:02:43,573 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:02:43,573 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 238, angle = 9
+[2024-12-28 08:02:44,968 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 238 response received
+[2024-12-28 08:02:44,969 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:02:44,969 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 239, distance = 50
+[2024-12-28 08:02:47,128 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 239 response received
+[2024-12-28 08:02:47,128 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:02:47,128 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 240, angle = 9
+[2024-12-28 08:02:48,478 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 240 response received
+[2024-12-28 08:02:48,478 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 08:02:48,478 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 241, enable = False
+[2024-12-28 08:02:49,017 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 08:02:59,019 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 08:02:59,019 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 242, enable = False
+[2024-12-28 08:02:59,457 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:02:59,458 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 243, distance = 50
+[2024-12-28 08:03:01,349 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 243 response received
+[2024-12-28 08:03:01,349 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:03:01,349 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 244, angle = 9
+[2024-12-28 08:03:02,697 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 244 response received
+[2024-12-28 08:03:02,697 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:03:02,698 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 245, distance = 50
+[2024-12-28 08:03:04,857 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 245 response received
+[2024-12-28 08:03:04,857 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:03:04,857 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 246, angle = 9
+[2024-12-28 08:03:06,207 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 246 response received
+[2024-12-28 08:03:06,208 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:03:06,208 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 247, distance = 50
+[2024-12-28 08:03:08,368 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 247 response received
+[2024-12-28 08:03:08,368 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:03:08,373 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 248, angle = 9
+[2024-12-28 08:03:09,717 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 248 response received
+[2024-12-28 08:03:09,717 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:03:09,718 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 249, distance = 50
+[2024-12-28 08:03:11,877 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 249 response received
+[2024-12-28 08:03:11,877 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:03:11,878 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 250, angle = 9
+[2024-12-28 08:03:13,227 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 250 response received
+[2024-12-28 08:03:13,227 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 08:03:13,228 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 251, enable = False
+[2024-12-28 08:03:13,497 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating
+[2024-12-28 08:03:23,499 vt2demo.py::demo():35]INFO: Sending command: Motors on
+[2024-12-28 08:03:23,499 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 252, enable = False
+[2024-12-28 08:03:24,027 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:03:24,027 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 253, distance = 50
+[2024-12-28 08:03:26,188 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 253 response received
+[2024-12-28 08:03:26,188 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:03:26,188 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 254, angle = 9
+[2024-12-28 08:03:27,538 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 254 response received
+[2024-12-28 08:03:27,538 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:03:27,538 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 255, distance = 50
+[2024-12-28 08:03:29,698 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 255 response received
+[2024-12-28 08:03:29,698 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:03:29,698 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 1, angle = 9
+[2024-12-28 08:03:31,047 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 1 response received
+[2024-12-28 08:03:31,048 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:03:31,048 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 2, distance = 50
+[2024-12-28 08:03:33,207 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 2 response received
+[2024-12-28 08:03:33,207 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:03:33,208 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 3, angle = 9
+[2024-12-28 08:03:34,558 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 3 response received
+[2024-12-28 08:03:34,559 vt2demo.py::demo():39]INFO: Sending command: Forward 50mm
+[2024-12-28 08:03:34,559 commands_tx.py::forward():105]INFO: Commands::forward - Command ID = 2, Sequence ID = 4, distance = 50
+[2024-12-28 08:03:36,447 commands_tx.py::forward():110]INFO: Commands::forward - Command ID = 2, Sequence ID = 4 response received
+[2024-12-28 08:03:36,448 vt2demo.py::demo():41]INFO: Sending command: Turn right 9 degrees
+[2024-12-28 08:03:36,448 commands_tx.py::right():180]INFO: Commands::right - Command ID = 5, Sequence ID = 5, angle = 9
+[2024-12-28 08:03:37,798 commands_tx.py::right():185]INFO: Commands::right - Command ID = 5, Sequence ID = 5 response received
+[2024-12-28 08:03:37,799 vt2demo.py::demo():44]INFO: Sending command: Motors off
+[2024-12-28 08:03:37,799 commands_tx.py::motors():81]INFO: Commands::motors - Command ID = 1, Sequence ID = 6, enable = False
+[2024-12-28 08:03:38,068 vt2demo.py::demo():47]INFO: Waiting for 10 seconds before repeating

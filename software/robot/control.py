@@ -58,15 +58,15 @@ class Control:
 
             # The first byte is the command ID and the second
             # byte is the sequence number. Unpack the data using struct
-            command_id, command_seq = struct.unpack('<BB', data[:2])
+            command_seq, command_id = struct.unpack('<BB', data[:2])
 
             if command_id == 0:
                 # NOP command
-                pass
+                picolog.debug(f"Control::run - NOP command received from central - sequence = {command_seq}")
             elif command_id == 1:
                 # Command ID 1 = motors
                 # Expect a single byte parameter (1 = enable, 0 = disable)
-                command_id, command_seq, enable = struct.unpack('<BBB', data[:3])
+                command_seq, command_id, enable = struct.unpack('<BBB', data[:3])
                 await self._commands.motors(enable)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -75,7 +75,7 @@ class Control:
             elif command_id == 2:
                 # Command ID 2 = forward
                 # Expect a single float parameter (distance in mm)
-                command_id, command_seq, distance_mm = struct.unpack('<BBf', data[:6])
+                command_seq, command_id, distance_mm = struct.unpack('<BBf', data[:6])
                 await self._commands.forward(distance_mm)
 
                 response = struct.pack('B', command_seq) + bytes(19)
@@ -84,7 +84,7 @@ class Control:
             elif command_id == 3:
                 # Command ID 3 = backward
                 # Expect a single float parameter (distance in mm)
-                command_id, command_seq, distance_mm = struct.unpack('<BBf', data[:6])
+                command_seq, command_id, distance_mm = struct.unpack('<BBf', data[:6])
                 await self._commands.backward(distance_mm)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -93,7 +93,7 @@ class Control:
             elif command_id == 4:
                 # Command ID 4 = left
                 # Expect a single float parameter (angle in degrees)
-                command_id, command_seq, angle_degrees = struct.unpack('<BBf', data[:6])
+                command_seq, command_id, angle_degrees = struct.unpack('<BBf', data[:6])
                 await self._commands.left(angle_degrees)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -102,7 +102,7 @@ class Control:
             elif command_id == 5:
                 # Command ID 5 = right
                 # Expect a single float parameter (angle in degrees)
-                command_id, command_seq, angle_degrees = struct.unpack('<BBf', data[:6])
+                command_seq, command_id, angle_degrees = struct.unpack('<BBf', data[:6])
                 await self._commands.right(angle_degrees)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -111,7 +111,7 @@ class Control:
             elif command_id == 6:
                 # Command ID 6 = heading
                 # Expect a single float parameter (heading in degrees)
-                command_id, command_seq, heading_degrees = struct.unpack('<BBf', data[:6])
+                command_seq, command_id, heading_degrees = struct.unpack('<BBf', data[:6])
                 await self._commands.heading(heading_degrees)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -120,7 +120,7 @@ class Control:
             elif command_id == 7:
                 # Command ID 7 = position_x
                 # Expect a single float parameter (x position in mm)
-                command_id, command_seq, x_mm = struct.unpack('<BBf', data[:6])
+                command_seq, command_id, x_mm = struct.unpack('<BBf', data[:6])
                 await self._commands.position_x(x_mm)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -128,7 +128,7 @@ class Control:
             elif command_id == 8:
                 # Command ID 8 = position_y
                 # Expect a single float parameter (y position in mm)
-                command_id, command_seq, y_mm = struct.unpack('<BBf', data[:6])
+                command_seq, command_id, y_mm = struct.unpack('<BBf', data[:6])
                 await self._commands.position_y(y_mm)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -136,7 +136,7 @@ class Control:
             elif command_id == 9:
                 # Command ID 9 = position
                 # Expect two float parameters (x and y position in mm)
-                command_id, command_seq, x_mm, y_mm = struct.unpack('<BBff', data[:10])
+                command_seq, command_id, x_mm, y_mm = struct.unpack('<BBff', data[:10])
                 await self._commands.position(x_mm, y_mm)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -144,7 +144,7 @@ class Control:
             elif command_id == 10:
                 # Command ID 10 = towards
                 # Expect two float parameters (x and y position in mm)
-                command_id, command_seq, x_mm, y_mm = struct.unpack('<BBff', data[:10])
+                command_seq, command_id, x_mm, y_mm = struct.unpack('<BBff', data[:10])
                 await self._commands.towards(x_mm, y_mm)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -184,7 +184,7 @@ class Control:
             elif command_id == 17:
                 # Command ID 17 = pen
                 # Expect a single byte parameter (0 = down, 1 = up)
-                command_id, command_seq, position = struct.unpack('<BBB', data[:3])
+                command_seq, command_id, position = struct.unpack('<BBB', data[:3])
                 await self._commands.pen(position)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -192,7 +192,7 @@ class Control:
             elif command_id == 18:
                 # Command ID 18 = eyes
                 # Expect four byte parameters (eye ID, red, green, blue)
-                command_id, command_seq, eye_id, red, green, blue = struct.unpack('<BBBBBB', data[:6])
+                command_seq, command_id, eye_id, red, green, blue = struct.unpack('<BBBBBB', data[:6])
                 await self._commands.eyes(eye_id, red, green, blue)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -232,7 +232,7 @@ class Control:
             elif command_id == 23:
                 # Command ID 23 = set-linear-velocity
                 # Expect two float parameters (max speed and acceleration in mm/s^2)
-                command_id, command_seq, max_speed, acceleration = struct.unpack('<BBff', data[:10])
+                command_seq, command_id, max_speed, acceleration = struct.unpack('<BBff', data[:10])
                 await self._commands.set_linear_velocity(max_speed, acceleration)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -240,7 +240,7 @@ class Control:
             elif command_id == 24:
                 # Command ID 24 = set-rotation-velocity
                 # Expect two float parameters (max speed and acceleration in mm/s^2)
-                command_id, command_seq, max_speed, acceleration = struct.unpack('<BBff', data[:10])
+                command_seq, command_id, max_speed, acceleration = struct.unpack('<BBff', data[:10])
                 await self._commands.set_rotational_velocity(max_speed, acceleration)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -264,7 +264,7 @@ class Control:
             elif command_id == 29:
                 # Command ID 29 = set-cali-wheel
                 # Expect a single int32 parameter (wheel diameter adjustment in micrometers)
-                command_id, command_seq, wheel_diameter = struct.unpack('<BBi', data[:6])
+                command_seq, command_id, wheel_diameter = struct.unpack('<BBi', data[:6])
                 await self._commands.set_wheel_diameter_calibration(wheel_diameter)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -272,7 +272,7 @@ class Control:
             elif command_id == 30:
                 # Command ID 30 = set-cali-axel
                 # Expect a single int32 parameter (axel distance adjustment in micrometers)
-                command_id, command_seq, axel_distance = struct.unpack('<BBi', data[:6])
+                command_seq, command_id, axel_distance = struct.unpack('<BBi', data[:6])
                 await self._commands.set_axel_distance_calibration(axel_distance)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -296,7 +296,7 @@ class Control:
             elif command_id == 33:
                 # Command ID 33 = set-turtle-id
                 # Expect a single byte parameter (ID)
-                command_id, command_seq, turtle_id = struct.unpack('<BBB', data[:3])
+                command_seq, command_id, turtle_id = struct.unpack('<BBB', data[:3])
                 await self._commands.set_turtle_id(turtle_id)
 
                 response = struct.pack('<B', command_seq) + bytes(19)

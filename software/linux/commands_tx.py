@@ -47,13 +47,19 @@ class CommandsTx:
     async def __wait_for_command_response(self, seq_id: int) -> bytes:
         while True:
             await self._ble_central._p2c_queue_event.wait()
-            data = self._ble_central._p2c_queue.pop(0)
+            try:
+                data = self._ble_central._p2c_queue.pop(0)
+            except IndexError:
+                logging.error("Commands::__wait_for_command_response - Got P2C queue event but the queue was empty?")
+                seq_id_rx = 0
+                return None
+
             self._ble_central._p2c_queue_event.clear()
             seq_id_rx = data[0]
 
             # Check if the sequence ID matches
             if seq_id_rx == seq_id:
-                logging.info(f"Commands::__wait_for_command_response - Sequence ID = {seq_id_rx} matched")
+                #logging.info(f"Commands::__wait_for_command_response - Sequence ID = {seq_id_rx} matched")
                 return data
 
     # Command ID = 1
@@ -70,7 +76,7 @@ class CommandsTx:
 
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBB", 1, seq_id, parameter)
+        data = struct.pack("<BBB", seq_id, 1, parameter)
         self._ble_central.add_to_c2p_queue(data)
         logging.info(f"Commands::motors - Command ID = 1, Sequence ID = {seq_id}, enable = {enable}")
         
@@ -94,16 +100,16 @@ class CommandsTx:
         # Command to move the robot forward
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", 2, seq_id, distance_mm)
+        data = struct.pack("<BBf", seq_id, 2, distance_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.debug(f"Commands::forward - Command ID = 2, Sequence ID = {seq_id}, distance = {distance_mm}")
+        logging.info(f"Commands::forward - Command ID = 2, Sequence ID = {seq_id}, distance = {distance_mm}")
 
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
-            logging.error(f"Commands::motors - Command ID = 2, Sequence ID = {seq_id} response received")
+            logging.info(f"Commands::forward - Command ID = 2, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
-            logging.error(f"Commands::motors - Command ID = 2, Sequence ID = {seq_id} timed out")
+            logging.error(f"Commands::forward - Command ID = 2, Sequence ID = {seq_id} timed out")
             self._ble_central.flag_disconnection()
             return False
 
@@ -119,16 +125,16 @@ class CommandsTx:
         # Command to move the robot backward
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", 3, seq_id, distance_mm)
+        data = struct.pack("<BBf", seq_id, 3, distance_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.debug(f"Commands::backward - Command ID = 3, Sequence ID = {seq_id}, distance = {distance_mm}")
+        logging.info(f"Commands::backward - Command ID = 3, Sequence ID = {seq_id}, distance = {distance_mm}")
         
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
-            logging.error(f"Commands::motors - Command ID = 3, Sequence ID = {seq_id} response received")
+            logging.info(f"Commands::backward - Command ID = 3, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
-            logging.error(f"Commands::motors - Command ID = 3, Sequence ID = {seq_id} timed out")
+            logging.error(f"Commands::backward - Command ID = 3, Sequence ID = {seq_id} timed out")
             self._ble_central.flag_disconnection()
             return False
 
@@ -144,16 +150,16 @@ class CommandsTx:
         # Command to turn the robot left
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", 4, seq_id, angle_degrees)
+        data = struct.pack("<BBf", seq_id, 4, angle_degrees)
         self._ble_central.add_to_c2p_queue(data)
-        logging.debug(f"Commands::left - Command ID = 4, Sequence ID = {seq_id}, angle = {angle_degrees}")
+        logging.info(f"Commands::left - Command ID = 4, Sequence ID = {seq_id}, angle = {angle_degrees}")
         
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
-            logging.error(f"Commands::motors - Command ID = 4, Sequence ID = {seq_id} response received")
+            logging.info(f"Commands::left - Command ID = 4, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
-            logging.error(f"Commands::motors - Command ID = 4, Sequence ID = {seq_id} timed out")
+            logging.error(f"Commands::left - Command ID = 4, Sequence ID = {seq_id} timed out")
             self._ble_central.flag_disconnection()
             return False
 
@@ -169,16 +175,16 @@ class CommandsTx:
         # Command to turn the robot right
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", 5, seq_id, angle_degrees)
+        data = struct.pack("<BBf", seq_id, 5, angle_degrees)
         self._ble_central.add_to_c2p_queue(data)
-        logging.debug(f"Commands::right - Command ID = 5, Sequence ID = {seq_id}, angle = {angle_degrees}")
+        logging.info(f"Commands::right - Command ID = 5, Sequence ID = {seq_id}, angle = {angle_degrees}")
         
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
-            logging.error(f"Commands::motors - Command ID = 5, Sequence ID = {seq_id} response received")
+            logging.info(f"Commands::right - Command ID = 5, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
-            logging.error(f"Commands::motors - Command ID = 5, Sequence ID = {seq_id} timed out")
+            logging.error(f"Commands::right - Command ID = 5, Sequence ID = {seq_id} timed out")
             self._ble_central.flag_disconnection()
             return False
 
