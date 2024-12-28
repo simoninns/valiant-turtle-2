@@ -208,7 +208,7 @@ class Control:
             elif command_id == 18:
                 # Command ID 18 = set-linear-velocity
                 # Expect two float parameters (max speed and acceleration in mm/s^2)
-                command_seq, command_id, max_speed, acceleration = struct.unpack('<BBff', data[:10])
+                command_seq, command_id, max_speed, acceleration = struct.unpack('<BBll', data[:10])
                 await self._commands.set_linear_velocity(max_speed, acceleration)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -216,7 +216,7 @@ class Control:
             elif command_id == 19:
                 # Command ID 19 = set-rotation-velocity
                 # Expect two float parameters (max speed and acceleration in mm/s^2)
-                command_seq, command_id, max_speed, acceleration = struct.unpack('<BBff', data[:10])
+                command_seq, command_id, max_speed, acceleration = struct.unpack('<BBll', data[:10])
                 await self._commands.set_rotational_velocity(max_speed, acceleration)
 
                 response = struct.pack('<B', command_seq) + bytes(19)
@@ -227,7 +227,7 @@ class Control:
                 command_seq, command_id = struct.unpack('<BB', data[:2])
                 linear_max_speed, linear_acceleration = await self._commands.get_linear_velocity()
 
-                response = struct.pack('<Bff', command_seq, linear_max_speed, linear_acceleration) + bytes(11)
+                response = struct.pack('<Bll', command_seq, linear_max_speed, linear_acceleration) + bytes(11)
                 self._ble_peripheral.add_to_p2c_queue(response)
             elif command_id == 21:
                 # Command ID 21 = get-rotational-velocity
@@ -235,7 +235,7 @@ class Control:
                 command_seq, command_id = struct.unpack('<BB', data[:2])
                 rotation_max_speed, rotation_acceleration = await self._commands.get_rotational_velocity()
 
-                response = struct.pack('<Bff', command_seq, rotation_max_speed, rotation_acceleration) + bytes(11)
+                response = struct.pack('<Bll', command_seq, rotation_max_speed, rotation_acceleration) + bytes(11)
                 self._ble_peripheral.add_to_p2c_queue(response)
             elif command_id == 22:
                 # Command ID 22 = set-cali-wheel

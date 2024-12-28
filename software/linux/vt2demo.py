@@ -32,8 +32,9 @@ from commands_tx import CommandsTx
 async def command_test(ble_central: BleCentral, commands_tx: CommandsTx):
     while True:
         if ble_central.is_connected:
-            result = await commands_tx.motors(True) # 1
             result = await commands_tx.motors(False) # 1
+            await asyncio.sleep(1)
+            result = await commands_tx.motors(True) # 1
 
             result = await commands_tx.forward(50) # 2
             result = await commands_tx.backward(50) # 3
@@ -56,7 +57,12 @@ async def command_test(ble_central: BleCentral, commands_tx: CommandsTx):
             # Pen servo test
             result = await commands_tx.pen(False) # 14
             await asyncio.sleep(1)
+            result, pen_up = await commands_tx.get_pen() # 17
+            print(f"Pen up: {'up' if pen_up else 'down'}")
             result = await commands_tx.pen(True) # 14
+            await asyncio.sleep(1)
+            result, pen_up = await commands_tx.get_pen() # 17
+            print(f"Pen up: {'up' if pen_up else 'down'}")
 
             # Eyes test
             result = await commands_tx.eyes(0, 255, 0, 0) # 15
@@ -71,6 +77,52 @@ async def command_test(ble_central: BleCentral, commands_tx: CommandsTx):
             # Power test
             result, mv, ma, mw = await commands_tx.get_power() # 16
             print(f"Power: {mv}mV, {ma}mA, {mw}mW")
+
+            # Velocity setting test
+            result = await commands_tx.set_linear_velocity(400, 8) # 18
+            result = await commands_tx.set_rotational_velocity(400, 8) # 19
+
+            result, target_speed, acceleration = await commands_tx.get_linear_velocity() # 20
+            print(f"Linear velocity: {target_speed}, {acceleration}")
+            result, target_speed, acceleration = await commands_tx.get_rotational_velocity() # 21
+            print(f"Rotational velocity: {target_speed}, {acceleration}")
+
+            result = await commands_tx.set_linear_velocity(200, 4) # 18
+            result = await commands_tx.set_rotational_velocity(200, 4) # 19
+
+            result, target_speed, acceleration = await commands_tx.get_linear_velocity() # 20
+            print(f"Linear velocity: {target_speed}, {acceleration}")
+            result, target_speed, acceleration = await commands_tx.get_rotational_velocity() # 21
+            print(f"Rotational velocity: {target_speed}, {acceleration}")
+
+            # Calibration test
+            result = await commands_tx.set_wheel_diameter_calibration(1234) # 22
+            result = await commands_tx.set_axel_distance_calibration(4321) # 23
+
+            result, wheel_diameter = await commands_tx.get_wheel_diameter_calibration() # 24
+            print(f"Wheel diameter calibration: {wheel_diameter} um")
+            result, axel_distance = await commands_tx.get_axel_distance_calibration() # 25
+            print(f"Axel distance calibration: {axel_distance} um")
+
+            result = await commands_tx.set_wheel_diameter_calibration(0) # 22
+            result = await commands_tx.set_axel_distance_calibration(0) # 23
+
+            result, wheel_diameter = await commands_tx.get_wheel_diameter_calibration() # 24
+            print(f"Wheel diameter calibration: {wheel_diameter} um")
+            result, axel_distance = await commands_tx.get_axel_distance_calibration() # 25
+            print(f"Axel distance calibration: {axel_distance} um")
+
+            result = await commands_tx.set_turtle_id(2) # 26
+            result, turtle_id = await commands_tx.get_turtle_id() # 27
+            print(f"Turtle ID: {turtle_id}")
+
+            result = await commands_tx.set_turtle_id(0) # 26
+            result, turtle_id = await commands_tx.get_turtle_id() # 27
+            print(f"Turtle ID: {turtle_id}")
+
+            result = await commands_tx.load_config() # 28
+            result = await commands_tx.save_config() # 29
+            result = await commands_tx.reset_config() # 30
 
         else:
             await asyncio.sleep(1)
