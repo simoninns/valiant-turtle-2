@@ -64,8 +64,8 @@ _LED_right_eye = const(3)
 _LED_left_eye = const(4)
 
 def main():
-    # Async task to monitor the robot
-    async def robot_monitor_task():
+    # Async task to monitor the status of the robot and show it in the LEDs
+    async def robot_status_task():
         """This task monitors the robot's status and updates the status LEDs accordingly.
     
         The status LED pulses green when BLE central is not connected.  If BLE central is connected,
@@ -102,21 +102,47 @@ def main():
                     # Motor is moving backwards
                     led_fx.set_led_colour(_LED_right_motor, 64, 0, 0)
 
-            # Update the BLE status
-            if ble_peripheral.is_connected:
-                if loop < 2:
-                    led_fx.set_led_colour(_LED_status, 0, 0, 64)
-                else:
-                    led_fx.set_led_colour(_LED_status, 0, 0, 32)
+            if power_low_event.is_set():
+                led_fx.set_led_colour(_LED_status, 255, 0, 0)
             else:
-                if loop < 2:
-                    led_fx.set_led_colour(_LED_status, 0, 64, 0)
+                # Update the BLE status
+                if ble_peripheral.is_connected:
+                    if loop < 2:
+                        led_fx.set_led_colour(_LED_status, 0, 0, 64)
+                    else:
+                        led_fx.set_led_colour(_LED_status, 0, 0, 32)
                 else:
-                    led_fx.set_led_colour(_LED_status, 0, 32, 0)
+                    if loop < 2:
+                        led_fx.set_led_colour(_LED_status, 0, 64, 0)
+                    else:
+                        led_fx.set_led_colour(_LED_status, 0, 32, 0)
 
             loop += 1
             if loop > 3: loop = 0
-            await asyncio.sleep_ms(250)
+            await asyncio.sleep(0.25)
+
+    # Power monitoring task
+    async def power_monitor_task():
+        while True:
+            # Read the power from the INA260
+            current = ina260.current_mA
+            voltage = ina260.voltage_mV
+            power = ina260.power_mW
+
+            picolog.debug(f"Power monitor: {voltage}mV, {current}mA, {power}mW")
+
+            # Check if the power level is below the minimum allowed
+            # cell voltage (3.0V) and set the event flag
+            if (voltage < 12000):
+                if not power_low_event.is_set():
+                    picolog.warning("Power monitor: Power low event set")
+                    power_low_event.set()
+            else:
+                if power_low_event.is_set():
+                    picolog.warning("Power monitor: Power low event cleared")
+                    power_low_event.clear()
+
+            await asyncio.sleep(5)
 
     # Async task generation and launch
     async def aio_main():
@@ -124,7 +150,8 @@ def main():
             asyncio.create_task(ble_peripheral.run()), # BLE peripheral tasks
             asyncio.create_task(control.run()), # Control task (BLE <-> Commands)
             asyncio.create_task(led_fx.run()), # LED effects task
-            asyncio.create_task(robot_monitor_task()), # Robot monitoring task
+            asyncio.create_task(robot_status_task()), # Robot status monitoring task
+            asyncio.create_task(power_monitor_task()), # Robot power monitoring task
         ]
         await asyncio.gather(*tasks)
 
@@ -141,6 +168,7 @@ def main():
 
     # Initialise the INA260 power monitoring chip
     ina260 = Ina260(i2c_internal, 0x40)
+    power_low_event = asyncio.Event()
 
     # Initialise the EEPROM
     eeprom = Eeprom(i2c_internal, 0x50)
@@ -160,9 +188,14 @@ def main():
         # Current EEPROM image is invalid, write the default
         eeprom.write(0, configuration.pack())
 
+    # Initialise the BLE peripheral
     ble_peripheral = BlePeripheral()
+
+    # Initialise the commands handler
     commands = CommandsRx(pen, ina260, eeprom, led_fx, diff_drive, configuration)
-    control = Control(ble_peripheral, commands)
+
+    # Initialise the control handler
+    control = Control(ble_peripheral, commands, power_low_event)
 
     # Run
     asyncio.run(aio_main())

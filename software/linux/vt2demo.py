@@ -26,6 +26,8 @@
 
 import logging
 import asyncio
+import time
+import csv
 from ble_central import BleCentral
 from commands_tx import CommandsTx
 
@@ -127,6 +129,34 @@ async def command_test(ble_central: BleCentral, commands_tx: CommandsTx):
         else:
             await asyncio.sleep(1)
 
+async def battery_test(ble_central: BleCentral, commands_tx: CommandsTx):
+    distance = 0
+
+    # Open CSV file to store the output
+    csv_file = open('battery_test_output.csv', mode='w', newline='')
+    csv_writer = csv.writer(csv_file)
+
+    # Wait for connection
+    while not ble_central.is_connected:
+        await asyncio.sleep(1)
+
+    # Motors on
+    result = await commands_tx.motors(True)
+
+    while True:
+        if ble_central.is_connected:
+            result, mv, ma, mw = await commands_tx.get_power()
+            current_time = time.time()
+            current_time_str = time.strftime("%H%M%S", time.localtime()) + f"{int(time.time() * 1000) % 1000:03d}"
+            print(f"{current_time_str}, {mv}, {ma}, {mw}, {distance}")
+            csv_writer.writerow([current_time_str, mv, ma, mw, distance])
+            csv_file.flush()
+
+            result = await commands_tx.forward(500)
+            distance += 5
+            result = await commands_tx.backward(500)
+            distance += 5
+
 async def aio_main():
     logging.info("Running BLE central async tasks") 
     ble_central = BleCentral()
@@ -134,7 +164,8 @@ async def aio_main():
 
     tasks = [
         asyncio.create_task(ble_central.run()),
-        asyncio.create_task(command_test(ble_central, commands_tx)),
+        #asyncio.create_task(command_test(ble_central, commands_tx)),
+        asyncio.create_task(battery_test(ble_central, commands_tx)),
     ]
     await asyncio.gather(*tasks)
 
