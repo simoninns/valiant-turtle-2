@@ -29,23 +29,29 @@ import asyncio
 from ble_central import BleCentral
 from commands_tx import CommandsTx
 
-async def demo(ble_central: BleCentral, commands_tx: CommandsTx):
+async def command_test(ble_central: BleCentral, commands_tx: CommandsTx):
     while True:
         if ble_central.is_connected:
-            logging.info("Sending command: Motors on")
-            result = await commands_tx.motors(False)
-            if result:
-                for i in range(4):
-                    logging.info("Sending command: Forward 50mm")
-                    await commands_tx.forward(50)
-                    logging.info("Sending command: Turn right 9 degrees")
-                    await commands_tx.right(9)
+            result = await commands_tx.motors(True) # 1
+            result = await commands_tx.motors(False) # 1
 
-                logging.info("Sending command: Motors off")
-                await commands_tx.motors(False)
+            result = await commands_tx.forward(50) # 2
+            result = await commands_tx.backward(50) # 3
+            result = await commands_tx.left(10) # 4
+            result = await commands_tx.right(10) # 5
 
-                logging.info("Waiting for 10 seconds before repeating")
-                await asyncio.sleep(10)
+            result = await commands_tx.heading(20) # 6
+            result = await commands_tx.position_x(100) # 7
+            result = await commands_tx.position_y(100) # 8
+            result = await commands_tx.position(50, 50) # 9
+            result = await commands_tx.towards(75, 75) # 10
+            
+            result, heading = await commands_tx.get_heading() # 12
+            print(f"Heading: {heading}")
+            result, x, y = await commands_tx.get_position() # 13
+            print(f"Position: {x}, {y}")
+
+            result = await commands_tx.reset_origin() # 11
         else:
             await asyncio.sleep(1)
 
@@ -56,7 +62,7 @@ async def aio_main():
 
     tasks = [
         asyncio.create_task(ble_central.run()),
-        asyncio.create_task(demo(ble_central, commands_tx)),
+        asyncio.create_task(command_test(ble_central, commands_tx)),
     ]
     await asyncio.gather(*tasks)
 

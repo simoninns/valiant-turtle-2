@@ -34,7 +34,7 @@ from ble_peripheral import BlePeripheral
 from led_fx import LedFx
 from diffdrive import DiffDrive
 from machine import I2C, Pin
-from commands import Commands
+from commands_rx import CommandsRx
 from control import Control
 import asyncio
 
@@ -161,7 +161,7 @@ def main():
         eeprom.write(0, configuration.pack())
 
     ble_peripheral = BlePeripheral()
-    commands = Commands(pen, ina260, eeprom, led_fx, diff_drive, configuration)
+    commands = CommandsRx(pen, ina260, eeprom, led_fx, diff_drive, configuration)
     control = Control(ble_peripheral, commands)
 
     # Run

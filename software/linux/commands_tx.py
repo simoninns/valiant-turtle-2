@@ -30,6 +30,10 @@ import logging
 import struct
 from ble_central import BleCentral
 
+# Note: The commands are defined in the BLE peripheral firmware
+# and the ControlRx class must match the ControlTx class otherwise
+# bad things will happen :)
+
 class CommandsTx:
     def __init__(self, ble_central: BleCentral):
         self._ble_central = ble_central
@@ -61,6 +65,8 @@ class CommandsTx:
             if seq_id_rx == seq_id:
                 #logging.info(f"Commands::__wait_for_command_response - Sequence ID = {seq_id_rx} matched")
                 return data
+            else:
+                logging.info(f"Commands::__wait_for_command_response - Sequence ID = {seq_id_rx} did not match received sequence ID = {seq_id}")
 
     # Command ID = 1
     async def motors(self, enable: bool) -> bool:
@@ -107,7 +113,6 @@ class CommandsTx:
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
-            logging.info(f"Commands::forward - Command ID = 2, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
             logging.error(f"Commands::forward - Command ID = 2, Sequence ID = {seq_id} timed out")
             self._ble_central.flag_disconnection()
@@ -132,7 +137,6 @@ class CommandsTx:
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
-            logging.info(f"Commands::backward - Command ID = 3, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
             logging.error(f"Commands::backward - Command ID = 3, Sequence ID = {seq_id} timed out")
             self._ble_central.flag_disconnection()
@@ -157,7 +161,6 @@ class CommandsTx:
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
-            logging.info(f"Commands::left - Command ID = 4, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
             logging.error(f"Commands::left - Command ID = 4, Sequence ID = {seq_id} timed out")
             self._ble_central.flag_disconnection()
@@ -182,7 +185,6 @@ class CommandsTx:
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
-            logging.info(f"Commands::right - Command ID = 5, Sequence ID = {seq_id} response received")
         except asyncio.TimeoutError:
             logging.error(f"Commands::right - Command ID = 5, Sequence ID = {seq_id} timed out")
             self._ble_central.flag_disconnection()
@@ -191,130 +193,201 @@ class CommandsTx:
         # This command does not return any data, so we don't need to return any
         return True
 
-    # async def heading(self, heading_degrees: float):
-    #     self._diff_drive.set_heading(heading_degrees)
-    #     # Wait for the drive to finish
-    #     while self._diff_drive.is_moving:
-    #         await asyncio.sleep_ms(250)
-
-    # async def position_x(self, x_mm: float):
-    #     self._diff_drive.set_cartesian_x_position(x_mm)
-    #     # Wait for the drive to finish
-    #     while self._diff_drive.is_moving:
-    #         await asyncio.sleep_ms(250)
-
-    # async def position_y(self, y_mm: float):
-    #     self._diff_drive.set_cartesian_y_position(y_mm)
-    #     # Wait for the drive to finish
-    #     while self._diff_drive.is_moving:
-    #         await asyncio.sleep_ms(250)
-
-    # async def position(self, x_mm: float, y_mm: float):
-    #     self._diff_drive.set_cartesian_position(x_mm, y_mm)
-    #     # Wait for the drive to finish
-    #     while self._diff_drive.is_moving:
-    #         await asyncio.sleep_ms(250)
-
-    # async def towards(self, x_mm: float, y_mm: float):
-    #     self._diff_drive.turn_towards_cartesian_point(x_mm, y_mm)
-    #     # Wait for the drive to finish
-    #     while self._diff_drive.is_moving:
-    #         await asyncio.sleep_ms(250)
-
-    # async def reset_origin(self):
-    #     self._diff_drive.reset_origin()
-
-    # async def get_heading(self) -> float:
-    #     return self._diff_drive.get_heading()
-
-    # async def get_position(self) -> tuple[float, float]:
-    #     x_pos, y_pos = self._diff_drive.get_cartesian_position()
-    #     return x_pos, y_pos
-
-    # async def pen(self, up: bool):
-    #     if up:
-    #         self._pen.up()
-    #     else:
-    #         self._pen.down()
-
-    # async def get_pen(self) -> bool:
-    #     return self._pen.is_servo_up
-
-    # async def eyes(self, eye: int, red: int, green: int, blue: int):
-    #     if eye == 0:
-    #         # Both eyes
-    #         self._led_fx.set_led_colour(0, red, green, blue)
-    #         self._led_fx.set_led_colour(1, red, green, blue)
-    #     elif eye == 1:
-    #         # Left eye
-    #         self._led_fx.set_led_colour(0, red, green, blue)
-    #     else:
-    #         # Right eye
-    #         self._led_fx.set_led_colour(1, red, green, blue)
-
-    # async def get_mv(self) -> int:
-    #     return int(self._ina260.voltage_mV)
-    
-    # async def get_ma(self) -> int:
-    #     return int(self._ina260.current_mA)
-    
-    # async def get_mw(self) -> int:
-    #     return int(self._ina260.power_mW)
-    
-    # async def set_linear_velocity(self, target_speed: int, acceleration: int):
-    #     self._diff_drive.set_linear_velocity(target_speed, acceleration)
-    #     self._configuration.linear_target_speed_mmps = target_speed
-    #     self._configuration.linear_acceleration_mmpss = acceleration
-    #     picolog.debug(f"Commands::set_linear_velocity - Setting linear target speed to = {target_speed} mm/s and acceleration to = {acceleration} mm/s^2")
-
-    # async def set_rotational_velocity(self, target_speed: int, acceleration: int):
-    #     self._diff_drive.set_rotational_velocity(target_speed, acceleration)
-    #     self._configuration.rotational_target_speed_mmps = target_speed
-    #     self._configuration.rotational_acceleration_mmpss = acceleration
-    #     picolog.debug(f"Commands::set_rotational_velocity - Setting rotational target speed to = {target_speed} mm/s and acceleration to = {acceleration} mm/s^2")
-
-    # async def get_linear_velocity(self) -> tuple[int, int]:
-    #     return self._diff_drive.get_linear_velocity()
-    
-    # async def get_rotational_velocity(self) -> tuple[int, int]:
-    #     return self._diff_drive.get_rotational_velocity()
+    # Command ID = 6
+    async def heading(self, angle_degrees: float) -> bool:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::heading - Not connected to a robot")
+            return False
         
-    # async def set_wheel_diameter_calibration(self, calibration_um: int):
-    #     self._diff_drive.set_wheel_calibration(calibration_um)
-    #     self._configuration.wheel_calibration_um = calibration_um
+        # Command to set the robot heading
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BBf", seq_id, 6, angle_degrees)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"Commands::heading - Command ID = 6, Sequence ID = {seq_id}, angle = {angle_degrees}")
+        
+        # Wait for the command to be processed with a long timeout
+        try:
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"Commands::heading - Command ID = 6, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
 
-    # async def set_axel_distance_calibration(self, calibration_um: int):
-    #     self._diff_drive.set_axel_calibration(calibration_um)
-    #     self._configuration.axel_calibration_um = calibration_um
-
-    # async def get_wheel_diameter_calibration(self) -> int:
-    #     return self._diff_drive.get_wheel_calibration()
+        # This command does not return any data, so we don't need to return any
+        return True
     
-    # async def get_axel_distance_calibration(self) -> int:
-    #     return self._diff_drive.get_axel_calibration()
+    # Command ID = 7
+    async def position_x(self, x_mm: float) -> bool:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::position_x - Not connected to a robot")
+            return False
+        
+        # Command to set the robot X position
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BBf", seq_id, 7, x_mm)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"Commands::position_x - Command ID = 7, Sequence ID = {seq_id}, x = {x_mm}")
+        
+        # Wait for the command to be processed with a long timeout
+        try:
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"Commands::position_x - Command ID = 7, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
+
+        # This command does not return any data, so we don't need to return any
+        return True
     
-    # async def set_turtle_id(self, turtle_id: int):
-    #     self._configuration.turtle_id = turtle_id
+    # Command ID = 8
+    async def position_y(self, y_mm: float) -> bool:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::position_y - Not connected to a robot")
+            return False
+        
+        # Command to set the robot Y position
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BBf", seq_id, 8, y_mm)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"Commands::position_y - Command ID = 8, Sequence ID = {seq_id}, y = {y_mm}")
+        
+        # Wait for the command to be processed with a long timeout
+        try:
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"Commands::position_y - Command ID = 8, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
 
-    # async def get_turtle_id(self) -> int:
-    #     return self._configuration.turtle_id
+        # This command does not return any data, so we don't need to return any
+        return True
+    
+    # Command ID = 9
+    async def position(self, x_mm: float, y_mm: float) -> bool:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::position - Not connected to a robot")
+            return False
+        
+        # Command to set the robot position
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BBff", seq_id, 9, x_mm, y_mm)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"Commands::position - Command ID = 9, Sequence ID = {seq_id}, x = {x_mm}, y = {y_mm}")
+        
+        # Wait for the command to be processed with a long timeout
+        try:
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"Commands::position - Command ID = 9, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
 
-    # async def load_config(self):
-    #     self._configuration.unpack(self._eeprom.read(0, self._configuration.pack_size))
-    #     self._diff_drive.set_linear_velocity(self._configuration.linear_target_speed_mmps, self._configuration.linear_acceleration_mmpss)
-    #     self._diff_drive.set_rotational_velocity(self._configuration.rotational_target_speed_mmps, self._configuration.rotational_acceleration_mmpss)
-    #     self._diff_drive.set_wheel_calibration(self._configuration.wheel_calibration_um)
-    #     self._diff_drive.set_axel_calibration(self._configuration.axel_calibration_um)
+        # This command does not return any data, so we don't need to return any
+        return True
+    
+    # Command ID = 10
+    async def towards(self, x_mm: float, y_mm: float) -> bool:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::towards - Not connected to a robot")
+            return False
+        
+        # Command to move the robot towards a point
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BBff", seq_id, 10, x_mm, y_mm)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"Commands::towards - Command ID = 10, Sequence ID = {seq_id}, x = {x_mm}, y = {y_mm}")
+        
+        # Wait for the command to be processed with a long timeout
+        try:
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"Commands::towards - Command ID = 10, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
 
-    # async def save_config(self):
-    #     self._eeprom.write(0, self._configuration.pack())
+        # This command does not return any data, so we don't need to return any
+        return True
+    
+    # Command ID = 11
+    async def reset_origin(self) -> bool:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::reset_origin - Not connected to a robot")
+            return False
+        
+        # Command to reset the x,y origin and heading
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BB", seq_id, 11)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"Commands::reset_origin - Command ID = 11, Sequence ID = {seq_id}")
+        
+        # Wait for the command to be processed with a short timeout
+        try:
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"Commands::reset_origin - Command ID = 11, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False
 
-    # async def reset_config(self):
-    #     self._configuration.default()
-    #     self._diff_drive.set_linear_velocity(self._configuration.linear_target_speed_mmps, self._configuration.linear_acceleration_mmpss)
-    #     self._diff_drive.set_rotational_velocity(self._configuration.rotational_target_speed_mmps, self._configuration.rotational_acceleration_mmpss)
-    #     self._diff_drive.set_wheel_calibration(self._configuration.wheel_calibration_um)
-    #     self._diff_drive.set_axel_calibration(self._configuration.axel_calibration_um)
+        # This command does not return any data, so we don't need to return any
+        return True
+    
+    # Command ID = 12
+    async def get_heading(self) -> tuple[bool, float]:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::get_heading - Not connected to a robot")
+            return False, 0.0
+        
+        # Command to get the robot heading
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BB", seq_id, 12)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"Commands::get_heading - Command ID = 12, Sequence ID = {seq_id}")
+        
+        # Wait for the command to be processed with a long timeout
+        try:
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"Commands::get_heading - Command ID = 12, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False, 0.0
+
+        # Extract the heading from the response
+        seq_id, heading = struct.unpack("<Bf", response[:5])
+        logging.info(f"Commands::get_heading - Heading = {heading}")
+        return True, heading
+    
+    # Command ID = 13
+    async def get_position(self) -> tuple[bool, float, float]:
+        if not self._ble_central.is_connected:
+            logging.error("Commands::get_position - Not connected to a robot")
+            return False, 0.0, 0.0
+        
+        # Command to get the robot position
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BB", seq_id, 13)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"Commands::get_position - Command ID = 13, Sequence ID = {seq_id}")
+        
+        # Wait for the command to be processed with a long timeout
+        try:
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"Commands::get_position - Command ID = 13, Sequence ID = {seq_id} timed out")
+            self._ble_central.flag_disconnection()
+            return False, 0.0, 0.0
+
+        # Extract the position from the response
+        seq_id, x, y = struct.unpack("<Bff", response[:9])
+        logging.info(f"Commands::get_position - X = {x}, Y = {y}")
+        return True, x, y
 
 if __name__ == "__main__":
     from main import main
