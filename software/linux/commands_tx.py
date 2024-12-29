@@ -28,6 +28,7 @@
 import asyncio
 import logging
 import struct
+import threading
 from ble_central import BleCentral
 
 # Note: The commands are defined in the BLE peripheral firmware
@@ -35,12 +36,45 @@ from ble_central import BleCentral
 # bad things will happen :)
 
 class CommandsTx:
-    def __init__(self, ble_central: BleCentral):
-        self._ble_central = ble_central
+    def __init__(self):
+        self._ble_central = BleCentral()
         self._command_sequence = 1
 
         self._short_timeout = 5.0
         self._long_timeout = 60.0
+
+        self._connect = False
+        
+    def connect(self):
+        if not self._connect:
+            logging.info("CommandsTx::connect - Staring the BLE central role")
+            # Start the BleCentral event loop in the background
+            self._loop = asyncio.new_event_loop()
+            self._thread = threading.Thread(target=self._start_event_loop, args=(self._loop,))
+            self._thread.start()
+            self._loop.call_soon_threadsafe(self._loop.create_task, self._ble_central.run())
+            self._connect = True
+
+    def disconnect(self):
+        if self._connect:
+            # Disconnect the BLE
+            logging.info("CommandsTx::disconnect - Disconnecting BLE")
+            self._ble_central.disconnect()
+            
+            # Stop the event loop
+            logging.info("CommandsTx::disconnect - Stopping event loop")
+            self._loop.call_soon_threadsafe(self._loop.stop)
+            
+            # Wait for the thread to finish
+            logging.info("CommandsTx::disconnect - Waiting for thread to finish")
+            self._thread.join()
+
+            logging.info("CommandsTx::disconnect - Stopped the BLE central role")
+            self._connect = False
+
+    def _start_event_loop(self, loop):
+        asyncio.set_event_loop(loop)
+        loop.run_forever()
 
     def __next_seq(self) -> int:
         self._command_sequence += 1
@@ -68,9 +102,166 @@ class CommandsTx:
             else:
                 logging.info(f"CommandsTx::__wait_for_command_response - Sequence ID = {seq_id_rx} did not match received sequence ID = {seq_id}")
 
-    # Command ID = 1
-    async def motors(self, enable: bool) -> bool:
-        if not self._ble_central.is_connected:
+    @property
+    def connected(self):
+        return self._ble_central.connected
+
+    # Synchronous methods to call the asynchronous methods ------------------------------------------------------------
+
+    def motors(self, enable: bool) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::motors - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._motors(enable), self._loop).result()
+
+    def forward(self, distance_mm: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::forward - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._forward(distance_mm), self._loop).result()
+
+    def backward(self, distance_mm: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::backward - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._backward(distance_mm), self._loop).result()
+
+    def left(self, angle_degrees: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::left - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._left(angle_degrees), self._loop).result()
+
+    def right(self, angle_degrees: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::right - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._right(angle_degrees), self._loop).result()
+
+    def heading(self, angle_degrees: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::heading - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._heading(angle_degrees), self._loop).result()
+
+    def position_x(self, x_mm: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::position_x - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._position_x(x_mm), self._loop).result()
+
+    def position_y(self, y_mm: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::position_y - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._position_y(y_mm), self._loop).result()
+
+    def position(self, x_mm: float, y_mm: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::position - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._position(x_mm, y_mm), self._loop).result()
+
+    def towards(self, x_mm: float, y_mm: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::towards - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._towards(x_mm, y_mm), self._loop).result()
+
+    def reset_origin(self) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::reset_origin - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._reset_origin(), self._loop).result()
+
+    def get_heading(self) -> tuple[bool, float]:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::get_heading - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._get_heading(), self._loop).result()
+
+    def get_position(self) -> tuple[bool, float, float]:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::get_position - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._get_position(), self._loop).result()
+
+    def pen(self, pen_up: bool) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::pen - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._pen(pen_up), self._loop).result()
+
+    def eyes(self, eye_id, red, green, blue) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::eyes - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._eyes(eye_id, red, green, blue), self._loop).result()
+
+    def get_power(self) -> tuple[bool, int, int, int]:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::get_power - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._get_power(), self._loop).result()
+
+    def get_pen(self) -> tuple[bool, bool]:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::get_pen - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._get_pen(), self._loop).result()
+
+    def set_linear_velocity(self, target_speed: int, acceleration: int) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::set_linear_velocity - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._set_linear_velocity(target_speed, acceleration), self._loop).result()
+
+    def set_rotational_velocity(self, target_speed: int, acceleration: int) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::set_rotational_velocity - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._set_rotational_velocity(target_speed, acceleration), self._loop).result()
+
+    def get_linear_velocity(self) -> tuple[bool, int, int]:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::get_linear_velocity - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._get_linear_velocity(), self._loop).result()
+
+    def get_rotational_velocity(self) -> tuple[bool, int, int]:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::get_rotational_velocity - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._get_rotational_velocity(), self._loop).result()
+
+    def set_wheel_diameter_calibration(self, wheel_diameter: int) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::set_wheel_diameter_calibration - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._set_wheel_diameter_calibration(wheel_diameter), self._loop).result()
+
+    def set_axel_distance_calibration(self, axel_distance: int) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::set_axel_distance_calibration - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._set_axel_distance_calibration(axel_distance), self._loop).result()
+
+    def get_wheel_diameter_calibration(self) -> tuple[bool, int]:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::get_wheel_diameter_calibration - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._get_wheel_diameter_calibration(), self._loop).result()
+
+    def get_axel_distance_calibration(self) -> tuple[bool, int]:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::get_axel_distance_calibration - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._get_axel_distance_calibration(), self._loop).result()
+
+    def set_turtle_id(self, turtle_id: int) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::set_turtle_id - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._set_turtle_id(turtle_id), self._loop).result()
+
+    def get_turtle_id(self) -> tuple[bool, int]:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::get_turtle_id - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._get_turtle_id(), self._loop).result()
+
+    def load_config(self) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::load_config - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._load_config(), self._loop).result()
+
+    def save_config(self) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::save_config - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._save_config(), self._loop).result()
+
+    def reset_config(self) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::reset_config - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._reset_config(), self._loop).result()
+    
+    # Asynchronous methods to send commands to the BLE peripheral -----------------------------------------------------
+
+    async def _motors(self, enable: bool) -> bool:
+        if not self._ble_central.connected:
             logging.info("CommandsTx::motors - Not connected to a robot")
             return False
 
@@ -91,15 +282,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::motors - Command ID = 1, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
 
-    # Command ID = 2
-    async def forward(self, distance_mm: float) -> bool:
-        if not self._ble_central.is_connected:
+    async def _forward(self, distance_mm: float) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::forward - Not connected to a robot")
             return False
         
@@ -115,15 +305,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::forward - Command ID = 2, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 3
-    async def backward(self, distance_mm: float) -> bool:
-        if not self._ble_central.is_connected:
+    async def _backward(self, distance_mm: float) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::backward - Not connected to a robot")
             return False
         
@@ -139,15 +328,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::backward - Command ID = 3, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 4
-    async def left(self, angle_degrees: float) -> bool:
-        if not self._ble_central.is_connected:
+    async def _left(self, angle_degrees: float) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::left - Not connected to a robot")
             return False
         
@@ -163,15 +351,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::left - Command ID = 4, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 5
-    async def right(self, angle_degrees: float) -> bool:
-        if not self._ble_central.is_connected:
+    async def _right(self, angle_degrees: float) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::right - Not connected to a robot")
             return False
         
@@ -187,15 +374,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::right - Command ID = 5, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
 
-    # Command ID = 6
-    async def heading(self, angle_degrees: float) -> bool:
-        if not self._ble_central.is_connected:
+    async def _heading(self, angle_degrees: float) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::heading - Not connected to a robot")
             return False
         
@@ -211,15 +397,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::heading - Command ID = 6, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 7
-    async def position_x(self, x_mm: float) -> bool:
-        if not self._ble_central.is_connected:
+    async def _position_x(self, x_mm: float) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::position_x - Not connected to a robot")
             return False
         
@@ -235,15 +420,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::position_x - Command ID = 7, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 8
-    async def position_y(self, y_mm: float) -> bool:
-        if not self._ble_central.is_connected:
+    async def _position_y(self, y_mm: float) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::position_y - Not connected to a robot")
             return False
         
@@ -259,15 +443,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::position_y - Command ID = 8, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 9
-    async def position(self, x_mm: float, y_mm: float) -> bool:
-        if not self._ble_central.is_connected:
+    async def _position(self, x_mm: float, y_mm: float) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::position - Not connected to a robot")
             return False
         
@@ -283,15 +466,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::position - Command ID = 9, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 10
-    async def towards(self, x_mm: float, y_mm: float) -> bool:
-        if not self._ble_central.is_connected:
+    async def _towards(self, x_mm: float, y_mm: float) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::towards - Not connected to a robot")
             return False
         
@@ -307,15 +489,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::towards - Command ID = 10, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 11
-    async def reset_origin(self) -> bool:
-        if not self._ble_central.is_connected:
+    async def _reset_origin(self) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::reset_origin - Not connected to a robot")
             return False
         
@@ -331,15 +512,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::reset_origin - Command ID = 11, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 12
-    async def get_heading(self) -> tuple[bool, float]:
-        if not self._ble_central.is_connected:
+    async def _get_heading(self) -> tuple[bool, float]:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::get_heading - Not connected to a robot")
             return False, 0.0
         
@@ -355,7 +535,7 @@ class CommandsTx:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::get_heading - Command ID = 12, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False, 0.0
 
         # Extract the heading from the response
@@ -367,9 +547,8 @@ class CommandsTx:
         logging.info(f"CommandsTx::get_heading - Heading = {heading}")
         return True, heading
     
-    # Command ID = 13
-    async def get_position(self) -> tuple[bool, float, float]:
-        if not self._ble_central.is_connected:
+    async def _get_position(self) -> tuple[bool, float, float]:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::get_position - Not connected to a robot")
             return False, 0.0, 0.0
         
@@ -385,7 +564,7 @@ class CommandsTx:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::get_position - Command ID = 13, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False, 0.0, 0.0
 
         # Extract the position from the response
@@ -397,9 +576,8 @@ class CommandsTx:
         logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
         return True, x, y
     
-    # Command ID = 14
-    async def pen(self, pen_up: bool) -> bool:
-        if not self._ble_central.is_connected:
+    async def _pen(self, pen_up: bool) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::pen - Not connected to a robot")
             return False
         
@@ -420,15 +598,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::pen - Command ID = 14, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 15
-    async def eyes(self, eye_id, red, green, blue) -> bool:
-        if not self._ble_central.is_connected:
+    async def _eyes(self, eye_id, red, green, blue) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::eyes - Not connected to a robot")
             return False
         
@@ -444,15 +621,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::eyes - Command ID = 15, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 16
-    async def get_power(self) -> tuple[bool, int, int, int]:
-        if not self._ble_central.is_connected:
+    async def _get_power(self) -> tuple[bool, int, int, int]:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::get_power - Not connected to a robot")
             return False, 0, 0, 0
         
@@ -468,7 +644,7 @@ class CommandsTx:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::get_power - Command ID = 16, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False, 0, 0, 0
 
         # Extract the power from the response
@@ -480,9 +656,8 @@ class CommandsTx:
         logging.info(f"CommandsTx::get_power - mV = {mv}, mA = {ma}, mW = {mw}")
         return True, mv, ma, mw 
     
-    # Command ID = 17
-    async def get_pen(self) -> tuple[bool, bool]:
-        if not self._ble_central.is_connected:
+    async def _get_pen(self) -> tuple[bool, bool]:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::get_pen - Not connected to a robot")
             return False, False
         
@@ -498,7 +673,7 @@ class CommandsTx:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::get_pen - Command ID = 17, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False, False
 
         # Extract the pen status from the response
@@ -510,9 +685,8 @@ class CommandsTx:
         logging.info(f"CommandsTx::get_pen - Pen up = {pen_up}")
         return True, pen_up
     
-    # Command ID = 18
-    async def set_linear_velocity(self, target_speed: int, acceleration: int) -> bool:
-        if not self._ble_central.is_connected:
+    async def _set_linear_velocity(self, target_speed: int, acceleration: int) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::set_linear_velocity - Not connected to a robot")
             return False
         
@@ -528,15 +702,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::set_linear_velocity - Command ID = 18, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 19
-    async def set_rotational_velocity(self, target_speed: int, acceleration: int) -> bool:
-        if not self._ble_central.is_connected:
+    async def _set_rotational_velocity(self, target_speed: int, acceleration: int) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::set_rotational_velocity - Not connected to a robot")
             return False
         
@@ -552,15 +725,14 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::set_rotational_velocity - Command ID = 19, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    # Command ID = 20
-    async def get_linear_velocity(self) -> tuple[bool, int, int]:
-        if not self._ble_central.is_connected:
+    async def _get_linear_velocity(self) -> tuple[bool, int, int]:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::get_linear_velocity - Not connected to a robot")
             return False, 0, 0
         
@@ -576,7 +748,7 @@ class CommandsTx:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::get_linear_velocity - Command ID = 20, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False, 0, 0
 
         # Extract the linear velocity from the response
@@ -588,9 +760,8 @@ class CommandsTx:
         logging.info(f"CommandsTx::get_linear_velocity - Target speed = {target_speed}, Acceleration = {acceleration}")
         return True, target_speed, acceleration
     
-    # Command ID = 21
-    async def get_rotational_velocity(self) -> tuple[bool, int, int]:
-        if not self._ble_central.is_connected:
+    async def _get_rotational_velocity(self) -> tuple[bool, int, int]:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::get_rotational_velocity - Not connected to a robot")
             return False, 0, 0
         
@@ -606,7 +777,7 @@ class CommandsTx:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::get_rotational_velocity - Command ID = 21, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False, 0, 0
 
         # Extract the rotational velocity from the response
@@ -618,9 +789,8 @@ class CommandsTx:
         logging.info(f"CommandsTx::get_rotational_velocity - Target speed = {target_speed}, Acceleration = {acceleration}")
         return True, target_speed, acceleration
 
-    # Command ID = 22
-    async def set_wheel_diameter_calibration(self, wheel_diameter: int) -> bool:
-        if not self._ble_central.is_connected:
+    async def _set_wheel_diameter_calibration(self, wheel_diameter: int) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::set_wheel_diameter_calibration - Not connected to a robot")
             return False
         
@@ -634,14 +804,13 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::set_wheel_diameter_calibration - Command ID = 22, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         return True
 
-    # Command ID = 23
-    async def set_axel_distance_calibration(self, axel_distance: int) -> bool:
-        if not self._ble_central.is_connected:
+    async def _set_axel_distance_calibration(self, axel_distance: int) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::set_axel_distance_calibration - Not connected to a robot")
             return False
         
@@ -655,14 +824,13 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::set_axel_distance_calibration - Command ID = 23, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         return True
 
-    # Command ID = 24
-    async def get_wheel_diameter_calibration(self) -> tuple[bool, int]:
-        if not self._ble_central.is_connected:
+    async def _get_wheel_diameter_calibration(self) -> tuple[bool, int]:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::get_wheel_diameter_calibration - Not connected to a robot")
             return False, 0
         
@@ -676,7 +844,7 @@ class CommandsTx:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::get_wheel_diameter_calibration - Command ID = 24, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False, 0
 
         try:
@@ -687,9 +855,8 @@ class CommandsTx:
         logging.info(f"CommandsTx::get_wheel_diameter_calibration - Calibration wheel diameter = {cali_wheel}")
         return True, cali_wheel
 
-    # Command ID = 25
-    async def get_axel_distance_calibration(self) -> tuple[bool, int]:
-        if not self._ble_central.is_connected:
+    async def _get_axel_distance_calibration(self) -> tuple[bool, int]:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::get_axel_distance_calibration - Not connected to a robot")
             return False, 0
         
@@ -703,7 +870,7 @@ class CommandsTx:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::get_axel_distance_calibration - Command ID = 25, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False, 0
 
         try:
@@ -714,9 +881,8 @@ class CommandsTx:
         logging.info(f"CommandsTx::get_axel_distance_calibration - Calibration axel distance = {cali_axel}")
         return True, cali_axel
 
-    # Command ID = 26
-    async def set_turtle_id(self, turtle_id: int) -> bool:
-        if not self._ble_central.is_connected:
+    async def _set_turtle_id(self, turtle_id: int) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::set_turtle_id - Not connected to a robot")
             return False
         
@@ -730,14 +896,13 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::set_turtle_id - Command ID = 26, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         return True
 
-    # Command ID = 27
-    async def get_turtle_id(self) -> tuple[bool, int]:
-        if not self._ble_central.is_connected:
+    async def _get_turtle_id(self) -> tuple[bool, int]:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::get_turtle_id - Not connected to a robot")
             return False, 0
         
@@ -751,7 +916,7 @@ class CommandsTx:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::get_turtle_id - Command ID = 27, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False, 0
 
         try:
@@ -762,9 +927,8 @@ class CommandsTx:
         logging.info(f"CommandsTx::get_turtle_id - Turtle ID = {turtle_id}")
         return True, turtle_id
 
-    # Command ID = 28
-    async def load_config(self) -> bool:
-        if not self._ble_central.is_connected:
+    async def _load_config(self) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::load_config - Not connected to a robot")
             return False
         
@@ -778,14 +942,13 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::load_config - Command ID = 28, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         return True
 
-    # Command ID = 29
-    async def save_config(self) -> bool:
-        if not self._ble_central.is_connected:
+    async def _save_config(self) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::save_config - Not connected to a robot")
             return False
         
@@ -799,14 +962,13 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::save_config - Command ID = 29, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         return True
 
-    # Command ID = 30
-    async def reset_config(self) -> bool:
-        if not self._ble_central.is_connected:
+    async def _reset_config(self) -> bool:
+        if not self._ble_central.connected:
             logging.error("CommandsTx::reset_config - Not connected to a robot")
             return False
         
@@ -820,7 +982,7 @@ class CommandsTx:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::reset_config - Command ID = 30, Sequence ID = {seq_id} timed out")
-            self._ble_central.flag_disconnection()
+            self._ble_central.disconnect()
             return False
 
         return True

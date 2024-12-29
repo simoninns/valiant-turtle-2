@@ -63,7 +63,7 @@ class BleCentral:
         self._p2c_notification_event = asyncio.Event()
 
     @property
-    def is_connected(self):
+    def connected(self):
         return self._connected
     
     @property
@@ -76,8 +76,8 @@ class BleCentral:
         else:
             logging.info("C2P queue is full - data not added")
 
-    def flag_disconnection(self):
-        logging.info("Application has flagged disconnection from the peripheral")
+    def disconnect(self):
+        logging.info("Disconnecting from BLE peripheral")
         self._connected = False
 
     async def run(self):
@@ -106,28 +106,22 @@ class BleCentral:
                     logging.info(f"BLE peripheral found with address {self._device.address}")
 
                     # Attempt to connect to the peripheral
-                    async with BleakClient(self._device.address) as self._client:
-                        if self._client.is_connected:
-                            # We should probably pair here... but bleak doesn't support programmatic pairing
-
-                            # Subscribe to notifications on the tx_p2c_characteristic
-                            await self._client.start_notify(self._tx_p2c_characteristic_uuid, self.__p2c_notification_handler)
-                            logging.info("Subscribed to P2C notifications")
-                            self._connected = True
-
-                            # Wait for disconnection
-                            while self._client.is_connected and self._connected:
-                                await asyncio.sleep(0.25)
-
-                            # Ensure that we are disconnected at the BLE level
+                    try:
+                        async with BleakClient(self._device.address) as self._client:
                             if self._client.is_connected:
-                                await self._client.disconnect()
+                                # We should probably pair here... but bleak doesn't support programmatic pairing
 
-                            logging.info("Disconnected from peripheral")
-                            self._connected = False
-                        else:
-                            logging.info("Failed to connect to peripheral")
-                            self._connected = False
+                                # Subscribe to notifications on the tx_p2c_characteristic
+                                await self._client.start_notify(self._tx_p2c_characteristic_uuid, self.__p2c_notification_handler)
+                                logging.info("Subscribed to P2C notifications")
+                                self._connected = True
+
+                                # Wait for disconnection
+                                while self._client.is_connected and self._connected:
+                                    await asyncio.sleep(0.25)
+                    except BleakError as e:
+                        logging.error(f"Failed to connect or discover services: {e}")
+                        await asyncio.sleep(1)  # Wait before retrying
                 else:
                     logging.info("BLE peripheral not found")
                     self._connected = False
@@ -180,5 +174,5 @@ class BleCentral:
         self._p2c_notification_event.set()
 
 if __name__ == "__main__":
-    from vt2demo import main
+    from vt2_cmdtest import main
     main()

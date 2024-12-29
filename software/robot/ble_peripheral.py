@@ -49,6 +49,9 @@ class BlePeripheral:
         # Flag to show connected status
         self._connected = False
 
+        # BLE connection object
+        self._ble_connection = None
+
         # Advertising definitions
         self.__ble_advertising_definitions()
 
@@ -202,10 +205,16 @@ class BlePeripheral:
             else:
                 self._connected = False
                 self._is_advertising = True
+                if self._ble_connection:
+                    await self._ble_connection.disconnect()
+                self._ble_connection = None
                 picolog.info("BlePeripheral::__poll_central - Empty response from central... Flagged as disconnected")
         else:
             self._connected = False
             self._is_advertising = True
+            if self._ble_connection:
+                await self._ble_connection.disconnect()
+            self._ble_connection = None
             picolog.info("BlePeripheral::__poll_central - No response from central... Flagged as disconnected")
 
     async def __handle_commands(self):
