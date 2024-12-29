@@ -48,6 +48,7 @@ class ValiantTurtleCLI(cmd.Cmd):
             while not self._commands_tx.connected:
                 time.sleep(1)
             self._connected = True
+            print("Connected to BLE peripheral.")
             logging.info("Connected to BLE")
         else:
             print("Cannot connect as BLE is already connected.")
@@ -57,6 +58,7 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             self._commands_tx.disconnect()
             self._connected = False
+            print("Disconnected from BLE peripheral.")
             logging.info("Disconnected from BLE")
         else:
             print("Cannot disconnect as BLE is not connected.")
@@ -67,6 +69,7 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             self._commands_tx.disconnect()
             self._connected = False
+        print("Goodbye!")
         sys.exit(0)
 
     def do_motors(self, arg):
@@ -194,7 +197,7 @@ class ValiantTurtleCLI(cmd.Cmd):
             print("Not connected to BLE device.")
 
     def do_reset_origin(self, arg):
-        'Reset the origin of the robot: reset_origin'
+        'Reset the origin and heading of the robot: reset_origin'
         if self._connected:
             self._commands_tx.reset_origin()
             logging.info("CLI: Reset Origin")
