@@ -70,6 +70,8 @@ class CommandsTx:
             self._thread.join()
 
             logging.info("CommandsTx::disconnect - Stopped the BLE central role")
+            self._loop = None
+            self._thread = None
             self._connect = False
 
     def _start_event_loop(self, loop):

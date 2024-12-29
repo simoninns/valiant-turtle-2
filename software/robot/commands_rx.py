@@ -51,6 +51,10 @@ class CommandsRx:
         self._diff_drive = diff_drive
         self._configuration = configuration
 
+    @property
+    def motors_enabled(self) -> bool:
+        return self._diff_drive.is_enabled
+
     async def motors(self, enable: bool):
         picolog.info(f"Commands::motors - {'Enabling' if enable else 'Disabling'} motors")
         if enable:

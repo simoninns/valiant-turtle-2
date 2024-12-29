@@ -53,6 +53,9 @@ class Control:
             # Wait for data to arrive in the c2p queue
             while len(self._ble_peripheral.c2p_queue) == 0 and self._power_low_event.is_set() == False:
                 await asyncio.sleep(0.25)
+                if not self._ble_peripheral.is_connected and self._commands.motors_enabled:
+                    # If we are not connected, ensure the motors are off
+                    await self._commands.motors(False)
 
             if self._power_low_event.is_set():
                 picolog.debug("Control::run - Power low event set - waiting for power to return")
