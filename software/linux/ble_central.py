@@ -57,10 +57,10 @@ class BleCentral:
 
         # Reception queue for receiving service data to central
         self._p2c_queue = []
-        self._p2c_queue_event = asyncio.Event()
+        self._p2c_queue_event = None
 
         # Notification event for when data is received from the peripheral
-        self._p2c_notification_event = asyncio.Event()
+        self._p2c_notification_event = None
 
     @property
     def connected(self):
@@ -82,6 +82,9 @@ class BleCentral:
 
     async def run(self):
         logging.info("Running BLE central async tasks") 
+
+        self._p2c_queue_event = asyncio.Event()
+        self._p2c_notification_event = asyncio.Event()
 
         tasks = [
             asyncio.create_task(self.__maintain_connection()),
