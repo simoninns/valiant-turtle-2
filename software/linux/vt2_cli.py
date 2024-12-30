@@ -40,6 +40,9 @@ class ValiantTurtleCLI(cmd.Cmd):
         self._commands_tx = commands_tx
         self._connected = False
 
+    def emptyline(self):
+        pass
+
     def do_connect(self, arg):
         'Connect to the BLE device: connect'
         if not self._connected:
