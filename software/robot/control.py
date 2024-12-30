@@ -49,6 +49,9 @@ class Control:
     async def run(self):
         picolog.debug("Control::run - Running")
 
+        # Ensure the stored configuration is loaded from EEPROM
+        await self._commands.load_config()
+
         while True:
             # Wait for data to arrive in the c2p queue
             while len(self._ble_peripheral.c2p_queue) == 0 and self._power_low_event.is_set() == False:
