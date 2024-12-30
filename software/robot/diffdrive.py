@@ -145,30 +145,46 @@ class DiffDrive:
 
     def __forward(self, distance_mm: float):
         """Linear motion forwards"""
+        if distance_mm <= 0:
+            picolog.debug(f"DiffDrive::__forward - Distance in mm must be greater than zero")
+            return
         self.__configure_linear_velocity()
         self._stepper.set_direction_forwards()
         self._stepper.move(self.__mm_to_steps(distance_mm))
 
     def __backward(self, distance_mm: float):
         """Linear motion backwards"""
+        if distance_mm <= 0:
+            picolog.debug(f"DiffDrive::__backward - Distance in mm must be greater than zero")
+            return
         self.__configure_linear_velocity()
         self._stepper.set_direction_backwards()
         self._stepper.move(self.__mm_to_steps(distance_mm))
 
     def __left(self, degrees: float):
         """Rotational motion to the left"""
+        if degrees <= 0:
+            picolog.debug(f"DiffDrive::__left - Degrees must be greater than zero")
+            return
         self.__configure_rotational_velocity()
         self._stepper.set_direction_left()
         self._stepper.move(self.__degrees_to_steps(degrees))
 
     def __right(self, degrees: float):
         """Rotational motion to the right"""
+        if degrees <= 0:
+            picolog.debug(f"DiffDrive::__left - Degrees must be greater than zero")
+            return
         self.__configure_rotational_velocity()
         self._stepper.set_direction_right()
         self._stepper.move(self.__degrees_to_steps(degrees))
 
     def set_heading(self, degrees: float):
         """Set the heading in degrees"""
+        if degrees < 0 or degrees >= 360:
+            picolog.debug(f"DiffDrive::set_heading - Degrees must be between 0 and 360")
+            return
+
         if self._heading == degrees:
             picolog.debug(f"DiffDrive::set_heading - Already at required heading")
             return

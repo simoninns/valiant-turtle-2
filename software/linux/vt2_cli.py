@@ -90,7 +90,10 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 distance = int(arg)
-                self._commands_tx.forward(distance)
+                if distance > 0:
+                    self._commands_tx.forward(distance)
+                else:
+                    print("Invalid distance. Please enter a positive integer value.")
             except ValueError:
                 print("Invalid distance. Please enter an integer value.")
             logging.info("CLI: Forward")
@@ -102,7 +105,10 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 distance = int(arg)
-                self._commands_tx.backward(distance)
+                if distance > 0:
+                    self._commands_tx.backward(distance)
+                else:
+                    print("Invalid distance. Please enter a positive integer value.")
             except ValueError:
                 print("Invalid distance. Please enter an integer value.")
             logging.info("CLI: Backward")
@@ -114,7 +120,10 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 degrees = int(arg)
-                self._commands_tx.left(degrees)
+                if degrees > 0:
+                    self._commands_tx.left(degrees)
+                else:
+                    print("Invalid degrees. Please enter a positive integer value.")
             except ValueError:
                 print("Invalid degrees. Please enter an integer value.")
             logging.info("CLI: Left")
@@ -126,7 +135,10 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 degrees = int(arg)
-                self._commands_tx.right(degrees)
+                if degrees > 0:
+                    self._commands_tx.right(degrees)
+                else:
+                    print("Invalid degrees. Please enter a positive integer value.")
             except ValueError:
                 print("Invalid degrees. Please enter an integer value.")
             logging.info("CLI: Right")
@@ -141,7 +153,7 @@ class ValiantTurtleCLI(cmd.Cmd):
                 if 0 <= angle_degrees < 360:
                     self._commands_tx.heading(angle_degrees)
                 else:
-                    print("Invalid angle. Please enter a value between 0 and 359 degrees.")
+                    print("Invalid angle. Angle should be 0 and above, and less than 360.")
             except ValueError:
                 print("Invalid angle. Please enter a float value.")
             logging.info("CLI: Heading")
