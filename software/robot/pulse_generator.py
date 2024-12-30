@@ -29,7 +29,7 @@ import picolog
 from machine import Pin
 import rp2
 
-@rp2.asm_pio(set_init=(rp2.PIO.OUT_LOW,)*2)
+@rp2.asm_pio(set_init=(rp2.PIO.OUT_LOW))
 def pulse_generator():
     wrap_target()
     pull(block)             # Pull (with blocking) FIFO into OSR (first, number of steps)
@@ -42,13 +42,13 @@ def pulse_generator():
 
     label("step")
     jmp(not_x, "finished")  # If X == 0 then jump to "finished"
-    set(pins, 0b11)         # Turn pins on
+    set(pins, 1)            # Turn pin on
 
     label("ondelay")
     jmp(y_dec, "ondelay")
     mov(y, osr)             # Restore the Y register (number of delay cycles)
 
-    set(pins, 0b00)         # Turn pins off
+    set(pins, 0)            # Turn pin off
 
     label("offdelay")
     jmp(y_dec,"offdelay")
@@ -57,7 +57,7 @@ def pulse_generator():
     jmp(x_dec,"step")       # X-- then jump to "step"
 
     label("finished")
-    set(pins, 0b00)         # Ensure output pins are 00 (not really needed)
+    set(pins, 0)            # Ensure output pin is 0 (not really needed)
     wrap()
 
 class PulseGenerator:

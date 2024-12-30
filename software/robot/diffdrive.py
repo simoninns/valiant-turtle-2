@@ -53,9 +53,11 @@ class DiffDrive:
         self._right_step_pin = Pin(right_step_gpio, Pin.OUT)
         self._right_direction_pin = Pin(right_direction_gpio, Pin.OUT)
 
-        # Create the combined stepper motor instance
-        self._stepper = Stepper(self._drv8825, self._left_step_pin, self._left_direction_pin, self._right_step_pin, self._right_direction_pin)
-        self._stepper.set_direction_forwards()
+        # Create the stepper motor instances
+        self._left_stepper = Stepper(self._drv8825, self._left_step_pin, self._left_direction_pin, True)
+        self._left_stepper.set_direction_forwards()
+        self._right_stepper = Stepper(self._drv8825, self._right_step_pin, self._right_direction_pin, False)
+        self._right_stepper.set_direction_forwards()
 
         # Default linear velocity
         self._linear_target_speed_mmps = 200 # mm per second
@@ -95,7 +97,7 @@ class DiffDrive:
     @property
     def is_moving(self):
         """Returns True if the motors are moving"""
-        return self._stepper.is_busy
+        return self._left_stepper.is_busy
     
     def set_wheel_calibration(self, value: int):
         """Set the wheel calibration in micrometers"""
@@ -149,9 +151,11 @@ class DiffDrive:
             picolog.debug(f"DiffDrive::__forward - Distance in mm must be greater than zero")
             return
         self.__configure_linear_velocity()
-        self._stepper.set_direction_forwards()
+        self._left_stepper.set_direction_forwards()
+        self._right_stepper.set_direction_forwards()
         picolog.debug(f"DiffDrive::__forward - Moving {distance_mm} mm using {self.__mm_to_steps(distance_mm)} steps")
-        self._stepper.move(self.__mm_to_steps(distance_mm))
+        self._left_stepper.move(self.__mm_to_steps(distance_mm))
+        self._right_stepper.move(self.__mm_to_steps(distance_mm))
 
     def __backward(self, distance_mm: float):
         """Linear motion backwards"""
@@ -159,9 +163,11 @@ class DiffDrive:
             picolog.debug(f"DiffDrive::__backward - Distance in mm must be greater than zero")
             return
         self.__configure_linear_velocity()
-        self._stepper.set_direction_backwards()
+        self._left_stepper.set_direction_backwards()
+        self._right_stepper.set_direction_backwards()
         picolog.debug(f"DiffDrive::__backward - Moving {distance_mm} mm using {self.__mm_to_steps(distance_mm)} steps")
-        self._stepper.move(self.__mm_to_steps(distance_mm))
+        self._left_stepper.move(self.__mm_to_steps(distance_mm))
+        self._right_stepper.move(self.__mm_to_steps(distance_mm))
 
     def __left(self, degrees: float):
         """Rotational motion to the left"""
@@ -169,9 +175,11 @@ class DiffDrive:
             picolog.debug(f"DiffDrive::__left - Degrees must be greater than zero")
             return
         self.__configure_rotational_velocity()
-        self._stepper.set_direction_left()
+        self._left_stepper.set_direction_left()
+        self._right_stepper.set_direction_left()
         picolog.debug(f"DiffDrive::__left - Turning left {degrees} degrees using {self.__degrees_to_steps(degrees)} steps")
-        self._stepper.move(self.__degrees_to_steps(degrees))
+        self._left_stepper.move(self.__degrees_to_steps(degrees))
+        self._right_stepper.move(self.__degrees_to_steps(degrees))
 
     def __right(self, degrees: float):
         """Rotational motion to the right"""
@@ -179,9 +187,11 @@ class DiffDrive:
             picolog.debug(f"DiffDrive::__left - Degrees must be greater than zero")
             return
         self.__configure_rotational_velocity()
-        self._stepper.set_direction_right()
+        self._left_stepper.set_direction_right()
+        self._right_stepper.set_direction_right()
         picolog.debug(f"DiffDrive::__right - Turning right {degrees} degrees using {self.__degrees_to_steps(degrees)} steps")
-        self._stepper.move(self.__degrees_to_steps(degrees))
+        self._left_stepper.move(self.__degrees_to_steps(degrees))
+        self._right_stepper.move(self.__degrees_to_steps(degrees))
 
     def set_heading(self, degrees: float):
         """Set the heading in degrees"""
@@ -253,7 +263,7 @@ class DiffDrive:
         
         if not turn_only:
             # Wait for the turn to complete
-            while self._stepper.is_busy:
+            while self._left_stepper.is_busy:
                 pass
 
             if is_direction_forwards:
@@ -280,13 +290,17 @@ class DiffDrive:
 
     def __configure_linear_velocity(self):
         """Configure the steppers for the linear velocity"""
-        self._stepper.set_target_speed_sps(self.__mm_to_steps(self._linear_target_speed_mmps))
-        self._stepper.set_acceleration_spsps(self.__mm_to_steps(self._linear_acceleration_mmpss))
+        self._left_stepper.set_target_speed_sps(self.__mm_to_steps(self._linear_target_speed_mmps))
+        self._left_stepper.set_acceleration_spsps(self.__mm_to_steps(self._linear_acceleration_mmpss))
+        self._right_stepper.set_target_speed_sps(self.__mm_to_steps(self._linear_target_speed_mmps))
+        self._right_stepper.set_acceleration_spsps(self.__mm_to_steps(self._linear_acceleration_mmpss))
 
     def __configure_rotational_velocity(self):
         """Configure the steppers for the rotational velocity"""
-        self._stepper.set_target_speed_sps(self.__mm_to_steps(self._rotational_target_speed_mmps))
-        self._stepper.set_acceleration_spsps(self.__mm_to_steps(self._rotational_acceleration_mmpss))
+        self._left_stepper.set_target_speed_sps(self.__mm_to_steps(self._rotational_target_speed_mmps))
+        self._left_stepper.set_acceleration_spsps(self.__mm_to_steps(self._rotational_acceleration_mmpss))
+        self._right_stepper.set_target_speed_sps(self.__mm_to_steps(self._rotational_target_speed_mmps))
+        self._right_stepper.set_acceleration_spsps(self.__mm_to_steps(self._rotational_acceleration_mmpss))
 
     def set_linear_velocity(self, velocity_mm_s: float, acceleration_mm_s2: float):
         """Set the linear velocity"""
@@ -312,13 +326,13 @@ class DiffDrive:
         left_stepper_status = 0
         right_stepper_status = 0
 
-        if self._stepper.is_busy:
-            if self._stepper.left_direction:
+        if self._left_stepper.is_busy:
+            if self._left_stepper.direction:
                 left_stepper_status = 1
             else:
                 left_stepper_status = 2
 
-            if self._stepper.right_direction:
+            if self._right_stepper.direction:
                 right_stepper_status = 1
             else:
                 right_stepper_status = 2
