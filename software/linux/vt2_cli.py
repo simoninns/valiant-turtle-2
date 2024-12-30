@@ -148,6 +148,36 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
+    def do_arc_left(self, arg):
+        'Move the robot in an arc to the left: arc_left [radius] [degrees]'
+        if self._connected:
+            try:
+                radius, degrees = map(int, arg.split())
+                if radius > 0 and degrees > 0:
+                    self._commands_tx.arc_left(radius, degrees)
+                else:
+                    print("Invalid radius or degrees. Please enter positive integer values.")
+            except ValueError:
+                print("Invalid radius or degrees. Please enter two integer values.")
+            logging.info("CLI: Arc Left")
+        else:
+            print("Not connected to BLE device.")
+
+    def do_arc_right(self, arg):
+        'Move the robot in an arc to the right: arc_right [radius] [degrees]'
+        if self._connected:
+            try:
+                radius, degrees = map(int, arg.split())
+                if radius > 0 and degrees > 0:
+                    self._commands_tx.arc_right(radius, degrees)
+                else:
+                    print("Invalid radius or degrees. Please enter positive integer values.")
+            except ValueError:
+                print("Invalid radius or degrees. Please enter two integer values.")
+            logging.info("CLI: Arc Right")
+        else:
+            print("Not connected to BLE device.")
+
     def do_heading(self, arg):
         'Set the heading of the robot: heading [degrees]'
         if self._connected:

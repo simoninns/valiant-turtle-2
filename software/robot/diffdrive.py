@@ -145,6 +145,26 @@ class DiffDrive:
         # Update the heading
         self._heading = (self._heading + degrees) % 360
 
+    def arc_left(self, radius_mm: float, degrees: float):
+        """Arc turn to the left"""
+        self.__arc_left(radius_mm, degrees)
+
+        # Update the cartesian position
+        angle_rad = math.radians(degrees)
+        self._x_pos += radius_mm * (math.sin(angle_rad) - math.sin(0))
+        self._y_pos += radius_mm * (math.cos(0) - math.cos(angle_rad))
+        self._heading = (self._heading - degrees) % 360
+
+    def arc_right(self, radius_mm: float, degrees: float):
+        """Arc turn to the right"""
+        self.__arc_right(radius_mm, degrees)
+
+        # Update the cartesian position
+        angle_rad = math.radians(degrees)
+        self._x_pos += radius_mm * (math.sin(0) - math.sin(angle_rad))
+        self._y_pos += radius_mm * (math.cos(angle_rad) - math.cos(0))
+        self._heading = (self._heading + degrees) % 360
+
     def __forward(self, distance_mm: float):
         """Linear motion forwards"""
         if distance_mm <= 0:
@@ -193,6 +213,90 @@ class DiffDrive:
         self._left_stepper.move(self.__degrees_to_steps(degrees))
         self._right_stepper.move(self.__degrees_to_steps(degrees))
 
+    def __arc_left(self, radius_mm: float, degrees: float):
+        """Arc turn to the left"""
+        if radius_mm <= 0:
+            picolog.debug(f"DiffDrive::__arc_left - Radius in mm must be greater than zero")
+            return
+        if degrees <= 0:
+            picolog.debug(f"DiffDrive::__arc_left - Degrees must be greater than zero")
+            return
+        self.__configure_rotational_velocity()
+        
+        # Calculate the distance each wheel needs to travel
+        left_wheel_distance = abs((radius_mm + (self._axel_distance_mm / 2)) * (degrees / 360.0) * 2 * self._pi)
+        right_wheel_distance = abs((radius_mm - (self._axel_distance_mm / 2)) * (degrees / 360.0) * 2 * self._pi)
+
+        left_wheel_steps = self.__mm_to_steps(left_wheel_distance)
+        right_wheel_steps = self.__mm_to_steps(right_wheel_distance)
+
+        left_wheel_speed = self._rotational_target_speed_mmps
+        right_wheel_speed = self._rotational_target_speed_mmps * (right_wheel_distance / left_wheel_distance)
+
+        self._left_stepper.set_target_speed_sps(self.__mm_to_steps(left_wheel_speed))
+        self._right_stepper.set_target_speed_sps(self.__mm_to_steps(right_wheel_speed))
+
+        left_wheel_acceleration = self._rotational_acceleration_mmpss
+        right_wheel_acceleration = self._rotational_acceleration_mmpss * (right_wheel_distance / left_wheel_distance)
+
+        self._left_stepper.set_acceleration_spsps(self.__mm_to_steps(left_wheel_acceleration))
+        self._right_stepper.set_acceleration_spsps(self.__mm_to_steps(right_wheel_acceleration))
+
+        if radius_mm < (self._axel_distance_mm / 2):
+            picolog.debug(f"DiffDrive::__arc_left - Arcing left {degrees} degrees with left wheel {left_wheel_steps} steps (forwards) and right wheel {right_wheel_steps} steps (backwards)")
+            self._left_stepper.set_direction_forwards()
+            self._right_stepper.set_direction_backwards()
+        else:
+            picolog.debug(f"DiffDrive::__arc_left - Arcing left {degrees} degrees with left wheel {left_wheel_steps} steps and right wheel {right_wheel_steps} steps")
+            self._left_stepper.set_direction_forwards()
+            self._right_stepper.set_direction_forwards()
+
+        # Move steppers
+        self._left_stepper.move(left_wheel_steps)
+        self._right_stepper.move(right_wheel_steps)
+
+    def __arc_right(self, radius_mm: float, degrees: float):
+        """Arc turn to the right"""
+        if radius_mm <= 0:
+            picolog.debug(f"DiffDrive::__arc_right - Radius in mm must be greater than zero")
+            return
+        if degrees <= 0:
+            picolog.debug(f"DiffDrive::__arc_right - Degrees must be greater than zero")
+            return
+        self.__configure_rotational_velocity()
+
+        # Calculate the distance each wheel needs to travel
+        left_wheel_distance = abs((radius_mm - (self._axel_distance_mm / 2)) * (degrees / 360.0) * 2 * self._pi)
+        right_wheel_distance = abs((radius_mm + (self._axel_distance_mm / 2)) * (degrees / 360.0) * 2 * self._pi)
+
+        left_wheel_steps = self.__mm_to_steps(left_wheel_distance)
+        right_wheel_steps = self.__mm_to_steps(right_wheel_distance)
+
+        left_wheel_speed = self._rotational_target_speed_mmps * (left_wheel_distance / right_wheel_distance)
+        right_wheel_speed = self._rotational_target_speed_mmps
+
+        self._left_stepper.set_target_speed_sps(self.__mm_to_steps(left_wheel_speed))
+        self._right_stepper.set_target_speed_sps(self.__mm_to_steps(right_wheel_speed))
+
+        left_wheel_acceleration = self._rotational_acceleration_mmpss * (left_wheel_distance / right_wheel_distance)
+        right_wheel_acceleration = self._rotational_acceleration_mmpss
+
+        self._left_stepper.set_acceleration_spsps(self.__mm_to_steps(left_wheel_acceleration))
+        self._right_stepper.set_acceleration_spsps(self.__mm_to_steps(right_wheel_acceleration))
+
+        if radius_mm < (self._axel_distance_mm / 2):
+            picolog.debug(f"DiffDrive::__arc_right - Arcing right {degrees} degrees with left wheel {left_wheel_steps} steps (backwards) and right wheel {right_wheel_steps} steps (forwards)")
+            self._left_stepper.set_direction_backwards()
+            self._right_stepper.set_direction_forwards()
+        else:
+            picolog.debug(f"DiffDrive::__arc_right - Arcing right {degrees} degrees with left wheel {left_wheel_steps} steps and right wheel {right_wheel_steps} steps")
+            self._left_stepper.set_direction_forwards()
+            self._right_stepper.set_direction_forwards()
+
+        # Move steppers
+        self._left_stepper.move(left_wheel_steps)
+        self._right_stepper.move(right_wheel_steps)
+        
     def set_heading(self, degrees: float):
         """Set the heading in degrees"""
         if degrees < 0 or degrees >= 360:

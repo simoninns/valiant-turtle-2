@@ -118,199 +118,215 @@ class Control:
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 6:
-                    # Command ID 6 = heading
+                    # Command ID 6 = arc-left
+                    # Expect two float parameters (angle in degrees and radius in mm)
+                    command_seq, command_id, angle_degrees, radius_mm = struct.unpack('<BBff', data[:10])
+                    await self._commands.arc_left(angle_degrees, radius_mm)
+
+                    response = struct.pack('<B', command_seq) + bytes(19)
+                    self._ble_peripheral.add_to_p2c_queue(response)
+                elif command_id == 7:
+                    # Command ID 7 = arc-right
+                    # Expect two float parameters (angle in degrees and radius in mm)
+                    command_seq, command_id, angle_degrees, radius_mm = struct.unpack('<BBff', data[:10])
+                    await self._commands.arc_right(angle_degrees, radius_mm)
+
+                    response = struct.pack('<B', command_seq) + bytes(19)
+                    self._ble_peripheral.add_to_p2c_queue(response)
+                elif command_id == 8:
+                    # Command ID 8 = heading
                     # Expect a single float parameter (heading in degrees)
                     command_seq, command_id, heading_degrees = struct.unpack('<BBf', data[:6])
                     await self._commands.heading(heading_degrees)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 7:
-                    # Command ID 7 = position_x
+                elif command_id == 9:
+                    # Command ID 9 = position_x
                     # Expect a single float parameter (x position in mm)
                     command_seq, command_id, x_mm = struct.unpack('<BBf', data[:6])
                     await self._commands.position_x(x_mm)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 8:
-                    # Command ID 8 = position_y
+                elif command_id == 10:
+                    # Command ID 10 = position_y
                     # Expect a single float parameter (y position in mm)
                     command_seq, command_id, y_mm = struct.unpack('<BBf', data[:6])
                     await self._commands.position_y(y_mm)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 9:
-                    # Command ID 9 = position
+                elif command_id == 11:
+                    # Command ID 11 = position
                     # Expect two float parameters (x and y position in mm)
                     command_seq, command_id, x_mm, y_mm = struct.unpack('<BBff', data[:10])
                     await self._commands.position(x_mm, y_mm)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 10:
-                    # Command ID 10 = towards
+                elif command_id == 12:
+                    # Command ID 12 = towards
                     # Expect two float parameters (x and y position in mm)
                     command_seq, command_id, x_mm, y_mm = struct.unpack('<BBff', data[:10])
                     await self._commands.towards(x_mm, y_mm)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 11:
-                    # Command ID 11 = reset-origin
+                elif command_id == 13:
+                    # Command ID 13 = reset-origin
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     await self._commands.reset_origin()
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 12:
-                    # Command ID 12 = get-heading
+                elif command_id == 14:
+                    # Command ID 14 = get-heading
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     heading = await self._commands.get_heading()
 
                     response = struct.pack('<Bf', command_seq, heading) + bytes(15)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 13:
-                    # Command ID 13 = get-position
+                elif command_id == 15:
+                    # Command ID 15 = get-position
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     x_position, y_position = await self._commands.get_position()
 
                     response = struct.pack('<Bff', command_seq, x_position, y_position) + bytes(11)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 14:
-                    # Command ID 14 = pen
+                elif command_id == 16:
+                    # Command ID 16 = pen
                     # Expect a single byte parameter (0 = down, 1 = up)
                     command_seq, command_id, position = struct.unpack('<BBB', data[:3])
                     await self._commands.pen(position)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 15:
-                    # Command ID 15 = eyes
+                elif command_id == 17:
+                    # Command ID 17 = eyes
                     # Expect four byte parameters (eye ID, red, green, blue)
                     command_seq, command_id, eye_id, red, green, blue = struct.unpack('<BBBBBB', data[:6])
                     await self._commands.eyes(eye_id, red, green, blue)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 16:
-                    # Command ID 16 = get-power
+                elif command_id == 18:
+                    # Command ID 18 = get-power
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     mv, ma, mw = await self._commands.get_power()
 
                     response = struct.pack('<Blll', command_seq, mv, ma, mw) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 17:
-                    # Command ID 17 = get-pen
+                elif command_id == 19:
+                    # Command ID 19 = get-pen
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     pen_position = await self._commands.get_pen()
 
                     response = struct.pack('<BB', command_seq, pen_position) + bytes(18)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 18:
-                    # Command ID 18 = set-linear-velocity
+                elif command_id == 20:
+                    # Command ID 20 = set-linear-velocity
                     # Expect two float parameters (max speed and acceleration in mm/s^2)
                     command_seq, command_id, max_speed, acceleration = struct.unpack('<BBll', data[:10])
                     await self._commands.set_linear_velocity(max_speed, acceleration)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 19:
-                    # Command ID 19 = set-rotation-velocity
+                elif command_id == 21:
+                    # Command ID 21 = set-rotation-velocity
                     # Expect two float parameters (max speed and acceleration in mm/s^2)
                     command_seq, command_id, max_speed, acceleration = struct.unpack('<BBll', data[:10])
                     await self._commands.set_rotational_velocity(max_speed, acceleration)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 20:
-                    # Command ID 20 = get-linear-velocity
+                elif command_id == 22:
+                    # Command ID 22 = get-linear-velocity
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     linear_max_speed, linear_acceleration = await self._commands.get_linear_velocity()
 
                     response = struct.pack('<Bll', command_seq, linear_max_speed, linear_acceleration) + bytes(11)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 21:
-                    # Command ID 21 = get-rotational-velocity
+                elif command_id == 23:
+                    # Command ID 23 = get-rotational-velocity
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     rotation_max_speed, rotation_acceleration = await self._commands.get_rotational_velocity()
 
                     response = struct.pack('<Bll', command_seq, rotation_max_speed, rotation_acceleration) + bytes(11)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 22:
-                    # Command ID 22 = set-cali-wheel
+                elif command_id == 24:
+                    # Command ID 24 = set-cali-wheel
                     # Expect a single int32 parameter (wheel diameter adjustment in micrometers)
                     command_seq, command_id, wheel_diameter = struct.unpack('<BBi', data[:6])
                     await self._commands.set_wheel_diameter_calibration(wheel_diameter)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 23:
-                    # Command ID 23 = set-cali-axel
+                elif command_id == 25:
+                    # Command ID 25 = set-cali-axel
                     # Expect a single int32 parameter (axel distance adjustment in micrometers)
                     command_seq, command_id, axel_distance = struct.unpack('<BBi', data[:6])
                     await self._commands.set_axel_distance_calibration(axel_distance)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 24:
-                    # Command ID 24 = get-wheel-diameter-calibration
+                elif command_id == 26:
+                    # Command ID 26 = get-wheel-diameter-calibration
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     cali_wheel = await self._commands.get_wheel_diameter_calibration()
 
                     response = struct.pack('<Bi', command_seq, cali_wheel) + bytes(15)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 25:
-                    # Command ID 25 = get-axel-distance-calibration
+                elif command_id == 27:
+                    # Command ID 27 = get-axel-distance-calibration
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     cali_axel = await self._commands.get_axel_distance_calibration()
 
                     response = struct.pack('<Bi', command_seq, cali_axel) + bytes(15)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 26:
-                    # Command ID 26 = set-turtle-id
+                elif command_id == 28:
+                    # Command ID 28 = set-turtle-id
                     # Expect a single byte parameter (ID)
                     command_seq, command_id, turtle_id = struct.unpack('<BBB', data[:3])
                     await self._commands.set_turtle_id(turtle_id)
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 27:
-                    # Command ID 27 = get-turtle-id
+                elif command_id == 29:
+                    # Command ID 29 = get-turtle-id
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     turtle_id = await self._commands.get_turtle_id()
 
                     response = struct.pack('<BB', command_seq, turtle_id) + bytes(18)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 28:
-                    # Command ID 28 = load-config
+                elif command_id == 30:
+                    # Command ID 30 = load-config
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     await self._commands.load_config()
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 29:
-                    # Command ID 29 = save-config
+                elif command_id == 31:
+                    # Command ID 31 = save-config
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     await self._commands.save_config()
 
                     response = struct.pack('<B', command_seq) + bytes(19)
                     self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 30:
-                    # Command ID 30 = reset-config
+                elif command_id == 32:
+                    # Command ID 32 = reset-config
                     # Expect no parameters
                     command_seq, command_id = struct.unpack('<BB', data[:2])
                     await self._commands.reset_config()

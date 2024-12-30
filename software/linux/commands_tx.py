@@ -134,6 +134,16 @@ class CommandsTx:
         if not self._ble_central.connected:
             raise RuntimeError("CommandsTx::right - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._right(angle_degrees), self._loop).result()
+    
+    def arc_left(self, radius_mm: float, angle_degrees: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::arc_left - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._arc_left(radius_mm, angle_degrees), self._loop).result()
+    
+    def arc_right(self, radius_mm: float, angle_degrees: float) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::arc_right - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._arc_right(radius_mm, angle_degrees), self._loop).result()
 
     def heading(self, angle_degrees: float) -> bool:
         if not self._ble_central.connected:
@@ -381,6 +391,52 @@ class CommandsTx:
 
         # This command does not return any data, so we don't need to return any
         return True
+    
+    async def _arc_left(self, radius_mm: float, angle_degrees: float) -> bool:
+        if not self._ble_central.connected:
+            logging.error("CommandsTx::arc_left - Not connected to a robot")
+            return False
+        
+        # Command to turn the robot left on an arc
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BBff", seq_id, 6, radius_mm, angle_degrees)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"CommandsTx::arc_left - Command ID = 6, Sequence ID = {seq_id}, radius = {radius_mm}, angle = {angle_degrees}")
+        
+        # Wait for the command to be processed with a long timeout
+        try:
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"CommandsTx::arc_left - Command ID = 6, Sequence ID = {seq_id} timed out")
+            self._ble_central.disconnect()
+            return False
+
+        # This command does not return any data, so we don't need to return any
+        return True
+    
+    async def _arc_right(self, radius_mm: float, angle_degrees: float) -> bool:
+        if not self._ble_central.connected:
+            logging.error("CommandsTx::arc_right - Not connected to a robot")
+            return False
+        
+        # Command to turn the robot right on an arc
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BBff", seq_id, 7, radius_mm, angle_degrees)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"CommandsTx::arc_right - Command ID = 7, Sequence ID = {seq_id}, radius = {radius_mm}, angle = {angle_degrees}")
+        
+        # Wait for the command to be processed with a long timeout
+        try:
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"CommandsTx::arc_right - Command ID = 7, Sequence ID = {seq_id} timed out")
+            self._ble_central.disconnect()
+            return False
+
+        # This command does not return any data, so we don't need to return any
+        return True
 
     async def _heading(self, angle_degrees: float) -> bool:
         if not self._ble_central.connected:
@@ -390,15 +446,15 @@ class CommandsTx:
         # Command to set the robot heading
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", seq_id, 6, angle_degrees)
+        data = struct.pack("<BBf", seq_id, 8, angle_degrees)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::heading - Command ID = 6, Sequence ID = {seq_id}, angle = {angle_degrees}")
+        logging.info(f"CommandsTx::heading - Command ID = 8, Sequence ID = {seq_id}, angle = {angle_degrees}")
         
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::heading - Command ID = 6, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::heading - Command ID = 8, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -413,15 +469,15 @@ class CommandsTx:
         # Command to set the robot X position
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", seq_id, 7, x_mm)
+        data = struct.pack("<BBf", seq_id, 9, x_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::position_x - Command ID = 7, Sequence ID = {seq_id}, x = {x_mm}")
+        logging.info(f"CommandsTx::position_x - Command ID = 9, Sequence ID = {seq_id}, x = {x_mm}")
         
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::position_x - Command ID = 7, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::position_x - Command ID = 9, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -436,15 +492,15 @@ class CommandsTx:
         # Command to set the robot Y position
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", seq_id, 8, y_mm)
+        data = struct.pack("<BBf", seq_id, 10, y_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::position_y - Command ID = 8, Sequence ID = {seq_id}, y = {y_mm}")
+        logging.info(f"CommandsTx::position_y - Command ID = 10, Sequence ID = {seq_id}, y = {y_mm}")
         
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::position_y - Command ID = 8, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::position_y - Command ID = 10, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -459,15 +515,15 @@ class CommandsTx:
         # Command to set the robot position
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBff", seq_id, 9, x_mm, y_mm)
+        data = struct.pack("<BBff", seq_id, 11, x_mm, y_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::position - Command ID = 9, Sequence ID = {seq_id}, x = {x_mm}, y = {y_mm}")
+        logging.info(f"CommandsTx::position - Command ID = 11, Sequence ID = {seq_id}, x = {x_mm}, y = {y_mm}")
         
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::position - Command ID = 9, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::position - Command ID = 11, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -482,15 +538,15 @@ class CommandsTx:
         # Command to move the robot towards a point
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBff", seq_id, 10, x_mm, y_mm)
+        data = struct.pack("<BBff", seq_id, 12, x_mm, y_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::towards - Command ID = 10, Sequence ID = {seq_id}, x = {x_mm}, y = {y_mm}")
+        logging.info(f"CommandsTx::towards - Command ID = 12, Sequence ID = {seq_id}, x = {x_mm}, y = {y_mm}")
         
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::towards - Command ID = 10, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::towards - Command ID = 12, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -505,15 +561,15 @@ class CommandsTx:
         # Command to reset the x,y origin and heading
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 11)
+        data = struct.pack("<BB", seq_id, 13)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::reset_origin - Command ID = 11, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::reset_origin - Command ID = 13, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::reset_origin - Command ID = 11, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::reset_origin - Command ID = 13, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -528,15 +584,15 @@ class CommandsTx:
         # Command to get the robot heading
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 12)
+        data = struct.pack("<BB", seq_id, 14)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_heading - Command ID = 12, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::get_heading - Command ID = 14, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_heading - Command ID = 12, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::get_heading - Command ID = 14, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0
 
@@ -557,15 +613,15 @@ class CommandsTx:
         # Command to get the robot position
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 13)
+        data = struct.pack("<BB", seq_id, 15)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_position - Command ID = 13, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::get_position - Command ID = 15, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_position - Command ID = 13, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::get_position - Command ID = 15, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0
 
@@ -591,15 +647,15 @@ class CommandsTx:
 
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBB", seq_id, 14, parameter)
+        data = struct.pack("<BBB", seq_id, 16, parameter)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::pen - Command ID = 14, Sequence ID = {seq_id}, pen_up = {pen_up}")
+        logging.info(f"CommandsTx::pen - Command ID = 16, Sequence ID = {seq_id}, pen_up = {pen_up}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::pen - Command ID = 14, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::pen - Command ID = 16, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -614,15 +670,15 @@ class CommandsTx:
         # Command to set the eye colour
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBBBBB", seq_id, 15, eye_id, red, green, blue)
+        data = struct.pack("<BBBBBB", seq_id, 17, eye_id, red, green, blue)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::eyes - Command ID = 15, Sequence ID = {seq_id}, eye_id = {eye_id}, red = {red}, green = {green}, blue = {blue}")
+        logging.info(f"CommandsTx::eyes - Command ID = 17, Sequence ID = {seq_id}, eye_id = {eye_id}, red = {red}, green = {green}, blue = {blue}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::eyes - Command ID = 15, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::eyes - Command ID = 17, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -637,15 +693,15 @@ class CommandsTx:
         # Command to get the robot power
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 16)
+        data = struct.pack("<BB", seq_id, 18)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_power - Command ID = 16, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::get_power - Command ID = 18, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_power - Command ID = 16, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::get_power - Command ID = 18, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0, 0, 0
 
@@ -666,15 +722,15 @@ class CommandsTx:
         # Command to get the pen status
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 17)
+        data = struct.pack("<BB", seq_id, 19)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_pen - Command ID = 17, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::get_pen - Command ID = 19, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_pen - Command ID = 17, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::get_pen - Command ID = 19, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, False
 
@@ -695,15 +751,15 @@ class CommandsTx:
         # Command to set the linear velocity
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBll", seq_id, 18, target_speed, acceleration)
+        data = struct.pack("<BBll", seq_id, 20, target_speed, acceleration)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::set_linear_velocity - Command ID = 18, Sequence ID = {seq_id}, target_speed = {target_speed}, acceleration = {acceleration}")
+        logging.info(f"CommandsTx::set_linear_velocity - Command ID = 20, Sequence ID = {seq_id}, target_speed = {target_speed}, acceleration = {acceleration}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::set_linear_velocity - Command ID = 18, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::set_linear_velocity - Command ID = 20, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -718,15 +774,15 @@ class CommandsTx:
         # Command to set the rotational velocity
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBll", seq_id, 19, target_speed, acceleration)
+        data = struct.pack("<BBll", seq_id, 21, target_speed, acceleration)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::set_rotational_velocity - Command ID = 19, Sequence ID = {seq_id}, target_speed = {target_speed}, acceleration = {acceleration}")
+        logging.info(f"CommandsTx::set_rotational_velocity - Command ID = 21, Sequence ID = {seq_id}, target_speed = {target_speed}, acceleration = {acceleration}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::set_rotational_velocity - Command ID = 19, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::set_rotational_velocity - Command ID = 21, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -741,15 +797,15 @@ class CommandsTx:
         # Command to get the linear velocity
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 20)
+        data = struct.pack("<BB", seq_id, 22)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_linear_velocity - Command ID = 20, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::get_linear_velocity - Command ID = 22, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_linear_velocity - Command ID = 20, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::get_linear_velocity - Command ID = 22, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0, 0
 
@@ -770,15 +826,15 @@ class CommandsTx:
         # Command to get the rotational velocity
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 21)
+        data = struct.pack("<BB", seq_id, 23)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_rotational_velocity - Command ID = 21, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::get_rotational_velocity - Command ID = 23, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_rotational_velocity - Command ID = 21, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::get_rotational_velocity - Command ID = 23, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0, 0
 
@@ -798,14 +854,14 @@ class CommandsTx:
         
         # Command to set the wheel diameter calibration
         seq_id = self.__next_seq()
-        data = struct.pack("<BBi", seq_id, 22, wheel_diameter)
+        data = struct.pack("<BBi", seq_id, 24, wheel_diameter)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::set_wheel_diameter_calibration - Command ID = 22, Sequence ID = {seq_id}, wheel_diameter = {wheel_diameter}")
+        logging.info(f"CommandsTx::set_wheel_diameter_calibration - Command ID = 24, Sequence ID = {seq_id}, wheel_diameter = {wheel_diameter}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::set_wheel_diameter_calibration - Command ID = 22, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::set_wheel_diameter_calibration - Command ID = 24, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -818,14 +874,14 @@ class CommandsTx:
         
         # Command to set the axel distance calibration
         seq_id = self.__next_seq()
-        data = struct.pack("<BBi", seq_id, 23, axel_distance)
+        data = struct.pack("<BBi", seq_id, 25, axel_distance)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::set_axel_distance_calibration - Command ID = 23, Sequence ID = {seq_id}, axel_distance = {axel_distance}")
+        logging.info(f"CommandsTx::set_axel_distance_calibration - Command ID = 25, Sequence ID = {seq_id}, axel_distance = {axel_distance}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::set_axel_distance_calibration - Command ID = 23, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::set_axel_distance_calibration - Command ID = 25, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -838,14 +894,14 @@ class CommandsTx:
         
         # Command to get the wheel diameter calibration
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 24)
+        data = struct.pack("<BB", seq_id, 26)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_wheel_diameter_calibration - Command ID = 24, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::get_wheel_diameter_calibration - Command ID = 26, Sequence ID = {seq_id}")
         
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_wheel_diameter_calibration - Command ID = 24, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::get_wheel_diameter_calibration - Command ID = 26, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0
 
@@ -864,14 +920,14 @@ class CommandsTx:
         
         # Command to get the axel distance calibration
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 25)
+        data = struct.pack("<BB", seq_id, 27)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_axel_distance_calibration - Command ID = 25, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::get_axel_distance_calibration - Command ID = 27, Sequence ID = {seq_id}")
         
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_axel_distance_calibration - Command ID = 25, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::get_axel_distance_calibration - Command ID = 27, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0
 
@@ -890,14 +946,14 @@ class CommandsTx:
         
         # Command to set the turtle ID
         seq_id = self.__next_seq()
-        data = struct.pack("<BBB", seq_id, 26, turtle_id)
+        data = struct.pack("<BBB", seq_id, 28, turtle_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::set_turtle_id - Command ID = 26, Sequence ID = {seq_id}, turtle_id = {turtle_id}")
+        logging.info(f"CommandsTx::set_turtle_id - Command ID = 28, Sequence ID = {seq_id}, turtle_id = {turtle_id}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::set_turtle_id - Command ID = 26, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::set_turtle_id - Command ID = 28, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -910,14 +966,14 @@ class CommandsTx:
         
         # Command to get the turtle ID
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 27)
+        data = struct.pack("<BB", seq_id, 29)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_turtle_id - Command ID = 27, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::get_turtle_id - Command ID = 29, Sequence ID = {seq_id}")
         
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_turtle_id - Command ID = 27, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::get_turtle_id - Command ID = 29, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0
 
@@ -936,14 +992,14 @@ class CommandsTx:
         
         # Command to load the configuration
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 28)
+        data = struct.pack("<BB", seq_id, 30)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::load_config - Command ID = 28, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::load_config - Command ID = 30, Sequence ID = {seq_id}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::load_config - Command ID = 28, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::load_config - Command ID = 30, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -956,14 +1012,14 @@ class CommandsTx:
         
         # Command to save the configuration
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 29)
+        data = struct.pack("<BB", seq_id, 31)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::save_config - Command ID = 29, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::save_config - Command ID = 31, Sequence ID = {seq_id}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::save_config - Command ID = 29, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::save_config - Command ID = 31, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -976,14 +1032,14 @@ class CommandsTx:
         
         # Command to reset the configuration
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 30)
+        data = struct.pack("<BB", seq_id, 32)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::reset_config - Command ID = 30, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::reset_config - Command ID = 32, Sequence ID = {seq_id}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::reset_config - Command ID = 30, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::reset_config - Command ID = 32, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 

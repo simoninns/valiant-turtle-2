@@ -86,6 +86,18 @@ class CommandsRx:
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
+    async def arc_left(self, radius_mm: float, angle_degrees: float):
+        picolog.info(f"Commands::arc_left - Arcing left with radius {radius_mm} mm and angle {angle_degrees} degrees")
+        self._diff_drive.arc_left(radius_mm, angle_degrees)
+        while self._diff_drive.is_moving:
+            await asyncio.sleep(0.25)
+
+    async def arc_right(self, radius_mm: float, angle_degrees: float):
+        picolog.info(f"Commands::arc_right - Arcing right with radius {radius_mm} mm and angle {angle_degrees} degrees")
+        self._diff_drive.arc_right(radius_mm, angle_degrees)
+        while self._diff_drive.is_moving:
+            await asyncio.sleep(0.25)
+
     async def heading(self, heading_degrees: float):
         picolog.info(f"Commands::heading - Setting heading to {heading_degrees} degrees")
         self._diff_drive.set_heading(heading_degrees)
