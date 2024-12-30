@@ -150,6 +150,7 @@ class DiffDrive:
             return
         self.__configure_linear_velocity()
         self._stepper.set_direction_forwards()
+        picolog.debug(f"DiffDrive::__forward - Moving {distance_mm} mm using {self.__mm_to_steps(distance_mm)} steps")
         self._stepper.move(self.__mm_to_steps(distance_mm))
 
     def __backward(self, distance_mm: float):
@@ -159,6 +160,7 @@ class DiffDrive:
             return
         self.__configure_linear_velocity()
         self._stepper.set_direction_backwards()
+        picolog.debug(f"DiffDrive::__backward - Moving {distance_mm} mm using {self.__mm_to_steps(distance_mm)} steps")
         self._stepper.move(self.__mm_to_steps(distance_mm))
 
     def __left(self, degrees: float):
@@ -168,6 +170,7 @@ class DiffDrive:
             return
         self.__configure_rotational_velocity()
         self._stepper.set_direction_left()
+        picolog.debug(f"DiffDrive::__left - Turning left {degrees} degrees using {self.__degrees_to_steps(degrees)} steps")
         self._stepper.move(self.__degrees_to_steps(degrees))
 
     def __right(self, degrees: float):
@@ -177,6 +180,7 @@ class DiffDrive:
             return
         self.__configure_rotational_velocity()
         self._stepper.set_direction_right()
+        picolog.debug(f"DiffDrive::__right - Turning right {degrees} degrees using {self.__degrees_to_steps(degrees)} steps")
         self._stepper.move(self.__degrees_to_steps(degrees))
 
     def set_heading(self, degrees: float):

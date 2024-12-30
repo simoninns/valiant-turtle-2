@@ -62,6 +62,11 @@ class Stepper:
         # The number of speed re-calculations per second
         self._intervals_per_second = 16
 
+        # Temporary acceleration and target speed values in case
+        # we need to adjust them for a single move
+        self._actual_acceleration_spi = self._acceleration_spi
+        self._actual_target_speed_spi = self._target_speed_spi
+
         # Ensure we have a free state-machine
         if Stepper._sm_counter < 4:
             picolog.debug(f"Stepper::__init__ - Using PIO {self.pio} SM {Stepper._sm_counter}")
@@ -150,25 +155,34 @@ class Stepper:
         self._partial_steps = 0
         self._track_actual_steps = 0
 
-        # Check the input parameters and decide if acceleration is required
-        if self._total_steps < (2 * self._acceleration_spi):
-            picolog.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to twice the acceleration rate")
-            one_shot = True
+        # Save the initial acceleration and target speed in case we need to adjust them
+        self._actual_acceleration_spi = self._acceleration_spi
+        self._actual_target_speed_spi = self._target_speed_spi
+
+        # Ensure that we have enough steps to accelerate
+        if self._total_steps < (2 * self._actual_acceleration_spi):
+            if (self._total_steps / 2) >= 1:
+                self._actual_acceleration_spi = int(self._total_steps / 2)
+                picolog.debug(f"Stepper::move - Adjusting acceleration to {self._actual_acceleration_spi} steps per interval")
+            else:
+                picolog.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to 2")
+                one_shot = True
         
-        if (self._target_speed_spi <= self._acceleration_spi):
-            picolog.debug("Stepper::move - Cannot accelerate: Target speed must be greater than the acceleration rate")
-            one_shot = True
+        # Range check and adjust the target speed if necessary
+        if (self._actual_target_speed_spi <= self._actual_acceleration_spi):
+            self._actual_target_speed_spi = self._actual_acceleration_spi
+            picolog.debug(f"Stepper::move - Adjusting target speed to {self._actual_target_speed_spi} steps per interval")
         
-        if (self._total_steps < self._target_speed_spi):
-            picolog.debug("Stepper::move - Cannot accelerate: Steps must be greater than or equal to the target speed")
-            one_shot = True
+        if (self._total_steps < self._actual_target_speed_spi):
+            self._actual_target_speed_spi = self._total_steps
+            picolog.debug(f"Stepper::move - Adjusting target speed to {self._actual_target_speed_spi} steps per interval")
 
         if one_shot:
             # One-shot move
             picolog.debug(f"Stepper::move - Performing one-shot move of {self._total_steps} steps at {self._intervals_per_second} steps per second)")
             if not Stepper.test_only:
                 # Move at a low speed during a one-shot move
-                self.pulse_generator.set(int(self._intervals_per_second * 4), self._total_steps)
+                self.pulse_generator.set(self._intervals_per_second, self._total_steps)
                 self._steps_remaining = 0
                 self._track_actual_steps = self._total_steps
         else:
@@ -193,10 +207,10 @@ class Stepper:
         speed = 0
 
         # Accelerating?
-        if (self._steps_remaining - self._current_speed_spi) > self._maximum_available_acceleration_steps and (self._current_speed_spi + self._acceleration_spi) < self._target_speed_spi:
-            self._current_speed_spi += self._acceleration_spi
-            if (self._current_speed_spi > self._target_speed_spi):
-                self._current_speed_spi = self._target_speed_spi
+        if (self._steps_remaining - self._current_speed_spi) > self._maximum_available_acceleration_steps and (self._current_speed_spi + self._actual_acceleration_spi) < self._actual_target_speed_spi:
+            self._current_speed_spi += self._actual_acceleration_spi
+            if (self._current_speed_spi > self._actual_target_speed_spi):
+                self._current_speed_spi = self._actual_target_speed_spi
             self._steps_remaining -= self._current_speed_spi
             if Stepper.test_only: picolog.debug(f"Stepper::calculate_next_command - Accelerating - Current SPI = {self._current_speed_spi}, steps remaining = {self._steps_remaining}")
             steps = self._current_speed_spi
@@ -209,9 +223,9 @@ class Stepper:
             if Stepper.test_only: picolog.debug(f"Stepper::calculate_next_command - Acceleration steps = {self._acceleration_steps}")
 
             # If acceleration didn't reach target speed, accelerate one more time
-            self._current_speed_spi += self._acceleration_spi
-            if (self._current_speed_spi > self._target_speed_spi):
-                self._current_speed_spi = self._target_speed_spi
+            self._current_speed_spi += self._actual_acceleration_spi
+            if (self._current_speed_spi > self._actual_target_speed_spi):
+                self._current_speed_spi = self._actual_target_speed_spi
 
             self._steps_remaining -= self._running_steps
             if Stepper.test_only: picolog.debug(f"Stepper::calculate_next_command - Running - Current speed = {self._current_speed_spi}, running steps = {self._running_steps}")
@@ -226,7 +240,7 @@ class Stepper:
             steps = self._current_speed_spi
             speed = self._current_speed_spi
 
-            self._current_speed_spi -= self._acceleration_spi
+            self._current_speed_spi -= self._actual_acceleration_spi
             if (self._current_speed_spi < 1):
                 self._current_speed_spi = 1
 
