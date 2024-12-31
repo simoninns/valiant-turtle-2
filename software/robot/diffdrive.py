@@ -358,6 +358,10 @@ class DiffDrive:
         # Convert degrees to radians
         target_radians = math.radians(degrees)
 
+        # Set the heading
+        self.__set_heading(target_radians)
+
+    def __set_heading(self, target_radians: float):
         # Normalize the angle difference to the range [-π, π]
         def normalize_angle(angle):
             return (angle + math.pi) % (2 * math.pi) - math.pi
@@ -366,10 +370,10 @@ class DiffDrive:
 
         # Determine turning direction
         if angle_difference > 0:
-            picolog.debug(f"DiffDrive::set_heading - Turning left by {math.degrees(angle_difference):.2f}°")
+            picolog.debug(f"DiffDrive::__set_heading - Turning left by {math.degrees(angle_difference):.2f}°")
             self.turn_left(math.degrees(angle_difference))
         elif angle_difference < 0:
-            picolog.debug(f"DiffDrive::set_heading - Turning right by {math.degrees(-angle_difference):.2f}°")
+            picolog.debug(f"DiffDrive::__set_heading - Turning right by {math.degrees(-angle_difference):.2f}°")
             self.turn_right(math.degrees(-angle_difference))
 
         # Update the heading to the target value
@@ -398,6 +402,9 @@ class DiffDrive:
             picolog.debug("Already at the required position.")
             return
 
+        # Store the current heading
+        current_heading = self._heading_radians
+
         # Calculate the target angle and distance
         delta_x = x - self._x_pos
         delta_y = y - self._y_pos
@@ -421,11 +428,19 @@ class DiffDrive:
 
             self._heading_radians = (self._heading_radians + turn_angle) % (2 * math.pi)
 
+            picolog.debug("Waiting for turn to complete (backward).")
             while self._left_stepper.is_busy or self._right_stepper.is_busy:
-                picolog.debug("Waiting for turn to complete (backward).")
+                pass
 
             if not turn_only:
                 self.drive_backward(distance)
+
+                picolog.debug("Waiting for movement to complete (backward).")
+                while self._left_stepper.is_busy or self._right_stepper.is_busy:
+                    pass
+
+                # Restore the original heading
+                self.__set_heading(current_heading)                
         else:
             # Forward movement
             if angle_diff > 0:
@@ -435,11 +450,19 @@ class DiffDrive:
 
             self._heading_radians = (self._heading_radians + angle_diff) % (2 * math.pi)
 
+            picolog.debug("Waiting for turn to complete (forward).")
             while self._left_stepper.is_busy or self._right_stepper.is_busy:
-                picolog.debug("Waiting for turn to complete (forward).")
+                pass
 
             if not turn_only:
                 self.drive_forward(distance)
+
+                picolog.debug("Waiting for movement to complete (forward).")
+                while self._left_stepper.is_busy or self._right_stepper.is_busy:
+                    pass
+
+                # Restore the original heading
+                self.__set_heading(current_heading) 
 
     def get_cartesian_position(self) -> tuple:
         """Get the Cartesian x and y position"""
