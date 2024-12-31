@@ -169,14 +169,17 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 radius, extent_degrees = map(int, arg.split())
-                success, x, y, heading = self._commands_tx.circle(radius, extent_degrees)
-                if success:
-                    print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                if radius != 0 and extent_degrees != 0:
+                    success, x, y, heading = self._commands_tx.circle(radius, extent_degrees)
+                    if success:
+                        print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                    else:
+                        print("Failed to move in a circle.")
                 else:
-                    print("Failed to move in a circle.")
+                    print("Invalid radius or extent degrees. Both values must be non-zero.")
             except ValueError:
                 print("Invalid radius or extent degrees. Please enter two integer values.")
-                logging.info("CLI: Circle")
+            logging.info("CLI: Circle")
         else:
             print("Not connected to BLE device.")
 

@@ -230,19 +230,28 @@ class DiffDrive:
             return
 
         # Ensure that the absolute radius is greater than the half the axel distance
-        if abs(radius_mm) < (self._axel_distance_mm / 2):
-            picolog.debug(f"DiffDrive::__circle - Radius must be greater than half the axel distance")
+        if abs(radius_mm) >= (self._axel_distance_mm / 2):
+            self.__circle_big(radius_mm, extent_radians)
+        else:
+            self.__circle_small(radius_mm, extent_radians)
             return
         
+    def __circle_big(self, radius_mm: float, extent_radians: float):
+        """Move the fulcrum of the wheel axle in a circle of the specified radius and extent (when the radius is equal or greater to the half the wheel axle distance)."""
+        if abs(radius_mm) < (self._axel_distance_mm / 2):
+            picolog.debug(f"DiffDrive::__circle_big - Radius must be greater than or equal to the axel distance")
+            return
+        
+        picolog.debug(f"DiffDrive::__circle_big - Moving in a circle with radius {radius_mm} mm and extent {math.degrees(extent_radians)} degrees")
         # If the radius is positive the outer wheel is the left wheel
         if radius_mm > 0:
             outer_stepper = self._left_stepper
             inner_stepper = self._right_stepper
-            picolog.debug(f"DiffDrive::__circle - Moving in a circle to the left, left motor is outer and right motor is inner")
+            picolog.debug(f"DiffDrive::__circle_big - Moving in a circle to the left, left motor is outer and right motor is inner")
         else:
             outer_stepper = self._right_stepper
             inner_stepper = self._left_stepper
-            picolog.debug(f"DiffDrive::__circle - Moving in a circle to the right, right motor is outer and left motor is inner")
+            picolog.debug(f"DiffDrive::__circle_big - Moving in a circle to the right, right motor is outer and left motor is inner")
 
         # Calculate the outer and inner wheel distances
         outer_distance = abs(radius_mm) * (extent_radians * 2)
@@ -276,6 +285,64 @@ class DiffDrive:
         # Move the outer and inner wheels
         outer_stepper.move(self.__mm_to_steps(outer_distance))
         inner_stepper.move(self.__mm_to_steps(inner_distance))
+
+    def __circle_small(self, radius_mm: float, extent_radians: float):
+        """Move the fulcrum of the wheel axle in a circle of the specified radius and extent
+        (when the radius describes the path of the midpoint between the wheels and is smaller 
+        than half the axle distance, requiring opposite rotation for the inner wheel)."""
+
+        if abs(radius_mm) >= (self._axel_distance_mm / 2):
+            picolog.debug(f"DiffDrive::__circle_small - Radius must be smaller than half the axle distance")
+            return
+
+        picolog.debug(f"DiffDrive::__circle_small - Moving in a circle with radius {radius_mm} mm and extent {math.degrees(extent_radians)} degrees")
+
+        # Determine which wheel is inner and which is outer
+        if radius_mm > 0:
+            outer_stepper = self._left_stepper
+            inner_stepper = self._right_stepper
+            picolog.debug(f"DiffDrive::__circle_small - Moving in a tight circle to the left, left motor is outer and right motor is inner")
+        else:
+            outer_stepper = self._right_stepper
+            inner_stepper = self._left_stepper
+            picolog.debug(f"DiffDrive::__circle_small - Moving in a tight circle to the right, right motor is outer and left motor is inner")
+
+        # Calculate the actual radii for the inner and outer wheels
+        outer_radius = abs(radius_mm) + (self._axel_distance_mm / 2)
+        inner_radius = abs(radius_mm) - (self._axel_distance_mm / 2)
+
+        # Calculate the distances traveled by each wheel
+        outer_distance = outer_radius * abs(extent_radians)
+        inner_distance = inner_radius * abs(extent_radians)
+
+        # Set the target speed and acceleration for the outer wheel
+        self.__configure_rotational_velocity()
+        picolog.debug(f"DiffDrive::__circle_small - Setting outer stepper target speed to {self._rotational_target_speed_mmps} mm/s and acceleration to {self._rotational_acceleration_mmpss} mm/s^2")
+        outer_stepper.set_target_speed_sps(self.__mm_to_steps(self._rotational_target_speed_mmps))
+        outer_stepper.set_acceleration_spsps(self.__mm_to_steps(self._rotational_acceleration_mmpss))
+
+        # Calculate the inner wheel speed and acceleration to match the movement time of the outer wheel
+        inner_speed = abs((inner_distance / outer_distance) * self._rotational_target_speed_mmps)
+        inner_acceleration = abs((inner_distance / outer_distance) * self._rotational_acceleration_mmpss)
+
+        # Set the target speed and acceleration for the inner wheel
+        picolog.debug(f"DiffDrive::__circle_small - Setting inner stepper target speed to {inner_speed} mm/s and acceleration to {inner_acceleration} mm/s^2")
+        inner_stepper.set_target_speed_sps(self.__mm_to_steps(inner_speed))
+        inner_stepper.set_acceleration_spsps(self.__mm_to_steps(inner_acceleration))
+
+        # Handle wheel direction: inner wheel rotates in the opposite direction
+        if extent_radians > 0:
+            outer_stepper.set_direction_forwards()
+            inner_stepper.set_direction_backwards()
+            picolog.debug(f"DiffDrive::__circle_small - Outer wheel moves forward, inner wheel moves backward")
+        else:
+            outer_stepper.set_direction_backwards()
+            inner_stepper.set_direction_forwards()
+            picolog.debug(f"DiffDrive::__circle_small - Outer wheel moves backward, inner wheel moves forward")
+
+        # Move the outer and inner wheels
+        outer_stepper.move(self.__mm_to_steps(abs(outer_distance)))
+        inner_stepper.move(self.__mm_to_steps(abs(inner_distance)))
 
     def set_heading(self, degrees: float):
         """Set the heading in degrees"""
