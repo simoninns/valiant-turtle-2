@@ -42,8 +42,7 @@ def command_test(commands_tx: CommandsTx):
     commands_tx.left(10)
     commands_tx.right(10)
 
-    commands_tx.arc_left(100, 90)
-    commands_tx.arc_right(100, 90)
+    commands_tx.circle(100, 90)
 
     commands_tx.heading(20)
     commands_tx.position_x(100)

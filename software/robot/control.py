@@ -118,18 +118,10 @@ class Control:
                     response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 6:
-                    # Command ID 6 = arc-left
-                    # Expect two float parameters (angle in degrees and radius in mm)
-                    command_seq, command_id, angle_degrees, radius_mm = struct.unpack('<BBff', data[:10])
-                    x_position, y_position, heading = await self._commands.arc_left(angle_degrees, radius_mm)
-
-                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
-                    self._ble_peripheral.add_to_p2c_queue(response)
-                elif command_id == 7:
-                    # Command ID 7 = arc-right
-                    # Expect two float parameters (angle in degrees and radius in mm)
-                    command_seq, command_id, angle_degrees, radius_mm = struct.unpack('<BBff', data[:10])
-                    x_position, y_position, heading = await self._commands.arc_right(angle_degrees, radius_mm)
+                    # Command ID 6 = circle
+                    # Expect two float parameters (radius in mm and extent in degrees)
+                    command_seq, command_id, radius_mm, extent_degrees = struct.unpack('<BBff', data[:10])
+                    x_position, y_position, heading = await self._commands.circle(radius_mm, extent_degrees)
 
                     response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)

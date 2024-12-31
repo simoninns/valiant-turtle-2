@@ -129,7 +129,7 @@ def main():
             voltage = ina260.voltage_mV
             power = ina260.power_mW
 
-            picolog.debug(f"Power monitor: {voltage}mV, {current}mA, {power}mW")
+            #picolog.debug(f"Power monitor: {voltage}mV, {current}mA, {power}mW")
 
             # Check if the power level is below the minimum allowed
             # cell voltage (3.0V) and set the event flag

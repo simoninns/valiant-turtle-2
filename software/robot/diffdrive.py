@@ -153,29 +153,20 @@ class DiffDrive:
         # Update the heading
         self._heading_radians -= math.radians(degrees)
 
-    def arc_left(self, radius_mm: float, degrees: float):
-        """Arc turn to the left"""
-        self.__arc_left(radius_mm, degrees)
+    def circle(self, radius_mm: float, extent_degrees: float):
+        """Move in a circle"""
+        self.__circle(radius_mm, math.radians(extent_degrees))
 
-        # Update the cartesian position
-        arc_length = radius_mm * math.radians(degrees)
-        self._x_pos += arc_length * math.cos(self._heading_radians + math.radians(degrees) / 2)
-        self._y_pos += arc_length * math.sin(self._heading_radians + math.radians(degrees) / 2)
+        # Update the Cartesian position and heading
+        arc_center_x = self._x_pos - radius_mm * math.sin(self._heading_radians)
+        arc_center_y = self._y_pos + radius_mm * math.cos(self._heading_radians)
 
-        # Update the heading
-        self._heading_radians += math.radians(degrees)
+        new_heading_radians = self._heading_radians + math.radians(extent_degrees)
 
-    def arc_right(self, radius_mm: float, degrees: float):
-        """Arc turn to the right"""
-        self.__arc_right(radius_mm, degrees)
+        self._x_pos = arc_center_x + radius_mm * math.sin(new_heading_radians)
+        self._y_pos = arc_center_y - radius_mm * math.cos(new_heading_radians)
 
-        # Update the cartesian position
-        arc_length = radius_mm * math.radians(degrees)
-        self._x_pos += arc_length * math.cos(self._heading_radians - math.radians(degrees) / 2)
-        self._y_pos += arc_length * math.sin(self._heading_radians - math.radians(degrees) / 2)
-
-        # Update the heading
-        self._heading_radians -= math.radians(degrees)
+        self._heading_radians = new_heading_radians
 
     def __forward(self, distance_mm: float):
         """Linear motion forwards"""
@@ -225,90 +216,67 @@ class DiffDrive:
         self._left_stepper.move(self.__radians_to_steps(radians))
         self._right_stepper.move(self.__radians_to_steps(radians))
 
-    def __arc_left(self, radius_mm: float, radians: float):
-        """Arc turn to the left"""
-        if radius_mm <= 0:
-            picolog.debug(f"DiffDrive::__arc_left - Radius in mm must be greater than zero")
+    def __circle(self, radius_mm: float, extent_radians: float):
+        """Move in a circle of the specified radius and extent."""
+
+        # Ensure the radius is not zero
+        if radius_mm == 0:
+            picolog.debug(f"DiffDrive::__circle - Radius must be non-zero")
             return
-        if radians <= 0:
-            picolog.debug(f"DiffDrive::__arc_left - Radians must be greater than zero")
-            return
-        self.__configure_rotational_velocity()
         
-        # Calculate the distance each wheel needs to travel
-        left_wheel_distance = abs((radius_mm + (self._axel_distance_mm / 2)) * radians)
-        right_wheel_distance = abs((radius_mm - (self._axel_distance_mm / 2)) * radians)
-
-        left_wheel_steps = self.__mm_to_steps(left_wheel_distance)
-        right_wheel_steps = self.__mm_to_steps(right_wheel_distance)
-
-        left_wheel_speed = self._rotational_target_speed_mmps
-        right_wheel_speed = self._rotational_target_speed_mmps * (right_wheel_distance / left_wheel_distance)
-
-        self._left_stepper.set_target_speed_sps(self.__mm_to_steps(left_wheel_speed))
-        self._right_stepper.set_target_speed_sps(self.__mm_to_steps(right_wheel_speed))
-
-        left_wheel_acceleration = self._rotational_acceleration_mmpss
-        right_wheel_acceleration = self._rotational_acceleration_mmpss * (right_wheel_distance / left_wheel_distance)
-
-        self._left_stepper.set_acceleration_spsps(self.__mm_to_steps(left_wheel_acceleration))
-        self._right_stepper.set_acceleration_spsps(self.__mm_to_steps(right_wheel_acceleration))
-
-        if radius_mm < (self._axel_distance_mm / 2):
-            picolog.debug(f"DiffDrive::__arc_left - Arcing left {math.degrees(radians)} radians with left wheel {left_wheel_steps} steps (forwards) and right wheel {right_wheel_steps} steps (backwards)")
-            self._left_stepper.set_direction_forwards()
-            self._right_stepper.set_direction_backwards()
-        else:
-            picolog.debug(f"DiffDrive::__arc_left - Arcing left {math.degrees(radians)} radians with left wheel {left_wheel_steps} steps and right wheel {right_wheel_steps} steps")
-            self._left_stepper.set_direction_forwards()
-            self._right_stepper.set_direction_forwards()
-
-        # Move steppers
-        self._left_stepper.move(left_wheel_steps)
-        self._right_stepper.move(right_wheel_steps)
-
-    def __arc_right(self, radius_mm: float, radians: float):
-        """Arc turn to the right"""
-        if radius_mm <= 0:
-            picolog.debug(f"DiffDrive::__arc_right - Radius in mm must be greater than zero")
+        # Ensure the extent is not zero
+        if extent_radians == 0:
+            picolog.debug(f"DiffDrive::__circle - Extent must be non-zero")
             return
-        if radians <= 0:
-            picolog.debug(f"DiffDrive::__arc_right - Radians must be greater than zero")
+
+        # Ensure that the absolute radius is greater than the half the axel distance
+        if abs(radius_mm) < (self._axel_distance_mm / 2):
+            picolog.debug(f"DiffDrive::__circle - Radius must be greater than half the axel distance")
             return
-        self.__configure_rotational_velocity()
-
-        # Calculate the distance each wheel needs to travel
-        left_wheel_distance = abs((radius_mm - (self._axel_distance_mm / 2)) * radians)
-        right_wheel_distance = abs((radius_mm + (self._axel_distance_mm / 2)) * radians)
-
-        left_wheel_steps = self.__mm_to_steps(left_wheel_distance)
-        right_wheel_steps = self.__mm_to_steps(right_wheel_distance)
-
-        left_wheel_speed = self._rotational_target_speed_mmps * (left_wheel_distance / right_wheel_distance)
-        right_wheel_speed = self._rotational_target_speed_mmps
-
-        self._left_stepper.set_target_speed_sps(self.__mm_to_steps(left_wheel_speed))
-        self._right_stepper.set_target_speed_sps(self.__mm_to_steps(right_wheel_speed))
-
-        left_wheel_acceleration = self._rotational_acceleration_mmpss * (left_wheel_distance / right_wheel_distance)
-        right_wheel_acceleration = self._rotational_acceleration_mmpss
-
-        self._left_stepper.set_acceleration_spsps(self.__mm_to_steps(left_wheel_acceleration))
-        self._right_stepper.set_acceleration_spsps(self.__mm_to_steps(right_wheel_acceleration))
-
-        if radius_mm < (self._axel_distance_mm / 2):
-            picolog.debug(f"DiffDrive::__arc_right - Arcing right {math.degrees(radians)} radians with left wheel {left_wheel_steps} steps (backwards) and right wheel {right_wheel_steps} steps (forwards)")
-            self._left_stepper.set_direction_backwards()
-            self._right_stepper.set_direction_forwards()
-        else:
-            picolog.debug(f"DiffDrive::__arc_right - Arcing right {math.degrees(radians)} radians with left wheel {left_wheel_steps} steps and right wheel {right_wheel_steps} steps")
-            self._left_stepper.set_direction_forwards()
-            self._right_stepper.set_direction_forwards()
-
-        # Move steppers
-        self._left_stepper.move(left_wheel_steps)
-        self._right_stepper.move(right_wheel_steps)
         
+        # If the radius is positive the outer wheel is the left wheel
+        if radius_mm > 0:
+            outer_stepper = self._left_stepper
+            inner_stepper = self._right_stepper
+            picolog.debug(f"DiffDrive::__circle - Moving in a circle to the left, left motor is outer and right motor is inner")
+        else:
+            outer_stepper = self._right_stepper
+            inner_stepper = self._left_stepper
+            picolog.debug(f"DiffDrive::__circle - Moving in a circle to the right, right motor is outer and left motor is inner")
+
+        # Calculate the outer and inner wheel distances
+        outer_distance = abs(radius_mm) * (extent_radians * 2)
+        inner_distance = (abs(radius_mm) - (self._axel_distance_mm / 2)) * (extent_radians * 2)
+
+        # Set the target speed and acceleration of the outer wheel to the maximum allowed
+        self.__configure_rotational_velocity()
+        outer_stepper.set_target_speed_sps(self.__mm_to_steps(self._rotational_target_speed_mmps))
+        outer_stepper.set_acceleration_spsps(self.__mm_to_steps(self._rotational_acceleration_mmpss))
+
+        # Calculate the inner wheel speed and acceleration to match the movement time of the outer wheel
+        inner_speed = (inner_distance / outer_distance) * self._rotational_target_speed_mmps
+        inner_acceleration = (inner_distance / outer_distance) * self._rotational_acceleration_mmpss
+
+        # Set the target speed and acceleration of the inner wheel
+        inner_stepper.set_target_speed_sps(self.__mm_to_steps(inner_speed))
+        inner_stepper.set_acceleration_spsps(self.__mm_to_steps(inner_acceleration))
+
+        # If extent is positive, both wheels move forwards
+        if extent_radians > 0:
+            outer_stepper.set_direction_forwards()
+            inner_stepper.set_direction_forwards()
+        else:
+            outer_stepper.set_direction_backwards()
+            inner_stepper.set_direction_backwards()
+
+        # Ensure steps are positive
+        outer_distance = abs(outer_distance)
+        inner_distance = abs(inner_distance)
+
+        # Move the outer and inner wheels
+        outer_stepper.move(self.__mm_to_steps(outer_distance))
+        inner_stepper.move(self.__mm_to_steps(inner_distance))
+
     def set_heading(self, degrees: float):
         """Set the heading in degrees"""
         if degrees < 0 or degrees >= 360:
@@ -372,12 +340,9 @@ class DiffDrive:
         # Normalize angles to [-pi, pi]
         angle_diff = (target_angle - self._heading_radians + math.pi) % (2 * math.pi) - math.pi
 
-        # Debug output
-        picolog.debug(f"Target: ({x:.2f}, {y:.2f}), Current: ({self._x_pos:.2f}, {self._y_pos:.2f}), "
-                    f"Target Angle: {math.degrees(target_angle):.2f}°, "
-                    f"Angle Diff: {math.degrees(angle_diff):.2f}°, Distance: {distance:.2f} mm")
-
-        if abs(angle_diff) > math.pi / 2 and not turn_only: # Always forward is turn_only is True
+        # Determine the turning direction based on the angle difference
+        # Note: Always turn towards the position (facing forwards) if turn_only is True
+        if abs(angle_diff) > math.pi / 2 and not turn_only: 
             # Backward movement
             turn_angle = math.pi - abs(angle_diff)
             turn_angle *= -1 if angle_diff > 0 else 1

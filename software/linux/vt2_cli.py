@@ -164,41 +164,19 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
-    def do_arc_left(self, arg):
-        'Move the robot in an arc to the left: arc_left [radius] [degrees]'
+    def do_circle(self, arg):
+        'Move the robot in a circle: circle [radius] [extent in degrees]'
         if self._connected:
             try:
-                radius, degrees = map(int, arg.split())
-                if radius > 0 and degrees > 0:
-                    success, x, y, heading = self._commands_tx.arc_left(radius, degrees)
-                    if success:
-                        print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
-                    else:
-                        print("Failed to move in an arc to the left.")
+                radius, extent_degrees = map(int, arg.split())
+                success, x, y, heading = self._commands_tx.circle(radius, extent_degrees)
+                if success:
+                    print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
                 else:
-                    print("Invalid radius or degrees. Please enter positive integer values.")
+                    print("Failed to move in a circle.")
             except ValueError:
-                print("Invalid radius or degrees. Please enter two integer values.")
-            logging.info("CLI: Arc Left")
-        else:
-            print("Not connected to BLE device.")
-
-    def do_arc_right(self, arg):
-        'Move the robot in an arc to the right: arc_right [radius] [degrees]'
-        if self._connected:
-            try:
-                radius, degrees = map(int, arg.split())
-                if radius > 0 and degrees > 0:
-                    success, x, y, heading = self._commands_tx.arc_right(radius, degrees)
-                    if success:
-                        print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
-                    else:
-                        print("Failed to move in an arc to the right.")
-                else:
-                    print("Invalid radius or degrees. Please enter positive integer values.")
-            except ValueError:
-                print("Invalid radius or degrees. Please enter two integer values.")
-            logging.info("CLI: Arc Right")
+                print("Invalid radius or extent degrees. Please enter two integer values.")
+                logging.info("CLI: Circle")
         else:
             print("Not connected to BLE device.")
 

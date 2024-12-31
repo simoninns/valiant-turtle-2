@@ -56,14 +56,14 @@ class CommandsRx:
         return self._diff_drive.is_enabled
 
     async def motors(self, enable: bool):
-        picolog.info(f"Commands::motors - {'Enabling' if enable else 'Disabling'} motors")
+        picolog.info(f"CommandsRx::motors - {'Enabling' if enable else 'Disabling'} motors")
         if enable:
             self._diff_drive.set_enable(True)
         else:
             self._diff_drive.set_enable(False)
 
     async def forward(self, distance_mm: float) -> tuple[float, float, float]:
-        picolog.info(f"Commands::forward - Moving forward {distance_mm} mm")
+        picolog.info(f"CommandsRx::forward - Moving forward {distance_mm} mm")
         self._diff_drive.drive_forward(distance_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -74,7 +74,7 @@ class CommandsRx:
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
     async def backward(self, distance_mm: float) -> tuple[float, float, float]:
-        picolog.info(f"Commands::backward - Moving backward {distance_mm} mm")
+        picolog.info(f"CommandsRx::backward - Moving backward {distance_mm} mm")
         self._diff_drive.drive_backward(distance_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -85,7 +85,7 @@ class CommandsRx:
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
     async def left(self, angle_degrees: float) -> tuple[float, float, float]:
-        picolog.info(f"Commands::left - Turning left {angle_degrees} degrees")
+        picolog.info(f"CommandsRx::left - Turning left {angle_degrees} degrees")
         self._diff_drive.turn_left(angle_degrees)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -96,7 +96,7 @@ class CommandsRx:
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
     async def right(self, angle_degrees: float) -> tuple[float, float, float]:
-        picolog.info(f"Commands::right - Turning right {angle_degrees} degrees")
+        picolog.info(f"CommandsRx::right - Turning right {angle_degrees} degrees")
         self._diff_drive.turn_right(angle_degrees)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -106,20 +106,9 @@ class CommandsRx:
         heading = self._diff_drive.get_heading()
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
-    async def arc_left(self, radius_mm: float, angle_degrees: float) -> tuple[float, float, float]:
-        picolog.info(f"Commands::arc_left - Arcing left with radius {radius_mm} mm and angle {angle_degrees} degrees")
-        self._diff_drive.arc_left(radius_mm, angle_degrees)
-        while self._diff_drive.is_moving:
-            await asyncio.sleep(0.25)
-
-        # Return the new position and heading
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
-        heading = self._diff_drive.get_heading()
-        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
-
-    async def arc_right(self, radius_mm: float, angle_degrees: float) -> tuple[float, float, float]:
-        picolog.info(f"Commands::arc_right - Arcing right with radius {radius_mm} mm and angle {angle_degrees} degrees")
-        self._diff_drive.arc_right(radius_mm, angle_degrees)
+    async def circle(self, radius_mm: float, extent_degrees: float) -> tuple[float, float, float]:
+        picolog.info(f"CommandsRx::circle - Circle with radius {radius_mm} mm and extent of {extent_degrees} degrees")
+        self._diff_drive.circle(radius_mm, extent_degrees)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
@@ -129,13 +118,13 @@ class CommandsRx:
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
     async def heading(self, heading_degrees: float):
-        picolog.info(f"Commands::heading - Setting heading to {heading_degrees} degrees")
+        picolog.info(f"CommandsRx::heading - Setting heading to {heading_degrees} degrees")
         self._diff_drive.set_heading(heading_degrees)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
     async def position_x(self, x_mm: float) -> tuple[float, float, float]:
-        picolog.info(f"Commands::position_x - Setting X position to {x_mm} mm")
+        picolog.info(f"CommandsRx::position_x - Setting X position to {x_mm} mm")
         self._diff_drive.set_cartesian_x_position(x_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -146,7 +135,7 @@ class CommandsRx:
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
     async def position_y(self, y_mm: float) -> tuple[float, float, float]:
-        picolog.info(f"Commands::position_y - Setting Y position to {y_mm} mm")
+        picolog.info(f"CommandsRx::position_y - Setting Y position to {y_mm} mm")
         self._diff_drive.set_cartesian_y_position(y_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -157,7 +146,7 @@ class CommandsRx:
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
     async def position(self, x_mm: float, y_mm: float) -> tuple[float, float, float]:
-        picolog.info(f"Commands::position - Setting position to ({x_mm}, {y_mm}) mm")
+        picolog.info(f"CommandsRx::position - Setting position to ({x_mm}, {y_mm}) mm")
         self._diff_drive.set_cartesian_position(x_mm, y_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -168,7 +157,7 @@ class CommandsRx:
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
     async def towards(self, x_mm: float, y_mm: float) -> tuple[float, float, float]:
-        picolog.info(f"Commands::towards - Turning towards ({x_mm}, {y_mm}) mm")
+        picolog.info(f"CommandsRx::towards - Turning towards ({x_mm}, {y_mm}) mm")
         self._diff_drive.turn_towards_cartesian_point(x_mm, y_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -179,39 +168,39 @@ class CommandsRx:
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
     async def reset_origin(self):
-        picolog.info("Commands::reset_origin - Resetting origin")
+        picolog.info("CommandsRx::reset_origin - Resetting origin")
         self._diff_drive.reset_origin()
 
     async def get_heading(self) -> float:
-        picolog.info("Commands::get_heading - Getting heading")
+        picolog.info("CommandsRx::get_heading - Getting heading")
         return round(self._diff_drive.get_heading(), 2)
 
     async def get_position(self) -> tuple[float, float]:
-        picolog.info("Commands::get_position - Getting position")
+        picolog.info("CommandsRx::get_position - Getting position")
         x_pos, y_pos = self._diff_drive.get_cartesian_position()
         return round(x_pos, 2), round(y_pos, 2)
 
     async def pen(self, up: bool):
-        picolog.info(f"Commands::pen - {'Raising' if up else 'Lowering'} pen")
+        picolog.info(f"CommandsRx::pen - {'Raising' if up else 'Lowering'} pen")
         if up:
             self._pen.up()
         else:
             self._pen.down()
 
     async def get_pen(self) -> bool:
-        picolog.info("Commands::get_pen - Getting pen state")
+        picolog.info("CommandsRx::get_pen - Getting pen state")
         return self._pen.is_servo_up
 
     async def eyes(self, eye: int, red: int, green: int, blue: int):
         if eye == 0:
-            picolog.info(f"Commands::eyes - Setting both eyes to colour ({red}, {green}, {blue})")
+            picolog.info(f"CommandsRx::eyes - Setting both eyes to colour ({red}, {green}, {blue})")
             self._led_fx.set_led_colour(_LED_left_eye, red, green, blue)
             self._led_fx.set_led_colour(_LED_right_eye, red, green, blue)
         elif eye == 1:
-            picolog.info(f"Commands::eyes - Setting left eye colour to ({red}, {green}, {blue})")
+            picolog.info(f"CommandsRx::eyes - Setting left eye colour to ({red}, {green}, {blue})")
             self._led_fx.set_led_colour(_LED_left_eye, red, green, blue)
         else:
-            picolog.info(f"Commands::eyes - Setting right eye colour to ({red}, {green}, {blue})")
+            picolog.info(f"CommandsRx::eyes - Setting right eye colour to ({red}, {green}, {blue})")
             self._led_fx.set_led_colour(_LED_right_eye, red, green, blue)
 
     async def get_power(self) -> tuple[int, int, int]:
@@ -219,57 +208,57 @@ class CommandsRx:
         ma = int(self._ina260.current_mA)
         mw = int(self._ina260.power_mW)
 
-        picolog.info(f"Commands::get_power - Power readings: {mv} mV, {ma} mA, {mw} mW")
+        picolog.info(f"CommandsRx::get_power - Power readings: {mv} mV, {ma} mA, {mw} mW")
         return mv, ma, mw
     
     async def set_linear_velocity(self, target_speed: int, acceleration: int):
-        picolog.info(f"Commands::set_linear_velocity - Setting linear target speed to {target_speed} mm/s and acceleration to {acceleration} mm/s^2")
+        picolog.info(f"CommandsRx::set_linear_velocity - Setting linear target speed to {target_speed} mm/s and acceleration to {acceleration} mm/s^2")
         self._diff_drive.set_linear_velocity(target_speed, acceleration)
         self._configuration.linear_target_speed_mmps = target_speed
         self._configuration.linear_acceleration_mmpss = acceleration
 
     async def set_rotational_velocity(self, target_speed: int, acceleration: int):
-        picolog.info(f"Commands::set_rotational_velocity - Setting rotational target speed to {target_speed} mm/s and acceleration to {acceleration} mm/s^2")
+        picolog.info(f"CommandsRx::set_rotational_velocity - Setting rotational target speed to {target_speed} mm/s and acceleration to {acceleration} mm/s^2")
         self._diff_drive.set_rotational_velocity(target_speed, acceleration)
         self._configuration.rotational_target_speed_mmps = target_speed
         self._configuration.rotational_acceleration_mmpss = acceleration
 
     async def get_linear_velocity(self) -> tuple[int, int]:
-        picolog.info("Commands::get_linear_velocity - Getting linear velocity")
+        picolog.info("CommandsRx::get_linear_velocity - Getting linear velocity")
         return self._diff_drive.get_linear_velocity()
     
     async def get_rotational_velocity(self) -> tuple[int, int]:
-        picolog.info("Commands::get_rotational_velocity - Getting rotational velocity")
+        picolog.info("CommandsRx::get_rotational_velocity - Getting rotational velocity")
         return self._diff_drive.get_rotational_velocity()
         
     async def set_wheel_diameter_calibration(self, calibration_um: int):
-        picolog.info(f"Commands::set_wheel_diameter_calibration - Setting wheel diameter calibration to {calibration_um} um")
+        picolog.info(f"CommandsRx::set_wheel_diameter_calibration - Setting wheel diameter calibration to {calibration_um} um")
         self._diff_drive.set_wheel_calibration(calibration_um)
         self._configuration.wheel_calibration_um = calibration_um
 
     async def set_axel_distance_calibration(self, calibration_um: int):
-        picolog.info(f"Commands::set_axel_distance_calibration - Setting axel distance calibration to {calibration_um} um")
+        picolog.info(f"CommandsRx::set_axel_distance_calibration - Setting axel distance calibration to {calibration_um} um")
         self._diff_drive.set_axel_calibration(calibration_um)
         self._configuration.axel_calibration_um = calibration_um
 
     async def get_wheel_diameter_calibration(self) -> int:
-        picolog.info("Commands::get_wheel_diameter_calibration - Getting wheel diameter calibration")
+        picolog.info("CommandsRx::get_wheel_diameter_calibration - Getting wheel diameter calibration")
         return self._diff_drive.get_wheel_calibration()
     
     async def get_axel_distance_calibration(self) -> int:
-        picolog.info("Commands::get_axel_distance_calibration - Getting axel distance calibration")
+        picolog.info("CommandsRx::get_axel_distance_calibration - Getting axel distance calibration")
         return self._diff_drive.get_axel_calibration()
     
     async def set_turtle_id(self, turtle_id: int):
-        picolog.info(f"Commands::set_turtle_id - Setting turtle ID to {turtle_id}")
+        picolog.info(f"CommandsRx::set_turtle_id - Setting turtle ID to {turtle_id}")
         self._configuration.turtle_id = turtle_id
 
     async def get_turtle_id(self) -> int:
-        picolog.info("Commands::get_turtle_id - Getting turtle ID")
+        picolog.info("CommandsRx::get_turtle_id - Getting turtle ID")
         return self._configuration.turtle_id
 
     async def load_config(self):
-        picolog.info("Commands::load_config - Loading configuration")
+        picolog.info("CommandsRx::load_config - Loading configuration")
         self._configuration.unpack(self._eeprom.read(0, self._configuration.pack_size))
         self._diff_drive.set_linear_velocity(self._configuration.linear_target_speed_mmps, self._configuration.linear_acceleration_mmpss)
         self._diff_drive.set_rotational_velocity(self._configuration.rotational_target_speed_mmps, self._configuration.rotational_acceleration_mmpss)
@@ -277,11 +266,11 @@ class CommandsRx:
         self._diff_drive.set_axel_calibration(self._configuration.axel_calibration_um)
 
     async def save_config(self):
-        picolog.info("Commands::save_config - Saving configuration")
+        picolog.info("CommandsRx::save_config - Saving configuration")
         self._eeprom.write(0, self._configuration.pack())
 
     async def reset_config(self):
-        picolog.info("Commands::reset_config - Resetting configuration to default")
+        picolog.info("CommandsRx::reset_config - Resetting configuration to default")
         self._configuration.default()
         self._diff_drive.set_linear_velocity(self._configuration.linear_target_speed_mmps, self._configuration.linear_acceleration_mmpss)
         self._diff_drive.set_rotational_velocity(self._configuration.rotational_target_speed_mmps, self._configuration.rotational_acceleration_mmpss)
