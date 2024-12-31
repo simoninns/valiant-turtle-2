@@ -94,7 +94,11 @@ class ValiantTurtleCLI(cmd.Cmd):
             try:
                 distance = int(arg)
                 if distance > 0:
-                    self._commands_tx.forward(distance)
+                    success, x, y, heading = self._commands_tx.forward(distance)
+                    if success:
+                        print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                    else:
+                        print("Failed to move forward.")
                 else:
                     print("Invalid distance. Please enter a positive integer value.")
             except ValueError:
@@ -109,7 +113,11 @@ class ValiantTurtleCLI(cmd.Cmd):
             try:
                 distance = int(arg)
                 if distance > 0:
-                    self._commands_tx.backward(distance)
+                    success, x, y, heading = self._commands_tx.backward(distance)
+                    if success:
+                        print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                    else:
+                        print("Failed to move backward.")
                 else:
                     print("Invalid distance. Please enter a positive integer value.")
             except ValueError:
@@ -124,7 +132,11 @@ class ValiantTurtleCLI(cmd.Cmd):
             try:
                 degrees = int(arg)
                 if degrees > 0:
-                    self._commands_tx.left(degrees)
+                    success, x, y, heading = self._commands_tx.left(degrees)
+                    if success:
+                        print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                    else:
+                        print("Failed to turn left.")
                 else:
                     print("Invalid degrees. Please enter a positive integer value.")
             except ValueError:
@@ -139,7 +151,11 @@ class ValiantTurtleCLI(cmd.Cmd):
             try:
                 degrees = int(arg)
                 if degrees > 0:
-                    self._commands_tx.right(degrees)
+                    success, x, y, heading = self._commands_tx.right(degrees)
+                    if success:
+                        print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                    else:
+                        print("Failed to turn right.")
                 else:
                     print("Invalid degrees. Please enter a positive integer value.")
             except ValueError:
@@ -154,7 +170,11 @@ class ValiantTurtleCLI(cmd.Cmd):
             try:
                 radius, degrees = map(int, arg.split())
                 if radius > 0 and degrees > 0:
-                    self._commands_tx.arc_left(radius, degrees)
+                    success, x, y, heading = self._commands_tx.arc_left(radius, degrees)
+                    if success:
+                        print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                    else:
+                        print("Failed to move in an arc to the left.")
                 else:
                     print("Invalid radius or degrees. Please enter positive integer values.")
             except ValueError:
@@ -169,7 +189,11 @@ class ValiantTurtleCLI(cmd.Cmd):
             try:
                 radius, degrees = map(int, arg.split())
                 if radius > 0 and degrees > 0:
-                    self._commands_tx.arc_right(radius, degrees)
+                    success, x, y, heading = self._commands_tx.arc_right(radius, degrees)
+                    if success:
+                        print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                    else:
+                        print("Failed to move in an arc to the right.")
                 else:
                     print("Invalid radius or degrees. Please enter positive integer values.")
             except ValueError:
@@ -198,7 +222,11 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 x_mm = float(arg)
-                self._commands_tx.position_x(x_mm)
+                success, x, y, heading = self._commands_tx.position_x(x_mm)
+                if success:
+                    print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                else:
+                    print("Failed to set X position.")
             except ValueError:
                 print("Invalid position. Please enter a float value.")
             logging.info("CLI: Position X")
@@ -210,7 +238,11 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 y_mm = float(arg)
-                self._commands_tx.position_y(y_mm)
+                success, x, y, heading = self._commands_tx.position_y(y_mm)
+                if success:
+                    print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                else:
+                    print("Failed to set Y position.")
             except ValueError:
                 print("Invalid position. Please enter a float value.")
             logging.info("CLI: Position Y")
@@ -222,7 +254,11 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 x_mm, y_mm = map(float, arg.split())
-                self._commands_tx.position(x_mm, y_mm)
+                success, x, y, heading = self._commands_tx.position(x_mm, y_mm)
+                if success:
+                    print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                else:
+                    print("Failed to set position.")
             except ValueError:
                 print("Invalid positions. Please enter two float values.")
             logging.info("CLI: Position")
@@ -234,7 +270,11 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 x_mm, y_mm = map(float, arg.split())
-                self._commands_tx.towards(x_mm, y_mm)
+                success, x, y, heading = self._commands_tx.towards(x_mm, y_mm)
+                if success:
+                    print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
+                else:
+                    print("Failed to move towards position.")
             except ValueError:
                 print("Invalid positions. Please enter two float values.")
             logging.info("CLI: Towards")

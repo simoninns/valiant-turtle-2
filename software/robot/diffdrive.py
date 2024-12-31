@@ -82,8 +82,8 @@ class DiffDrive:
         self._x_pos = 0
         self._y_pos = 0
 
-        # Current heading in degrees (common to both polar and Cartesian coordinates)
-        self._heading = 0
+        # Current heading in radians (common to both polar and Cartesian coordinates)
+        self._heading_radians = 0
 
     def set_enable(self, enable: bool):
         """Enable or disable the motor driver"""
@@ -119,51 +119,63 @@ class DiffDrive:
         """Linear motion forwards"""
         self.__forward(distance_mm)
 
-        # Update the cartesian position
-        self._x_pos += distance_mm * math.cos(self._heading)
-        self._y_pos += distance_mm * math.sin(self._heading)
+        # Update the cartesian position, heading is self._heading_radians
+        self._x_pos += distance_mm * math.cos(self._heading_radians)
+        self._y_pos += distance_mm * math.sin(self._heading_radians)
+
+        # Round the Cartesian position to 2 decimal places
+        self._x_pos = round(self._x_pos, 2)
+        self._y_pos = round(self._y_pos, 2)
 
     def drive_backward(self, distance_mm: float):
         """Linear motion backwards"""
         self.__backward(distance_mm)
 
-        # Update the cartesian position
-        self._x_pos -= distance_mm * math.cos(self._heading)
-        self._y_pos -= distance_mm * math.sin(self._heading)
+        # Update the cartesian position, heading is self._heading_radians
+        self._x_pos -= distance_mm * math.cos(self._heading_radians)
+        self._y_pos -= distance_mm * math.sin(self._heading_radians)
+
+        # Round the Cartesian position to 2 decimal places
+        self._x_pos = round(self._x_pos, 2)
+        self._y_pos = round(self._y_pos, 2)
 
     def turn_left(self, degrees: float):
         """Rotational motion to the left"""
-        self.__left(degrees)
+        self.__left(math.radians(degrees))
         
         # Update the heading
-        self._heading = (self._heading - degrees) % 360
+        self._heading_radians += math.radians(degrees)
 
     def turn_right(self, degrees: float):
         """Rotational motion to the right"""
-        self.__right(degrees)
+        self.__right(math.radians(degrees))
 
         # Update the heading
-        self._heading = (self._heading + degrees) % 360
+        self._heading_radians -= math.radians(degrees)
 
     def arc_left(self, radius_mm: float, degrees: float):
         """Arc turn to the left"""
         self.__arc_left(radius_mm, degrees)
 
         # Update the cartesian position
-        angle_rad = math.radians(degrees)
-        self._x_pos += radius_mm * (math.sin(angle_rad) - math.sin(0))
-        self._y_pos += radius_mm * (math.cos(0) - math.cos(angle_rad))
-        self._heading = (self._heading - degrees) % 360
+        arc_length = radius_mm * math.radians(degrees)
+        self._x_pos += arc_length * math.cos(self._heading_radians + math.radians(degrees) / 2)
+        self._y_pos += arc_length * math.sin(self._heading_radians + math.radians(degrees) / 2)
+
+        # Update the heading
+        self._heading_radians += math.radians(degrees)
 
     def arc_right(self, radius_mm: float, degrees: float):
         """Arc turn to the right"""
         self.__arc_right(radius_mm, degrees)
 
         # Update the cartesian position
-        angle_rad = math.radians(degrees)
-        self._x_pos += radius_mm * (math.sin(0) - math.sin(angle_rad))
-        self._y_pos += radius_mm * (math.cos(angle_rad) - math.cos(0))
-        self._heading = (self._heading + degrees) % 360
+        arc_length = radius_mm * math.radians(degrees)
+        self._x_pos += arc_length * math.cos(self._heading_radians - math.radians(degrees) / 2)
+        self._y_pos += arc_length * math.sin(self._heading_radians - math.radians(degrees) / 2)
+
+        # Update the heading
+        self._heading_radians -= math.radians(degrees)
 
     def __forward(self, distance_mm: float):
         """Linear motion forwards"""
@@ -189,43 +201,43 @@ class DiffDrive:
         self._left_stepper.move(self.__mm_to_steps(distance_mm))
         self._right_stepper.move(self.__mm_to_steps(distance_mm))
 
-    def __left(self, degrees: float):
+    def __left(self, radians: float):
         """Rotational motion to the left"""
-        if degrees <= 0:
-            picolog.debug(f"DiffDrive::__left - Degrees must be greater than zero")
+        if radians <= 0:
+            picolog.debug(f"DiffDrive::__left - Radians must be greater than zero")
             return
         self.__configure_rotational_velocity()
         self._left_stepper.set_direction_left()
         self._right_stepper.set_direction_left()
-        picolog.debug(f"DiffDrive::__left - Turning left {degrees} degrees using {self.__degrees_to_steps(degrees)} steps")
-        self._left_stepper.move(self.__degrees_to_steps(degrees))
-        self._right_stepper.move(self.__degrees_to_steps(degrees))
+        picolog.debug(f"DiffDrive::__left - Turning left {math.degrees(radians)} radians using {self.__radians_to_steps(radians)} steps")
+        self._left_stepper.move(self.__radians_to_steps(radians))
+        self._right_stepper.move(self.__radians_to_steps(radians))
 
-    def __right(self, degrees: float):
+    def __right(self, radians: float):
         """Rotational motion to the right"""
-        if degrees <= 0:
-            picolog.debug(f"DiffDrive::__left - Degrees must be greater than zero")
+        if radians <= 0:
+            picolog.debug(f"DiffDrive::__right - Radians must be greater than zero")
             return
         self.__configure_rotational_velocity()
         self._left_stepper.set_direction_right()
         self._right_stepper.set_direction_right()
-        picolog.debug(f"DiffDrive::__right - Turning right {degrees} degrees using {self.__degrees_to_steps(degrees)} steps")
-        self._left_stepper.move(self.__degrees_to_steps(degrees))
-        self._right_stepper.move(self.__degrees_to_steps(degrees))
+        picolog.debug(f"DiffDrive::__right - Turning right {math.degrees(radians)} radians using {self.__radians_to_steps(radians)} steps")
+        self._left_stepper.move(self.__radians_to_steps(radians))
+        self._right_stepper.move(self.__radians_to_steps(radians))
 
-    def __arc_left(self, radius_mm: float, degrees: float):
+    def __arc_left(self, radius_mm: float, radians: float):
         """Arc turn to the left"""
         if radius_mm <= 0:
             picolog.debug(f"DiffDrive::__arc_left - Radius in mm must be greater than zero")
             return
-        if degrees <= 0:
-            picolog.debug(f"DiffDrive::__arc_left - Degrees must be greater than zero")
+        if radians <= 0:
+            picolog.debug(f"DiffDrive::__arc_left - Radians must be greater than zero")
             return
         self.__configure_rotational_velocity()
         
         # Calculate the distance each wheel needs to travel
-        left_wheel_distance = abs((radius_mm + (self._axel_distance_mm / 2)) * (degrees / 360.0) * 2 * self._pi)
-        right_wheel_distance = abs((radius_mm - (self._axel_distance_mm / 2)) * (degrees / 360.0) * 2 * self._pi)
+        left_wheel_distance = abs((radius_mm + (self._axel_distance_mm / 2)) * radians)
+        right_wheel_distance = abs((radius_mm - (self._axel_distance_mm / 2)) * radians)
 
         left_wheel_steps = self.__mm_to_steps(left_wheel_distance)
         right_wheel_steps = self.__mm_to_steps(right_wheel_distance)
@@ -243,11 +255,11 @@ class DiffDrive:
         self._right_stepper.set_acceleration_spsps(self.__mm_to_steps(right_wheel_acceleration))
 
         if radius_mm < (self._axel_distance_mm / 2):
-            picolog.debug(f"DiffDrive::__arc_left - Arcing left {degrees} degrees with left wheel {left_wheel_steps} steps (forwards) and right wheel {right_wheel_steps} steps (backwards)")
+            picolog.debug(f"DiffDrive::__arc_left - Arcing left {math.degrees(radians)} radians with left wheel {left_wheel_steps} steps (forwards) and right wheel {right_wheel_steps} steps (backwards)")
             self._left_stepper.set_direction_forwards()
             self._right_stepper.set_direction_backwards()
         else:
-            picolog.debug(f"DiffDrive::__arc_left - Arcing left {degrees} degrees with left wheel {left_wheel_steps} steps and right wheel {right_wheel_steps} steps")
+            picolog.debug(f"DiffDrive::__arc_left - Arcing left {math.degrees(radians)} radians with left wheel {left_wheel_steps} steps and right wheel {right_wheel_steps} steps")
             self._left_stepper.set_direction_forwards()
             self._right_stepper.set_direction_forwards()
 
@@ -255,19 +267,19 @@ class DiffDrive:
         self._left_stepper.move(left_wheel_steps)
         self._right_stepper.move(right_wheel_steps)
 
-    def __arc_right(self, radius_mm: float, degrees: float):
+    def __arc_right(self, radius_mm: float, radians: float):
         """Arc turn to the right"""
         if radius_mm <= 0:
             picolog.debug(f"DiffDrive::__arc_right - Radius in mm must be greater than zero")
             return
-        if degrees <= 0:
-            picolog.debug(f"DiffDrive::__arc_right - Degrees must be greater than zero")
+        if radians <= 0:
+            picolog.debug(f"DiffDrive::__arc_right - Radians must be greater than zero")
             return
         self.__configure_rotational_velocity()
 
         # Calculate the distance each wheel needs to travel
-        left_wheel_distance = abs((radius_mm - (self._axel_distance_mm / 2)) * (degrees / 360.0) * 2 * self._pi)
-        right_wheel_distance = abs((radius_mm + (self._axel_distance_mm / 2)) * (degrees / 360.0) * 2 * self._pi)
+        left_wheel_distance = abs((radius_mm - (self._axel_distance_mm / 2)) * radians)
+        right_wheel_distance = abs((radius_mm + (self._axel_distance_mm / 2)) * radians)
 
         left_wheel_steps = self.__mm_to_steps(left_wheel_distance)
         right_wheel_steps = self.__mm_to_steps(right_wheel_distance)
@@ -285,11 +297,11 @@ class DiffDrive:
         self._right_stepper.set_acceleration_spsps(self.__mm_to_steps(right_wheel_acceleration))
 
         if radius_mm < (self._axel_distance_mm / 2):
-            picolog.debug(f"DiffDrive::__arc_right - Arcing right {degrees} degrees with left wheel {left_wheel_steps} steps (backwards) and right wheel {right_wheel_steps} steps (forwards)")
+            picolog.debug(f"DiffDrive::__arc_right - Arcing right {math.degrees(radians)} radians with left wheel {left_wheel_steps} steps (backwards) and right wheel {right_wheel_steps} steps (forwards)")
             self._left_stepper.set_direction_backwards()
             self._right_stepper.set_direction_forwards()
         else:
-            picolog.debug(f"DiffDrive::__arc_right - Arcing right {degrees} degrees with left wheel {left_wheel_steps} steps and right wheel {right_wheel_steps} steps")
+            picolog.debug(f"DiffDrive::__arc_right - Arcing right {math.degrees(radians)} radians with left wheel {left_wheel_steps} steps and right wheel {right_wheel_steps} steps")
             self._left_stepper.set_direction_forwards()
             self._right_stepper.set_direction_forwards()
 
@@ -300,33 +312,38 @@ class DiffDrive:
     def set_heading(self, degrees: float):
         """Set the heading in degrees"""
         if degrees < 0 or degrees >= 360:
-            picolog.debug(f"DiffDrive::set_heading - Degrees must be between 0 and 360")
+            picolog.debug("DiffDrive::set_heading - Degrees must be between 0 and 360")
             return
 
-        if self._heading == degrees:
-            picolog.debug(f"DiffDrive::set_heading - Already at required heading")
+        current_heading_degrees = math.degrees(self._heading_radians)
+        if math.isclose(current_heading_degrees, degrees, abs_tol=1e-2):
+            picolog.debug(f"DiffDrive::set_heading - Already at required heading ({degrees}°)")
             return
-        
-        # Calculate the angle difference and the go the shortest way to the required heading
-        angle_difference = (degrees - self._heading) % 360
-        if angle_difference > 180:
-            picolog.debug(f"DiffDrive::set_heading - Setting heading to {degrees} degrees by turning left {360 - angle_difference} degrees")
-            if (360 - angle_difference) > 0: 
-                self.turn_left(360 - angle_difference)
-        else:
-            picolog.debug(f"DiffDrive::set_heading - Setting heading to {degrees} degrees by turning right {angle_difference} degrees")
-            if angle_difference > 0:
-                self.turn_right(angle_difference)
+
+        # Convert degrees to radians
+        target_radians = math.radians(degrees)
+
+        # Normalize the angle difference to the range [-π, π]
+        def normalize_angle(angle):
+            return (angle + math.pi) % (2 * math.pi) - math.pi
+
+        angle_difference = normalize_angle(target_radians - self._heading_radians)
+
+        # Determine turning direction
+        if angle_difference > 0:
+            picolog.debug(f"DiffDrive::set_heading - Turning left by {math.degrees(angle_difference):.2f}°")
+            self.turn_left(math.degrees(angle_difference))
+        elif angle_difference < 0:
+            picolog.debug(f"DiffDrive::set_heading - Turning right by {math.degrees(-angle_difference):.2f}°")
+            self.turn_right(math.degrees(-angle_difference))
+
+        # Update the heading to the target value
+        self._heading_radians = target_radians
 
     def get_heading(self) -> float:
         """Get the heading in degrees"""
-        return self._heading
-
-    def get_polar_position(self) -> tuple:
-        """Get the polar angular and radial position from the Cartesian position"""
-        r = math.sqrt(self._x_pos**2 + self._y_pos**2)
-        theta = math.atan2(self._y_pos, self._x_pos)
-        return r, theta
+        heading_degrees = round(math.degrees(self._heading_radians), 2) % 360
+        return heading_degrees
 
     def set_cartesian_x_position(self, x: float):
         """Move to the specified x-coordinate"""
@@ -341,56 +358,67 @@ class DiffDrive:
         self.set_cartesian_position(x, y, True)
 
     def set_cartesian_position(self, x: float, y: float, turn_only: bool = False):
-        """Move to the specified x and y coordinates in one motion"""
+        """Move to the specified x and y coordinates in one motion."""
         if x == self._x_pos and y == self._y_pos:
-            picolog.debug(f"DiffDrive::set_cartesian_position - Already at required position")
+            picolog.debug("Already at the required position.")
             return
-        
+
+        # Calculate the target angle and distance
         delta_x = x - self._x_pos
         delta_y = y - self._y_pos
-
+        target_angle = math.atan2(delta_y, delta_x)
         distance = math.sqrt(delta_x**2 + delta_y**2)
-        target_heading_forwards = math.degrees(math.atan2(delta_x, delta_y))
-        target_heading_forwards = target_heading_forwards % 360
-        target_heading_backwards = (target_heading_forwards + 180) % 360
 
-        picolog.debug(f"DiffDrive::set_cartesian_position - Target heading forwards: {target_heading_forwards} degrees, target heading backwards: {target_heading_backwards} degrees")
+        # Normalize angles to [-pi, pi]
+        angle_diff = (target_angle - self._heading_radians + math.pi) % (2 * math.pi) - math.pi
 
-        is_direction_forwards = True
-        if min(abs(self._heading - target_heading_forwards), 360 - abs(self._heading - target_heading_forwards)) <= min(abs(self._heading - target_heading_backwards), 360 - abs(self._heading - target_heading_backwards)):
-            picolog.debug(f"DiffDrive::set_cartesian_position - Turning towards target heading forwards")
-            self.set_heading(target_heading_forwards)
-        else:
-            picolog.debug(f"DiffDrive::set_cartesian_position - Turning towards target heading backwards")
-            self.set_heading(target_heading_backwards)
-            is_direction_forwards = False
-        
-        if not turn_only:
-            # Wait for the turn to complete
-            while self._left_stepper.is_busy:
-                pass
+        # Debug output
+        picolog.debug(f"Target: ({x:.2f}, {y:.2f}), Current: ({self._x_pos:.2f}, {self._y_pos:.2f}), "
+                    f"Target Angle: {math.degrees(target_angle):.2f}°, "
+                    f"Angle Diff: {math.degrees(angle_diff):.2f}°, Distance: {distance:.2f} mm")
 
-            if is_direction_forwards:
-                picolog.debug(f"DiffDrive::set_cartesian_position - Driving forward {distance} mm")
-                self.__forward(distance)
+        if abs(angle_diff) > math.pi / 2 and not turn_only: # Always forward is turn_only is True
+            # Backward movement
+            turn_angle = math.pi - abs(angle_diff)
+            turn_angle *= -1 if angle_diff > 0 else 1
+
+            if angle_diff > 0:
+                self.__right(abs(turn_angle))
             else:
-                picolog.debug(f"DiffDrive::set_cartesian_position - Driving backward {distance} mm")
-                self.__backward(distance)
+                self.__left(abs(turn_angle))
 
-            # Update the Cartesian position
-            self._x_pos = x
-            self._y_pos = y
+            self._heading_radians = (self._heading_radians + turn_angle) % (2 * math.pi)
+
+            while self._left_stepper.is_busy or self._right_stepper.is_busy:
+                picolog.debug("Waiting for turn to complete (backward).")
+
+            if not turn_only:
+                self.drive_backward(distance)
+        else:
+            # Forward movement
+            if angle_diff > 0:
+                self.__left(angle_diff)
+            else:
+                self.__right(-angle_diff)
+
+            self._heading_radians = (self._heading_radians + angle_diff) % (2 * math.pi)
+
+            while self._left_stepper.is_busy or self._right_stepper.is_busy:
+                picolog.debug("Waiting for turn to complete (forward).")
+
+            if not turn_only:
+                self.drive_forward(distance)
 
     def get_cartesian_position(self) -> tuple:
         """Get the Cartesian x and y position"""
-        return self._x_pos, self._y_pos
+        return round(self._x_pos, 2), round(self._y_pos, 2)
 
     def reset_origin(self):
         """Reset the Cartesian origin and heading to the current position"""
         picolog.debug(f"DiffDrive::reset_origin - Resetting origin and heading")
         self._x_pos = 0
         self._y_pos = 0
-        self._heading = 0
+        self._heading_radians = 0
 
     def __configure_linear_velocity(self):
         """Configure the steppers for the linear velocity"""
@@ -449,11 +477,11 @@ class DiffDrive:
         millimeters_per_step = (circumference / self._steps_per_revolution)
         return int(millimeters / millimeters_per_step)
     
-    # Convert degrees to steps
-    # Note: This is only for when the robot turns on it's axis
-    def __degrees_to_steps(self, degrees: float) -> int:
+    # Convert radians to steps
+    def __radians_to_steps(self, radians: float) -> int:
+        """Convert radians to steps"""
         circumference = self._pi * (self._axel_distance_mm + (self._axel_calibration_um / 1000))
-        millimeters = (circumference / 360.0) * degrees
+        millimeters = (circumference / (2 * self._pi)) * radians
         return self.__mm_to_steps(millimeters)
     
 if __name__ == "__main__":

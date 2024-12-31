@@ -62,41 +62,71 @@ class CommandsRx:
         else:
             self._diff_drive.set_enable(False)
 
-    async def forward(self, distance_mm: float):
+    async def forward(self, distance_mm: float) -> tuple[float, float, float]:
         picolog.info(f"Commands::forward - Moving forward {distance_mm} mm")
         self._diff_drive.drive_forward(distance_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
-    async def backward(self, distance_mm: float):
+        # Return the new position and heading
+        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        heading = self._diff_drive.get_heading()
+        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+
+    async def backward(self, distance_mm: float) -> tuple[float, float, float]:
         picolog.info(f"Commands::backward - Moving backward {distance_mm} mm")
         self._diff_drive.drive_backward(distance_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
+        
+        # Return the new position and heading
+        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        heading = self._diff_drive.get_heading()
+        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
-    async def left(self, angle_degrees: float):
+    async def left(self, angle_degrees: float) -> tuple[float, float, float]:
         picolog.info(f"Commands::left - Turning left {angle_degrees} degrees")
         self._diff_drive.turn_left(angle_degrees)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
-    async def right(self, angle_degrees: float):
+        # Return the new position and heading
+        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        heading = self._diff_drive.get_heading()
+        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+
+    async def right(self, angle_degrees: float) -> tuple[float, float, float]:
         picolog.info(f"Commands::right - Turning right {angle_degrees} degrees")
         self._diff_drive.turn_right(angle_degrees)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
-    async def arc_left(self, radius_mm: float, angle_degrees: float):
+        # Return the new position and heading
+        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        heading = self._diff_drive.get_heading()
+        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+
+    async def arc_left(self, radius_mm: float, angle_degrees: float) -> tuple[float, float, float]:
         picolog.info(f"Commands::arc_left - Arcing left with radius {radius_mm} mm and angle {angle_degrees} degrees")
         self._diff_drive.arc_left(radius_mm, angle_degrees)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
-    async def arc_right(self, radius_mm: float, angle_degrees: float):
+        # Return the new position and heading
+        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        heading = self._diff_drive.get_heading()
+        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+
+    async def arc_right(self, radius_mm: float, angle_degrees: float) -> tuple[float, float, float]:
         picolog.info(f"Commands::arc_right - Arcing right with radius {radius_mm} mm and angle {angle_degrees} degrees")
         self._diff_drive.arc_right(radius_mm, angle_degrees)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
+
+        # Return the new position and heading
+        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        heading = self._diff_drive.get_heading()
+        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
     async def heading(self, heading_degrees: float):
         picolog.info(f"Commands::heading - Setting heading to {heading_degrees} degrees")
@@ -104,29 +134,49 @@ class CommandsRx:
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
-    async def position_x(self, x_mm: float):
+    async def position_x(self, x_mm: float) -> tuple[float, float, float]:
         picolog.info(f"Commands::position_x - Setting X position to {x_mm} mm")
         self._diff_drive.set_cartesian_x_position(x_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
-    async def position_y(self, y_mm: float):
+        # Return the new position and heading
+        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        heading = self._diff_drive.get_heading()
+        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+
+    async def position_y(self, y_mm: float) -> tuple[float, float, float]:
         picolog.info(f"Commands::position_y - Setting Y position to {y_mm} mm")
         self._diff_drive.set_cartesian_y_position(y_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
-    async def position(self, x_mm: float, y_mm: float):
+        # Return the new position and heading
+        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        heading = self._diff_drive.get_heading()
+        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+
+    async def position(self, x_mm: float, y_mm: float) -> tuple[float, float, float]:
         picolog.info(f"Commands::position - Setting position to ({x_mm}, {y_mm}) mm")
         self._diff_drive.set_cartesian_position(x_mm, y_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
-    async def towards(self, x_mm: float, y_mm: float):
+        # Return the new position and heading
+        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        heading = self._diff_drive.get_heading()
+        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+
+    async def towards(self, x_mm: float, y_mm: float) -> tuple[float, float, float]:
         picolog.info(f"Commands::towards - Turning towards ({x_mm}, {y_mm}) mm")
         self._diff_drive.turn_towards_cartesian_point(x_mm, y_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
+
+        # Return the new position and heading
+        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        heading = self._diff_drive.get_heading()
+        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
     async def reset_origin(self):
         picolog.info("Commands::reset_origin - Resetting origin")
@@ -134,12 +184,12 @@ class CommandsRx:
 
     async def get_heading(self) -> float:
         picolog.info("Commands::get_heading - Getting heading")
-        return self._diff_drive.get_heading()
+        return round(self._diff_drive.get_heading(), 2)
 
     async def get_position(self) -> tuple[float, float]:
         picolog.info("Commands::get_position - Getting position")
         x_pos, y_pos = self._diff_drive.get_cartesian_position()
-        return x_pos, y_pos
+        return round(x_pos, 2), round(y_pos, 2)
 
     async def pen(self, up: bool):
         picolog.info(f"Commands::pen - {'Raising' if up else 'Lowering'} pen")

@@ -89,49 +89,49 @@ class Control:
                     # Command ID 2 = forward
                     # Expect a single float parameter (distance in mm)
                     command_seq, command_id, distance_mm = struct.unpack('<BBf', data[:6])
-                    await self._commands.forward(distance_mm)
+                    x_position, y_position, heading = await self._commands.forward(distance_mm)
 
-                    response = struct.pack('B', command_seq) + bytes(19)
+                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 3:
                     # Command ID 3 = backward
                     # Expect a single float parameter (distance in mm)
                     command_seq, command_id, distance_mm = struct.unpack('<BBf', data[:6])
-                    await self._commands.backward(distance_mm)
+                    x_position, y_position, heading = await self._commands.backward(distance_mm)
 
-                    response = struct.pack('<B', command_seq) + bytes(19)
+                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 4:
                     # Command ID 4 = left
                     # Expect a single float parameter (angle in degrees)
                     command_seq, command_id, angle_degrees = struct.unpack('<BBf', data[:6])
-                    await self._commands.left(angle_degrees)
+                    x_position, y_position, heading = await self._commands.left(angle_degrees)
 
-                    response = struct.pack('<B', command_seq) + bytes(19)
+                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 5:
                     # Command ID 5 = right
                     # Expect a single float parameter (angle in degrees)
                     command_seq, command_id, angle_degrees = struct.unpack('<BBf', data[:6])
-                    await self._commands.right(angle_degrees)
+                    x_position, y_position, heading = await self._commands.right(angle_degrees)
 
-                    response = struct.pack('<B', command_seq) + bytes(19)
+                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 6:
                     # Command ID 6 = arc-left
                     # Expect two float parameters (angle in degrees and radius in mm)
                     command_seq, command_id, angle_degrees, radius_mm = struct.unpack('<BBff', data[:10])
-                    await self._commands.arc_left(angle_degrees, radius_mm)
+                    x_position, y_position, heading = await self._commands.arc_left(angle_degrees, radius_mm)
 
-                    response = struct.pack('<B', command_seq) + bytes(19)
+                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 7:
                     # Command ID 7 = arc-right
                     # Expect two float parameters (angle in degrees and radius in mm)
                     command_seq, command_id, angle_degrees, radius_mm = struct.unpack('<BBff', data[:10])
-                    await self._commands.arc_right(angle_degrees, radius_mm)
+                    x_position, y_position, heading = await self._commands.arc_right(angle_degrees, radius_mm)
 
-                    response = struct.pack('<B', command_seq) + bytes(19)
+                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 8:
                     # Command ID 8 = heading
@@ -145,33 +145,33 @@ class Control:
                     # Command ID 9 = position_x
                     # Expect a single float parameter (x position in mm)
                     command_seq, command_id, x_mm = struct.unpack('<BBf', data[:6])
-                    await self._commands.position_x(x_mm)
+                    x_position, y_position, heading = await self._commands.position_x(x_mm)
 
-                    response = struct.pack('<B', command_seq) + bytes(19)
+                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 10:
                     # Command ID 10 = position_y
                     # Expect a single float parameter (y position in mm)
                     command_seq, command_id, y_mm = struct.unpack('<BBf', data[:6])
-                    await self._commands.position_y(y_mm)
+                    x_position, y_position, heading = await self._commands.position_y(y_mm)
 
-                    response = struct.pack('<B', command_seq) + bytes(19)
+                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 11:
                     # Command ID 11 = position
                     # Expect two float parameters (x and y position in mm)
                     command_seq, command_id, x_mm, y_mm = struct.unpack('<BBff', data[:10])
-                    await self._commands.position(x_mm, y_mm)
+                    x_position, y_position, heading = await self._commands.position(x_mm, y_mm)
 
-                    response = struct.pack('<B', command_seq) + bytes(19)
+                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 12:
                     # Command ID 12 = towards
                     # Expect two float parameters (x and y position in mm)
                     command_seq, command_id, x_mm, y_mm = struct.unpack('<BBff', data[:10])
-                    await self._commands.towards(x_mm, y_mm)
+                    x_position, y_position, heading = await self._commands.towards(x_mm, y_mm)
 
-                    response = struct.pack('<B', command_seq) + bytes(19)
+                    response = struct.pack('<Bfff', command_seq, x_position, y_position, heading) + bytes(7)
                     self._ble_peripheral.add_to_p2c_queue(response)
                 elif command_id == 13:
                     # Command ID 13 = reset-origin

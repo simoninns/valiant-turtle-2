@@ -115,32 +115,32 @@ class CommandsTx:
             raise RuntimeError("CommandsTx::motors - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._motors(enable), self._loop).result()
 
-    def forward(self, distance_mm: float) -> bool:
+    def forward(self, distance_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             raise RuntimeError("CommandsTx::forward - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._forward(distance_mm), self._loop).result()
 
-    def backward(self, distance_mm: float) -> bool:
+    def backward(self, distance_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             raise RuntimeError("CommandsTx::backward - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._backward(distance_mm), self._loop).result()
 
-    def left(self, angle_degrees: float) -> bool:
+    def left(self, angle_degrees: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             raise RuntimeError("CommandsTx::left - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._left(angle_degrees), self._loop).result()
 
-    def right(self, angle_degrees: float) -> bool:
+    def right(self, angle_degrees: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             raise RuntimeError("CommandsTx::right - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._right(angle_degrees), self._loop).result()
     
-    def arc_left(self, radius_mm: float, angle_degrees: float) -> bool:
+    def arc_left(self, radius_mm: float, angle_degrees: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             raise RuntimeError("CommandsTx::arc_left - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._arc_left(radius_mm, angle_degrees), self._loop).result()
     
-    def arc_right(self, radius_mm: float, angle_degrees: float) -> bool:
+    def arc_right(self, radius_mm: float, angle_degrees: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             raise RuntimeError("CommandsTx::arc_right - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._arc_right(radius_mm, angle_degrees), self._loop).result()
@@ -300,10 +300,10 @@ class CommandsTx:
         # This command does not return any data, so we don't need to return any
         return True
 
-    async def _forward(self, distance_mm: float) -> bool:
+    async def _forward(self, distance_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::forward - Not connected to a robot")
-            return False
+            return False, 0.0, 0.0, 0.0
         
         # Command to move the robot forward
         # Generate a sequence ID and queue the command
@@ -314,19 +314,28 @@ class CommandsTx:
 
         # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::forward - Command ID = 2, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
-            return False
+            return False, 0.0, 0.0, 0.0
 
-        # This command does not return any data, so we don't need to return any
-        return True
+        # Extract the position and heading from the response
+        try:
+            seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0, 0.0
+        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
+        heading = round(heading, 2)
+        return True, x, y, heading
     
-    async def _backward(self, distance_mm: float) -> bool:
+    async def _backward(self, distance_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::backward - Not connected to a robot")
-            return False
+            return False, 0.0, 0.0, 0.0
         
         # Command to move the robot backward
         # Generate a sequence ID and queue the command
@@ -337,19 +346,28 @@ class CommandsTx:
         
         # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::backward - Command ID = 3, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
-            return False
+            return False, 0.0, 0.0, 0.0
 
-        # This command does not return any data, so we don't need to return any
-        return True
+        # Extract the position and heading from the response
+        try:
+            seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0, 0.0
+        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
+        heading = round(heading, 2)
+        return True, x, y, heading
     
-    async def _left(self, angle_degrees: float) -> bool:
+    async def _left(self, angle_degrees: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::left - Not connected to a robot")
-            return False
+            return False, 0.0, 0.0, 0.0
         
         # Command to turn the robot left
         # Generate a sequence ID and queue the command
@@ -360,19 +378,28 @@ class CommandsTx:
         
         # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::left - Command ID = 4, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
-            return False
+            return False, 0.0, 0.0, 0.0
 
-        # This command does not return any data, so we don't need to return any
-        return True
+        # Extract the position and heading from the response
+        try:
+            seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0, 0.0
+        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
+        heading = round(heading, 2)
+        return True, x, y, heading
     
-    async def _right(self, angle_degrees: float) -> bool:
+    async def _right(self, angle_degrees: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::right - Not connected to a robot")
-            return False
+            return False, 0.0, 0.0, 0.0
         
         # Command to turn the robot right
         # Generate a sequence ID and queue the command
@@ -383,19 +410,28 @@ class CommandsTx:
         
         # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::right - Command ID = 5, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
-            return False
+            return False, 0.0, 0.0, 0.0
 
-        # This command does not return any data, so we don't need to return any
-        return True
+        # Extract the position and heading from the response
+        try:
+            seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0, 0.0
+        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
+        heading = round(heading, 2)
+        return True, x, y, heading
     
-    async def _arc_left(self, radius_mm: float, angle_degrees: float) -> bool:
+    async def _arc_left(self, radius_mm: float, angle_degrees: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::arc_left - Not connected to a robot")
-            return False
+            return False, 0.0, 0.0, 0.0
         
         # Command to turn the robot left on an arc
         # Generate a sequence ID and queue the command
@@ -406,19 +442,28 @@ class CommandsTx:
         
         # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::arc_left - Command ID = 6, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
-            return False
+            return False, 0.0, 0.0, 0.0
 
-        # This command does not return any data, so we don't need to return any
-        return True
+        # Extract the position and heading from the response
+        try:
+            seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0, 0.0
+        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
+        heading = round(heading, 2)
+        return True, x, y, heading
     
-    async def _arc_right(self, radius_mm: float, angle_degrees: float) -> bool:
+    async def _arc_right(self, radius_mm: float, angle_degrees: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::arc_right - Not connected to a robot")
-            return False
+            return False, 0.0, 0.0, 0.0
         
         # Command to turn the robot right on an arc
         # Generate a sequence ID and queue the command
@@ -429,14 +474,23 @@ class CommandsTx:
         
         # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::arc_right - Command ID = 7, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
-            return False
+            return False, 0.0, 0.0, 0.0
 
-        # This command does not return any data, so we don't need to return any
-        return True
+        # Extract the position and heading from the response
+        try:
+            seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0, 0.0
+        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
+        heading = round(heading, 2)
+        return True, x, y, heading
 
     async def _heading(self, angle_degrees: float) -> bool:
         if not self._ble_central.connected:
@@ -461,10 +515,10 @@ class CommandsTx:
         # This command does not return any data, so we don't need to return any
         return True
     
-    async def _position_x(self, x_mm: float) -> bool:
+    async def _position_x(self, x_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::position_x - Not connected to a robot")
-            return False
+            return False, 0.0, 0.0, 0.0
         
         # Command to set the robot X position
         # Generate a sequence ID and queue the command
@@ -475,19 +529,28 @@ class CommandsTx:
         
         # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::position_x - Command ID = 9, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
-            return False
+            return False, 0.0, 0.0, 0.0
 
-        # This command does not return any data, so we don't need to return any
-        return True
+        # Extract the position and heading from the response
+        try:
+            seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0, 0.0
+        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
+        heading = round(heading, 2)
+        return True, x, y, heading
     
-    async def _position_y(self, y_mm: float) -> bool:
+    async def _position_y(self, y_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::position_y - Not connected to a robot")
-            return False
+            return False, 0.0, 0.0, 0.0
         
         # Command to set the robot Y position
         # Generate a sequence ID and queue the command
@@ -498,19 +561,28 @@ class CommandsTx:
         
         # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::position_y - Command ID = 10, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
-            return False
+            return False, 0.0, 0.0, 0.0
 
-        # This command does not return any data, so we don't need to return any
-        return True
+        # Extract the position and heading from the response
+        try:
+            seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0, 0.0
+        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
+        heading = round(heading, 2)
+        return True, x, y, heading
     
-    async def _position(self, x_mm: float, y_mm: float) -> bool:
+    async def _position(self, x_mm: float, y_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::position - Not connected to a robot")
-            return False
+            return False, 0.0, 0.0, 0.0
         
         # Command to set the robot position
         # Generate a sequence ID and queue the command
@@ -521,19 +593,28 @@ class CommandsTx:
         
         # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::position - Command ID = 11, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
-            return False
+            return False, 0.0, 0.0, 0.0
 
-        # This command does not return any data, so we don't need to return any
-        return True
+        # Extract the position and heading from the response
+        try:
+            seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0, 0.0
+        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
+        heading = round(heading, 2)
+        return True, x, y, heading
     
-    async def _towards(self, x_mm: float, y_mm: float) -> bool:
+    async def _towards(self, x_mm: float, y_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::towards - Not connected to a robot")
-            return False
+            return False, 0.0, 0.0, 0.0
         
         # Command to move the robot towards a point
         # Generate a sequence ID and queue the command
@@ -544,14 +625,23 @@ class CommandsTx:
         
         # Wait for the command to be processed with a long timeout
         try:
-            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
+            response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
             logging.error(f"CommandsTx::towards - Command ID = 12, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
-            return False
+            return False, 0.0, 0.0, 0.0
 
-        # This command does not return any data, so we don't need to return any
-        return True
+        # Extract the position and heading from the response
+        try:
+            seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
+        except ValueError as e:
+            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            return False, 0.0, 0.0, 0.0
+        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
+        heading = round(heading, 2)
+        return True, x, y, heading
     
     async def _reset_origin(self) -> bool:
         if not self._ble_central.connected:
@@ -603,6 +693,7 @@ class CommandsTx:
             logging.error(f"CommandsTx::get_heading - Error unpacking response: {e}")
             return False, 0.0
         logging.info(f"CommandsTx::get_heading - Heading = {heading}")
+        heading = round(heading, 2)
         return True, heading
     
     async def _get_position(self) -> tuple[bool, float, float]:
@@ -632,6 +723,8 @@ class CommandsTx:
             logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
             return False, 0.0, 0.0
         logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        x = round(x, 2)
+        y = round(y, 2)
         return True, x, y
     
     async def _pen(self, pen_up: bool) -> bool:
