@@ -103,7 +103,7 @@ class ScreenTurtle(TurtleInterface):
 
     def heading(self) -> float:
         """Get the turtle's current heading."""
-        _, self._angle = self._commands_tx.heading()
+        self._angle = self._turtle.heading()
         return self._angle
 
     def position(self) -> tuple[float, float]:
@@ -122,6 +122,10 @@ class ScreenTurtle(TurtleInterface):
     def isdown(self) -> bool:
         """Check if the pen is down."""
         return self._turtle.isdown()
+    
+    def speed(self, speed: int):
+        """Set the turtle's speed."""
+        self._turtle.speed(speed)
     
     # Methods that are not implemented by the ScreenTurtle class
     

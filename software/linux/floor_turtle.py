@@ -79,6 +79,8 @@ class FloorTurtle(TurtleInterface):
         else:
             # This implementation attempts to match the behaviour of turtle.circle()
             # by using a series of straight lines to approximate the circle
+
+            print(f"circle(radius={radius}, extent={extent}, steps={steps})")
             
             # Calculate the angle to turn at each step
             step_angle = 360 / steps
@@ -244,3 +246,40 @@ class FloorTurtle(TurtleInterface):
         """Reset the turtle's configuration to default."""
         print("reset_config()")
         self._commands_tx.reset_config()
+
+    def speed(self, speed: int):
+        """Set the turtle's speed."""
+        print(f"speed(speed={speed})")
+
+        if isinstance(speed, int):
+            if speed < 0 or speed > 10:
+                raise ValueError("Speed must be an integer between 0 and 10")
+        elif isinstance(speed, str):
+            speed_aliases = {
+            "fastest": 0,
+            "fast": 10,
+            "normal": 6,
+            "slow": 3,
+            "slowest": 1
+            }
+            if speed not in speed_aliases:
+                raise ValueError("Invalid speed string. Use one of: 'fastest', 'fast', 'normal', 'slow', 'slowest'")
+            speed = speed_aliases[speed]
+        else:
+            raise TypeError("Speed must be an integer or a string")
+
+        if speed == 0:
+            speed = 10
+
+        if speed <= 3:
+            self._commands_tx.set_linear_velocity(100, 2)
+            self._commands_tx.set_rotational_velocity(50, 2)
+        elif speed <= 6:
+            self._commands_tx.set_linear_velocity(200, 4)
+            self._commands_tx.set_rotational_velocity(100, 4)
+        elif speed <= 8:
+            self._commands_tx.set_linear_velocity(400, 8)
+            self._commands_tx.set_rotational_velocity(200, 4)
+        else:
+            self._commands_tx.set_linear_velocity(600, 16)
+            self._commands_tx.set_rotational_velocity(300, 8)

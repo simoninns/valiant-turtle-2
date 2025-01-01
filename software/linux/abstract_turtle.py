@@ -249,3 +249,8 @@ class TurtleInterface(ABC):
     def reset_config(self) -> NoReturn:
         """Reset the turtle's configuration to default."""
         pass
+
+    @abstractmethod
+    def speed(self, speed) -> NoReturn:
+        """Set the turtle's speed."""
+        pass
