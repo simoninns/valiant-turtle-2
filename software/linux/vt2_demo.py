@@ -120,7 +120,10 @@ def draw_simple_cat(turtle):
 
 # Call this to use the real robot
 def main_physical():
-    logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s: %(message)s")
+     # Configure the logging module
+    log_format = "[%(asctime)s %(filename)s::%(funcName)s():%(lineno)s]%(levelname)s: %(message)s"
+    logging.basicConfig(level=logging.INFO, format=log_format, filename="vt2_demo.log")
+
     turtle = TurtleWrapper()
 
     try:
@@ -136,7 +139,9 @@ def main_physical():
 
 # Call this to use the screen turtle graphics class
 def main_screen():
-    logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s: %(message)s")
+    # Configure the logging module
+    log_format = "[%(asctime)s %(filename)s::%(funcName)s():%(lineno)s]%(levelname)s: %(message)s"
+    logging.basicConfig(level=logging.INFO, format=log_format, filename="vt2_demo.log")
 
     turtle.speed(1)
     draw_simple_cat(turtle)

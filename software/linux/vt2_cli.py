@@ -183,13 +183,13 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
-    def do_heading(self, arg):
-        'Set the heading of the robot: heading [degrees]'
+    def do_setheading(self, arg):
+        'Set the heading of the robot: setheading [degrees]'
         if self._connected:
             try:
                 angle_degrees = float(arg)
                 if 0 <= angle_degrees < 360:
-                    self._commands_tx.heading(angle_degrees)
+                    self._commands_tx.setheading(angle_degrees)
                 else:
                     print("Invalid angle. Angle should be 0 and above, and less than 360.")
             except ValueError:
@@ -198,12 +198,12 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
-    def do_position_x(self, arg):
-        'Set the X position of the robot: position_x [mm]'
+    def do_setx(self, arg):
+        'Set the X position of the robot: setx [mm]'
         if self._connected:
             try:
                 x_mm = float(arg)
-                success, x, y, heading = self._commands_tx.position_x(x_mm)
+                success, x, y, heading = self._commands_tx.setx(x_mm)
                 if success:
                     print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
                 else:
@@ -214,12 +214,12 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
-    def do_position_y(self, arg):
-        'Set the Y position of the robot: position_y [mm]'
+    def do_sety(self, arg):
+        'Set the Y position of the robot: sety [mm]'
         if self._connected:
             try:
                 y_mm = float(arg)
-                success, x, y, heading = self._commands_tx.position_y(y_mm)
+                success, x, y, heading = self._commands_tx.sety(y_mm)
                 if success:
                     print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
                 else:
@@ -230,12 +230,12 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
-    def do_position(self, arg):
-        'Set the X and Y position of the robot: position [x_mm] [y_mm]'
+    def do_setposition(self, arg):
+        'Set the X and Y position of the robot: setposition [x_mm] [y_mm]'
         if self._connected:
             try:
                 x_mm, y_mm = map(float, arg.split())
-                success, x, y, heading = self._commands_tx.position(x_mm, y_mm)
+                success, x, y, heading = self._commands_tx.setposition(x_mm, y_mm)
                 if success:
                     print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
                 else:
@@ -270,10 +270,10 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
-    def do_get_heading(self, arg):
-        'Get the current heading of the robot: get_heading'
+    def do_heading(self, arg):
+        'Get the current heading of the robot: heading'
         if self._connected:
-            success, heading = self._commands_tx.get_heading()
+            success, heading = self._commands_tx.heading()
             if success:
                 print(f"Current heading: {heading} degrees")
             else:
@@ -282,10 +282,10 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
-    def do_get_position(self, arg):
-        'Get the current position of the robot: get_position'
+    def do_position(self, arg):
+        'Get the current position of the robot: position'
         if self._connected:
-            success, x, y = self._commands_tx.get_position()
+            success, x, y = self._commands_tx.position()
             if success:
                 print(f"Current position: X={x} mm, Y={y} mm")
             else:
@@ -294,16 +294,19 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
-    def do_pen(self, arg):
-        'Control the pen: pen [up|down]'
+    def do_penup(self, arg):
+        'Move the pen up'
         if self._connected:
-            if arg == "up":
-                self._commands_tx.pen(True)
-            elif arg == "down":
-                self._commands_tx.pen(False)
-            else:
-                print("Invalid argument. Please enter 'up' or 'down'.")
-            logging.info("CLI: Pen")
+            self._commands_tx.penup()
+            logging.info("CLI: penup")
+        else:
+            print("Not connected to BLE device.")
+
+    def do_pendown(self, arg):
+        'Move the pen down]'
+        if self._connected:
+            self._commands_tx.pendown()
+            logging.info("CLI: pendown")
         else:
             print("Not connected to BLE device.")
 
@@ -322,10 +325,10 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
-    def do_get_power(self, arg):
-        'Get the power status: get_power'
+    def do_power(self, arg):
+        'Get the power status: power'
         if self._connected:
-            success, mv, ma, mw = self._commands_tx.get_power()
+            success, mv, ma, mw = self._commands_tx.power()
             if success:
                 print(f"Power status: {mv}mV, {ma}mA, {mw}mW")
             else:
@@ -334,12 +337,12 @@ class ValiantTurtleCLI(cmd.Cmd):
         else:
             print("Not connected to BLE device.")
 
-    def do_get_pen(self, arg):
-        'Get the pen status: get_pen'
+    def do_isdown(self, arg):
+        'Get the pen status: isdown'
         if self._connected:
-            success, pen_up = self._commands_tx.get_pen()
+            success, pen_down = self._commands_tx.isdown()
             if success:
-                print(f"Pen status: {'Up' if pen_up else 'Down'}")
+                print(f"Pen status: {'Down' if pen_down else 'Up'}")
             else:
                 print("Failed to get pen status.")
             logging.info("CLI: Get Pen")
@@ -499,16 +502,7 @@ def main():
     logging.basicConfig(level=logging.INFO, format=log_format, filename="vt2_cli.log")
 
     commands_tx = CommandsTx()
-
-    # # Wait for BLE connection
-    # commands_tx.connect()
-    # logging.info("Waiting for BLE connection...")
-    # while not commands_tx.connected:
-    #     time.sleep(1)
-    # logging.info("Connected to BLE")
-
     ValiantTurtleCLI(commands_tx).cmdloop()
-
     sys.exit(0)
 
 if __name__ == "__main__":

@@ -40,7 +40,6 @@ class TurtleWrapper:
         self._commands_tx.connect()
         while not self._commands_tx.connected:
             time.sleep(1)
-        self._commands_tx.reset_origin()
         self._commands_tx.eyes(0, 0, 0, 255)
 
     def disconnect(self):
@@ -50,15 +49,15 @@ class TurtleWrapper:
     def penup(self):
         self._pen_down = False
         self._commands_tx.eyes(0, 0, 255, 0)
-        self._commands_tx.pen(True)
+        self._commands_tx.penup()
 
     def pendown(self):
         self._pen_down = True
         self._commands_tx.eyes(0, 255, 0, 0)
-        self._commands_tx.pen(False)
+        self._commands_tx.pendown()
 
     def goto(self, x, y):
-        self._commands_tx.position(x, y)
+        self._commands_tx.setposition(x, y)
 
     def forward(self, distance):
         self._commands_tx.forward(distance)
@@ -68,7 +67,7 @@ class TurtleWrapper:
 
     def setheading(self, angle):
         self._angle = angle % 360
-        self._commands_tx.heading(self._angle)
+        self._commands_tx.setheading(self._angle)
 
     def right(self, angle):
         self._commands_tx.right(angle)
@@ -80,11 +79,11 @@ class TurtleWrapper:
         self._commands_tx.circle(radius, extent)
 
     def position(self):
-        _, self._x, self._y = self._commands_tx.get_position()
+        _, self._x, self._y = self._commands_tx.position()
         return self._x, self._y
 
     def heading(self):
-        _, self._angle = self._commands_tx.get_heading()
+        _, self._angle = self._commands_tx.heading()
         return self._angle
 
     def motors_on(self):

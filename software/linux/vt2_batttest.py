@@ -46,7 +46,7 @@ def battery_discharge_test(commands_tx: CommandsTx):
     commands_tx.motors(True)
 
     while True:
-        _, mv, ma, mw = commands_tx.get_power()
+        _, mv, ma, mw = commands_tx.power()
         current_time_str = time.strftime("%H%M%S", time.localtime()) + f"{int(time.time() * 1000) % 1000:03d}"
         print(f"{current_time_str}, {mv}, {ma}, {mw}, {distance}")
         csv_writer.writerow([current_time_str, mv, ma, mw, distance])

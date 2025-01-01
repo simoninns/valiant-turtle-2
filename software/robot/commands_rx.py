@@ -58,7 +58,9 @@ class CommandsRx:
     async def motors(self, enable: bool):
         picolog.info(f"CommandsRx::motors - {'Enabling' if enable else 'Disabling'} motors")
         if enable:
+            # Enable the motors and reset the origin to the current position
             self._diff_drive.set_enable(True)
+            self._diff_drive.reset_origin()
         else:
             self._diff_drive.set_enable(False)
 
@@ -117,14 +119,14 @@ class CommandsRx:
         heading = self._diff_drive.get_heading()
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
-    async def heading(self, heading_degrees: float):
-        picolog.info(f"CommandsRx::heading - Setting heading to {heading_degrees} degrees")
+    async def setheading(self, heading_degrees: float):
+        picolog.info(f"CommandsRx::setheading - Setting heading to {heading_degrees} degrees")
         self._diff_drive.set_heading(heading_degrees)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
-    async def position_x(self, x_mm: float) -> tuple[float, float, float]:
-        picolog.info(f"CommandsRx::position_x - Setting X position to {x_mm} mm")
+    async def setx(self, x_mm: float) -> tuple[float, float, float]:
+        picolog.info(f"CommandsRx::setx - Setting X position to {x_mm} mm")
         self._diff_drive.set_cartesian_x_position(x_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -134,8 +136,8 @@ class CommandsRx:
         heading = self._diff_drive.get_heading()
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
-    async def position_y(self, y_mm: float) -> tuple[float, float, float]:
-        picolog.info(f"CommandsRx::position_y - Setting Y position to {y_mm} mm")
+    async def sety(self, y_mm: float) -> tuple[float, float, float]:
+        picolog.info(f"CommandsRx::sety - Setting Y position to {y_mm} mm")
         self._diff_drive.set_cartesian_y_position(y_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -145,8 +147,8 @@ class CommandsRx:
         heading = self._diff_drive.get_heading()
         return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
 
-    async def position(self, x_mm: float, y_mm: float) -> tuple[float, float, float]:
-        picolog.info(f"CommandsRx::position - Setting position to ({x_mm}, {y_mm}) mm")
+    async def setposition(self, x_mm: float, y_mm: float) -> tuple[float, float, float]:
+        picolog.info(f"CommandsRx::setposition - Setting position to ({x_mm}, {y_mm}) mm")
         self._diff_drive.set_cartesian_position(x_mm, y_mm)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
@@ -170,26 +172,30 @@ class CommandsRx:
     async def reset_origin(self):
         picolog.info("CommandsRx::reset_origin - Resetting origin")
         self._diff_drive.reset_origin()
+        return
 
-    async def get_heading(self) -> float:
-        picolog.info("CommandsRx::get_heading - Getting heading")
+    async def heading(self) -> float:
+        picolog.info("CommandsRx::heading - Getting heading")
         return round(self._diff_drive.get_heading(), 2)
 
-    async def get_position(self) -> tuple[float, float]:
-        picolog.info("CommandsRx::get_position - Getting position")
+    async def position(self) -> tuple[float, float]:
+        picolog.info("CommandsRx::position - Getting position")
         x_pos, y_pos = self._diff_drive.get_cartesian_position()
         return round(x_pos, 2), round(y_pos, 2)
 
-    async def pen(self, up: bool):
-        picolog.info(f"CommandsRx::pen - {'Raising' if up else 'Lowering'} pen")
-        if up:
-            self._pen.up()
-        else:
-            self._pen.down()
+    async def penup(self):
+        picolog.info(f"CommandsRx::penup - Raising pen")
+        self._pen.up()
+        return
+    
+    async def pendown(self):
+        picolog.info(f"CommandsRx::pendown - Lowering pen")
+        self._pen.down()
+        return
 
-    async def get_pen(self) -> bool:
-        picolog.info("CommandsRx::get_pen - Getting pen state")
-        return self._pen.is_servo_up
+    async def isdown(self) -> bool:
+        picolog.info("CommandsRx::isdown - Getting pen state")
+        return not self._pen.is_servo_up
 
     async def eyes(self, eye: int, red: int, green: int, blue: int):
         if eye == 0:
@@ -203,12 +209,12 @@ class CommandsRx:
             picolog.info(f"CommandsRx::eyes - Setting right eye colour to ({red}, {green}, {blue})")
             self._led_fx.set_led_colour(_LED_right_eye, red, green, blue)
 
-    async def get_power(self) -> tuple[int, int, int]:
+    async def power(self) -> tuple[int, int, int]:
         mv = int(self._ina260.voltage_mV)
         ma = int(self._ina260.current_mA)
         mw = int(self._ina260.power_mW)
 
-        picolog.info(f"CommandsRx::get_power - Power readings: {mv} mV, {ma} mA, {mw} mW")
+        picolog.info(f"CommandsRx::power - Power readings: {mv} mV, {ma} mA, {mw} mW")
         return mv, ma, mw
     
     async def set_linear_velocity(self, target_speed: int, acceleration: int):

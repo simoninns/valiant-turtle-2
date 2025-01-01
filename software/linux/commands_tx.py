@@ -140,25 +140,25 @@ class CommandsTx:
             raise RuntimeError("CommandsTx::circle - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._circle(radius_mm, extent_degrees), self._loop).result()
 
-    def heading(self, angle_degrees: float) -> bool:
+    def setheading(self, angle_degrees: float) -> bool:
         if not self._ble_central.connected:
-            raise RuntimeError("CommandsTx::heading - The connect method must be called before sending commands")
-        return asyncio.run_coroutine_threadsafe(self._heading(angle_degrees), self._loop).result()
+            raise RuntimeError("CommandsTx::setheading - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._setheading(angle_degrees), self._loop).result()
 
-    def position_x(self, x_mm: float) -> bool:
+    def setx(self, x_mm: float) -> bool:
         if not self._ble_central.connected:
-            raise RuntimeError("CommandsTx::position_x - The connect method must be called before sending commands")
-        return asyncio.run_coroutine_threadsafe(self._position_x(x_mm), self._loop).result()
+            raise RuntimeError("CommandsTx::setx - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._setx(x_mm), self._loop).result()
 
-    def position_y(self, y_mm: float) -> bool:
+    def sety(self, y_mm: float) -> bool:
         if not self._ble_central.connected:
-            raise RuntimeError("CommandsTx::position_y - The connect method must be called before sending commands")
-        return asyncio.run_coroutine_threadsafe(self._position_y(y_mm), self._loop).result()
+            raise RuntimeError("CommandsTx::sety - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._sety(y_mm), self._loop).result()
 
-    def position(self, x_mm: float, y_mm: float) -> bool:
+    def setposition(self, x_mm: float, y_mm: float) -> bool:
         if not self._ble_central.connected:
-            raise RuntimeError("CommandsTx::position - The connect method must be called before sending commands")
-        return asyncio.run_coroutine_threadsafe(self._position(x_mm, y_mm), self._loop).result()
+            raise RuntimeError("CommandsTx::setposition - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._setposition(x_mm, y_mm), self._loop).result()
 
     def towards(self, x_mm: float, y_mm: float) -> bool:
         if not self._ble_central.connected:
@@ -170,35 +170,40 @@ class CommandsTx:
             raise RuntimeError("CommandsTx::reset_origin - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._reset_origin(), self._loop).result()
 
-    def get_heading(self) -> tuple[bool, float]:
+    def heading(self) -> tuple[bool, float]:
         if not self._ble_central.connected:
-            raise RuntimeError("CommandsTx::get_heading - The connect method must be called before sending commands")
-        return asyncio.run_coroutine_threadsafe(self._get_heading(), self._loop).result()
+            raise RuntimeError("CommandsTx::heading - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._heading(), self._loop).result()
 
-    def get_position(self) -> tuple[bool, float, float]:
+    def position(self) -> tuple[bool, float, float]:
         if not self._ble_central.connected:
-            raise RuntimeError("CommandsTx::get_position - The connect method must be called before sending commands")
-        return asyncio.run_coroutine_threadsafe(self._get_position(), self._loop).result()
+            raise RuntimeError("CommandsTx::position - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._position(), self._loop).result()
 
-    def pen(self, pen_up: bool) -> bool:
+    def penup(self) -> bool:
         if not self._ble_central.connected:
-            raise RuntimeError("CommandsTx::pen - The connect method must be called before sending commands")
-        return asyncio.run_coroutine_threadsafe(self._pen(pen_up), self._loop).result()
+            raise RuntimeError("CommandsTx::penup - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._penup(), self._loop).result()
+    
+    def pendown(self) -> bool:
+        if not self._ble_central.connected:
+            raise RuntimeError("CommandsTx::pendown - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._pendown(), self._loop).result()
 
     def eyes(self, eye_id, red, green, blue) -> bool:
         if not self._ble_central.connected:
             raise RuntimeError("CommandsTx::eyes - The connect method must be called before sending commands")
         return asyncio.run_coroutine_threadsafe(self._eyes(eye_id, red, green, blue), self._loop).result()
 
-    def get_power(self) -> tuple[bool, int, int, int]:
+    def power(self) -> tuple[bool, int, int, int]:
         if not self._ble_central.connected:
-            raise RuntimeError("CommandsTx::get_power - The connect method must be called before sending commands")
-        return asyncio.run_coroutine_threadsafe(self._get_power(), self._loop).result()
+            raise RuntimeError("CommandsTx::power - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._power(), self._loop).result()
 
-    def get_pen(self) -> tuple[bool, bool]:
+    def isdown(self) -> tuple[bool, bool]:
         if not self._ble_central.connected:
-            raise RuntimeError("CommandsTx::get_pen - The connect method must be called before sending commands")
-        return asyncio.run_coroutine_threadsafe(self._get_pen(), self._loop).result()
+            raise RuntimeError("CommandsTx::isdown - The connect method must be called before sending commands")
+        return asyncio.run_coroutine_threadsafe(self._isdown(), self._loop).result()
 
     def set_linear_velocity(self, target_speed: int, acceleration: int) -> bool:
         if not self._ble_central.connected:
@@ -271,6 +276,8 @@ class CommandsTx:
         if not self._ble_central.connected:
             logging.info("CommandsTx::motors - Not connected to a robot")
             return False
+        
+        command_id = 1
 
         # Command to enable or disable the motors
         if enable:
@@ -280,15 +287,15 @@ class CommandsTx:
 
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBB", seq_id, 1, parameter)
+        data = struct.pack("<BBB", seq_id, command_id, parameter)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::motors - Command ID = 1, Sequence ID = {seq_id}, enable = {enable}")
+        logging.info(f"CommandsTx::motors - Command ID = {command_id}, Sequence ID = {seq_id}, enable = {enable}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::motors - Command ID = 1, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::motors - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -300,18 +307,20 @@ class CommandsTx:
             logging.error("CommandsTx::_forward - Not connected to a robot")
             return False, 0.0, 0.0, 0.0
         
+        command_id = 2
+
         # Command to move the robot forward
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", seq_id, 2, distance_mm)
+        data = struct.pack("<BBf", seq_id, command_id, distance_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::_forward - Command ID = 2, Sequence ID = {seq_id}, distance = {distance_mm}")
+        logging.info(f"CommandsTx::_forward - Command ID = {command_id}, Sequence ID = {seq_id}, distance = {distance_mm}")
 
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::_forward - Command ID = 2, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_forward - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0, 0.0
 
@@ -321,10 +330,11 @@ class CommandsTx:
         except ValueError as e:
             logging.error(f"CommandsTx::_forward - Error unpacking response: {e}")
             return False, 0.0, 0.0, 0.0
-        logging.info(f"CommandsTx::_forward - X = {x}, Y = {y}")
+        
         x = round(x, 2)
         y = round(y, 2)
         heading = round(heading, 2)
+        logging.info(f"CommandsTx::_forward - X = {x}, Y = {y}, heading = {heading}")
         return True, x, y, heading
     
     async def _backward(self, distance_mm: float) -> tuple[bool, float, float, float]:
@@ -332,18 +342,20 @@ class CommandsTx:
             logging.error("CommandsTx::_backward - Not connected to a robot")
             return False, 0.0, 0.0, 0.0
         
+        command_id = 3
+
         # Command to move the robot backward
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", seq_id, 3, distance_mm)
+        data = struct.pack("<BBf", seq_id, command_id, distance_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::_backward - Command ID = 3, Sequence ID = {seq_id}, distance = {distance_mm}")
+        logging.info(f"CommandsTx::_backward - Command ID = {command_id}, Sequence ID = {seq_id}, distance = {distance_mm}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::_backward - Command ID = 3, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_backward - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0, 0.0
 
@@ -353,10 +365,11 @@ class CommandsTx:
         except ValueError as e:
             logging.error(f"CommandsTx::_backward - Error unpacking response: {e}")
             return False, 0.0, 0.0, 0.0
-        logging.info(f"CommandsTx::_backward - X = {x}, Y = {y}")
+        
         x = round(x, 2)
         y = round(y, 2)
         heading = round(heading, 2)
+        logging.info(f"CommandsTx::_backward - X = {x}, Y = {y}, heading = {heading}")
         return True, x, y, heading
     
     async def _left(self, angle_degrees: float) -> tuple[bool, float, float, float]:
@@ -364,18 +377,20 @@ class CommandsTx:
             logging.error("CommandsTx::_left - Not connected to a robot")
             return False, 0.0, 0.0, 0.0
         
+        command_id = 4
+
         # Command to turn the robot left
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", seq_id, 4, angle_degrees)
+        data = struct.pack("<BBf", seq_id, command_id, angle_degrees)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::_left - Command ID = 4, Sequence ID = {seq_id}, angle = {angle_degrees}")
+        logging.info(f"CommandsTx::_left - Command ID = {command_id}, Sequence ID = {seq_id}, angle = {angle_degrees}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::_left - Command ID = 4, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_left - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0, 0.0
 
@@ -385,10 +400,11 @@ class CommandsTx:
         except ValueError as e:
             logging.error(f"CommandsTx::_left - Error unpacking response: {e}")
             return False, 0.0, 0.0, 0.0
-        logging.info(f"CommandsTx::_left - X = {x}, Y = {y}")
+        
         x = round(x, 2)
         y = round(y, 2)
         heading = round(heading, 2)
+        logging.info(f"CommandsTx::_left - X = {x}, Y = {y}, heading = {heading}")
         return True, x, y, heading
     
     async def _right(self, angle_degrees: float) -> tuple[bool, float, float, float]:
@@ -396,18 +412,20 @@ class CommandsTx:
             logging.error("CommandsTx::_right - Not connected to a robot")
             return False, 0.0, 0.0, 0.0
         
+        command_id = 5
+
         # Command to turn the robot right
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", seq_id, 5, angle_degrees)
+        data = struct.pack("<BBf", seq_id, command_id, angle_degrees)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::_right - Command ID = 5, Sequence ID = {seq_id}, angle = {angle_degrees}")
+        logging.info(f"CommandsTx::_right - Command ID = {command_id}, Sequence ID = {seq_id}, angle = {angle_degrees}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::_right - Command ID = 5, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_right - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0, 0.0
 
@@ -417,10 +435,11 @@ class CommandsTx:
         except ValueError as e:
             logging.error(f"CommandsTx::_right - Error unpacking response: {e}")
             return False, 0.0, 0.0, 0.0
-        logging.info(f"CommandsTx::_right - X = {x}, Y = {y}")
+        
         x = round(x, 2)
         y = round(y, 2)
         heading = round(heading, 2)
+        logging.info(f"CommandsTx::_right - X = {x}, Y = {y}, heading = {heading}")
         return True, x, y, heading
     
     async def _circle(self, radius_mm: float, extent_degrees: float) -> tuple[bool, float, float, float]:
@@ -428,18 +447,20 @@ class CommandsTx:
             logging.error("CommandsTx::_circle - Not connected to a robot")
             return False, 0.0, 0.0, 0.0
         
+        command_id = 6
+
         # Command to turn the robot left on an arc
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBff", seq_id, 6, radius_mm, extent_degrees)
+        data = struct.pack("<BBff", seq_id, command_id, radius_mm, extent_degrees)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::_circle - Command ID = 6, Sequence ID = {seq_id}, radius = {radius_mm}, extent = {extent_degrees}")
+        logging.info(f"CommandsTx::_circle - Command ID = {command_id}, Sequence ID = {seq_id}, radius = {radius_mm}, extent = {extent_degrees}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::_circle - Command ID = 6, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_circle - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0, 0.0
 
@@ -449,52 +470,57 @@ class CommandsTx:
         except ValueError as e:
             logging.error(f"CommandsTx::_circle - Error unpacking response: {e}")
             return False, 0.0, 0.0, 0.0
-        logging.info(f"CommandsTx::_circle - X = {x}, Y = {y}")
+        
         x = round(x, 2)
         y = round(y, 2)
         heading = round(heading, 2)
+        logging.info(f"CommandsTx::_circle - X = {x}, Y = {y}, heading = {heading}")
         return True, x, y, heading
 
-    async def _heading(self, angle_degrees: float) -> bool:
+    async def _setheading(self, angle_degrees: float) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::heading - Not connected to a robot")
+            logging.error("CommandsTx::_setheading - Not connected to a robot")
             return False
         
+        command_id = 7
+
         # Command to set the robot heading
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", seq_id, 8, angle_degrees)
+        data = struct.pack("<BBf", seq_id, command_id, angle_degrees)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::heading - Command ID = 8, Sequence ID = {seq_id}, angle = {angle_degrees}")
+        logging.info(f"CommandsTx::_setheading - Command ID = {command_id}, Sequence ID = {seq_id}, angle = {angle_degrees}")
         
         # Wait for the command to be processed with a long timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::heading - Command ID = 8, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_setheading - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    async def _position_x(self, x_mm: float) -> tuple[bool, float, float, float]:
+    async def _setx(self, x_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::position_x - Not connected to a robot")
+            logging.error("CommandsTx::_setx - Not connected to a robot")
             return False, 0.0, 0.0, 0.0
         
+        command_id = 8
+
         # Command to set the robot X position
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", seq_id, 9, x_mm)
+        data = struct.pack("<BBf", seq_id, command_id, x_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::position_x - Command ID = 9, Sequence ID = {seq_id}, x = {x_mm}")
+        logging.info(f"CommandsTx::_setx - Command ID = {command_id}, Sequence ID = {seq_id}, x = {x_mm}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::position_x - Command ID = 9, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_setx - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0, 0.0
 
@@ -502,31 +528,34 @@ class CommandsTx:
         try:
             seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_setx - Error unpacking response: {e}")
             return False, 0.0, 0.0, 0.0
-        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        
         x = round(x, 2)
         y = round(y, 2)
         heading = round(heading, 2)
+        logging.info(f"CommandsTx::_setx - X = {x}, Y = {y}, heading = {heading}")
         return True, x, y, heading
     
-    async def _position_y(self, y_mm: float) -> tuple[bool, float, float, float]:
+    async def _sety(self, y_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::position_y - Not connected to a robot")
+            logging.error("CommandsTx::_sety - Not connected to a robot")
             return False, 0.0, 0.0, 0.0
         
+        command_id = 9
+
         # Command to set the robot Y position
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBf", seq_id, 10, y_mm)
+        data = struct.pack("<BBf", seq_id, command_id, y_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::position_y - Command ID = 10, Sequence ID = {seq_id}, y = {y_mm}")
+        logging.info(f"CommandsTx::_sety - Command ID = {command_id}, Sequence ID = {seq_id}, y = {y_mm}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::position_y - Command ID = 10, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_sety - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0, 0.0
 
@@ -534,31 +563,34 @@ class CommandsTx:
         try:
             seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_sety - Error unpacking response: {e}")
             return False, 0.0, 0.0, 0.0
-        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        
         x = round(x, 2)
         y = round(y, 2)
         heading = round(heading, 2)
+        logging.info(f"CommandsTx::_sety - X = {x}, Y = {y}, heading = {heading}")
         return True, x, y, heading
     
-    async def _position(self, x_mm: float, y_mm: float) -> tuple[bool, float, float, float]:
+    async def _setposition(self, x_mm: float, y_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::position - Not connected to a robot")
+            logging.error("CommandsTx::_setposition - Not connected to a robot")
             return False, 0.0, 0.0, 0.0
         
+        command_id = 10
+
         # Command to set the robot position
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBff", seq_id, 11, x_mm, y_mm)
+        data = struct.pack("<BBff", seq_id, command_id, x_mm, y_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::position - Command ID = 11, Sequence ID = {seq_id}, x = {x_mm}, y = {y_mm}")
+        logging.info(f"CommandsTx::_setposition - Command ID = {command_id}, Sequence ID = {seq_id}, x = {x_mm}, y = {y_mm}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::position - Command ID = 11, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_setposition - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0, 0.0
 
@@ -566,31 +598,34 @@ class CommandsTx:
         try:
             seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_setposition - Error unpacking response: {e}")
             return False, 0.0, 0.0, 0.0
-        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        
         x = round(x, 2)
         y = round(y, 2)
         heading = round(heading, 2)
+        logging.info(f"CommandsTx::_setposition - X = {x}, Y = {y}, heading = {heading}")
         return True, x, y, heading
     
     async def _towards(self, x_mm: float, y_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::towards - Not connected to a robot")
+            logging.error("CommandsTx::_towards - Not connected to a robot")
             return False, 0.0, 0.0, 0.0
         
+        command_id = 11
+
         # Command to move the robot towards a point
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBff", seq_id, 12, x_mm, y_mm)
+        data = struct.pack("<BBff", seq_id, command_id, x_mm, y_mm)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::towards - Command ID = 12, Sequence ID = {seq_id}, x = {x_mm}, y = {y_mm}")
+        logging.info(f"CommandsTx::_towards - Command ID = {command_id}, Sequence ID = {seq_id}, x = {x_mm}, y = {y_mm}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::towards - Command ID = 12, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_towards - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0, 0.0
 
@@ -598,54 +633,59 @@ class CommandsTx:
         try:
             seq_id, x, y, heading = struct.unpack("<Bfff", response[:13])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_towards - Error unpacking response: {e}")
             return False, 0.0, 0.0, 0.0
-        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        
         x = round(x, 2)
         y = round(y, 2)
         heading = round(heading, 2)
+        logging.info(f"CommandsTx::_towards - X = {x}, Y = {y}, heading = {heading}")
         return True, x, y, heading
     
     async def _reset_origin(self) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::reset_origin - Not connected to a robot")
+            logging.error("CommandsTx::_reset_origin - Not connected to a robot")
             return False
         
+        command_id = 12
+
         # Command to reset the x,y origin and heading
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 13)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::reset_origin - Command ID = 13, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_reset_origin - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::reset_origin - Command ID = 13, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_reset_origin - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    async def _get_heading(self) -> tuple[bool, float]:
+    async def _heading(self) -> tuple[bool, float]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::get_heading - Not connected to a robot")
+            logging.error("CommandsTx::_heading - Not connected to a robot")
             return False, 0.0
         
+        command_id = 13
+
         # Command to get the robot heading
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 14)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_heading - Command ID = 14, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_heading - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_heading - Command ID = 14, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_heading - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0
 
@@ -653,29 +693,32 @@ class CommandsTx:
         try:
             seq_id, heading = struct.unpack("<Bf", response[:5])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_heading - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_heading - Error unpacking response: {e}")
             return False, 0.0
-        logging.info(f"CommandsTx::get_heading - Heading = {heading}")
+        
         heading = round(heading, 2)
+        logging.info(f"CommandsTx::_heading - Heading = {heading}")
         return True, heading
     
-    async def _get_position(self) -> tuple[bool, float, float]:
+    async def _position(self) -> tuple[bool, float, float]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::get_position - Not connected to a robot")
+            logging.error("CommandsTx::_position - Not connected to a robot")
             return False, 0.0, 0.0
         
+        command_id = 14
+
         # Command to get the robot position
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 15)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_position - Command ID = 15, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_position - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a long timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._long_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_position - Command ID = 15, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_position - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0.0, 0.0
 
@@ -683,35 +726,58 @@ class CommandsTx:
         try:
             seq_id, x, y = struct.unpack("<Bff", response[:9])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_position - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_position - Error unpacking response: {e}")
             return False, 0.0, 0.0
-        logging.info(f"CommandsTx::get_position - X = {x}, Y = {y}")
+        
         x = round(x, 2)
         y = round(y, 2)
+        logging.info(f"CommandsTx::_position - X = {x}, Y = {y}")
         return True, x, y
     
-    async def _pen(self, pen_up: bool) -> bool:
+    async def _penup(self) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::pen - Not connected to a robot")
+            logging.error("CommandsTx::_penup - Not connected to a robot")
             return False
         
-        # Command to raise or lower the pen
-        if pen_up:
-            parameter = 1
-        else:
-            parameter = 0
+        command_id = 15
 
+        # Command to raise the pen
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBB", seq_id, 16, parameter)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::pen - Command ID = 16, Sequence ID = {seq_id}, pen_up = {pen_up}")
+        logging.info(f"CommandsTx::_penup - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::pen - Command ID = 16, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_penup - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
+            self._ble_central.disconnect()
+            return False
+
+        # This command does not return any data, so we don't need to return any
+        return True
+    
+    async def _pendown(self) -> bool:
+        if not self._ble_central.connected:
+            logging.error("CommandsTx::_pendown - Not connected to a robot")
+            return False
+        
+        command_id = 16
+
+        # Command to raise the pen
+        # Generate a sequence ID and queue the command
+        seq_id = self.__next_seq()
+        data = struct.pack("<BB", seq_id, command_id)
+        self._ble_central.add_to_c2p_queue(data)
+        logging.info(f"CommandsTx::_pendown - Command ID = {command_id}, Sequence ID = {seq_id}")
+        
+        # Wait for the command to be processed with a short timeout
+        try:
+            await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
+        except asyncio.TimeoutError:
+            logging.error(f"CommandsTx::_pendown - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -720,44 +786,48 @@ class CommandsTx:
     
     async def _eyes(self, eye_id, red, green, blue) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::eyes - Not connected to a robot")
+            logging.error("CommandsTx::_eyes - Not connected to a robot")
             return False
         
+        command_id = 17
+
         # Command to set the eye colour
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBBBBB", seq_id, 17, eye_id, red, green, blue)
+        data = struct.pack("<BBBBBB", seq_id, command_id, eye_id, red, green, blue)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::eyes - Command ID = 17, Sequence ID = {seq_id}, eye_id = {eye_id}, red = {red}, green = {green}, blue = {blue}")
+        logging.info(f"CommandsTx::_eyes - Command ID = {command_id}, Sequence ID = {seq_id}, eye_id = {eye_id}, red = {red}, green = {green}, blue = {blue}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::eyes - Command ID = 17, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_eyes - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
         # This command does not return any data, so we don't need to return any
         return True
     
-    async def _get_power(self) -> tuple[bool, int, int, int]:
+    async def _power(self) -> tuple[bool, int, int, int]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::get_power - Not connected to a robot")
+            logging.error("CommandsTx::_power - Not connected to a robot")
             return False, 0, 0, 0
         
+        command_id = 18
+
         # Command to get the robot power
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 18)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_power - Command ID = 18, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_power - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_power - Command ID = 18, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_power - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0, 0, 0
 
@@ -765,57 +835,61 @@ class CommandsTx:
         try:
             seq_id, mv, ma, mw = struct.unpack("<Blll", response[:13])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_power - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_power - Error unpacking response: {e}")
             return False, 0, 0, 0
-        logging.info(f"CommandsTx::get_power - mV = {mv}, mA = {ma}, mW = {mw}")
+        logging.info(f"CommandsTx::_power - mV = {mv}, mA = {ma}, mW = {mw}")
         return True, mv, ma, mw 
     
-    async def _get_pen(self) -> tuple[bool, bool]:
+    async def _isdown(self) -> tuple[bool, bool]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::get_pen - Not connected to a robot")
+            logging.error("CommandsTx::_isdown - Not connected to a robot")
             return False, False
         
-        # Command to get the pen status
+        command_id = 19
+
+        # Command to get the pen status (True = down, False = up)
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 19)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_pen - Command ID = 19, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_isdown - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_pen - Command ID = 19, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_isdown - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, False
 
         # Extract the pen status from the response
         try:
-            seq_id, pen_up = struct.unpack("<BB", response[:2])
+            seq_id, pen_down = struct.unpack("<BB", response[:2])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_pen - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_isdown - Error unpacking response: {e}")
             return False, False
-        logging.info(f"CommandsTx::get_pen - Pen up = {pen_up}")
-        return True, pen_up
+        logging.info(f"CommandsTx::_isdown - Pen down = {pen_down}")
+        return True, pen_down
     
     async def _set_linear_velocity(self, target_speed: int, acceleration: int) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::set_linear_velocity - Not connected to a robot")
+            logging.error("CommandsTx::_set_linear_velocity - Not connected to a robot")
             return False
         
+        command_id = 20
+
         # Command to set the linear velocity
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBll", seq_id, 20, target_speed, acceleration)
+        data = struct.pack("<BBll", seq_id, command_id, target_speed, acceleration)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::set_linear_velocity - Command ID = 20, Sequence ID = {seq_id}, target_speed = {target_speed}, acceleration = {acceleration}")
+        logging.info(f"CommandsTx::set_linear_velocity - Command ID = {command_id}, Sequence ID = {seq_id}, target_speed = {target_speed}, acceleration = {acceleration}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::set_linear_velocity - Command ID = 20, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::set_linear_velocity - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -824,21 +898,23 @@ class CommandsTx:
     
     async def _set_rotational_velocity(self, target_speed: int, acceleration: int) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::set_rotational_velocity - Not connected to a robot")
+            logging.error("CommandsTx::_set_rotational_velocity - Not connected to a robot")
             return False
         
+        command_id = 21
+
         # Command to set the rotational velocity
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BBll", seq_id, 21, target_speed, acceleration)
+        data = struct.pack("<BBll", seq_id, command_id, target_speed, acceleration)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::set_rotational_velocity - Command ID = 21, Sequence ID = {seq_id}, target_speed = {target_speed}, acceleration = {acceleration}")
+        logging.info(f"CommandsTx::_set_rotational_velocity - Command ID = {command_id}, Sequence ID = {seq_id}, target_speed = {target_speed}, acceleration = {acceleration}")
         
         # Wait for the command to be processed with a short timeout
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::set_rotational_velocity - Command ID = 21, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_set_rotational_velocity - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -847,21 +923,23 @@ class CommandsTx:
     
     async def _get_linear_velocity(self) -> tuple[bool, int, int]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::get_linear_velocity - Not connected to a robot")
+            logging.error("CommandsTx::_get_linear_velocity - Not connected to a robot")
             return False, 0, 0
         
+        command_id = 22
+
         # Command to get the linear velocity
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 22)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_linear_velocity - Command ID = 22, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_get_linear_velocity - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_linear_velocity - Command ID = 22, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_get_linear_velocity - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0, 0
 
@@ -869,28 +947,30 @@ class CommandsTx:
         try:
             seq_id, target_speed, acceleration = struct.unpack("<Bll", response[:9])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_linear_velocity - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_get_linear_velocity - Error unpacking response: {e}")
             return False, 0, 0
-        logging.info(f"CommandsTx::get_linear_velocity - Target speed = {target_speed}, Acceleration = {acceleration}")
+        logging.info(f"CommandsTx::_get_linear_velocity - Target speed = {target_speed}, Acceleration = {acceleration}")
         return True, target_speed, acceleration
     
     async def _get_rotational_velocity(self) -> tuple[bool, int, int]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::get_rotational_velocity - Not connected to a robot")
+            logging.error("CommandsTx::_get_rotational_velocity - Not connected to a robot")
             return False, 0, 0
         
+        command_id = 23
+
         # Command to get the rotational velocity
         # Generate a sequence ID and queue the command
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 23)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_rotational_velocity - Command ID = 23, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_get_rotational_velocity - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         # Wait for the command to be processed with a short timeout
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_rotational_velocity - Command ID = 23, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_get_rotational_velocity - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0, 0
 
@@ -898,26 +978,28 @@ class CommandsTx:
         try:
             seq_id, target_speed, acceleration = struct.unpack("<Bll", response[:9])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_rotational_velocity - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_get_rotational_velocity - Error unpacking response: {e}")
             return False, 0, 0
-        logging.info(f"CommandsTx::get_rotational_velocity - Target speed = {target_speed}, Acceleration = {acceleration}")
+        logging.info(f"CommandsTx::_get_rotational_velocity - Target speed = {target_speed}, Acceleration = {acceleration}")
         return True, target_speed, acceleration
 
     async def _set_wheel_diameter_calibration(self, wheel_diameter: int) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::set_wheel_diameter_calibration - Not connected to a robot")
+            logging.error("CommandsTx::_set_wheel_diameter_calibration - Not connected to a robot")
             return False
         
+        command_id = 24
+
         # Command to set the wheel diameter calibration
         seq_id = self.__next_seq()
-        data = struct.pack("<BBi", seq_id, 24, wheel_diameter)
+        data = struct.pack("<BBi", seq_id, command_id, wheel_diameter)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::set_wheel_diameter_calibration - Command ID = 24, Sequence ID = {seq_id}, wheel_diameter = {wheel_diameter}")
+        logging.info(f"CommandsTx::_set_wheel_diameter_calibration - Command ID = {command_id}, Sequence ID = {seq_id}, wheel_diameter = {wheel_diameter}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::set_wheel_diameter_calibration - Command ID = 24, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_set_wheel_diameter_calibration - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -925,19 +1007,21 @@ class CommandsTx:
 
     async def _set_axel_distance_calibration(self, axel_distance: int) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::set_axel_distance_calibration - Not connected to a robot")
+            logging.error("CommandsTx::_set_axel_distance_calibration - Not connected to a robot")
             return False
         
+        command_id = 25
+
         # Command to set the axel distance calibration
         seq_id = self.__next_seq()
-        data = struct.pack("<BBi", seq_id, 25, axel_distance)
+        data = struct.pack("<BBi", seq_id, command_id, axel_distance)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::set_axel_distance_calibration - Command ID = 25, Sequence ID = {seq_id}, axel_distance = {axel_distance}")
+        logging.info(f"CommandsTx::_set_axel_distance_calibration - Command ID = {command_id}, Sequence ID = {seq_id}, axel_distance = {axel_distance}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::set_axel_distance_calibration - Command ID = 25, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_set_axel_distance_calibration - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -945,71 +1029,77 @@ class CommandsTx:
 
     async def _get_wheel_diameter_calibration(self) -> tuple[bool, int]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::get_wheel_diameter_calibration - Not connected to a robot")
+            logging.error("CommandsTx::_get_wheel_diameter_calibration - Not connected to a robot")
             return False, 0
         
+        command_id = 26
+
         # Command to get the wheel diameter calibration
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 26)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_wheel_diameter_calibration - Command ID = 26, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_get_wheel_diameter_calibration - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_wheel_diameter_calibration - Command ID = 26, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_get_wheel_diameter_calibration - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0
 
         try:
             seq_id, cali_wheel = struct.unpack("<Bi", response[:5])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_wheel_diameter_calibration - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_get_wheel_diameter_calibration - Error unpacking response: {e}")
             return False, 0
-        logging.info(f"CommandsTx::get_wheel_diameter_calibration - Calibration wheel diameter = {cali_wheel}")
+        logging.info(f"CommandsTx::_get_wheel_diameter_calibration - Calibration wheel diameter = {cali_wheel}")
         return True, cali_wheel
 
     async def _get_axel_distance_calibration(self) -> tuple[bool, int]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::get_axel_distance_calibration - Not connected to a robot")
+            logging.error("CommandsTx::_get_axel_distance_calibration - Not connected to a robot")
             return False, 0
         
+        command_id = 27
+
         # Command to get the axel distance calibration
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 27)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_axel_distance_calibration - Command ID = 27, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_get_axel_distance_calibration - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_axel_distance_calibration - Command ID = 27, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_get_axel_distance_calibration - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0
 
         try:
             seq_id, cali_axel = struct.unpack("<Bi", response[:5])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_axel_distance_calibration - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_get_axel_distance_calibration - Error unpacking response: {e}")
             return False, 0
-        logging.info(f"CommandsTx::get_axel_distance_calibration - Calibration axel distance = {cali_axel}")
+        logging.info(f"CommandsTx::_get_axel_distance_calibration - Calibration axel distance = {cali_axel}")
         return True, cali_axel
 
     async def _set_turtle_id(self, turtle_id: int) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::set_turtle_id - Not connected to a robot")
+            logging.error("CommandsTx::_set_turtle_id - Not connected to a robot")
             return False
         
+        command_id = 28
+
         # Command to set the turtle ID
         seq_id = self.__next_seq()
-        data = struct.pack("<BBB", seq_id, 28, turtle_id)
+        data = struct.pack("<BBB", seq_id, command_id, turtle_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::set_turtle_id - Command ID = 28, Sequence ID = {seq_id}, turtle_id = {turtle_id}")
+        logging.info(f"CommandsTx::_set_turtle_id - Command ID = {command_id}, Sequence ID = {seq_id}, turtle_id = {turtle_id}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::set_turtle_id - Command ID = 28, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_set_turtle_id - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -1017,45 +1107,49 @@ class CommandsTx:
 
     async def _get_turtle_id(self) -> tuple[bool, int]:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::get_turtle_id - Not connected to a robot")
+            logging.error("CommandsTx::_get_turtle_id - Not connected to a robot")
             return False, 0
         
+        command_id = 29
+
         # Command to get the turtle ID
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 29)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::get_turtle_id - Command ID = 29, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_get_turtle_id - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         try:
             response = await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::get_turtle_id - Command ID = 29, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_get_turtle_id - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False, 0
 
         try:
             seq_id, turtle_id = struct.unpack("<BB", response[:2])
         except ValueError as e:
-            logging.error(f"CommandsTx::get_turtle_id - Error unpacking response: {e}")
+            logging.error(f"CommandsTx::_get_turtle_id - Error unpacking response: {e}")
             return False, 0
-        logging.info(f"CommandsTx::get_turtle_id - Turtle ID = {turtle_id}")
+        logging.info(f"CommandsTx::_get_turtle_id - Turtle ID = {turtle_id}")
         return True, turtle_id
 
     async def _load_config(self) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::load_config - Not connected to a robot")
+            logging.error("CommandsTx::_load_config - Not connected to a robot")
             return False
         
+        command_id = 30
+
         # Command to load the configuration
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 30)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::load_config - Command ID = 30, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_load_config - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::load_config - Command ID = 30, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_load_config - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -1063,19 +1157,21 @@ class CommandsTx:
 
     async def _save_config(self) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::save_config - Not connected to a robot")
+            logging.error("CommandsTx::_save_config - Not connected to a robot")
             return False
         
+        command_id = 31
+
         # Command to save the configuration
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 31)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::save_config - Command ID = 31, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_save_config - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::save_config - Command ID = 31, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_save_config - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
@@ -1083,24 +1179,22 @@ class CommandsTx:
 
     async def _reset_config(self) -> bool:
         if not self._ble_central.connected:
-            logging.error("CommandsTx::reset_config - Not connected to a robot")
+            logging.error("CommandsTx::_reset_config - Not connected to a robot")
             return False
         
+        command_id = 32
+
         # Command to reset the configuration
         seq_id = self.__next_seq()
-        data = struct.pack("<BB", seq_id, 32)
+        data = struct.pack("<BB", seq_id, command_id)
         self._ble_central.add_to_c2p_queue(data)
-        logging.info(f"CommandsTx::reset_config - Command ID = 32, Sequence ID = {seq_id}")
+        logging.info(f"CommandsTx::_reset_config - Command ID = {command_id}, Sequence ID = {seq_id}")
         
         try:
             await asyncio.wait_for(self.__wait_for_command_response(seq_id), timeout=self._short_timeout)
         except asyncio.TimeoutError:
-            logging.error(f"CommandsTx::reset_config - Command ID = 32, Sequence ID = {seq_id} timed out")
+            logging.error(f"CommandsTx::_reset_config - Command ID = {command_id}, Sequence ID = {seq_id} timed out")
             self._ble_central.disconnect()
             return False
 
         return True
-
-if __name__ == "__main__":
-    from main import main
-    main()

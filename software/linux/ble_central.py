@@ -175,7 +175,3 @@ class BleCentral:
 
         # Notify the main async task that data has been received
         self._p2c_notification_event.set()
-
-if __name__ == "__main__":
-    from vt2_cmdtest import main
-    main()

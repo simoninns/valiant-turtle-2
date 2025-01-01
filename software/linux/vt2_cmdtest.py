@@ -42,30 +42,32 @@ def command_test(commands_tx: CommandsTx):
     commands_tx.left(10)
     commands_tx.right(10)
 
-    commands_tx.circle(100, 90)
+    # Circle test (needs to invoke big and small circle methods)
+    commands_tx.circle(20, 90)
+    commands_tx.circle(200, 90)
 
-    commands_tx.heading(20)
-    commands_tx.position_x(100)
-    commands_tx.position_y(100)
-    commands_tx.position(50, 50)
+    commands_tx.setheading(20)
+    commands_tx.setx(100)
+    commands_tx.sety(100)
+    commands_tx.setposition(50, 50)
     commands_tx.towards(75, 75)
     
-    _, heading = commands_tx.get_heading()
+    _, heading = commands_tx.heading()
     print(f"Heading: {heading}")
-    _, x, y = commands_tx.get_position()
+    _, x, y = commands_tx.position()
     print(f"Position: {x}, {y}")
 
     commands_tx.reset_origin()
 
     # Pen servo test
-    commands_tx.pen(False)
+    commands_tx.pendown()
     time.sleep(1)
-    _, pen_up = commands_tx.get_pen()
-    print(f"Pen up: {'up' if pen_up else 'down'}")
-    commands_tx.pen(True)
+    _, pen_down = commands_tx.isdown()
+    print(f"isdown: {'down' if pen_down else 'up'}")
+    commands_tx.penup()
     time.sleep(1)
-    _, pen_up = commands_tx.get_pen()
-    print(f"Pen up: {'up' if pen_up else 'down'}")
+    _, pen_down = commands_tx.isdown()
+    print(f"isdown: {'down' if pen_down else 'up'}")
 
     # Eyes test
     commands_tx.eyes(0, 255, 0, 0)
@@ -78,7 +80,7 @@ def command_test(commands_tx: CommandsTx):
     time.sleep(1)
 
     # Power test
-    _, mv, ma, mw = commands_tx.get_power()
+    _, mv, ma, mw = commands_tx.power()
     print(f"Power: {mv}mV, {ma}mA, {mw}mW")
 
     # Velocity setting test
