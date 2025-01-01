@@ -200,7 +200,7 @@ class DiffDrive:
         self.__configure_rotational_velocity()
         self._left_stepper.set_direction_left()
         self._right_stepper.set_direction_left()
-        picolog.debug(f"DiffDrive::__left - Turning left {math.degrees(radians)} radians using {self.__radians_to_steps(radians)} steps")
+        picolog.debug(f"DiffDrive::__left - Turning left {radians} radians using {self.__radians_to_steps(radians)} steps")
         self._left_stepper.move(self.__radians_to_steps(radians))
         self._right_stepper.move(self.__radians_to_steps(radians))
 
@@ -212,7 +212,7 @@ class DiffDrive:
         self.__configure_rotational_velocity()
         self._left_stepper.set_direction_right()
         self._right_stepper.set_direction_right()
-        picolog.debug(f"DiffDrive::__right - Turning right {math.degrees(radians)} radians using {self.__radians_to_steps(radians)} steps")
+        picolog.debug(f"DiffDrive::__right - Turning right {radians} radians using {self.__radians_to_steps(radians)} steps")
         self._left_stepper.move(self.__radians_to_steps(radians))
         self._right_stepper.move(self.__radians_to_steps(radians))
 
@@ -346,9 +346,7 @@ class DiffDrive:
 
     def set_heading(self, degrees: float):
         """Set the heading in degrees"""
-        if degrees < 0 or degrees >= 360:
-            picolog.debug("DiffDrive::set_heading - Degrees must be between 0 and 360")
-            return
+        degrees = degrees % 360
 
         current_heading_degrees = math.degrees(self._heading_radians)
         if math.isclose(current_heading_degrees, degrees, abs_tol=1e-2):

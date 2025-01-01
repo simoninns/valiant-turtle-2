@@ -92,17 +92,17 @@ class ValiantTurtleCLI(cmd.Cmd):
         'Move the robot forward: forward [mm]'
         if self._connected:
             try:
-                distance = int(arg)
-                if distance > 0:
+                distance = float(arg)
+                if distance != 0:
                     success, x, y, heading = self._commands_tx.forward(distance)
                     if success:
                         print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
                     else:
                         print("Failed to move forward.")
                 else:
-                    print("Invalid distance. Please enter a positive integer value.")
+                    print("Invalid distance. Please enter a non-zero value.")
             except ValueError:
-                print("Invalid distance. Please enter an integer value.")
+                print("Invalid distance. Please enter a floating-point value.")
             logging.info("CLI: Forward")
         else:
             print("Not connected to BLE device.")
@@ -111,17 +111,17 @@ class ValiantTurtleCLI(cmd.Cmd):
         'Move the robot backward: backward [mm]'
         if self._connected:
             try:
-                distance = int(arg)
-                if distance > 0:
+                distance = float(arg)
+                if distance != 0:
                     success, x, y, heading = self._commands_tx.backward(distance)
                     if success:
                         print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
                     else:
                         print("Failed to move backward.")
                 else:
-                    print("Invalid distance. Please enter a positive integer value.")
+                    print("Invalid distance. Please enter a non-zero value.")
             except ValueError:
-                print("Invalid distance. Please enter an integer value.")
+                print("Invalid distance. Please enter a floating-point value.")
             logging.info("CLI: Backward")
         else:
             print("Not connected to BLE device.")
@@ -130,17 +130,17 @@ class ValiantTurtleCLI(cmd.Cmd):
         'Turn the robot left: left [degrees]'
         if self._connected:
             try:
-                degrees = int(arg)
-                if degrees > 0:
+                degrees = float(arg)
+                if degrees != 0:
                     success, x, y, heading = self._commands_tx.left(degrees)
                     if success:
                         print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
                     else:
                         print("Failed to turn left.")
                 else:
-                    print("Invalid degrees. Please enter a positive integer value.")
+                    print("Invalid degrees. Please enter a non-zero value.")
             except ValueError:
-                print("Invalid degrees. Please enter an integer value.")
+                print("Invalid degrees. Please enter a floating-point value.")
             logging.info("CLI: Left")
         else:
             print("Not connected to BLE device.")
@@ -150,14 +150,14 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 degrees = int(arg)
-                if degrees > 0:
+                if degrees != 0:
                     success, x, y, heading = self._commands_tx.right(degrees)
                     if success:
                         print(f"X={x} mm, Y={y} mm, Heading={heading} degrees")
                     else:
                         print("Failed to turn right.")
                 else:
-                    print("Invalid degrees. Please enter a positive integer value.")
+                    print("Invalid degrees. Please enter a non-zero integer value.")
             except ValueError:
                 print("Invalid degrees. Please enter an integer value.")
             logging.info("CLI: Right")
@@ -168,7 +168,7 @@ class ValiantTurtleCLI(cmd.Cmd):
         'Move the robot in a circle: circle [radius] [extent in degrees]'
         if self._connected:
             try:
-                radius, extent_degrees = map(int, arg.split())
+                radius, extent_degrees = map(float, arg.split())
                 if radius != 0 and extent_degrees != 0:
                     success, x, y, heading = self._commands_tx.circle(radius, extent_degrees)
                     if success:
@@ -178,7 +178,7 @@ class ValiantTurtleCLI(cmd.Cmd):
                 else:
                     print("Invalid radius or extent degrees. Both values must be non-zero.")
             except ValueError:
-                print("Invalid radius or extent degrees. Please enter two integer values.")
+                print("Invalid radius or extent degrees. Please enter two floating-point values.")
             logging.info("CLI: Circle")
         else:
             print("Not connected to BLE device.")
@@ -188,12 +188,9 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             try:
                 angle_degrees = float(arg)
-                if 0 <= angle_degrees < 360:
-                    self._commands_tx.setheading(angle_degrees)
-                else:
-                    print("Invalid angle. Angle should be 0 and above, and less than 360.")
+                self._commands_tx.setheading(angle_degrees)
             except ValueError:
-                print("Invalid angle. Please enter a float value.")
+                print("Invalid angle. Please enter a floating-point value.")
             logging.info("CLI: Heading")
         else:
             print("Not connected to BLE device.")
@@ -209,7 +206,7 @@ class ValiantTurtleCLI(cmd.Cmd):
                 else:
                     print("Failed to set X position.")
             except ValueError:
-                print("Invalid position. Please enter a float value.")
+                print("Invalid position. Please enter a floating-point value.")
             logging.info("CLI: Position X")
         else:
             print("Not connected to BLE device.")
@@ -225,7 +222,7 @@ class ValiantTurtleCLI(cmd.Cmd):
                 else:
                     print("Failed to set Y position.")
             except ValueError:
-                print("Invalid position. Please enter a float value.")
+                print("Invalid position. Please enter a floating-point value.")
             logging.info("CLI: Position Y")
         else:
             print("Not connected to BLE device.")
@@ -241,7 +238,7 @@ class ValiantTurtleCLI(cmd.Cmd):
                 else:
                     print("Failed to set position.")
             except ValueError:
-                print("Invalid positions. Please enter two float values.")
+                print("Invalid positions. Please enter two floating-point values.")
             logging.info("CLI: Position")
         else:
             print("Not connected to BLE device.")
@@ -311,16 +308,21 @@ class ValiantTurtleCLI(cmd.Cmd):
             print("Not connected to BLE device.")
 
     def do_eyes(self, arg):
-        'Set the color of the eyes: eyes [eye_id] [red] [green] [blue]'
+        'Set the color of the eyes: eyes [both|left|right] [red] [green] [blue]'
         if self._connected:
             try:
-                eye_id, red, green, blue = map(int, arg.split())
+                eye_str, red, green, blue = arg.split()
+                eye_id = {"both": 0, "left": 1, "right": 2}.get(eye_str.lower())
+                if eye_id is None:
+                    print("Invalid eye identifier. Please enter 'both', 'left', or 'right'.")
+                    return
+                red, green, blue = int(red), int(green), int(blue)
                 if not (0 <= red <= 255 and 0 <= green <= 255 and 0 <= blue <= 255):
                     print("Invalid color values. Please enter values between 0 and 255 for red, green, and blue.")
                     return
                 self._commands_tx.eyes(eye_id, red, green, blue)
             except ValueError:
-                print("Invalid arguments. Please enter four integer values.")
+                print("Invalid arguments. Please enter an eye identifier and three integer values.")
             logging.info("CLI: Eyes")
         else:
             print("Not connected to BLE device.")
@@ -330,7 +332,8 @@ class ValiantTurtleCLI(cmd.Cmd):
         if self._connected:
             success, mv, ma, mw = self._commands_tx.power()
             if success:
-                print(f"Power status: {mv}mV, {ma}mA, {mw}mW")
+                battery_percentage = round(min(max((mv - 12000) / 4000 * 100, 0), 100))
+                print(f"Power status: {mv}mV, {ma}mA, {mw}mW - Battery: {battery_percentage}%")
             else:
                 print("Failed to get power status.")
             logging.info("CLI: Get Power")
