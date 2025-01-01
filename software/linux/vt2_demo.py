@@ -25,130 +25,138 @@
 #
 #************************************************************************
 
-import math
 import logging
-import time
-import sys
-from turtle_wrapper import TurtleWrapper
-import turtle
+import argparse
+from abstract_turtle import TurtleInterface
+from floor_turtle import FloorTurtle
+from screen_turtle import ScreenTurtle
+from commands_tx import CommandsTx
 
-def draw_simple_cat(turtle):
+def draw_simple_cat(t: TurtleInterface):
+    # Connect
+    t.connect()
+    t.motors(True)
+    
     # Draw the head (circle)
-    turtle.penup()
-    turtle.goto(0, 50)
-    turtle.pendown()
-    turtle.circle(50, 360)
+    t.penup()
+    t.goto(0, 50)
+    t.pendown()
+    t.circle(50, 360)
 
     # Draw the left ear (triangle pointing upwards)
-    turtle.penup()
-    turtle.goto(-40, 150 + 30)
-    turtle.pendown()
-    turtle.goto(-50, 100 + 30)
-    turtle.goto(-10, 100 + 30)
-    turtle.goto(-40, 150 + 30)
+    t.penup()
+    t.goto(-40, 150 + 30)
+    t.pendown()
+    t.goto(-50, 100 + 30)
+    t.goto(-10, 100 + 30)
+    t.goto(-40, 150 + 30)
 
     # Draw the right ear (triangle pointing upwards)
-    turtle.penup()
-    turtle.goto(40, 150 + 30)
-    turtle.pendown()
-    turtle.goto(50, 100 + 30)
-    turtle.goto(10, 100 + 30)
-    turtle.goto(40, 150 + 30)
+    t.penup()
+    t.goto(40, 150 + 30)
+    t.pendown()
+    t.goto(50, 100 + 30)
+    t.goto(10, 100 + 30)
+    t.goto(40, 150 + 30)
 
     # Draw the eyes (small circles)
-    turtle.penup()
-    turtle.goto(-20, 100)
-    turtle.pendown()
-    turtle.circle(10, 360)
-    turtle.penup()
-    turtle.goto(20, 100)
-    turtle.pendown()
-    turtle.circle(10, 360)
+    t.penup()
+    t.goto(-20, 100)
+    t.pendown()
+    t.circle(10, 360)
+    t.penup()
+    t.goto(20, 100)
+    t.pendown()
+    t.circle(10, 360)
 
     # Draw the nose (triangle)
-    turtle.penup()
-    turtle.goto(0, 90)
-    turtle.pendown()
-    turtle.goto(-10, 80)
-    turtle.goto(10, 80)
-    turtle.goto(0, 90)
+    t.penup()
+    t.goto(0, 90)
+    t.pendown()
+    t.goto(-10, 80)
+    t.goto(10, 80)
+    t.goto(0, 90)
 
     # Draw the mouth (lines)
-    turtle.penup()
-    turtle.goto(0, 80)
-    turtle.setheading(315)
-    turtle.pendown()
-    turtle.forward(15)
-    turtle.penup()
-    turtle.goto(0, 80)
-    turtle.setheading(225)
-    turtle.pendown()
-    turtle.forward(15)
+    t.penup()
+    t.goto(0, 80)
+    t.setheading(315)
+    t.pendown()
+    t.forward(15)
+    t.penup()
+    t.goto(0, 80)
+    t.setheading(225)
+    t.pendown()
+    t.forward(15)
 
     # Draw the whiskers (lines)
     for angle in [200, 180, 160]:
-        turtle.penup()
-        turtle.goto(-10, 85)
-        turtle.setheading(angle)
-        turtle.pendown()
-        turtle.forward(60)
+        t.penup()
+        t.goto(-10, 85)
+        t.setheading(angle)
+        t.pendown()
+        t.forward(60)
 
     for angle in [340, 0, 20]:
-        turtle.penup()
-        turtle.goto(10, 85)
-        turtle.setheading(angle)
-        turtle.pendown()
-        turtle.forward(60)
+        t.penup()
+        t.goto(10, 85)
+        t.setheading(angle)
+        t.pendown()
+        t.forward(60)
 
     # Draw the body (ellipse-like shape)
-    turtle.penup()
-    turtle.goto(0, 0)
-    turtle.pendown()
-    turtle.setheading(270)
+    t.penup()
+    t.goto(0, 0)
+    t.pendown()
+    t.setheading(270)
     for _ in range(2):
-        turtle.circle(50, 90)
-        turtle.circle(100, 90)
+        t.circle(50, 90)
+        t.circle(100, 90)
 
     # Draw the tail (curved line)
-    turtle.penup()
-    turtle.goto(50, -50)
-    turtle.setheading(120)
-    turtle.pendown()
-    turtle.circle(40, 200)
+    t.penup()
+    t.goto(50, -50)
+    t.setheading(120)
+    t.pendown()
+    t.circle(40, 200)
 
-    turtle.penup()
+    t.penup()
 
-# Call this to use the real robot
-def main_physical():
+    # Clean up
+    t.motors(False)
+    t.disconnect()
+
+def main():
      # Configure the logging module
     log_format = "[%(asctime)s %(filename)s::%(funcName)s():%(lineno)s]%(levelname)s: %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_format, filename="vt2_demo.log")
 
-    turtle = TurtleWrapper()
+    # Set up argparse
+    parser = argparse.ArgumentParser(description="Choose turtle mode: screen or floor.")
+    parser.add_argument(
+        "-m", "--mode",
+        choices=["screen", "floor"],
+        default="screen",
+        help="Choose between 'screen' for the on-screen turtle or 'floor' for the physical robot. Default is 'screen'."
+    )
+    args = parser.parse_args()
+    mode = args.mode
 
-    try:
-        turtle.connect()
-        logging.info("Connected to BLE")
-        turtle.motors_on()
-        draw_simple_cat(turtle)
-        turtle.motors_off()
-        logging.info("Drawing completed")
-    finally:
-        turtle.disconnect()
-        logging.info("Disconnected from BLE")
+    if mode == "screen":
+        turtle_object = ScreenTurtle()
+    elif mode == "floor":
+        commands_tx = CommandsTx()
+        turtle_object = FloorTurtle(commands_tx)
+    else:
+        print("Unsupported mode. Please choose 'screen' or 'floor'.")
+        return
 
-# Call this to use the screen turtle graphics class
-def main_screen():
-    # Configure the logging module
-    log_format = "[%(asctime)s %(filename)s::%(funcName)s():%(lineno)s]%(levelname)s: %(message)s"
-    logging.basicConfig(level=logging.INFO, format=log_format, filename="vt2_demo.log")
+    # Draw the cat
+    draw_simple_cat(turtle_object)
 
-    turtle.speed(1)
-    draw_simple_cat(turtle)
-    logging.info("Drawing completed")
-    turtle.goto(0,0)
-    turtle.setheading(0)
-    turtle.done()
+    # If we are in screen mode, run the main loop to keep the window open
+    if mode == "screen":
+        turtle_object.screen.mainloop()
 
-#main_screen()
-main_physical()
+if __name__ == "__main__":
+    main()

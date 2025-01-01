@@ -158,7 +158,7 @@ class CommandsTx:
     def setposition(self, x_mm: float, y_mm: float) -> bool:
         if not self._ble_central.connected:
             raise RuntimeError("CommandsTx::setposition - The connect method must be called before sending commands")
-        return asyncio.run_coroutine_threadsafe(self._setposition(x_mm, y_mm), self._loop).result()
+        return asyncio.run_coroutine_threadsafe(self._goto(x_mm, y_mm), self._loop).result()
 
     def towards(self, x_mm: float, y_mm: float) -> bool:
         if not self._ble_central.connected:
@@ -572,7 +572,7 @@ class CommandsTx:
         logging.info(f"CommandsTx::_sety - X = {x}, Y = {y}, heading = {heading}")
         return True, x, y, heading
     
-    async def _setposition(self, x_mm: float, y_mm: float) -> tuple[bool, float, float, float]:
+    async def _goto(self, x_mm: float, y_mm: float) -> tuple[bool, float, float, float]:
         if not self._ble_central.connected:
             logging.error("CommandsTx::_setposition - Not connected to a robot")
             return False, 0.0, 0.0, 0.0
