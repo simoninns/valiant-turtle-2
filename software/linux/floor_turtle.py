@@ -28,6 +28,7 @@
 from abstract_turtle import TurtleInterface 
 from commands_tx import CommandsTx
 import time
+import math
 
 class FloorTurtle(TurtleInterface):
     def __init__(self, commands_tx: CommandsTx):
@@ -70,10 +71,34 @@ class FloorTurtle(TurtleInterface):
         print(f"right(angle={angle})")
         self._commands_tx.right(angle)
 
-    def circle(self, radius: float, extent: float=360):
+    def circle(self, radius: float, extent: float=360, steps: int=None):
         """Move the turtle in a circle with a specified radius and extent."""
-        print(f"circle(radius={radius}, extent={extent})")
-        self._commands_tx.circle(radius, extent)
+        if steps is None or extent != 360:
+            print(f"circle(radius={radius}, extent={extent})")
+            self._commands_tx.circle(radius, extent)
+        else:
+            # This implementation attempts to match the behaviour of turtle.circle()
+            # by using a series of straight lines to approximate the circle
+            
+            # Calculate the angle to turn at each step
+            step_angle = 360 / steps
+            
+            # Adjust starting angle for consistency with turtle.circle()
+            start_angle = step_angle / 2  # Pre-rotation applied by turtle.circle()
+            turn_direction = -1 if radius < 0 else 1  # Reverse turn for negative radius
+            
+            # Use chord length for accurate radius
+            step_length = 2 * abs(radius) * math.sin(math.pi / steps)
+            
+            # Rotate to match turtle.circle() starting orientation
+            self._commands_tx.left(start_angle * turn_direction)
+
+            for _ in range(steps):
+                self._commands_tx.forward(step_length)
+                self._commands_tx.left(turn_direction * step_angle)
+            
+            # Reset the initial rotation to match turtle.circle() final state
+            self._commands_tx.right(start_angle * turn_direction)
 
     def setheading(self, angle: float):
         """Set the turtle's heading to a specified angle."""

@@ -81,7 +81,7 @@ class TurtleInterface(ABC):
         return self.right(angle)
 
     @abstractmethod
-    def circle(self, radius: float, extent: float) -> NoReturn:
+    def circle(self, radius: float, extent: float, steps: int) -> NoReturn:
         """Move the turtle in a circle with a specified radius and extent."""
         pass
 

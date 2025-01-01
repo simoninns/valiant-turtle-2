@@ -27,6 +27,7 @@
 
 from turtle import Turtle, Screen
 from abstract_turtle import TurtleInterface
+import math
 
 class ScreenTurtle(TurtleInterface):
     def __init__(self):
@@ -53,9 +54,9 @@ class ScreenTurtle(TurtleInterface):
         """Turn the turtle right by a specified angle."""
         self._turtle.right(angle)
 
-    def circle(self, radius: float, extent: float=360):
+    def circle(self, radius: float, extent: float=360, steps: int=None):
         """Move the turtle in a circle with a specified radius and extent."""
-        self._turtle.circle(radius, extent)
+        self._turtle.circle(radius, extent, steps)
 
     def setheading(self, angle: float):
         """Set the turtle's heading to a specified angle."""

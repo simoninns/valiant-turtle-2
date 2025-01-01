@@ -31,100 +31,8 @@ from abstract_turtle import TurtleInterface
 from floor_turtle import FloorTurtle
 from screen_turtle import ScreenTurtle
 from commands_tx import CommandsTx
-
-def draw_simple_cat(t: TurtleInterface):
-    # Connect
-    t.connect()
-    t.motors(True)
-    
-    # Draw the head (circle)
-    t.penup()
-    t.goto(0, 50)
-    t.pendown()
-    t.circle(50, 360)
-
-    # Draw the left ear (triangle pointing upwards)
-    t.penup()
-    t.goto(-40, 150 + 30)
-    t.pendown()
-    t.goto(-50, 100 + 30)
-    t.goto(-10, 100 + 30)
-    t.goto(-40, 150 + 30)
-
-    # Draw the right ear (triangle pointing upwards)
-    t.penup()
-    t.goto(40, 150 + 30)
-    t.pendown()
-    t.goto(50, 100 + 30)
-    t.goto(10, 100 + 30)
-    t.goto(40, 150 + 30)
-
-    # Draw the eyes (small circles)
-    t.penup()
-    t.goto(-20, 100)
-    t.pendown()
-    t.circle(10, 360)
-    t.penup()
-    t.goto(20, 100)
-    t.pendown()
-    t.circle(10, 360)
-
-    # Draw the nose (triangle)
-    t.penup()
-    t.goto(0, 90)
-    t.pendown()
-    t.goto(-10, 80)
-    t.goto(10, 80)
-    t.goto(0, 90)
-
-    # Draw the mouth (lines)
-    t.penup()
-    t.goto(0, 80)
-    t.setheading(315)
-    t.pendown()
-    t.forward(15)
-    t.penup()
-    t.goto(0, 80)
-    t.setheading(225)
-    t.pendown()
-    t.forward(15)
-
-    # Draw the whiskers (lines)
-    for angle in [200, 180, 160]:
-        t.penup()
-        t.goto(-10, 85)
-        t.setheading(angle)
-        t.pendown()
-        t.forward(60)
-
-    for angle in [340, 0, 20]:
-        t.penup()
-        t.goto(10, 85)
-        t.setheading(angle)
-        t.pendown()
-        t.forward(60)
-
-    # Draw the body (ellipse-like shape)
-    t.penup()
-    t.goto(0, 0)
-    t.pendown()
-    t.setheading(270)
-    for _ in range(2):
-        t.circle(50, 90)
-        t.circle(100, 90)
-
-    # Draw the tail (curved line)
-    t.penup()
-    t.goto(50, -50)
-    t.setheading(120)
-    t.pendown()
-    t.circle(40, 200)
-
-    t.penup()
-
-    # Clean up
-    t.motors(False)
-    t.disconnect()
+from cat import Cat
+from logotype import Logotype
 
 def main():
      # Configure the logging module
@@ -132,15 +40,22 @@ def main():
     logging.basicConfig(level=logging.INFO, format=log_format, filename="vt2_demo.log")
 
     # Set up argparse
-    parser = argparse.ArgumentParser(description="Choose turtle mode: screen or floor.")
+    parser = argparse.ArgumentParser(description="Choose turtle mode and shape.")
     parser.add_argument(
         "-m", "--mode",
         choices=["screen", "floor"],
         default="screen",
         help="Choose between 'screen' for the on-screen turtle or 'floor' for the physical robot. Default is 'screen'."
     )
+    parser.add_argument(
+        "-s", "--shape",
+        choices=["cat", "logotype"],
+        default="logotype",
+        help="Choose the shape to draw: 'cat' or 'logotype'. Default is 'logotype'."
+    )
     args = parser.parse_args()
     mode = args.mode
+    shape = args.shape
 
     if mode == "screen":
         turtle_object = ScreenTurtle()
@@ -151,8 +66,17 @@ def main():
         print("Unsupported mode. Please choose 'screen' or 'floor'.")
         return
 
-    # Draw the cat
-    draw_simple_cat(turtle_object)
+    if shape == "cat":
+        # Draw the cat
+        cat = Cat(turtle_object)
+        cat.render()
+    elif shape == "logotype":
+        # Draw the Valiant Turtle 2 logo
+        logotype = Logotype(10, turtle_object)
+        logotype.render()
+    else:
+        print("Unsupported shape. Please choose 'cat' or 'logotype'.")
+        return
 
     # If we are in screen mode, run the main loop to keep the window open
     if mode == "screen":
