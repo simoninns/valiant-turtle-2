@@ -290,5 +290,5 @@ class FloorTurtle(TurtleInterface):
             self._commands_tx.set_linear_velocity(400, 8)
             self._commands_tx.set_rotational_velocity(200, 4)
         else:
-            self._commands_tx.set_linear_velocity(600, 16)
-            self._commands_tx.set_rotational_velocity(300, 8)
+            self._commands_tx.set_linear_velocity(500, 12)
+            self._commands_tx.set_rotational_velocity(250, 6)

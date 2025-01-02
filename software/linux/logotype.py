@@ -30,172 +30,133 @@ from abstract_turtle import TurtleInterface
 
 class Logotype():
     def __init__(self, scale, t: TurtleInterface):
-        self._scale = scale
-        self._t = t      
+        self._t = t
 
-    def logo_flippers(self):
-        back_flipper = [
-            ([0, 13], [1, 15]),
-            ([1, 15], [13, 15]),
-            ([13, 15], [13.5, 11]),
-            ([13.5, 11], [10, 7.5])
-        ]
+    def pentagon_points(self, radius, index):
+        angle = math.radians(72 * index)
+        x = radius * math.sin(angle)
+        y = -radius * math.cos(angle)
+        return (x, y)
+    
+    def dodecagon_points(self, radius, index):
+        angle = math.radians(36 * index)
+        x = radius * math.sin(angle)
+        y = -radius * math.cos(angle)
+        return (x, y)
 
-        front_flipper = [
-            ([-6, 11], [-9, 15]),
-            ([-9, 15], [-13, 15]),
-            ([-13, 15], [-14, 9]),
-            ([-14, 9], [-10.75, 6.25])
-        ]
+    def draw_spokes(self, pentagon_radius, dodecagon_radius):
+        # Draw lines from each point of the pentagon to the dodecagon
 
-        def draw_path(path, flip_y=False):
-            if flip_y:
-                path = [([x[0], -x[1]], [y[0], -y[1]]) for x, y in path]
-
-            # Move to the starting point without drawing
-            start_point = path[0][0]
+        # Draw lines from pentagon points to dodecagon points
+        for i in range(5):
             self._t.penup()
-            self._t.goto(start_point[0] * self._scale, start_point[1] * self._scale)
+            self._t.towards(self.pentagon_points(pentagon_radius, i)[0], self.pentagon_points(pentagon_radius, i)[1])
+            self._t.goto(self.pentagon_points(pentagon_radius, i))
+
+            self._t.towards(self.dodecagon_points(dodecagon_radius, 2 * i)[0], self.dodecagon_points(dodecagon_radius, 2 * i)[1])
             self._t.pendown()
+            self._t.goto(self.dodecagon_points(dodecagon_radius, 2 * i))
 
-            # Draw the path
-            for start, end in path:
-                dx = end[0] - start[0]
-                dy = end[1] - start[1]
-                distance = math.sqrt(dx ** 2 + dy ** 2)
-                angle = math.degrees(math.atan2(dy, dx))
-
-                self._t.setheading(angle)
-                self._t.forward(distance * self._scale)
-
-        # Draw the lower back flipper
-        draw_path(back_flipper, flip_y=True)
-
-        # Draw the lower front flipper
-        draw_path(front_flipper, flip_y=True)
-
-        # Draw the upper front flipper
-        draw_path(front_flipper, flip_y=False)
-
-         # Draw the upper back flipper
-        draw_path(back_flipper, flip_y=False)
-
-    def logo_head(self):
-        coordinates = [
-            # Head
-            ([-12.5 + 0.125, 3], [-16, 3]),
-            ([-16, 3], [-19, 0]),
-            ([-19, 0], [-16, -3]),
-            ([-16, -3], [-12.5 + 0.125, -3])
-        ]
-
-        def move_and_draw(start, end):
-            dx = end[0] - start[0]
-            dy = end[1] - start[1]
-            distance = math.sqrt(dx ** 2 + dy ** 2)
-            angle = math.degrees(math.atan2(dy, dx))
-
-            self._t.setheading(angle)
-            self._t.forward(distance * self._scale)
-
-        # Move to the starting point without drawing
-        start_point = coordinates[0][0]
         self._t.penup()
-        self._t.setheading(0)
-        self._t.setposition(start_point[0] * self._scale, start_point[1] * self._scale)
+
+    def move_to_dodecagon_point(self, dodecagon_radius, index: int):
+        # Move to a point on the dodecagon
+        self._t.goto(self.dodecagon_points(dodecagon_radius, index))
+
+    def move_to_dodecagon_line_midpoint(self, dodecagon_radius, mid_point_index: int = 4):
+        # Calculate the mid-point of a line of the dodecagon
+        x1, y1 = self.dodecagon_points(dodecagon_radius, mid_point_index)
+        x2, y2 = self.dodecagon_points(dodecagon_radius, mid_point_index + 1)
+        x_mid = (x1 + x2) / 2
+        y_mid = (y1 + y2) / 2
+        self._t.goto(x_mid, y_mid)
+        return x_mid, y_mid
+
+    def draw_head(self):
+        # Calculate the coordinates of the first midpoint
+        x1, y1 = self.dodecagon_points(130, 4)
+        x2, y2 = self.dodecagon_points(130, 5)
+        x_mid1 = (x1 + x2) / 2
+        y_mid1 = (y1 + y2) / 2
+
+        # Calculate the coordinates of the second midpoint
+        x3, y3 = self.dodecagon_points(130, 5)
+        x4, y4 = self.dodecagon_points(130, 6)
+        x_mid2 = (x3 + x4) / 2
+        y_mid2 = (y3 + y4) / 2
+
+        # Start the continuous path at the first midpoint
+        self._t.penup()
+        self._t.goto(x_mid1, y_mid1)
+
+        # Draw the head shape in a continuous path
+        self._t.setheading(90)
         self._t.pendown()
-
-        # Draw the head in one continuous path
-        for start, end in coordinates:
-            move_and_draw(start, end)
-
-    def draw_rotated_pentagon(self, radius, rotation_angle):
-        # Save the current heading and position
+        self._t.forward(40)  # Line upward from first midpoint
+        self._t.goto(0, 200)  # Line to the center of the head
+        self._t.goto(x_mid2, y_mid2 + 40)  # Line to the second midpoint
+        self._t.setheading(90)  # Face upward
+        self._t.backward(40)  # Line downward to complete the path
+        
         self._t.penup()
 
-        # Move the turtle to the center of the pentagon
-        # In a regular pentagon, the center is effectively the origin
-        self._t.goto(0, 0)
-
-        # Adjust the turtle to start at the bottom edge of the pentagon
-        self._t.setheading(-90 + rotation_angle)  # Point to the bottom of the pentagon and apply rotation
-        self._t.forward(radius * self._scale)  # Move to the starting edge of the pentagon
-
-        # Draw the pentagon using the circle method
-        self._t.setheading(rotation_angle)  # Set the turtle's heading to the rotation angle
+    def back_flipper_right(self):
+        self.move_to_dodecagon_point(130, 1)
+        self._t.right(-36)
         self._t.pendown()
-        self._t.circle(radius * self._scale, steps=5)
+        self._t.backward(50)
+        self._t.setheading(10)
+        self._t.forward(45)
+        self._t.setheading(90)
+        self._t.forward(130)
+        self.move_to_dodecagon_line_midpoint(130, 2)
         self._t.penup()
 
-        # Return the turtle to the center of the pentagon
-        self._t.goto(0, 0)
-
-    def roman_numerals(self):
-        # Roman numeral II
-        self._t.penup()
-        self._t.setheading(90)  # Point upwards
-
-        # Draw first vertical line
-        self._t.goto(1.5 * self._scale, -2.5 * self._scale)
+    def back_flipper_left(self):
+        self.move_to_dodecagon_point(130, 9)
+        #self._t.left(-36)
+        self._t.setheading(90 - 36)
         self._t.pendown()
-        self._t.forward(5 * self._scale)
-
-        # Move to second vertical line position
+        self._t.backward(50)
+        self._t.setheading(170)
+        self._t.forward(45)
+        self._t.setheading(90)
+        self._t.forward(130)
+        self.move_to_dodecagon_line_midpoint(130, 7)
         self._t.penup()
-        self._t.goto(-1.5 * self._scale, -2.5 * self._scale)
-        self._t.pendown()
-        self._t.forward(5 * self._scale)
-
-        # Draw horizontal lines
-        self._t.penup()
-        self._t.goto(-3 * self._scale, 2.5 * self._scale)  # Top horizontal line start
-        self._t.setheading(0)  # Face right
-        self._t.pendown()
-        self._t.forward(6 * self._scale)
-
-        self._t.penup()
-        self._t.goto(-3 * self._scale, -2.5 * self._scale)  # Bottom horizontal line start
-        self._t.pendown()
-        self._t.forward(6 * self._scale)
 
     def render(self):
         # Connect
         self._t.connect()
-        self._t.speed(0)
+        self._t.speed(1)
         self._t.motors(True)
+
+        # Central pentagon
+        self._t.penup()
+        self._t.goto(0, -75)
+        self._t.pendown()
+        self._t.circle(75, steps=5)
 
         # Dodecagon
         self._t.penup()
-        self._t.goto(0, -13 * self._scale)
+        self._t.goto(0, -130)
         self._t.pendown()
-        self._t.circle(13 * self._scale, steps=10)
+        self._t.circle(130, steps=10)
 
-        # Inter pentagon
-        self.draw_rotated_pentagon(7.5, 36/2)
+        # Draw spokes
+        self.draw_spokes(75, 130)
 
-        # Spokes
-        for rota in range(0, 360, 72):
-            self._t.penup()
-            self._t.goto(0, 0)
-            self._t.setheading(rota)
-            self._t.forward(7.5 * self._scale)
-            self._t.pendown()
-            self._t.forward((4.75+0.125) * self._scale)
+        # Draw back flipper
+        self.back_flipper_left()
+        self.back_flipper_right()
 
-        # Roman numerals
-        self.roman_numerals()
+        # Draw head
+        self.draw_head()
 
-        # Head
-        self.logo_head()
-
-        # Flippers
-        self.logo_flippers()
-
-        # Clean up
         self._t.penup()
+        self._t.setheading(0)
         self._t.goto(0, 0)
-        self._t.setheading(180)
-        self._t.forward(300)
-
+                    
+        # Disconnect
         self._t.motors(False)
         self._t.disconnect()
