@@ -123,7 +123,7 @@ class ScreenTurtle(TurtleInterface):
         """Check if the pen is down."""
         return self._turtle.isdown()
     
-    def speed(self, speed: int):
+    def speed(self, speed):
         """Set the turtle's speed."""
         self._turtle.speed(speed)
     
