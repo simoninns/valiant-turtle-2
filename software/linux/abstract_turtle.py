@@ -105,12 +105,12 @@ class TurtleInterface(ABC):
         pass
 
     @abstractmethod
-    def setposition(self, x: float, y: float) -> NoReturn:
+    def setposition(self, x: float = None, y: float = None) -> NoReturn:
         """Set the turtle's position to specified x and y coordinates."""
         pass
 
     # Alias for setposition
-    def goto(self, x: float, y: float) -> NoReturn:
+    def goto(self, x: float = None, y: float = None) -> NoReturn:
         return self.setposition(x, y)
     
     def setpos(self, x: float, y: float) -> NoReturn:

@@ -70,9 +70,18 @@ class ScreenTurtle(TurtleInterface):
         """Set the turtle's y-coordinate."""
         self._turtle.sety(y)
 
-    def setposition(self, x: float, y: float):
+    def setposition(self, x: float = None, y: float = None):
         """Set the turtle's position to specified x and y coordinates."""
-        self._turtle.setposition(x, y)
+        if isinstance(x, tuple) and len(x) == 2 and y is None:
+            # Handle the case where a single tuple (x, y) is passed
+            _x, _y = x  # Unpack the tuple
+        elif isinstance(x, (int, float)) and isinstance(y, (int, float)):
+            # Handle the case where x and y are passed as separate floats
+            _x, _y = x, y
+        else:
+            raise ValueError("Provide either two floats or a single tuple containing two floats.")
+        
+        self._turtle.setposition(_x, _y)
 
     def towards(self, x: float, y: float):
         """Calculate the angle towards a specified position."""
