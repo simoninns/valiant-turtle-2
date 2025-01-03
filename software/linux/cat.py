@@ -1,6 +1,6 @@
 #************************************************************************ 
 #
-#   caself._t.py
+#   cat.py
 #
 #   Draw a cat using the turtle graphics library
 #   Valiant Turtle 2 - Communicator Linux Firmware
@@ -28,13 +28,15 @@
 from abstract_turtle import TurtleInterface
 
 class Cat():
-    def __init__(self, t: TurtleInterface):
+    def __init__(self, t: TurtleInterface, speed: int):
         self._t = t
+        self._speed = speed
 
     def render(self):
         # Connect
         self._t.connect()
         self._t.motors(True)
+        self._t.speed(self._speed)
         
         # Draw the head (circle)
         self._t.penup()

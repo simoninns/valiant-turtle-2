@@ -29,8 +29,9 @@ import math
 from abstract_turtle import TurtleInterface
 
 class Logotype():
-    def __init__(self, scale, t: TurtleInterface):
+    def __init__(self, t: TurtleInterface, speed: int):
         self._t = t
+        self._speed = speed
 
     def pentagon_points(self, radius, index):
         angle = math.radians(72 * index)
@@ -128,7 +129,7 @@ class Logotype():
     def render(self):
         # Connect
         self._t.connect()
-        self._t.speed(1)
+        self._t.speed(self._speed)
         self._t.motors(True)
 
         # Central pentagon

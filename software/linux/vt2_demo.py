@@ -33,6 +33,7 @@ from screen_turtle import ScreenTurtle
 from commands_tx import CommandsTx
 from cat import Cat
 from logotype import Logotype
+from calitest import Calitest1, Calitest2
 
 def main():
      # Configure the logging module
@@ -48,14 +49,27 @@ def main():
         help="Choose between 'screen' for the on-screen turtle or 'floor' for the physical robot. Default is 'screen'."
     )
     parser.add_argument(
-        "-s", "--shape",
-        choices=["cat", "logotype"],
+        "-d", "--drawing",
+        choices=["cat", "logotype", "calitest1", "calitest2"],
         default="logotype",
-        help="Choose the shape to draw: 'cat' or 'logotype'. Default is 'logotype'."
+        help="Choose the shape to draw: 'cat', 'calitest1', 'calitest2' or 'logotype'. Default is 'logotype'."
+    )
+    parser.add_argument(
+        "-s", "--speed",
+        type=int,
+        choices=range(10),
+        default=6,
+        help="Choose the speed of the turtle (0-9). Default is 6."
     )
     args = parser.parse_args()
     mode = args.mode
-    shape = args.shape
+    drawing = args.drawing
+    speed = args.speed
+
+    # Range check for speed
+    if speed < 0 or speed > 9:
+        print("Speed must be between 0 and 9.")
+        return
 
     if mode == "screen":
         turtle_object = ScreenTurtle()
@@ -66,16 +80,24 @@ def main():
         print("Unsupported mode. Please choose 'screen' or 'floor'.")
         return
 
-    if shape == "cat":
+    if drawing == "cat":
         # Draw the cat
-        cat = Cat(turtle_object)
+        cat = Cat(turtle_object, speed)
         cat.render()
-    elif shape == "logotype":
+    elif drawing == "logotype":
         # Draw the Valiant Turtle 2 logo
-        logotype = Logotype(10, turtle_object)
+        logotype = Logotype(turtle_object, speed)
         logotype.render()
+    elif drawing == "calitest1":
+        # Draw the calitest
+        calitest1 = Calitest1(turtle_object, speed)
+        calitest1.render()
+    elif drawing == "calitest2":
+        # Draw the calitest
+        calitest2 = Calitest2(turtle_object, speed)
+        calitest2.render()
     else:
-        print("Unsupported shape. Please choose 'cat' or 'logotype'.")
+        print("Unsupported drawing. Please choose 'cat' or 'logotype'.")
         return
 
     # If we are in screen mode, run the main loop to keep the window open
