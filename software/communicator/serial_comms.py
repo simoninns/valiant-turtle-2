@@ -84,13 +84,13 @@ class SerialComms:
             return False, -1, []
 
         # The first two bytes are the command ID
-        command_id = int.from_bytes(command_data[:2], 'little')
+        command_id = struct.unpack("<h", command_data[:2])[0]
         parameters = []
 
         # If there are more bytes, they are parameters
         for i in range(2, len(command_data), 2):
             if i + 1 < len(command_data):
-                param = int.from_bytes(command_data[i:i+2], 'little')
+                param = struct.unpack("<h", command_data[i:i+2])[0]
                 parameters.append(param)
 
             if len(parameters) > 4:
@@ -127,39 +127,39 @@ class SerialComms:
         if command_id == 32: # Motors
             if parameters[0] == 0:
                 if not await self._commands_tx.motors(False):
-                    result_code = -1
+                    result_code = 1
             else:
                 if not await self._commands_tx.motors(True):
-                    result_code = -1
+                    result_code = 1
         elif command_id == 33: # Forward
             success_flag,_,_,_ = await self._commands_tx.forward(parameters[0])
             if not success_flag:
-                result_code = -1
+                result_code = 1
         elif command_id == 34: # Backward
             success_flag,_,_,_ = await self._commands_tx.backward(parameters[0])
             if not success_flag:
-                result_code = -1
+                result_code = 1
         elif command_id == 35: # Left
             success_flag,_,_,_ = await self._commands_tx.left(parameters[0])
             if not success_flag:
-                result_code = -1
+                result_code = 1
         elif command_id == 36: # Right
             success_flag,_,_,_ = await self._commands_tx.right(parameters[0])
             if not success_flag:
-                result_code = -1
+                result_code = 1
         elif command_id == 37: # Penup
             if not await self._commands_tx.penup():
-                result_code = -1
+                result_code = 1
         elif command_id == 38: # Pendown
             if not await self._commands_tx.pendown():
-                result_code = -1
+                result_code = 1
         elif command_id == 39: # Eyes
             if not await self._commands_tx.eyes(parameters[0], parameters[1], parameters[2], parameters[3]):
-                result_code = -1
+                result_code = 1
         elif command_id == 40: # is pen up?
             success_flag, pen_state = await self._commands_tx.isdown()
             if not success_flag:
-                result_code = -1
+                result_code = 1
             if pen_state:
                 command_response = 0 # Pen is down
             else:
@@ -167,19 +167,19 @@ class SerialComms:
         elif command_id == 41: # power_mv
             success_flag, power_mv, power_ma, power_mw = await self._commands_tx.power()
             if not success_flag:
-                result_code = -1
+                result_code = 1
             else:
                 command_response = power_mv
         elif command_id == 42: # power_ma
             success_flag, power_mv, power_ma, power_mw = await self._commands_tx.power()
             if not success_flag:
-                result_code = -1
+                result_code = 1
             else:
                 command_response = power_ma
         elif command_id == 43: # power_mw
             success_flag, power_mv, power_ma, power_mw = await self._commands_tx.power()
             if not success_flag:
-                result_code = -1
+                result_code = 1
             else:
                 command_response = power_mw
 

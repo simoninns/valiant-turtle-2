@@ -206,37 +206,42 @@ class BleCentral:
                 # Wait for a notification to be received
                 # Note: With BLEak, the notification triggers an interrupt, but with aioBLE we have to
                 # await the notification
-                service_data = await self._tx_p2c_characteristic.notified()
+                try:
+                    service_data = await self._tx_p2c_characteristic.notified()
+                except Exception:
+                    picolog.info("BleCentral::__handle_commands - Device disconnected")
+                    self.disconnect()
 
-                if len(service_data) == 20:
-                    # Check the first byte to see if it is a valid commmand response
-                    # If the first byte is 0x00, then it is a NOP response
-                    if service_data[0] != 0x00:
-                        # Queue the data packet for processing
-                        if len(self._p2c_queue) < self._max_queue_elements:
-                            self._p2c_queue.append(service_data)
-                            #picolog.info(f"Received data from peripheral: {service_data}, appended to queue ({len(self._p2c_queue)} elements)")
-                            self._p2c_queue_event.set()
-                else:
-                    picolog.info(f"BleCentral::__handle_commands - Received data from peripheral: {service_data} - invalid length")
+                if self._connected:
+                    if len(service_data) == 20:
+                        # Check the first byte to see if it is a valid commmand response
+                        # If the first byte is 0x00, then it is a NOP response
+                        if service_data[0] != 0x00:
+                            # Queue the data packet for processing
+                            if len(self._p2c_queue) < self._max_queue_elements:
+                                self._p2c_queue.append(service_data)
+                                #picolog.info(f"Received data from peripheral: {service_data}, appended to queue ({len(self._p2c_queue)} elements)")
+                                self._p2c_queue_event.set()
+                    else:
+                        picolog.info(f"BleCentral::__handle_commands - Received data from peripheral: {service_data} - invalid length")
 
-                # Notify the main async task that data has been received
-                self._p2c_notification_event.set()
-  
-                # Send any data in the c2p queue to the peripheral
-                if len(self._c2p_queue) > 0:
-                    # Send all waiting data
-                    while len(self._c2p_queue) > 0:
-                        data_packet = self._c2p_queue.pop(0)
-                        #picolog.info(f"Sending data to peripheral: {data_packet}")
+                    # Notify the main async task that data has been received
+                    self._p2c_notification_event.set()
+    
+                    # Send any data in the c2p queue to the peripheral
+                    if len(self._c2p_queue) > 0:
+                        # Send all waiting data
+                        while len(self._c2p_queue) > 0:
+                            data_packet = self._c2p_queue.pop(0)
+                            #picolog.info(f"Sending data to peripheral: {data_packet}")
+                            await self._rx_c2p_characteristic.write(data_packet)
+                    else:
+                        # If the queue is empty, send a nop
+                        data_packet = bytearray(20)
                         await self._rx_c2p_characteristic.write(data_packet)
-                else:
-                    # If the queue is empty, send a nop
-                    data_packet = bytearray(20)
-                    await self._rx_c2p_characteristic.write(data_packet)
 
-                # Clear the notification event
-                self._p2c_notification_event.clear()
+                    # Clear the notification event
+                    self._p2c_notification_event.clear()
             else:
                 # If we are not connected, wait for 250ms
                 await asyncio.sleep(0.25)
