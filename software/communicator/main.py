@@ -32,6 +32,7 @@ from machine import Pin, UART
 from leds import Leds
 from commands_tx import CommandsTx
 from ble_central import BleCentral
+from serial_comms import SerialComms
 import asyncio
 
 # GPIO Hardware mapping
@@ -61,14 +62,38 @@ _GPIO_OPTION0 = const(26)
 _GPIO_OPTION1 = const(27)
 _GPIO_OPTION2 = const(28)
 
-async def aio_main(ble_central: BleCentral, commands_tx: CommandsTx):
+async def led_control_task(leds: Leds, ble_central: BleCentral):
+    loop = 0
+    green_led = 0
+    blue_led = 1
+
+    leds.set_fade_speed(green_led, 10)
+    leds.set_fade_speed(blue_led, 2)
+
+    leds.set_brightness(green_led, 255)
+
+    while True:
+        # Show BLE connection status
+        if ble_central.connected:
+            if loop < 3:
+                leds.set_brightness(blue_led, 32)
+            else:
+                leds.set_brightness(blue_led, 100)
+        else:
+            leds.set_brightness(blue_led, 0)
+
+        loop += 1
+        if loop > 4: loop = 0
+        await asyncio.sleep(0.25)
+
+async def aio_main(ble_central: BleCentral, serial_comms: SerialComms, leds: Leds):
     picolog.info("aio_main - Running main async tasks") 
 
     tasks = [
         asyncio.create_task(ble_central.run()),
-
-        # Get commands from somewhere and give them to the commands_tx class for processing
-        #asyncio.create_task(),
+        asyncio.create_task(serial_comms.run()),
+        asyncio.create_task(leds.run()),
+        asyncio.create_task(led_control_task(leds, ble_central)),
     ]
     await asyncio.gather(*tasks)
 
@@ -97,17 +122,18 @@ def main():
     # Initialise LEDs
     leds = Leds([_GPIO_GREEN_LED, _GPIO_BLUE_LED])
 
-    # Configure the UART1 for host communication
+    # Configure the UART1 for serial <-> host communication
     uart1 = UART(1, baudrate=4800, tx=Pin(_GPIO_UART1_TX), rx=Pin(_GPIO_UART1_RX),
         cts=Pin(_GPIO_UART1_CTS), rts=Pin(_GPIO_UART1_RTS), flow=(UART.RTS | UART.CTS),
         txbuf=1024, rxbuf=1024, bits=8, parity=None, stop=1)
     
+    # Create the required objects before going asynchronous
     ble_central = BleCentral()
     commands_tx = CommandsTx(ble_central)
-    #communicatorCli = CommunicatorCli(commands_tx)
+    serial_comms = SerialComms(uart1, commands_tx)
     
     while True:
-        asyncio.run(aio_main(ble_central, commands_tx))
+        asyncio.run(aio_main(ble_central, serial_comms, leds))
     
 if __name__ == "__main__":
     main()
