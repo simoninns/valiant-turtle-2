@@ -30,14 +30,14 @@ import ustruct
 from micropython import const
 
 class Configuration:
-    CONFIGURATION_VERSION = const(0x02)
+    CONFIGURATION_VERSION = const(0x03)
 
     def __init__(self):
         self._configuration_version = 0
-        self._linear_target_speed_mmps = 0
-        self._linear_acceleration_mmpss = 0
-        self._rotational_target_speed_mmps = 0
-        self._rotational_acceleration_mmpss = 0
+        self._linear_target_speed_umps = 0
+        self._linear_acceleration_umpss = 0
+        self._rotational_target_speed_umps = 0
+        self._rotational_acceleration_umpss = 0
         self._wheel_calibration_um = 0
         self._axel_calibration_um = 0
         self._turtle_id = 0
@@ -47,16 +47,16 @@ class Configuration:
 
         # ustruct format
         # See: https://docs.micropython.org/en/latest/library/struct.html
-        # 8 x int16_t (2 bytes) = 16 bytes
-        self.format = 'hhhhhhhh'
+        # 8 x int32_t (4 bytes) = 32 bytes
+        self.format = 'qqqqqqqq'
 
     def pack(self) -> bytes:
         buffer = ustruct.pack(self.format,
             int(Configuration.CONFIGURATION_VERSION),
-            int(self._linear_target_speed_mmps),
-            int(self._linear_acceleration_mmpss),
-            int(self._rotational_target_speed_mmps),
-            int(self._rotational_acceleration_mmpss),
+            int(self._linear_target_speed_umps),
+            int(self._linear_acceleration_umpss),
+            int(self._rotational_target_speed_umps),
+            int(self._rotational_acceleration_umpss),
             int(self._wheel_calibration_um),
             int(self._axel_calibration_um),
             int(self._turtle_id),
@@ -71,10 +71,10 @@ class Configuration:
 
         # Place the resulting tuple into the configuration parameters
         self._configuration_version = result[0]
-        self._linear_target_speed_mmps = result[1]
-        self._linear_acceleration_mmpss = result[2]
-        self._rotational_target_speed_mmps = result[3]
-        self._rotational_acceleration_mmpss = result[4]
+        self._linear_target_speed_umps = result[1]
+        self._linear_acceleration_umpss = result[2]
+        self._rotational_target_speed_umps = result[3]
+        self._rotational_acceleration_umpss = result[4]
         self._wheel_calibration_um = result[5]
         self._axel_calibration_um = result[6]
         self._turtle_id = result[7]
@@ -92,12 +92,12 @@ class Configuration:
         self._configuration_version = Configuration.CONFIGURATION_VERSION
 
         # Linear velocity
-        self._linear_target_speed_mmps = 200 # mm per second
-        self._linear_acceleration_mmpss = 4 # mm per second per second
+        self._linear_target_speed_umps = 200000 # um per second
+        self._linear_acceleration_umpss = 4000 # um per second per second
 
         # Rotational velocity
-        self._rotational_target_speed_mmps = 100 # mm per second
-        self._rotational_acceleration_mmpss = 4 # mm per second per second
+        self._rotational_target_speed_umps = 100000 # um per second
+        self._rotational_acceleration_umpss = 4000 # um per second per second
 
         # Wheel and axel calibration
         self._wheel_calibration_um = 0 # micrometers
@@ -119,48 +119,48 @@ class Configuration:
         return self._configuration_version
 
     @property
-    def linear_target_speed_mmps(self) -> int:
-        return self._linear_target_speed_mmps
+    def linear_target_speed_umps(self) -> int:
+        return self._linear_target_speed_umps
 
-    @linear_target_speed_mmps.setter
-    def linear_target_speed_mmps(self, value: int):
-        if 0 <= value <= 32767:
-            self._linear_target_speed_mmps = value
+    @linear_target_speed_umps.setter
+    def linear_target_speed_umps(self, value: int):
+        if 0 <= value <= 2147483647:
+            self._linear_target_speed_umps = value
         else:
-            raise ValueError("linear_target_speed_mmps must be an integer between 0 and 32767")
+            raise ValueError("linear_target_speed_umps must be an integer between 0 and 2,147,483,647")
 
     @property
-    def linear_acceleration_mmpss(self) -> int:
-        return self._linear_acceleration_mmpss
+    def linear_acceleration_umpss(self) -> int:
+        return self._linear_acceleration_umpss
 
-    @linear_acceleration_mmpss.setter
-    def linear_acceleration_mmpss(self, value: int):
-        if 0 <= value <= 32767:
-            self._linear_acceleration_mmpss = value
+    @linear_acceleration_umpss.setter
+    def linear_acceleration_umpss(self, value: int):
+        if 0 <= value <= 2147483647:
+            self._linear_acceleration_umpss = value
         else:
-            raise ValueError("linear_acceleration_mmpss must be an integer between 0 and 32767")
+            raise ValueError("linear_acceleration_umpss must be an integer between 0 and 2,147,483,647")
 
     @property
-    def rotational_target_speed_mmps(self) -> int:
-        return self._rotational_target_speed_mmps
+    def rotational_target_speed_umps(self) -> int:
+        return self._rotational_target_speed_umps
 
-    @rotational_target_speed_mmps.setter
-    def rotational_target_speed_mmps(self, value: int):
-        if 0 <= value <= 32767:
-            self._rotational_target_speed_mmps = value
+    @rotational_target_speed_umps.setter
+    def rotational_target_speed_umps(self, value: int):
+        if 0 <= value <= 2147483647:
+            self._rotational_target_speed_umps = value
         else:
-            raise ValueError("rotational_target_speed_mmps must be an integer between 0 and 32767")
+            raise ValueError("rotational_target_speed_umps must be an integer between 0 and 2,147,483,647")
 
     @property
-    def rotational_acceleration_mmpss(self) -> int:
-        return self._rotational_acceleration_mmpss
+    def rotational_acceleration_umpss(self) -> int:
+        return self._rotational_acceleration_umpss
 
-    @rotational_acceleration_mmpss.setter
-    def rotational_acceleration_mmpss(self, value: int):
-        if 1 <= value <= 32767:
-            self._rotational_acceleration_mmpss = value
+    @rotational_acceleration_umpss.setter
+    def rotational_acceleration_umpss(self, value: int):
+        if 1 <= value <= 2147483647:
+            self._rotational_acceleration_umpss = value
         else:
-            raise ValueError("rotational_acceleration_mmpss must be an integer between 1 and 32767")
+            raise ValueError("rotational_acceleration_umpss must be an integer between 1 and 2,147,483,647")
 
     @property
     def wheel_calibration_um(self) -> int:
@@ -168,10 +168,10 @@ class Configuration:
 
     @wheel_calibration_um.setter
     def wheel_calibration_um(self, value: int):
-        if -32768 <= value <= 32767:
+        if -2147483647 <= value <= 2147483647:
             self._wheel_calibration_um = value
         else:
-            raise ValueError("wheel_calibration_um must be an integer between -32768 and 32767")
+            raise ValueError("wheel_calibration_um must be an integer between -2,147,483,647 and 2,147,483,647")
 
     @property
     def axel_calibration_um(self) -> int:
@@ -179,10 +179,10 @@ class Configuration:
 
     @axel_calibration_um.setter
     def axel_calibration_um(self, value: int):
-        if -32768 <= value <= 32767:
+        if -2147483647 <= value <= 2147483647:
             self._axel_calibration_um = value
         else:
-            raise ValueError("axel_calibration_um must be an integer between -32768 and 32767")
+            raise ValueError("axel_calibration_um must be an integer between -2,147,483,647 and 2,147,483,647")
 
     @property
     def turtle_id(self) -> int:

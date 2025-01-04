@@ -54,6 +54,14 @@ class CommandsRx:
     @property
     def motors_enabled(self) -> bool:
         return self._diff_drive.is_enabled
+    
+    # Convert between mm and um
+    def __mm_to_um(self, mm: float) -> int:
+        return int(mm * 1000)
+    
+    # Convert between um and mm
+    def __um_to_mm(self, um: float) -> float:
+        return um / 1000
 
     async def motors(self, enable: bool):
         picolog.info(f"CommandsRx::motors - {'Enabling' if enable else 'Disabling'} motors")
@@ -66,25 +74,25 @@ class CommandsRx:
 
     async def forward(self, distance_mm: float) -> tuple[float, float, float]:
         picolog.info(f"CommandsRx::forward - Moving forward {distance_mm} mm")
-        self._diff_drive.drive_forward(distance_mm)
+        self._diff_drive.drive_forward(self.__mm_to_um(distance_mm))
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
         # Return the new position and heading
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        x_pos_um, y_pos_um = self._diff_drive.get_cartesian_position()
         heading = self._diff_drive.get_heading()
-        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+        return round(self.__um_to_mm(x_pos_um), 2), round(self.__um_to_mm(y_pos_um), 2), round(heading, 2)
 
     async def backward(self, distance_mm: float) -> tuple[float, float, float]:
         picolog.info(f"CommandsRx::backward - Moving backward {distance_mm} mm")
-        self._diff_drive.drive_backward(distance_mm)
+        self._diff_drive.drive_backward(self.__mm_to_um(distance_mm))
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
         
         # Return the new position and heading
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        x_pos_um, y_pos_um = self._diff_drive.get_cartesian_position()
         heading = self._diff_drive.get_heading()
-        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+        return round(self.__um_to_mm(x_pos_um), 2), round(self.__um_to_mm(y_pos_um), 2), round(heading, 2)
 
     async def left(self, angle_degrees: float) -> tuple[float, float, float]:
         picolog.info(f"CommandsRx::left - Turning left {angle_degrees} degrees")
@@ -93,9 +101,9 @@ class CommandsRx:
             await asyncio.sleep(0.25)
 
         # Return the new position and heading
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        x_pos_um, y_pos_um = self._diff_drive.get_cartesian_position()
         heading = self._diff_drive.get_heading()
-        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+        return round(self.__um_to_mm(x_pos_um), 2), round(self.__um_to_mm(y_pos_um), 2), round(heading, 2)
 
     async def right(self, angle_degrees: float) -> tuple[float, float, float]:
         picolog.info(f"CommandsRx::right - Turning right {angle_degrees} degrees")
@@ -104,20 +112,20 @@ class CommandsRx:
             await asyncio.sleep(0.25)
 
         # Return the new position and heading
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        x_pos_um, y_pos_um = self._diff_drive.get_cartesian_position()
         heading = self._diff_drive.get_heading()
-        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+        return round(self.__um_to_mm(x_pos_um), 2), round(self.__um_to_mm(y_pos_um), 2), round(heading, 2)
 
     async def circle(self, radius_mm: float, extent_degrees: float) -> tuple[float, float, float]:
         picolog.info(f"CommandsRx::circle - Circle with radius {radius_mm} mm and extent of {extent_degrees} degrees")
-        self._diff_drive.circle(radius_mm, extent_degrees)
+        self._diff_drive.circle(self.__mm_to_um(radius_mm), extent_degrees)
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
         # Return the new position and heading
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        x_pos_um, y_pos_um = self._diff_drive.get_cartesian_position()
         heading = self._diff_drive.get_heading()
-        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+        return round(self.__um_to_mm(x_pos_um), 2), round(self.__um_to_mm(y_pos_um), 2), round(heading, 2)
 
     async def setheading(self, heading_degrees: float):
         picolog.info(f"CommandsRx::setheading - Setting heading to {heading_degrees} degrees")
@@ -127,47 +135,47 @@ class CommandsRx:
 
     async def setx(self, x_mm: float) -> tuple[float, float, float]:
         picolog.info(f"CommandsRx::setx - Setting X position to {x_mm} mm")
-        self._diff_drive.set_cartesian_x_position(x_mm)
+        self._diff_drive.set_cartesian_x_position(self.__mm_to_um(x_mm))
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
         # Return the new position and heading
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        x_pos_um, y_pos_um = self._diff_drive.get_cartesian_position()
         heading = self._diff_drive.get_heading()
-        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+        return round(self.__um_to_mm(x_pos_um), 2), round(self.__um_to_mm(y_pos_um), 2), round(heading, 2)
 
     async def sety(self, y_mm: float) -> tuple[float, float, float]:
         picolog.info(f"CommandsRx::sety - Setting Y position to {y_mm} mm")
-        self._diff_drive.set_cartesian_y_position(y_mm)
+        self._diff_drive.set_cartesian_y_position(self.__mm_to_um(y_mm))
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
         # Return the new position and heading
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        x_pos_um, y_pos_um = self._diff_drive.get_cartesian_position()
         heading = self._diff_drive.get_heading()
-        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+        return round(self.__um_to_mm(x_pos_um), 2), round(self.__um_to_mm(y_pos_um), 2), round(heading, 2)
 
     async def setposition(self, x_mm: float, y_mm: float) -> tuple[float, float, float]:
         picolog.info(f"CommandsRx::setposition - Setting position to ({x_mm}, {y_mm}) mm")
-        self._diff_drive.set_cartesian_position(x_mm, y_mm)
+        self._diff_drive.set_cartesian_position(self.__mm_to_um(x_mm), self.__mm_to_um(y_mm))
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
         # Return the new position and heading
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        x_pos_um, y_pos_um = self._diff_drive.get_cartesian_position()
         heading = self._diff_drive.get_heading()
-        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+        return round(self.__um_to_mm(x_pos_um), 2), round(self.__um_to_mm(y_pos_um), 2), round(heading, 2)
 
     async def towards(self, x_mm: float, y_mm: float) -> tuple[float, float, float]:
         picolog.info(f"CommandsRx::towards - Turning towards ({x_mm}, {y_mm}) mm")
-        self._diff_drive.turn_towards_cartesian_point(x_mm, y_mm)
+        self._diff_drive.turn_towards_cartesian_point(self.__mm_to_um(x_mm), self.__mm_to_um(y_mm))
         while self._diff_drive.is_moving:
             await asyncio.sleep(0.25)
 
         # Return the new position and heading
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
+        x_pos_um, y_pos_um = self._diff_drive.get_cartesian_position()
         heading = self._diff_drive.get_heading()
-        return round(x_pos, 2), round(y_pos, 2), round(heading, 2)
+        return round(self.__um_to_mm(x_pos_um), 2), round(self.__um_to_mm(y_pos_um), 2), round(heading, 2)
 
     async def reset_origin(self):
         picolog.info("CommandsRx::reset_origin - Resetting origin")
@@ -180,8 +188,8 @@ class CommandsRx:
 
     async def position(self) -> tuple[float, float]:
         picolog.info("CommandsRx::position - Getting position")
-        x_pos, y_pos = self._diff_drive.get_cartesian_position()
-        return round(x_pos, 2), round(y_pos, 2)
+        x_pos_um, y_pos_um = self._diff_drive.get_cartesian_position()
+        return round(self.__um_to_mm(x_pos_um), 2), round(self.__um_to_mm(y_pos_um), 2)
 
     async def penup(self):
         picolog.info(f"CommandsRx::penup - Raising pen")
@@ -217,25 +225,27 @@ class CommandsRx:
         picolog.info(f"CommandsRx::power - Power readings: {mv} mV, {ma} mA, {mw} mW")
         return mv, ma, mw
     
-    async def set_linear_velocity(self, target_speed: int, acceleration: int):
-        picolog.info(f"CommandsRx::set_linear_velocity - Setting linear target speed to {target_speed} mm/s and acceleration to {acceleration} mm/s^2")
-        self._diff_drive.set_linear_velocity(target_speed, acceleration)
-        self._configuration.linear_target_speed_mmps = target_speed
-        self._configuration.linear_acceleration_mmpss = acceleration
+    async def set_linear_velocity(self, target_speed_mms: int, acceleration_mmpss: int):
+        picolog.info(f"CommandsRx::set_linear_velocity - Setting linear target speed to {target_speed_mms} mm/s and acceleration to {acceleration_mmpss} mm/s^2")
+        self._diff_drive.set_linear_velocity(self.__mm_to_um(target_speed_mms), self.__mm_to_um(acceleration_mmpss))
+        self._configuration.linear_target_speed_umps = self.__mm_to_um(target_speed_mms)
+        self._configuration.linear_acceleration_umpss = self.__mm_to_um(acceleration_mmpss)
 
-    async def set_rotational_velocity(self, target_speed: int, acceleration: int):
-        picolog.info(f"CommandsRx::set_rotational_velocity - Setting rotational target speed to {target_speed} mm/s and acceleration to {acceleration} mm/s^2")
-        self._diff_drive.set_rotational_velocity(target_speed, acceleration)
-        self._configuration.rotational_target_speed_mmps = target_speed
-        self._configuration.rotational_acceleration_mmpss = acceleration
+    async def set_rotational_velocity(self, target_speed_mms: int, acceleration_mmps: int):
+        picolog.info(f"CommandsRx::set_rotational_velocity - Setting rotational target speed to {target_speed_mms} mm/s and acceleration to {acceleration_mmps} mm/s^2")
+        self._diff_drive.set_rotational_velocity(self.__mm_to_um(target_speed_mms), self.__mm_to_um(acceleration_mmps))
+        self._configuration.rotational_target_speed_umps = self.__mm_to_um(target_speed_mms)
+        self._configuration.rotational_acceleration_umpss = self.__mm_to_um(acceleration_mmps)
 
-    async def get_linear_velocity(self) -> tuple[int, int]:
+    async def get_linear_velocity(self) -> tuple[float, float]:
         picolog.info("CommandsRx::get_linear_velocity - Getting linear velocity")
-        return self._diff_drive.get_linear_velocity()
+        target_speed_ums, acceleration_umpss = self._diff_drive.get_linear_velocity()
+        return (self.__um_to_mm(target_speed_ums), self.__um_to_mm(acceleration_umpss))
     
-    async def get_rotational_velocity(self) -> tuple[int, int]:
+    async def get_rotational_velocity(self) -> tuple[float, float]:
         picolog.info("CommandsRx::get_rotational_velocity - Getting rotational velocity")
-        return self._diff_drive.get_rotational_velocity()
+        target_speed_ums, acceleration_umpss = self._diff_drive.get_rotational_velocity()
+        return (self.__um_to_mm(target_speed_ums), self.__um_to_mm(acceleration_umpss))
         
     async def set_wheel_diameter_calibration(self, calibration_um: int):
         picolog.info(f"CommandsRx::set_wheel_diameter_calibration - Setting wheel diameter calibration to {calibration_um} um")
@@ -266,8 +276,8 @@ class CommandsRx:
     async def load_config(self):
         picolog.info("CommandsRx::load_config - Loading configuration")
         self._configuration.unpack(self._eeprom.read(0, self._configuration.pack_size))
-        self._diff_drive.set_linear_velocity(self._configuration.linear_target_speed_mmps, self._configuration.linear_acceleration_mmpss)
-        self._diff_drive.set_rotational_velocity(self._configuration.rotational_target_speed_mmps, self._configuration.rotational_acceleration_mmpss)
+        self._diff_drive.set_linear_velocity(self._configuration.linear_target_speed_umps, self._configuration.linear_acceleration_umpss)
+        self._diff_drive.set_rotational_velocity(self._configuration.rotational_target_speed_umps, self._configuration.rotational_acceleration_umpss)
         self._diff_drive.set_wheel_calibration(self._configuration.wheel_calibration_um)
         self._diff_drive.set_axel_calibration(self._configuration.axel_calibration_um)
 
@@ -278,8 +288,8 @@ class CommandsRx:
     async def reset_config(self):
         picolog.info("CommandsRx::reset_config - Resetting configuration to default")
         self._configuration.default()
-        self._diff_drive.set_linear_velocity(self._configuration.linear_target_speed_mmps, self._configuration.linear_acceleration_mmpss)
-        self._diff_drive.set_rotational_velocity(self._configuration.rotational_target_speed_mmps, self._configuration.rotational_acceleration_mmpss)
+        self._diff_drive.set_linear_velocity(self._configuration.linear_target_speed_umps, self._configuration.linear_acceleration_umpss)
+        self._diff_drive.set_rotational_velocity(self._configuration.rotational_target_speed_umps, self._configuration.rotational_acceleration_umpss)
         self._diff_drive.set_wheel_calibration(self._configuration.wheel_calibration_um)
         self._diff_drive.set_axel_calibration(self._configuration.axel_calibration_um)
 
