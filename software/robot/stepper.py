@@ -136,7 +136,7 @@ class Stepper:
         self._target_speed_spi = target_speed / self._intervals_per_second
         picolog.debug(f"Stepper::set_target_speed - Target speed set to {target_speed} steps per second ({self._target_speed_spi} steps per interval)")
 
-    def move(self, steps: int):
+    def move(self, steps: float):
         # Check if the stepper is currently busy
         if self._is_busy:
             raise RuntimeError("Stepper::move - Stepper is currently busy")
@@ -186,7 +186,7 @@ class Stepper:
             picolog.debug(f"Stepper::move - Performing one-shot move of {self._total_steps} steps at {self._intervals_per_second} steps per second)")
             if not Stepper.test_only:
                 # Move at a low speed during a one-shot move
-                self.pulse_generator.set(self._intervals_per_second, self._total_steps)
+                self.pulse_generator.set(self._intervals_per_second, int(round(self._total_steps, 0)))
                 self._steps_remaining = 0
                 self._track_actual_steps = self._total_steps
         else:
@@ -273,10 +273,11 @@ class Stepper:
             self.calculate_next_command()
         else:
             self._is_busy = False
-            if self._total_steps == self._track_actual_steps:
-                picolog.debug(f"Stepper::callback - Acceleration/deceleration sequence completed successfully on SM {self._state_machine}")
+            error_margin = self._total_steps - self._track_actual_steps
+            if int(error_margin) == 0:
+                picolog.debug(f"Stepper::callback - Acc/dec completed successfully on SM {self._state_machine} error margin was {error_margin} steps")
             else:
-                picolog.error(f"Stepper::callback - Acceleration/deceleration sequence failed on SM {self._state_machine} expected {self._total_steps} steps, performed {self._track_actual_steps} steps")
+                picolog.error(f"Stepper::callback - Acc/dec completed failed on SM {self._state_machine} error margin was >1 step ({error_margin} steps)")
 
 if __name__ == "__main__":
     from main import main

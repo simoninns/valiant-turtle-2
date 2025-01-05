@@ -535,13 +535,13 @@ class DiffDrive:
         return left_stepper_status, right_stepper_status
     
     # Convert micrometers to steps
-    def __um_to_steps(self, micrometers: float) -> int:
+    def __um_to_steps(self, micrometers: float) -> float:
         circumference = self._pi * (self._wheel_diameter_um + self._wheel_calibration_um)
         micrometers_per_step = (circumference / self._steps_per_revolution)
-        return int(micrometers / micrometers_per_step)
+        return micrometers / micrometers_per_step
     
     # Convert radians to steps
-    def __radians_to_steps(self, radians: float) -> int:
+    def __radians_to_steps(self, radians: float) -> float:
         """Convert radians to steps"""
         circumference = self._pi * (self._axel_distance_um + self._axel_calibration_um)
         micrometers = (circumference / (2 * self._pi)) * radians
