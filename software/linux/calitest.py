@@ -41,6 +41,7 @@ class Calitest1():
         self._t.connect()
         self._t.motors(True)
         self._t.speed(self._speed)
+        self._t.eyes(0, 0, 255, 0)
         
         repeats = 6
 
@@ -64,6 +65,7 @@ class Calitest1():
         # Clean up
         self._t.penup()
         self._t.motors(False)
+        self._t.eyes(0, 0, 0, 0)
         self._t.disconnect()
 
 class Calitest2():
@@ -80,6 +82,7 @@ class Calitest2():
         self._t.connect()
         self._t.motors(True)
         self._t.speed(self._speed)
+        self._t.eyes(0, 0, 255, 0)
         
         repeats = 6
 
@@ -102,4 +105,5 @@ class Calitest2():
         # Clean up
         self._t.penup()
         self._t.motors(False)
+        self._t.eyes(0, 0, 0, 0)
         self._t.disconnect()

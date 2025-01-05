@@ -37,6 +37,7 @@ class Cat():
         self._t.connect()
         self._t.motors(True)
         self._t.speed(self._speed)
+        self._t.eyes(0, 0, 255, 0)
         
         # Draw the head (circle)
         self._t.penup()
@@ -125,4 +126,5 @@ class Cat():
 
         # Clean up
         self._t.motors(False)
+        self._t.eyes(0, 0, 0, 0)
         self._t.disconnect()
