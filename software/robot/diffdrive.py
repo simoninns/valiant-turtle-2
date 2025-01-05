@@ -31,6 +31,7 @@ from stepper import Stepper
 
 from machine import Pin
 import math
+import time
 
 class DiffDrive:
     def __init__(self, drv8825_enable_gpio: int, drv8825_m0_gpio :int, drv8825_m1_gpio :int, drv8825_m2_gpio :int, left_step_gpio :int, left_direction_gpio :int, right_step_gpio :int, right_direction_gpio :int):
@@ -436,16 +437,16 @@ class DiffDrive:
 
             self._heading_radians = (self._heading_radians + turn_angle) % (2 * math.pi)
 
-            picolog.debug("Waiting for turn to complete (backward).")
+            picolog.debug("DiffDrive::set_cartesian_position - Waiting for turn to complete (backward).")
             while self._left_stepper.is_busy or self._right_stepper.is_busy:
-                pass
+                time.sleep(0.2)
 
             if not turn_only:
                 self.drive_backward(distance)
 
-                picolog.debug("Waiting for movement to complete (backward).")
+                picolog.debug("DiffDrive::set_cartesian_position - Waiting for movement to complete (backward).")
                 while self._left_stepper.is_busy or self._right_stepper.is_busy:
-                    pass
+                    time.sleep(0.2)
 
                 # Restore the original heading
                 self.__set_heading(current_heading)                
@@ -458,16 +459,16 @@ class DiffDrive:
 
             self._heading_radians = (self._heading_radians + angle_diff) % (2 * math.pi)
 
-            picolog.debug("Waiting for turn to complete (forward).")
+            picolog.debug("DiffDrive::set_cartesian_position - Waiting for turn to complete (forward).")
             while self._left_stepper.is_busy or self._right_stepper.is_busy:
-                pass
+                time.sleep(0.2)
 
             if not turn_only:
                 self.drive_forward(distance)
 
-                picolog.debug("Waiting for movement to complete (forward).")
+                picolog.debug("DiffDrive::set_cartesian_position - Waiting for movement to complete (forward).")
                 while self._left_stepper.is_busy or self._right_stepper.is_busy:
-                    pass
+                    time.sleep(0.2)
 
                 # Restore the original heading
                 self.__set_heading(current_heading) 
@@ -521,7 +522,7 @@ class DiffDrive:
         left_stepper_status = 0
         right_stepper_status = 0
 
-        if self._left_stepper.is_busy:
+        if self._left_stepper.is_busy or self._right_stepper.is_busy:
             if self._left_stepper.direction:
                 left_stepper_status = 1
             else:

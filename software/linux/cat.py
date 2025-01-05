@@ -125,6 +125,8 @@ class Cat():
         self._t.penup()
 
         # Clean up
+        self._t.setheading(0)
+        self._t.forward(225)
         self._t.motors(False)
         self._t.eyes(0, 0, 0, 0)
         self._t.disconnect()

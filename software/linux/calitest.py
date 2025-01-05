@@ -53,17 +53,11 @@ class Calitest1():
                 self._t.left(90)
             self._t.forward(100)
 
-            # self._t.penup()
-            # self._t.forward(50)
-            # self._t.pendown()
-            # self._t.circle(50, 360)
-            # self._t.penup()
-            # self._t.backward(50)
-
             self._t.right((360/repeats) - 90)
 
         # Clean up
         self._t.penup()
+        self._t.forward(225)
         self._t.motors(False)
         self._t.eyes(0, 0, 0, 0)
         self._t.disconnect()
@@ -104,6 +98,7 @@ class Calitest2():
 
         # Clean up
         self._t.penup()
+        self._t.forward(225)
         self._t.motors(False)
         self._t.eyes(0, 0, 0, 0)
         self._t.disconnect()

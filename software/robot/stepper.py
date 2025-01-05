@@ -90,8 +90,6 @@ class Stepper:
     
     @property
     def direction(self):
-        if not self._is_left:
-            return not self._direction
         return self._direction
     
     def set_direction_forwards(self):
@@ -113,14 +111,20 @@ class Stepper:
             self._direction_pin.value(1)
         else:
             self._direction_pin.value(1)
-        self._direction = True
+        if self._is_left: 
+            self._direction = True
+        else:
+            self._direction = False
 
     def set_direction_right(self):
         if self._is_left:
             self._direction_pin.value(0)
         else:
             self._direction_pin.value(0)
-        self._direction = False
+        if self._is_left: 
+            self._direction = False
+        else:
+            self._direction = True
 
     def set_acceleration_spsps(self, acceleration: float):
         """Set the acceleration in steps per second per second"""

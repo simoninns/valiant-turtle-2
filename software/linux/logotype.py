@@ -184,7 +184,7 @@ class Logotype():
         self.draw_head()
 
         self._t.penup()
-        self._t.goto(300, 0)
+        self._t.goto(225, 0)
         self._t.setheading(0)
                     
         # Disconnect
