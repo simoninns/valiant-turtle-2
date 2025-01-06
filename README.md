@@ -6,7 +6,7 @@ The Valiant Turtle 2 is a modern re-creation of the Valiant Turtle robot from th
 Please see the project Wiki for details of the project and for access to the project documentation.
 
 ## Project status
-This project is current incomplete and is a work in progress. Parts may not work or be missing entirely.
+This project is at first release.  Please read the wiki and see YouTube for consruction videos (detailed in the wiki also).
 
 ## Author
 Valiant Turtle 2 is designed and maintained by Simon Inns.
