@@ -92,7 +92,7 @@ module eye_surround()
                     move([0,0,0.5]) cyl(h=1,d=10, chamfer1=0.5);
                     move([0,0,2.25]) cyl(h=4,d=7);
                 }
-                move([0,0,3]) cyl(h=16,d=5);
+                move([0,0,3]) cyl(h=16,d=5.2);
             }
         }
     }

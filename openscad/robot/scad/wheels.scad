@@ -99,8 +99,8 @@ module wheel()
 
             // Hub for D-shaped NEMA 17 5mm shaft (with 1mm D)
             difference() {
-                move([5,0,0]) yrot(-90) cyl(h=20,d=5.1);
-                move([5,0,3.1 - 0.5]) yrot(-90) cuboid([1,6,20]);
+                move([5,0,0]) yrot(-90) cyl(h=20,d=5.2);
+                move([5,0,3.1 - 0.495]) yrot(-90) cuboid([1,6,20]);
             }
 
             wheel_hub_decoration();
