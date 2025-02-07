@@ -94,7 +94,7 @@ class Pen:
         Lowers the pen by setting the servo position to 0 degrees and turning on the servo power.
         """
 
-        self.servo.set_position(0)
+        self.servo.set_position(45)
         self.servo.set_power(True)
         self._is_servo_up = False
         self._is_servo_powered = True

@@ -35,11 +35,11 @@ module pen_servo_interface()
 module holder_body()
 {
     // Base of holder
-    move([0,0,0]) cyl(h=23, d=20, center=false, chamfer=0.5, $fn=8);
+    move([0,0,0]) cyl(h=23, d=19.4, center=false, chamfer=0.5, $fn=8);
 
     // Main Shaft (pen hole is 16mm)
     difference() {
-        move([0,0,22]) cyl(h=23, d=15.5, center=false, chamfer2=0.5, $fn=8);
+        move([0,0,22]) cyl(h=23, d=15, center=false, chamfer2=0.5, $fn=8);
         move([0,-11.75,26]) cuboid([10,10,40]);
     }
 

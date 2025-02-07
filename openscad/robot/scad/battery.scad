@@ -65,11 +65,29 @@ module batteries()
 
 module bullet_4mm_female()
 {
-    move([0,0,12.25/2]) difference() {
+    //original is 12.25
+    //length is made of base-indent-ridge-tip
+    female_bullet_inner_diameter = 3.5;
+    female_bullet_length = 11.8;
+    female_bullet_outer_diameter = 4.25;
+    female_bullet_base_diameter = 4.75;
+    female_bullet_base_height = 3;
+    female_bullet_indent_height = 1;
+    
+    
+
+    move([0,0,female_bullet_length/2]) difference() {
         union() {
-            move([0,0,0]) cyl(h=12.25, d=4.25);
-            move([0,0,-4.5-0.125]) cyl(h=3, d=4.75);
-            move([0,0,-2.5 - 0.125 + 0.75 - 0.125]) cyl(h=0.75, d=4.75);
+            move([0,0,0]) cyl(h=female_bullet_length, d=female_bullet_outer_diameter);
+            //half of the 12- base height-9, minus half the other bit
+            
+            //move([0,0,-4.5-0.125]) cyl(h=female_bullet_base_height, d=female_bullet_base_diameter);
+
+            move([0,0,-((female_bullet_length-female_bullet_base_height)/2)]) cyl(h=female_bullet_base_height, d=female_bullet_base_diameter);
+            
+            //move([0,0,-2.5 - 0.125 + 0.75 - 0.125]) cyl(h=0.75, d=female_bullet_base_diameter);
+            move([0,0,-2.5 - 0.125 + 0.75 - 0.125]) cyl(h=0.75, d=female_bullet_base_diameter);
+            
         }
 
         move([0,0,9.5 - 6]) cyl(h=7, d=3.5);
@@ -151,10 +169,16 @@ module battery_pack_clip()
 
 module bullet_connector_female_mask()
 {
-    move([0,0,9]) cyl(h=9,d=4.5);
+    //move([0,0,9]) cyl(h=9,d=4.5);
+    //move([0,0,-0.5]) cyl(h=1,d=4);
+    //move([0,0,2.25]) cyl(h=5,d=5.5);
+    move([0,0,9]) cyl(h=9,d=4.8);
     move([0,0,-0.5]) cyl(h=1,d=4);
-    move([0,0,2.25]) cyl(h=5,d=5.5);
+    move([0,0,1.75]) cyl(h=3.8,d=5.3);
+    //slopes in
+    move([0,0,4.35]) cyl (h=1.4, r1=2.65, r2=2.4);
 }
+
 
 module battery_pack_screw_columns()
 {
@@ -230,15 +254,19 @@ module battery_pack()
                 }
                 cuboid([81,44,64], chamfer=1, edges=EDGES_Z_ALL);
 
+                
                 // Battery connector
-                move([-23.5 - 3,29,-22 + 3]) bullet_connector_female_mask();
-                move([-23.5 + 3,29,-22 + 3]) bullet_connector_female_mask();
+                // Move z coordinate up to move the bullet connector down. 
+                move([-23.5 - 3,29,-22 + 3 +0.5]) bullet_connector_female_mask();
+                move([-23.5 + 3,29,-22 + 3 +0.5]) bullet_connector_female_mask();
 
                 // Cable gap
                 move([-23.5 - 3,25,-27 + 0]) cuboid([4,10,8]);
                 move([-23.5 + 3,25,-27 + 0]) cuboid([4,10,8]);
-                move([-23.5 - 3,29,-24.5 + 3]) cyl(h=4,d=4);
-                move([-23.5 + 3,29,-24.5 + 3]) cyl(h=4,d=4);
+                
+                // Increase cable gap cylinder height as moved the connector mask.
+                move([-23.5 - 3,29,-24.5 + 3]) cyl(h=6,d=4);
+                move([-23.5 + 3,29,-24.5 + 3]) cyl(h=6,d=4);
 
                 // Clip slots
                 move([-33.5,0,-17.25]) { 
@@ -293,13 +321,15 @@ module battery_pack_connector_cover()
                 move([-23.5,26.75 - 4,10]) cuboid([20,8.5,25]);
             }
 
-            move([-23.5 - 3,27,9.0]) bullet_connector_female_mask();
-            move([-23.5 + 3,27,9.0]) bullet_connector_female_mask();
+            //move z coordinate up to drop the mask further down in the cover.
+            
+            move([-23.5 - 3,27,10.3]) bullet_connector_female_mask();
+            move([-23.5 + 3,27,10.3]) bullet_connector_female_mask();
             move([-23.5 - 3,23.75,4.5]) cuboid([4,10,6]);
             move([-23.5 + 3,23.75,4.5]) cuboid([4,10,6]);
-            move([-23.5 - 3,27,6.5]) cyl(h=4,d=4);
-            move([-23.5 + 3,27,6.5]) cyl(h=4,d=4);
-
+            move([-23.5 - 3,27,7]) cyl(h=6,d=4);
+            move([-23.5 + 3,27,7]) cyl(h=6,d=4);
+            
             // Positive symbol
             move([-20.5,32.25,19]) {
                 cuboid([3,1,1]);
@@ -308,17 +338,20 @@ module battery_pack_connector_cover()
         }
 
         // Clips
+        
         move([-33.5,0,0]) { 
-            move([0.5,26,11.25]) {
-                cuboid([1,12,21.5]);
-                move([-0.75,-5.5,0]) cuboid([0.5, 1, 21.5]);
-                move([-1.5,-5.5,0]) xrot(90) yrot(-90) right_triangle([1, 21.5, 1], center=true);
+            move([0.5,25.9,11.25]) {
+            //middle number plus 1
+                cuboid([1,12.2,21.5]);
+                //5.5 to 6
+                move([-0.75,-5.9,0]) cuboid([0.5, 1, 21.5]);
+                move([-1.5,-5.9,0]) xrot(90) yrot(-90) right_triangle([1, 21.5, 1], center=true);
             }
 
-            move([19.5,26,11.25]) {
-                cuboid([1,12,21.5]);
-                move([0.75,-5.5,0]) cuboid([0.5, 1, 21.5]);
-                move([1.5,-5.5,0]) xrot(90) right_triangle([1, 21.5, 1], center=true);
+            move([19.5,25.9,11.25]) {
+                cuboid([1,12.2,21.5]);
+                move([0.75,-5.9,0]) cuboid([0.5, 1, 21.5]);
+                move([1.5,-5.9,0]) xrot(90) right_triangle([1, 21.5, 1], center=true);
             }
         }
     }

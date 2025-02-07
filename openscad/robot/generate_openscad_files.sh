@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 echo "Generating 3D STL model files..."
 echo "  body_left.stl"
 openscad -o ./stl/body_left.stl -D 'for_printing="Printing"' -D 'display_body_left="Yes"' ./scad/main.scad
